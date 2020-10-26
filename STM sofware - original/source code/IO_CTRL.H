@@ -1,0 +1,8 @@
+#define IO_POS_MAX 4095
+#define IO_POS_MIN 0
+#define IO_POS_DELT 1
+#define IO_POS_DDELT 50
+#define IO_OFFSET_MAX 4095
+#define IO_OFFSET_MIN 0
+#define IO_OFFSET_DELT 1
+#define IO_OFFSET_DDELT 50

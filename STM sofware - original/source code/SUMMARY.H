@@ -1,0 +1,2 @@
+BOOL FAR PASCAL SummaryDlg(HWND,unsigned,WPARAM,LPARAM);
+

@@ -1,0 +1,6 @@
+file=scanimg.tmp
+grid=1x1
+format=lsb binary
+type=float
+majority=column
+header=bytes 56

@@ -1,0 +1,6 @@
+file=scan3.ini
+grid=0x0
+format=lsb binary
+type=float
+majority=column
+header=bytes 56
