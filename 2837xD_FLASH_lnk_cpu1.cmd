@@ -52,8 +52,9 @@ PAGE 1 : /* Data Memory */
 //   RAMGS7      : origin = 0x013000, length = 0x001000
 //   RAMGS8      : origin = 0x014000, length = 0x001000
    RAMGS6      : origin = 0x012000, length = 0x003000
-   RAMGS9      : origin = 0x015000, length = 0x001000
-   RAMGS10     : origin = 0x016000, length = 0x001000
+   RAMGS9      : origin = 0x015000, length = 0x002000
+//   RAMGS9      : origin = 0x015000, length = 0x001000
+//   RAMGS10     : origin = 0x016000, length = 0x001000
    RAMGS11     : origin = 0x017000, length = 0x001000
    RAMGS12     : origin = 0x018000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
    RAMGS13     : origin = 0x019000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
@@ -86,7 +87,8 @@ SECTIONS
    .pinit              : > FLASHB,       PAGE = 0,       ALIGN(4)
 //   .ebss               : >> RAMLS5 | RAMGS0 | RAMGS1,    PAGE = 1
    .ebss           		: > RAMGS6,    PAGE = 1
-   .esysmem            : > RAMLS5,       PAGE = 1
+//   .esysmem            : > RAMLS5,       PAGE = 1
+   .esysmem            : > RAMGS9,       PAGE = 1
    .cio                : > RAMLS5,       PAGE = 1
    /* Initalized sections go in Flash */
    .econst             : >> FLASHF | FLASHG | FLASHH      PAGE = 0, ALIGN(4)
