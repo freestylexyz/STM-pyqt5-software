@@ -158,7 +158,7 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(_translate("MainWindow", "scan"))
         self.actionnew.setText(_translate("MainWindow", "new"))
         self.actionopen.setText(_translate("MainWindow", "open"))
-import figs_rc
+
 
 
 if __name__ == "__main__":
