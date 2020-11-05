@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="logo">
+    <file>STMlogo_blackhole.png</file>
+    <file>STMlogo_NiCp2.png</file>
+  </qresource>
+  <qresource prefix="newPrefix"/>
+</RCC>
