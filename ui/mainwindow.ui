@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>286</height>
+    <height>443</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -674,7 +674,14 @@
            </spacer>
           </item>
           <item row="0" column="0">
-           <widget class="QSpinBox" name="spinBox"/>
+           <widget class="QSpinBox" name="spinBox">
+            <property name="minimum">
+             <number>-32768</number>
+            </property>
+            <property name="maximum">
+             <number>32767</number>
+            </property>
+           </widget>
           </item>
           <item row="1" column="3">
            <spacer name="horizontalSpacer_6">
@@ -1468,7 +1475,7 @@
    <property name="minimumSize">
     <size>
      <width>342</width>
-     <height>200</height>
+     <height>260</height>
     </size>
    </property>
    <property name="acceptDrops">
@@ -1520,6 +1527,9 @@
          <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
           <property name="decimals">
            <number>5</number>
+          </property>
+          <property name="maximum">
+           <double>65535.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1904,12 +1914,12 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>513</x>
-     <y>406</y>
+     <x>549</x>
+     <y>458</y>
     </hint>
     <hint type="destinationlabel">
      <x>49</x>
-     <y>460</y>
+     <y>512</y>
     </hint>
    </hints>
   </connection>
@@ -1942,6 +1952,38 @@
     <hint type="destinationlabel">
      <x>140</x>
      <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>166</x>
+     <y>194</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalScrollBar_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>30</x>
+     <y>183</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>191</y>
     </hint>
    </hints>
   </connection>
