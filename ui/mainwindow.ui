@@ -996,7 +996,7 @@
     <bool>true</bool>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -1023,7 +1023,7 @@
     <string>Bias</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_8">
@@ -1369,7 +1369,7 @@
         </sizepolicy>
        </property>
        <property name="title">
-        <string>Setpoint</string>
+        <string>Bias</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_10">
         <property name="topMargin">
@@ -1475,7 +1475,7 @@
    <property name="minimumSize">
     <size>
      <width>342</width>
-     <height>260</height>
+     <height>299</height>
     </size>
    </property>
    <property name="acceptDrops">
@@ -1507,13 +1507,66 @@
         <string>Setpoint</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_6">
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item row="0" column="1" colspan="2">
+        <item row="0" column="1">
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>nA</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::AutoText</enum>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="margin">
+           <number>-1</number>
+          </property>
+          <property name="indent">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="wrapping">
+           <bool>true</bool>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::UpDownArrows</enum>
+          </property>
+          <property name="showGroupSeparator" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="decimals">
+           <number>5</number>
+          </property>
+          <property name="minimum">
+           <double>-10.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>9.999689999999999</double>
+          </property>
+          <property name="stepType">
+           <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
          <widget class="QScrollBar" name="horizontalScrollBar_3">
           <property name="maximum">
            <number>65535</number>
@@ -1523,23 +1576,45 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
-          <property name="decimals">
-           <number>5</number>
-          </property>
-          <property name="maximum">
-           <double>65535.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="2">
-         <spacer name="horizontalSpacer_2">
+        <item row="2" column="1">
+         <spacer name="horizontalSpacer_8">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeType">
            <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>9</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0">
+         <spacer name="horizontalSpacer_45">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>30</width>
+            <height>9</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="2">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -1581,6 +1656,9 @@
          <widget class="QRadioButton" name="radioButton_14">
           <property name="text">
            <string>9</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -1851,9 +1929,9 @@
     <string>Manual(&amp;M)</string>
    </property>
   </action>
+  <zorder>Zcontrol</zorder>
   <zorder>Bias</zorder>
   <zorder>Current</zorder>
-  <zorder>Zcontrol</zorder>
  </widget>
  <resources>
   <include location="logo.qrc"/>
@@ -1870,8 +1948,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>146</x>
-     <y>445</y>
+     <x>457</x>
+     <y>423</y>
     </hint>
    </hints>
   </connection>
@@ -1902,8 +1980,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>436</x>
-     <y>223</y>
+     <x>362</x>
+     <y>255</y>
     </hint>
    </hints>
   </connection>
@@ -1914,12 +1992,12 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>549</x>
-     <y>458</y>
+     <x>628</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
-     <x>49</x>
-     <y>512</y>
+     <x>360</x>
+     <y>414</y>
     </hint>
    </hints>
   </connection>
@@ -1946,8 +2024,8 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>99</y>
+     <x>87</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>140</x>
@@ -1966,8 +2044,8 @@
      <y>194</y>
     </hint>
     <hint type="destinationlabel">
-     <x>102</x>
-     <y>190</y>
+     <x>78</x>
+     <y>198</y>
     </hint>
    </hints>
   </connection>

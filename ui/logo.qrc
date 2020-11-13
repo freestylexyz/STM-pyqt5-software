@@ -3,5 +3,8 @@
     <file>STMlogo_blackhole.png</file>
     <file>STMlogo_NiCp2.png</file>
   </qresource>
-  <qresource prefix="newPrefix"/>
+  <qresource prefix="menuIcon">
+    <file>tipappriconblack.png</file>
+    <file>settingiconblack.png</file>
+  </qresource>
 </RCC>
