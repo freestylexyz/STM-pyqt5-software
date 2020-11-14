@@ -13,6 +13,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from setting import Ui_Setting
 from tipapproach import Ui_TipApproach
+from electronictest import Ui_ElectronicTest
 
 class Ui_HoGroupSTM(object):
     def setupUi(self, HoGroupSTM):
@@ -646,6 +647,8 @@ class Ui_HoGroupSTM(object):
         self.actionOpen_Dialog.setObjectName("actionOpen_Dialog")
         self.actionOpen_tipappr_Dialog = QtWidgets.QAction(HoGroupSTM)
         self.actionOpen_tipappr_Dialog.setObjectName("actionOpen_tipappr_Dialog")
+        self.actionElectronic_Test = QtWidgets.QAction(HoGroupSTM)
+        self.actionElectronic_Test.setObjectName("actionElectronic_Test")
         self.Bias.raise_()
         self.Current.raise_()
         self.Zcontrol.raise_()
@@ -664,6 +667,7 @@ class Ui_HoGroupSTM(object):
         self.menuControl.addAction(self.actionZ)
         self.menuControl.addAction(self.actionShow_All_A)
         self.menuTip_Approach.addAction(self.actionOpen_tipappr_Dialog)
+        self.menuTest.addAction(self.actionElectronic_Test)
         self.menuHelp.addAction(self.actionManual_A)
 
         self.menubar.addAction(self.menuFile.menuAction())
@@ -678,6 +682,7 @@ class Ui_HoGroupSTM(object):
         self.retranslateUi(HoGroupSTM)
         self.actionOpen_Dialog.triggered['bool'].connect(self.opensettingwin)
         self.actionOpen_tipappr_Dialog.triggered['bool'].connect(self.opentipapprwin)
+        self.actionElectronic_Test.triggered['bool'].connect(self.openelectronictest)
         self.actionBias.triggered['bool'].connect(self.Bias.close)
         self.actionCurrent.triggered['bool'].connect(self.Current.repaint)
         self.actionZ.triggered['bool'].connect(self.Zcontrol.hide)
@@ -693,6 +698,10 @@ class Ui_HoGroupSTM(object):
         self.tipapprwidget = QtWidgets.QWidget()
         self.tipapprwin = Ui_TipApproach()
         self.tipapprwin.setupUi(self.tipapprwidget)
+        self.electrotestwidget = QtWidgets.QWidget()
+        self.electrotestwin = Ui_ElectronicTest()
+        self.electrotestwin.setupUi(self.electrotestwidget)
+
 
 
     def retranslateUi(self, HoGroupSTM):
@@ -787,6 +796,7 @@ class Ui_HoGroupSTM(object):
         self.actionManipulation.setText(_translate("HoGroupSTM", "Manipulation"))
         self.actionOpen_Dialog.setText(_translate("HoGroupSTM","Open Dialog"))
         self.actionOpen_tipappr_Dialog.setText(_translate("HoGroupSTM", "Open Dialog"))
+        self.actionElectronic_Test.setText(_translate("HoGroupSTM", "Electronic Test"))
         self.actionShow_All_A.setText(_translate("HoGroupSTM", "Show All(&A)"))
         self.actionManual_A.setText(_translate("HoGroupSTM", "Manual(&M)"))
 
@@ -795,4 +805,6 @@ class Ui_HoGroupSTM(object):
         self.settingwidget.show()
     def opentipapprwin(self):
         self.tipapprwidget.show()
+    def openelectronictest(self):
+        self.electrotestwidget.show()
 import logo_rc

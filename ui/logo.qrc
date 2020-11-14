@@ -4,6 +4,10 @@
     <file>STMlogo_NiCp2.png</file>
   </qresource>
   <qresource prefix="menuIcon">
+    <file>squarewaveiconblack.png</file>
+    <file>helpiconblack.png</file>
+    <file>testiconblack.png</file>
+    <file>ramptesticonblack.png</file>
     <file>tipappriconblack.png</file>
     <file>settingiconblack.png</file>
   </qresource>
