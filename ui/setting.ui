@@ -64,9 +64,9 @@
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="saveButton">
            <property name="text">
-            <string>Load settings</string>
+            <string>Save settings</string>
            </property>
           </widget>
          </item>
@@ -99,7 +99,7 @@
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QComboBox" name="comboBox_2">
+          <widget class="QComboBox" name="comboBox_baud">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -135,38 +135,13 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox">
+          <widget class="QComboBox" name="comboBox_uart">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <item>
-            <property name="text">
-             <string>COM1</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>COM2</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>COM3</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>COM4</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>COM5</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item row="0" column="2">
@@ -201,7 +176,7 @@
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="initButton">
            <property name="font">
             <font>
              <weight>50</weight>
