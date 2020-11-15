@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>710</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="bit20">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>140</y>
+      <width>381</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>20bit DAC</string>
+    </property>
+    <widget class="QDoubleSpinBox" name="bit20_val">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>140</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>8</number>
+     </property>
+     <property name="minimum">
+      <double>-5.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>5.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+    </widget>
+    <widget class="QScrollBar" name="bit20_bit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>361</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>1048575</number>
+     </property>
+     <property name="pageStep">
+      <number>10000</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bit20_out">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>25</y>
+       <width>120</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>20bit output</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bit20_0">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>25</y>
+       <width>60</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zero</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="dac_G">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>300</width>
+      <height>220</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>DAC</string>
+    </property>
+    <widget class="QComboBox" name="dac_ch">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>280</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>DAC0 (XIN)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC1 (X OFFSET)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC2 (Z OFFSET FINE)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC3 (Z OFFSET)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC4 (ISET OFFSET)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC5 (ISET)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC10 (ZOUTER)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC11</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC12 (BIAS OFFSET)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC13 (BIAS)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC14 (YOFFSET)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DAC15 (YIN)</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QDoubleSpinBox" name="dac_val">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>110</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="minimum">
+      <double>-10.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>10.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+    </widget>
+    <widget class="QScrollBar" name="dac_bit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>95</y>
+       <width>280</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>65535</number>
+     </property>
+     <property name="pageStep">
+      <number>1000</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="dac_out">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>60</y>
+       <width>90</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Output</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="dac_Iset_val">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>185</y>
+       <width>110</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="minimum">
+      <double>-10.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>10.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="dac_Iset_l">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>185</y>
+       <width>40</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ISET</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dac_b20">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>80</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>+/-10V</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dac_b10">
+     <property name="geometry">
+      <rect>
+       <x>105</x>
+       <y>120</y>
+       <width>80</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>+/-5V</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dac_b5">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>120</y>
+       <width>80</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>+/-2.5V</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dac_u5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>95</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0V - 5V</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dac_b10_4">
+     <property name="geometry">
+      <rect>
+       <x>105</x>
+       <y>150</y>
+       <width>95</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0V - 10V</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="dac_Iset_unit">
+     <property name="geometry">
+      <rect>
+       <x>175</x>
+       <y>185</y>
+       <width>20</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>V</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="dac_0">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>60</y>
+       <width>60</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zero</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="adc_G">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>10</y>
+      <width>380</width>
+      <height>130</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>ADC</string>
+    </property>
+    <widget class="QPushButton" name="adc_in">
+     <property name="geometry">
+      <rect>
+       <x>299</x>
+       <y>25</y>
+       <width>71</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Input</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="adc_ch">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>150</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>AIN0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN6 (ZOUT)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AIN7 (PREAMP)</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QDoubleSpinBox" name="adc_val">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>25</y>
+       <width>110</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="minimum">
+      <double>-10.240000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>10.240000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="adc_b20">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>+/- 10.24</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="adc_b10">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>60</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>+/- 5.12</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="adc_b5">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>60</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>+/- 2.56</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="adc_u10">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>120</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0V - 10.24V</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="adc_u5">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>90</y>
+       <width>120</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0V - 5.12V</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="xgain_G">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>230</y>
+      <width>210</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>XIN gain</string>
+    </property>
+    <widget class="QRadioButton" name="xgain1">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1.0</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="xgain0_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0.1</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="xgain10">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="ygain_G">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
+      <width>210</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>YIN gain</string>
+    </property>
+    <widget class="QRadioButton" name="ygain1">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1.0</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="ygain0_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0.1</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="ygain10">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="z1gain_G">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>350</y>
+      <width>210</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Z1 gain</string>
+    </property>
+    <widget class="QRadioButton" name="z1gain1">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1.0</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="z1gain0_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0.1</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="z1gain10">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="z2gain_G">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>410</y>
+      <width>210</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Z2 gain</string>
+    </property>
+    <widget class="QRadioButton" name="z2gain1">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1.0</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="z2gain10">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="z2gain0_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0.1</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="dither1_G">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>290</y>
+      <width>200</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Dither1</string>
+    </property>
+    <widget class="QRadioButton" name="dither1_on">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ON</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dither1_off">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="dither0_G">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>230</y>
+      <width>200</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Dither0</string>
+    </property>
+    <widget class="QRadioButton" name="dither0_on">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ON</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="dither0_off">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="feedback_G">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>350</y>
+      <width>200</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Feedback</string>
+    </property>
+    <widget class="QRadioButton" name="feedback_on">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ON</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="feedback_off">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="retract_G">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>410</y>
+      <width>200</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Retract</string>
+    </property>
+    <widget class="QRadioButton" name="retract_on">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ON</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="retract_off">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>25</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>OFF</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="coarse_G">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>230</y>
+      <width>260</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Coarse</string>
+    </property>
+    <widget class="QRadioButton" name="fine">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>80</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Coarse</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="coarse">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>25</y>
+       <width>80</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Fine</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="rot_G">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>290</y>
+      <width>260</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>ROT</string>
+    </property>
+    <widget class="QRadioButton" name="rotation">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>105</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Rotation</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="translation">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>25</y>
+       <width>105</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Translation</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="ramp">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>350</y>
+      <width>260</width>
+      <height>110</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>24</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Rmap</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>710</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
