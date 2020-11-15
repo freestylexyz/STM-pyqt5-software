@@ -1,5 +1,6 @@
 import logging
 import sys
+sys.path.append("./ui/")
 from PyQt5 import QtWidgets, QtCore
 # make the example runnable without the need to install
 from os.path import abspath, dirname
