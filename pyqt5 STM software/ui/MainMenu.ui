@@ -37,7 +37,7 @@
    <string>HoGroupSTM</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="logo.qrc">
+   <iconset>
     <normaloff>:/logo/STMlogo_NiCp2.png</normaloff>
     <normalon>:/logo/STMlogo_blackhole.png</normalon>
     <disabledoff>:/logo/STMlogo_NiCp2.png</disabledoff>
