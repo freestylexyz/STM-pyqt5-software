@@ -1,0 +1,4 @@
+[2020-11-15 09:00:25,321] [INFO] start tool logic thread
+[2020-11-15 09:00:54,269] [INFO] com init error!!!
+[2020-11-15 09:00:54,269] [INFO] start send and recv data thread.
+[2020-11-15 09:00:54,270] [INFO] start recv_data_thread
