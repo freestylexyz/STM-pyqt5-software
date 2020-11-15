@@ -14,9 +14,9 @@ from PyQt5.QtWidgets import *
 import serial
 import serial.tools.list_ports
 from time import sleep
-from setting import Ui_Setting
-from tipapproach import Ui_TipApproach
-from electronictest import Ui_ElectronicTest
+from Setting_ui import Ui_Setting
+from TipApproach_ui import Ui_TipApproach
+from Etest_ui import Ui_ElectronicTest
 
 # Let the settings subwindow load old configurations and find COM automatically.
 class myForm(QtWidgets.QWidget, Ui_Setting):
