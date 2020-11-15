@@ -66,13 +66,13 @@ class DSP(QObject):
     # !!! Not finished
     # Acquire DSP version number
     def version(self):
-        if self.ok():
+        if self.open & self.idling:
             self.ver = 'x'
     
     # !!! Not finished
     # Acquire DSP status information
     def status(self):
-        if self.ok():
+        if self.open & self.idling:
             self.lastdac = [0x8000] * 16
             self.dacrange = [10] * 16
             self.adcrange = [0] * 8
