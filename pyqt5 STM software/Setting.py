@@ -24,7 +24,7 @@ class mySetting(QtWidgets.QWidget, Ui_Setting):
         #self.comboBox_uart.addItem(self.com)
         self.comboBox_baud.setCurrentText(self.baud)
         self.comboBox_baud.currentIndexChanged.connect(self.combox_baud_cb)
-        self.saveButton.clicked.connect(self.btn_test_cb)
+        self.loadButton.clicked.connect(self.btn_test_cb)
 
 
         def check_valid_uart():
@@ -74,4 +74,4 @@ class mySetting(QtWidgets.QWidget, Ui_Setting):
 
     def btn_test_cb(self):
             self.settings.setValue("SETUP/BAUD_VALUE", self.baud)
-            QtWidgets.QMessageBox.information(self, "Reminder", "QSettings saved successfully!")
+            QtWidgets.QMessageBox.information(self, "Reminder", "QSettings loaded successfully!")
