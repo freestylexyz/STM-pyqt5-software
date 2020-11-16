@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+@Date     : 2020/11/16 17:48:07
+@Author   : milier00
+@FileName : Setting.py
+"""
 import sys
 sys.path.append("./ui/")
 from PyQt5.QtWidgets import QApplication , QWidget, QMessageBox
