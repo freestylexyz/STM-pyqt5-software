@@ -18,34 +18,15 @@ class myMainMenu(QtWidgets.QMainWindow, Ui_HoGroupSTM):
         self.setupUi(self)
 
 
-        self.actionOpen_Dialog = QtWidgets.QAction()
-        self.actionOpen_Dialog.setObjectName("actionOpen_Dialog")
-        self.actionOpen_tipappr_Dialog = QtWidgets.QAction()
-        self.actionOpen_tipappr_Dialog.setObjectName("actionOpen_tipappr_Dialog")
-        self.actionElectronic_Test = QtWidgets.QAction()
-        self.actionElectronic_Test.setObjectName("actionElectronic_Test")
-
-        self.menuSetting.addAction(self.actionOpen_Dialog)
-        self.menuTip_Approach.addAction(self.actionOpen_tipappr_Dialog)
-        self.menuTest.addAction(self.actionElectronic_Test)
-
-        self.retranslateui()
-        self.actionOpen_Dialog.triggered['bool'].connect(self.opensettingwin)
-        self.actionOpen_tipappr_Dialog.triggered['bool'].connect(self.opentipapprwin)
-        self.actionElectronic_Test.triggered['bool'].connect(self.openelectronictest)
+        self.actionSetting.triggered['bool'].connect(self.opensettingwin)
+        self.actionTipAppr.triggered['bool'].connect(self.opentipapprwin)
+        self.actionEtest.triggered['bool'].connect(self.openelectronictest)
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def retranslateui(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.actionOpen_Dialog.setText(_translate("HoGroupSTM","Open Dialog"))
-        self.actionOpen_tipappr_Dialog.setText(_translate("HoGroupSTM", "Open Dialog"))
-        self.actionElectronic_Test.setText(_translate("HoGroupSTM", "Electronic Test"))
+
         # call out sub windows from menu
 
         # Setting subwindow
-        # self.settingwidget = QtWidgets.QWidget()
-        # self.settingwin = Ui_Setting()
-        # self.settingwin.setupUi(self.settingwidget)
         self.settingwidget = mySetting()
         # Tip approach subwindow
         self.tipapprwidget = QtWidgets.QWidget()
