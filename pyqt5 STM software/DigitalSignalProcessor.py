@@ -7,8 +7,8 @@ Created on Sat Nov 14 18:35:18 2020
 from serial import *
 from PyQt5.QtCore import *
 
-class DSP(QObject):
-    succeed_signal = pyqtSignal(bool)          # Serial port open signal
+class myDSP(QObject):
+    succeed_signal = pyqtSignal(bool)       # Serial port open signal
     
     def __init__(self, parent=None, port='com1', baudrate=38400):
         super(DSP, self).__init__(parent, port, baud)
