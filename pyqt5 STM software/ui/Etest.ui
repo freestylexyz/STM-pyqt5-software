@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>ElectronicTest</class>
  <widget class="QWidget" name="ElectronicTest">
+  <property name="enabled">
+   <bool>false</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>455</width>
-    <height>250</height>
+    <width>651</width>
+    <height>475</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,20 +21,20 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>455</width>
-    <height>250</height>
+    <width>651</width>
+    <height>475</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>ELectronic Test</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="logo.qrc">
+   <iconset>
     <normaloff>:/menuIcon/testiconblack.png</normaloff>:/menuIcon/testiconblack.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
-    <widget class="QTabWidget" name="RampTest">
+    <widget class="QTabWidget" name="Etest">
      <property name="currentIndex">
       <number>4</number>
      </property>
@@ -39,6 +42,719 @@
       <attribute name="title">
        <string>I/O</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_12">
+       <item row="3" column="2">
+        <widget class="QGroupBox" name="rot_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>ROT</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_22">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="rotation">
+            <property name="text">
+             <string>Rotation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="translation">
+            <property name="text">
+             <string>Translation</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QGroupBox" name="z2gain_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Z2 gain</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_16">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="z2gain0_1">
+            <property name="text">
+             <string>0.1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="z2gain1">
+            <property name="text">
+             <string>1.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QRadioButton" name="z2gain10">
+            <property name="text">
+             <string>10</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="dac_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>DAC</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_25">
+          <item row="0" column="0" colspan="6">
+           <widget class="QComboBox" name="dac_ch">
+            <item>
+             <property name="text">
+              <string>DAC0 (XIN)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC1 (X OFFSET)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC2 (Z OFFSET FINE)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC3 (Z OFFSET)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC4 (ISET OFFSET)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC5 (ISET)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC8</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC9</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC10 (ZOUTER)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC11</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC12 (BIAS OFFSET)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC13 (BIAS)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC14 (YOFFSET)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DAC15 (YIN)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QDoubleSpinBox" name="dac_val">
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3" colspan="2">
+           <widget class="QPushButton" name="dac_0">
+            <property name="text">
+             <string>Zero</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="QPushButton" name="dac_out">
+            <property name="text">
+             <string>Output</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="6">
+           <widget class="QScrollBar" name="dac_bit">
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="pageStep">
+             <number>1000</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QRadioButton" name="dac_b20">
+            <property name="text">
+             <string>+/-10V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2" colspan="3">
+           <widget class="QRadioButton" name="dac_b10">
+            <property name="text">
+             <string>+/-5V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="5">
+           <widget class="QRadioButton" name="dac_b5">
+            <property name="text">
+             <string>+/-2.5V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QRadioButton" name="dac_u5">
+            <property name="text">
+             <string>0V - 5V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2" colspan="3">
+           <widget class="QRadioButton" name="dac_b10_4">
+            <property name="text">
+             <string>0V - 10V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="dac_Iset_l">
+            <property name="text">
+             <string>ISET</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="3">
+           <widget class="QDoubleSpinBox" name="dac_Iset_val">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="4">
+           <widget class="QLabel" name="dac_Iset_unit">
+            <property name="text">
+             <string>V</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QGroupBox" name="bit20">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>20bit DAC</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_24">
+          <item row="0" column="0">
+           <widget class="QDoubleSpinBox" name="bit20_val">
+            <property name="decimals">
+             <number>8</number>
+            </property>
+            <property name="minimum">
+             <double>-5.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="bit20_0">
+            <property name="text">
+             <string>Zero</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="bit20_out">
+            <property name="text">
+             <string>20bit output</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QScrollBar" name="bit20_bit">
+            <property name="maximum">
+             <number>1048575</number>
+            </property>
+            <property name="pageStep">
+             <number>10000</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="dither0_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Dither0</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_17">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="dither0_on">
+            <property name="text">
+             <string>ON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="dither0_off">
+            <property name="text">
+             <string>OFF</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QGroupBox" name="feedback_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Feedback</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_19">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="feedback_on">
+            <property name="text">
+             <string>ON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="feedback_off">
+            <property name="text">
+             <string>OFF</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QGroupBox" name="dither1_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Dither1</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_18">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="dither1_on">
+            <property name="text">
+             <string>ON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="dither1_off">
+            <property name="text">
+             <string>OFF</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="xgain_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>XIN gain</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="xgain0_1">
+            <property name="text">
+             <string>0.1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="xgain1">
+            <property name="text">
+             <string>1.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QRadioButton" name="xgain10">
+            <property name="text">
+             <string>10</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="ygain_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>YIN gain</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="ygain0_1">
+            <property name="text">
+             <string>0.1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="ygain1">
+            <property name="text">
+             <string>1.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QRadioButton" name="ygain10">
+            <property name="text">
+             <string>10</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QGroupBox" name="coarse_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Coarse</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_21">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="fine">
+            <property name="text">
+             <string>Coarse</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="coarse">
+            <property name="text">
+             <string>Fine</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QGroupBox" name="retract_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Retract</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_20">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="retract_on">
+            <property name="text">
+             <string>ON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="retract_off">
+            <property name="text">
+             <string>OFF</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QGroupBox" name="z1gain_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Z1 gain</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_15">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="z1gain0_1">
+            <property name="text">
+             <string>0.1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="z1gain1">
+            <property name="text">
+             <string>1.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QRadioButton" name="z1gain10">
+            <property name="text">
+             <string>10</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QPushButton" name="ramp">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Rmap</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QGroupBox" name="adc_G">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>ADC</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_23">
+          <item row="0" column="0" colspan="2">
+           <widget class="QComboBox" name="adc_ch">
+            <item>
+             <property name="text">
+              <string>AIN0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN6 (ZOUT)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN7 (PREAMP)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="2" colspan="2">
+           <widget class="QDoubleSpinBox" name="adc_val">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.240000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.240000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QPushButton" name="adc_in">
+            <property name="text">
+             <string>Input</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="adc_b20">
+            <property name="text">
+             <string>+/- 10.24</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QRadioButton" name="adc_b10">
+            <property name="text">
+             <string>+/- 5.12</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3" colspan="2">
+           <widget class="QRadioButton" name="adc_b5">
+            <property name="text">
+             <string>+/- 2.56</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="adc_u10">
+            <property name="text">
+             <string>0V - 10.24V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="QRadioButton" name="adc_u5">
+            <property name="text">
+             <string>0V - 5.12V</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="RampTest">
       <attribute name="title">
@@ -49,17 +765,29 @@
         <widget class="QWidget" name="widget_2" native="true">
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="QGraphicsView" name="graphicsView">
+           <widget class="QGraphicsView" name="view_RTest">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>190</horstretch>
+              <verstretch>190</verstretch>
              </sizepolicy>
             </property>
             <property name="minimumSize">
              <size>
-              <width>160</width>
-              <height>160</height>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="sizeIncrement">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
            </widget>
@@ -75,7 +803,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QComboBox" name="comboBox">
+              <widget class="QComboBox" name="comboBox_OutCh_RTest">
                <item>
                 <property name="text">
                  <string>0 (X IN)</string>
@@ -161,7 +889,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QComboBox" name="comboBox_2">
+              <widget class="QComboBox" name="comboBox_InCh_RTest">
                <item>
                 <property name="text">
                  <string>0 (AIN0)</string>
@@ -207,7 +935,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QSpinBox" name="spinBox"/>
+              <widget class="QSpinBox" name="spinBox_InitVal_RTest"/>
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="label_4">
@@ -217,7 +945,7 @@
               </widget>
              </item>
              <item row="3" column="1">
-              <widget class="QSpinBox" name="spinBox_2"/>
+              <widget class="QSpinBox" name="spinBox_FinVal_RTest"/>
              </item>
              <item row="4" column="0">
               <widget class="QLabel" name="label_5">
@@ -227,19 +955,12 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QSpinBox" name="spinBox_3"/>
-             </item>
-             <item row="5" column="0">
-              <widget class="QPushButton" name="pushButton">
-               <property name="text">
-                <string>Ramp</string>
-               </property>
-              </widget>
+              <widget class="QSpinBox" name="spinBox_StepSize_RTest"/>
              </item>
              <item row="5" column="1">
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="pushButton_RRread_RTest">
                <property name="text">
-                <string>Ramp read</string>
+                <string>Ramp/Ramp read</string>
                </property>
               </widget>
              </item>
@@ -286,8 +1007,24 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="2">
+           <widget class="QDoubleSpinBox" name="spinBox_V2_SWave"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Vlotage1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="spinBox_Delay_SWave"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="QDoubleSpinBox" name="spinBox_V1_SWave"/>
+          </item>
           <item row="0" column="2">
-           <widget class="QComboBox" name="comboBox_3">
+           <widget class="QComboBox" name="comboBox_Ch_SWave">
             <item>
              <property name="text">
               <string>0 (X IN)</string>
@@ -365,9 +1102,6 @@
             </item>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-          </item>
           <item row="0" column="1">
            <widget class="QLabel" name="label_6">
             <property name="text">
@@ -375,16 +1109,10 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
-          </item>
-          <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_8">
+          <item row="4" column="1" colspan="2">
+           <widget class="QPushButton" name="pushButton_Start_SWave">
             <property name="text">
-             <string>Vlotage1</string>
+             <string>Start</string>
             </property>
            </widget>
           </item>
@@ -418,7 +1146,7 @@
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="QGraphicsView" name="graphicsView_2"/>
+           <widget class="QGraphicsView" name="view_Osci"/>
           </item>
           <item row="1" column="0">
            <widget class="QWidget" name="widget_5" native="true">
@@ -435,8 +1163,32 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
+             <item row="0" column="8">
+              <widget class="QDoubleSpinBox" name="spinBox_Delay_Osci"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_NSample_Osci">
+               <property name="text">
+                <string>N sample</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string># of samples</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Average</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="1" colspan="3">
-              <widget class="QComboBox" name="comboBox_4">
+              <widget class="QComboBox" name="comboBox_InCh_Osci">
                <item>
                 <property name="text">
                  <string>0 (AIN0)</string>
@@ -474,6 +1226,36 @@
                </item>
               </widget>
              </item>
+             <item row="2" column="0">
+              <widget class="QRadioButton" name="radioButton_Contin_Osci">
+               <property name="text">
+                <string>Continuous</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QSpinBox" name="spinBox_AvTimes_Osci"/>
+             </item>
+             <item row="0" column="6">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Delay</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="9">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>us</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QSpinBox" name="spinBox_Samples_Osci"/>
+             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_10">
                <property name="text">
@@ -481,7 +1263,7 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="4">
+             <item row="0" column="5">
               <spacer name="horizontalSpacer">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -497,35 +1279,22 @@
                </property>
               </spacer>
              </item>
-             <item row="0" column="7">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton">
+             <item row="1" column="8" rowspan="4">
+              <widget class="QPushButton" name="pushButton_SorS_Osci">
                <property name="text">
-                <string>N sample</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButton_2">
-               <property name="text">
-                <string>Continuous</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
-              <widget class="QSpinBox" name="spinBox_5"/>
-             </item>
-             <item row="0" column="8">
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>us</string>
+                <string>Start/Stop</string>
                </property>
               </widget>
              </item>
              <item row="2" column="4">
-              <spacer name="horizontalSpacer_4">
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>times</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="4">
+              <spacer name="horizontalSpacer_3">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -540,49 +1309,8 @@
                </property>
               </spacer>
              </item>
-             <item row="0" column="5">
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>Delay</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="label_13">
-               <property name="text">
-                <string># of samples</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QSpinBox" name="spinBox_4"/>
-             </item>
-             <item row="1" column="7" rowspan="4">
-              <widget class="QPushButton" name="pushButton_3">
-               <property name="text">
-                <string>Start/Stop</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QLabel" name="label_14">
-               <property name="text">
-                <string>Average</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="4">
-              <widget class="QLabel" name="label_15">
-               <property name="text">
-                <string>times</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="5">
-              <spacer name="horizontalSpacer_3">
+             <item row="2" column="5" colspan="2">
+              <spacer name="horizontalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -614,10 +1342,10 @@
         <widget class="QWidget" name="widget_6" native="true">
          <layout class="QGridLayout" name="gridLayout_10">
           <item row="0" column="0">
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="lineEdit_1_Echo"/>
           </item>
           <item row="0" column="1" rowspan="2">
-           <widget class="QPushButton" name="pushButton_4">
+           <widget class="QPushButton" name="pushButton_Query_Echo">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -630,7 +1358,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="lineEdit_2_Echo"/>
           </item>
          </layout>
         </widget>

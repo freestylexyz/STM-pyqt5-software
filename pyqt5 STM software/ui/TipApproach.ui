@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>TipApproach</class>
  <widget class="QWidget" name="TipApproach">
+  <property name="enabled">
+   <bool>false</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,14 +29,17 @@
    <string>Tip Approach</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="logo.qrc">
+   <iconset>
     <normaloff>:/menuIcon/tipappriconblack.png</normaloff>:/menuIcon/tipappriconblack.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0" colspan="2">
     <layout class="QVBoxLayout" name="verticalLayout_8">
      <item>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="groupBox_WaveForm_TipAppr">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="title">
         <string>Wave form control</string>
        </property>
@@ -125,7 +131,7 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+            <widget class="QDoubleSpinBox" name="spinBox_DelayInput_WaveForm">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -134,7 +140,7 @@
             </widget>
            </item>
            <item row="2" column="2">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox">
+            <widget class="QDoubleSpinBox" name="spinBox_AcceInput_WaveForm">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -173,7 +179,7 @@
             </widget>
            </item>
            <item row="1" column="0" colspan="6">
-            <widget class="QScrollBar" name="horizontalScrollBar_8">
+            <widget class="QScrollBar" name="scrollBar_XstepInput_WaveForm">
              <property name="maximum">
               <number>65535</number>
              </property>
@@ -219,7 +225,7 @@
             </widget>
            </item>
            <item row="3" column="0" colspan="6">
-            <widget class="QScrollBar" name="horizontalScrollBar_3">
+            <widget class="QScrollBar" name="scrollBar_ZstepInput_WaveForm">
              <property name="maximum">
               <number>65535</number>
              </property>
@@ -241,7 +247,7 @@
             </widget>
            </item>
            <item row="2" column="4">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+            <widget class="QDoubleSpinBox" name="spinBox_ZouterInput_WaveForm">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -250,7 +256,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+            <widget class="QDoubleSpinBox" name="spinBox_XstepInput_WaveForm">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -265,7 +271,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="groupBox_ApprPar_TipAppr">
        <property name="title">
         <string>Approach parameters</string>
        </property>
@@ -280,7 +286,7 @@
          <widget class="QWidget" name="widget_7" native="true">
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="2" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+            <widget class="QDoubleSpinBox" name="spinBox_MinCurrInput_ApprPar">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -384,7 +390,7 @@
             </spacer>
            </item>
            <item row="3" column="0" colspan="3">
-            <widget class="QScrollBar" name="horizontalScrollBar_7">
+            <widget class="QScrollBar" name="scrollBar_MinCurrInput_ApprPar">
              <property name="minimumSize">
               <size>
                <width>160</width>
@@ -421,7 +427,7 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QScrollBar" name="horizontalScrollBar_4">
+            <widget class="QScrollBar" name="scrollBar_GstepInput_ApprPar">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -440,7 +446,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSpinBox" name="spinBox_2">
+            <widget class="QSpinBox" name="spinBox_GstepInput_ApprPar">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -449,7 +455,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="spinBox_3">
+            <widget class="QSpinBox" name="spinBox_BstepInput_ApprPar">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -476,7 +482,7 @@
             </widget>
            </item>
            <item row="2" column="2">
-            <widget class="QScrollBar" name="horizontalScrollBar_5">
+            <widget class="QScrollBar" name="scrollBar_BstepInput_ApprPar">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -514,7 +520,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_3">
+      <widget class="QGroupBox" name="groupBox_Steps_TipAppr">
        <property name="title">
         <string>Steps</string>
        </property>
@@ -538,7 +544,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="pushButton_Up_Steps">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -550,7 +556,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="pushButton_Down_Steps">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -599,7 +605,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButton_3">
+            <widget class="QPushButton" name="pushButton_TipAppr_Steps">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -611,7 +617,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="pushButton_STOP_Steps">
              <property name="font">
               <font>
                <pointsize>8</pointsize>
@@ -677,7 +683,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_4">
+              <widget class="QSpinBox" name="spinBox_NumInput_Steps">
                <property name="font">
                 <font>
                  <pointsize>8</pointsize>
@@ -688,7 +694,7 @@
             </layout>
            </item>
            <item>
-            <widget class="QScrollBar" name="horizontalScrollBar_6">
+            <widget class="QScrollBar" name="scrollBar_NumInput_Steps">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -719,7 +725,7 @@
     </layout>
    </item>
    <item row="0" column="3">
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="groupBox_Trans_TipAppro">
      <property name="title">
       <string>Translate</string>
      </property>
@@ -731,41 +737,41 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_6">
+       <widget class="QPushButton" name="pushButton_Xfwd_Trans">
         <property name="text">
          <string>+X</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_5">
+       <widget class="QPushButton" name="pushButton_Yfwd_Trans">
         <property name="text">
          <string>+Y</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="pushButton_7">
+       <widget class="QPushButton" name="pushButton_Xbkwd_Trans">
         <property name="text">
          <string>-X</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QPushButton" name="pushButton_8">
+       <widget class="QPushButton" name="pushButton_Ybkwd_Trans">
         <property name="text">
          <string>-Y</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0" colspan="2">
-       <widget class="QTextBrowser" name="textBrowser"/>
+       <widget class="QTextBrowser" name="Display_Trans"/>
       </item>
      </layout>
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="QWidget" name="widget_3" native="true">
+    <widget class="QWidget" name="widget_Status_TipAppr" native="true">
      <layout class="QGridLayout" name="gridLayout_10">
       <property name="leftMargin">
        <number>9</number>
@@ -783,7 +789,7 @@
        <number>0</number>
       </property>
       <item row="0" column="4">
-       <widget class="QLabel" name="label_17">
+       <widget class="QLabel" name="label_Pass_Status">
         <property name="text">
          <string/>
         </property>
@@ -797,7 +803,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_16">
+       <widget class="QLabel" name="label_Status_Status">
         <property name="text">
          <string/>
         </property>

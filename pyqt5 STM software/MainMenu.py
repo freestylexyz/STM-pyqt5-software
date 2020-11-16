@@ -51,6 +51,7 @@ class myMainMenu(QtWidgets.QMainWindow, Ui_HoGroupSTM):
         self.tipapprwidget = QtWidgets.QWidget()
         self.tipapprwin = Ui_TipApproach()
         self.tipapprwin.setupUi(self.tipapprwidget)
+        
         # Electronic test subwindow
         self.electrotestwidget = QtWidgets.QWidget()
         self.electrotestwin = Ui_ElectronicTest()

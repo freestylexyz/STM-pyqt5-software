@@ -29,7 +29,7 @@
    <string>Setting</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="logo.qrc">
+   <iconset>
     <normaloff>:/menuIcon/settingiconblack.png</normaloff>:/menuIcon/settingiconblack.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -231,7 +231,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox">
+          <widget class="QDoubleSpinBox" name="spinBox_Biasoffset25_Setting">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -276,7 +276,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+          <widget class="QDoubleSpinBox" name="spinBox_Biasoffset5_Setting">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -321,7 +321,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+          <widget class="QDoubleSpinBox" name="spinBox_Biasoffset10_Setting">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -361,7 +361,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+          <widget class="QDoubleSpinBox" name="spinBox_Isetoff_Setting">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
