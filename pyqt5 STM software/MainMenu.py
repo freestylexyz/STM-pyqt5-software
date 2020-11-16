@@ -1,74 +1,42 @@
-import logging
 import sys
 sys.path.append("./ui/")
-from PyQt5 import QtCore, QtGui, QtWidgets
-# make the example runnable without the need to install
-from os.path import abspath, dirname
-sys.path.insert(0, abspath(dirname(abspath(__file__)) + '/..'))
-
-import qdarkstyle
-from MainMenu_ui import Ui_HoGroupSTM
+from PyQt5.QtWidgets import QApplication , QMainWindow
+from PyQt5.QtCore import pyqtSignal , Qt , QMetaObject
 from Setting import mySetting
-from TipApproach_ui import Ui_TipApproach
-from Etest_ui import Ui_ElectronicTest
+from TipApproach import myTipApproach
+from Etest import myEtest
+from MainMenu_ui import Ui_HoGroupSTM
 
-class myMainMenu(QtWidgets.QMainWindow, Ui_HoGroupSTM):
+
+class myMainMenu(QMainWindow, Ui_HoGroupSTM):
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
+    def init_UI(self):
+        self.actionSetting.triggered['bool'].connect(self.open_setting)
+        self.actionTipAppr.triggered['bool'].connect(self.open_tipappr)
+        self.actionEtest.triggered['bool'].connect(self.open_etest)
+        QMetaObject.connectSlotsByName(self)
 
-        self.actionSetting.triggered['bool'].connect(self.opensettingwin)
-        self.actionTipAppr.triggered['bool'].connect(self.opentipapprwin)
-        self.actionEtest.triggered['bool'].connect(self.openelectronictest)
-        QtCore.QMetaObject.connectSlotsByName(self)
-
-
-        # call out sub windows from menu
-
-        # Setting subwindow
         self.settingwidget = mySetting()
-        # Tip approach subwindow
-        self.tipapprwidget = QtWidgets.QWidget()
-        self.tipapprwin = Ui_TipApproach()
-        self.tipapprwin.setupUi(self.tipapprwidget)
-        
-        # Electronic test subwindow
-        self.electrotestwidget = QtWidgets.QWidget()
-        self.electrotestwin = Ui_ElectronicTest()
-        self.electrotestwin.setupUi(self.electrotestwidget)
+        self.tipapprwidget = myTipApproach()
+        self.etestwidget = myEtest()
 
-    # Open dialog from menubar
-    def opensettingwin(self):
+    def open_setting(self):
         self.settingwidget.show()
-    def opentipapprwin(self):
+
+    def open_tipappr(self):
         self.tipapprwidget.show()
-    def openelectronictest(self):
-        self.electrotestwidget.show()
 
+    def open_etest(self):
+        self.etestwidget.show()
 
-
-def main():
-    """
-    Application entry point
-    """
-    logging.basicConfig(level=logging.DEBUG)
-    # create the application and the main window
-    app = QtWidgets.QApplication(sys.argv)
-    window = myMainMenu()
-
-    # setup stylesheet
-    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-
-    # auto quit after 2s when testing on travis-ci
-    if "--travis" in sys.argv:
-        QtCore.QTimer.singleShot(2000, app.exit)
-
-    # run
-    window.show()
-    app.exec_()
 
 
 if __name__ == "__main__":
-    main()
-
+    app = QApplication(sys.argv)
+    window = myMainMenu()
+    window.show()
+    sys.exit(app.exec_())

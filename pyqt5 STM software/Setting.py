@@ -1,31 +1,20 @@
 import sys
 sys.path.append("./ui/")
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QApplication , QWidget, QMessageBox
+from PyQt5.QtCore import pyqtSignal , Qt
+from PyQt5.QtCore import Qt , QSettings
+from Setting_ui import Ui_Setting
 import serial
 import serial.tools.list_ports
 from time import sleep
-from Setting_ui import Ui_Setting
 
 
-class mySetting(QtWidgets.QWidget, Ui_Setting):
+
+class mySetting(QWidget, Ui_Setting):
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
-        # load settings
-        self.settings = QtCore.QSettings("config.ini", QtCore.QSettings.IniFormat)
-        # self.com = self.settings.value("SETUP/COM_VALUE")
-        self.baud = self.settings.value("SETUP/BAUD_VALUE")#, 0, type=int)
-
-        # init gui
-        #self.comboBox_uart.addItem(self.com)
-        self.comboBox_baud.setCurrentText(self.baud)
-        self.comboBox_baud.currentIndexChanged.connect(self.combox_baud_cb)
-        self.loadButton.clicked.connect(self.btn_test_cb)
-
 
         def check_valid_uart():
             # com select
@@ -42,7 +31,7 @@ class mySetting(QtWidgets.QWidget, Ui_Setting):
                     port_values.append(port_list[i][0])
 
                 for i in range(len(port_list)):
-                    index = self.comboBox_uart.findText(port_values[i], QtCore.Qt.MatchFixedString)
+                    index = self.comboBox_uart.findText(port_values[i], Qt.MatchFixedString)
                     if (index < 0):
                         current_text = self.comboBox_uart.currentText()
                         self.comboBox_uart.addItem(port_values[i])
@@ -69,9 +58,24 @@ class mySetting(QtWidgets.QWidget, Ui_Setting):
         # find COM
         check_valid_uart()
 
+    def init_UI(self):
+        self.settings = QSettings("config.ini", QSettings.IniFormat)
+        self.baud = self.settings.value("SETUP/BAUD_VALUE")
+        self.comboBox_baud.setCurrentText(self.baud)
+        self.comboBox_baud.currentIndexChanged.connect(self.combox_baud_cb)
+        self.loadButton.clicked.connect(self.btn_test_cb)
+
     def combox_baud_cb(self):
             self.baud = self.comboBox_baud.currentText()
 
     def btn_test_cb(self):
             self.settings.setValue("SETUP/BAUD_VALUE", self.baud)
-            QtWidgets.QMessageBox.information(self, "Reminder", "QSettings loaded successfully!")
+            QMessageBox.information(self, "Reminder", "QSettings loaded successfully!")
+
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = mySetting()
+    window.show()
+    sys.exit(app.exec_())
