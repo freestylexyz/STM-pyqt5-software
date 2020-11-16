@@ -54,7 +54,7 @@ class myDSP(QObject):
     
     # Close serial
     def close(self):
-        if self.open & self.idling:
+        if self.open:
             self.ser.close()
     
     # Flush serial input and ouput, proceted method, internal use only
