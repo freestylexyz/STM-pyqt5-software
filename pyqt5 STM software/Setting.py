@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 @Date     : 2020/11/16 17:48:07
@@ -22,47 +23,10 @@ class mySetting(QWidget, Ui_Setting):
         super().__init__()
         self.setupUi(self)
 
-        def check_valid_uart():
-            # com select
-            port_values = []
-
-            port_list = list(serial.tools.list_ports.comports())
-            length = len(port_list)
-            if (0 == len(port_list)):
-                print("can't find serial port")
-                self.comboBox_uart.setCurrentIndex(-1)
-                self.comboBox_uart.clear()
-            else:
-                for i in range(0, len(port_list)):
-                    port_values.append(port_list[i][0])
-
-                for i in range(len(port_list)):
-                    index = self.comboBox_uart.findText(port_values[i], Qt.MatchFixedString)
-                    if (index < 0):
-                        current_text = self.comboBox_uart.currentText()
-                        self.comboBox_uart.addItem(port_values[i])
-                        if ("" == current_text):
-                            # print("current text is NULL")
-                            sleep(0.04)
-                            self.comboBox_uart.setCurrentIndex(-1)
-                        else:
-                            print("current text is ", current_text)
-                # remove eut
-                count = self.comboBox_uart.count()
-                for i in range(count):
-                    data = self.comboBox_uart.itemText(i)
-                    is_uart_exist = 0
-                    for j in range(length):
-                        if (data == port_values[j]):
-                            is_uart_exist = 1
-                    if (0 == is_uart_exist):
-                        # remove1
-                        self.comboBox_uart.removeItem(i)
-                        current_data = self.comboBox_uart.currentText()
-                        if (current_data == data or current_data == ""):
-                            self.comboBox_uart.clear()
-        # find COM
-        check_valid_uart()
+    def find_port(self):
+        port_values = []
+        port_list = list(serial.tools.list_ports.comports())
+        pass
 
     def init_UI(self):
         self.settings = QSettings("config.ini", QSettings.IniFormat)
