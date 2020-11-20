@@ -11,17 +11,18 @@ from PyQt5.QtCore import *
 class myDSP(QObject):
     succeed_signal = pyqtSignal(bool)          # Serial port open signal
     
-    def __init__(self, parent=None, port='com1', baudrate=38400):
-        super(DSP, self).__init__(parent, port, baud)
+    def __init__(self, parent = None, port = 'com1', baudrate = 38400):
+        super(DSP, self).__init__(parent, port, baudrate)
+        self.port = port
+        self.baudrate = baudrate
         try:
-            self.ser = Serial(port, baud)   # Open serial port
+            self.ser = Serial(self.port, self.baudrate)   # Open serial port
             self.open = True
             self.idling = True
             self.__flush()                  # Flush input and output
             self.version()                  # Update DSP version number
             self.status()                   # Update DSP status information
-            # Set succeed flag
-            self.succeed = self.open and self.version_obtained and self.status_obtained
+            
         except:
             self.open = False               # Flag that indicates if com port successfully open
             self.idling = True              # Flag that indicates if dsp in an idling state
@@ -36,8 +37,9 @@ class myDSP(QObject):
             
             self.version_obtained = False
             self.status_obtained = False
-            self.succeed = False            # Flag that indicates if dsp successfully intialized
-            
+        
+        # Set succeed flag
+        self.succeed = self.open and self.version_obtained and self.status_obtained
         self.succeed_signal.emit(self.succeed)    # Emit succeed signal of finding dsp
     
     # Check if it is ok to execute a dsp operation        
