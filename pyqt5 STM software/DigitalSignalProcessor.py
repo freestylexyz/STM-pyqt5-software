@@ -52,6 +52,20 @@ class myDSP(QObject):
         else:
             return (0).to_bytes(n, byteorder='big')
     
+    # Read serial data after check avaiable byte, max t s before abort, proceted method, internal use only
+    # Retrun if reading successful and read data
+    def __readt(self, n, t):
+        if self.open:
+            start_time = time.time()
+            while ((time.time() - start_time) < t) and (self.ser.inWaiting() < n):
+                pass
+            if self.ser.inWaiting() >= n:
+                return True, self.ser.read(n)
+            else:
+                return False, (0).to_bytes(n, byteorder='big')
+        else:
+            return False, (0).to_bytes(n, byteorder='big')
+    
     # Write serial data, proceted method, internal use only
     def __write(self, txdata):
         if self.open:
