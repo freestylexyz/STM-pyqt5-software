@@ -15,17 +15,16 @@ class myDSP(QObject):
         super(DSP, self).__init__(parent, port, baudrate)
         self.port = port
         self.baudrate = baudrate
+        self.idling = True              # Flag that indicates if dsp in an idling state
         try:
             self.ser = Serial(self.port, self.baudrate)   # Open serial port
             self.open = True
-            self.idling = True
             self.__flush()                  # Flush input and output
             self.version()                  # Update DSP version number
             self.status()                   # Update DSP status information
             
         except:
             self.open = False               # Flag that indicates if com port successfully open
-            self.idling = True              # Flag that indicates if dsp in an idling state
             self.ver = 'No DSP found'       # DSP version
             self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
             self.dacrange = [10] * 16       # All DAC channels' current range
