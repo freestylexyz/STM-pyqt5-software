@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>237</height>
+    <height>160</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,7 +22,7 @@
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>100</height>
+    <height>160</height>
    </size>
   </property>
   <property name="font">
@@ -60,7 +60,49 @@
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_10">
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget_3" native="true">
+      <layout class="QGridLayout" name="gridLayout_11">
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>12</number>
+       </property>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Status：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Version:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Author:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" rowspan="3" colspan="2">
+        <widget class="QTextBrowser" name="Status"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="sizePolicy">
@@ -89,7 +131,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -176,7 +218,7 @@
    <property name="minimumSize">
     <size>
      <width>372</width>
-     <height>370</height>
+     <height>395</height>
     </size>
    </property>
    <property name="floating">
@@ -899,7 +941,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_Gain_Zcontrol">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="title">
         <string>Gain</string>
@@ -1056,14 +1098,14 @@
     <string>Bias</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_8">
      <item row="2" column="0">
       <widget class="QGroupBox" name="groupBox_Ramp_Bias">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="title">
         <string>Ramp</string>
@@ -1077,6 +1119,9 @@
         </property>
         <item row="3" column="5">
          <widget class="QPushButton" name="pushButton_Rampto7_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1084,6 +1129,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QDoubleSpinBox" name="spinBox_Input4_BiasRamp">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1104,6 +1152,9 @@
         </item>
         <item row="4" column="0">
          <widget class="QPushButton" name="pushButton_Rampto4_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1118,6 +1169,9 @@
         </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="pushButton_Rampto2_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1125,6 +1179,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QDoubleSpinBox" name="spinBox_Input3_BiasRamp">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1158,6 +1215,9 @@
         </item>
         <item row="1" column="0">
          <widget class="QPushButton" name="pushButton_Rampto1_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1165,6 +1225,9 @@
         </item>
         <item row="4" column="5">
          <widget class="QPushButton" name="pushButton_Rampto8_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1202,6 +1265,9 @@
         </item>
         <item row="2" column="5">
          <widget class="QPushButton" name="pushButton_Rampto6_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1209,6 +1275,9 @@
         </item>
         <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="spinBox_Input2_BiasRamp">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1216,6 +1285,9 @@
         </item>
         <item row="5" column="0">
          <widget class="QPushButton" name="pushButton_StopRamp_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Stop ramp</string>
           </property>
@@ -1250,6 +1322,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QDoubleSpinBox" name="spinBox_Input1_BiasRamp">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1257,6 +1332,9 @@
         </item>
         <item row="1" column="5">
          <widget class="QPushButton" name="pushButton_Rampto5_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1264,6 +1342,9 @@
         </item>
         <item row="3" column="0">
          <widget class="QPushButton" name="pushButton_Rampto3_BiasRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1436,6 +1517,9 @@
         </item>
         <item row="0" column="0">
          <widget class="QDoubleSpinBox" name="spinBox_Input_Bias">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="decimals">
            <number>6</number>
           </property>
@@ -1556,7 +1640,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_Setpoint_Current">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1570,6 +1654,9 @@
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="1">
          <widget class="QLabel" name="label">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -1598,6 +1685,9 @@
         </item>
         <item row="0" column="0">
          <widget class="QDoubleSpinBox" name="spinBox_Input_Setpoint">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -1629,6 +1719,9 @@
         </item>
         <item row="0" column="2">
          <widget class="QScrollBar" name="scrollBar_Input_Setpoint">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="maximum">
            <number>65535</number>
           </property>
@@ -1691,7 +1784,7 @@
      <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox_Gain_Current">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="title">
         <string>Gain</string>
@@ -1739,7 +1832,7 @@
      <item row="2" column="0">
       <widget class="QGroupBox" name="groupBox_Ramp_Current">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="title">
         <string>Ramp</string>
@@ -1754,6 +1847,9 @@
         </item>
         <item row="2" column="3">
          <widget class="QPushButton" name="pushButton_Rampto4_CurrRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1777,6 +1873,9 @@
         </item>
         <item row="1" column="3">
          <widget class="QPushButton" name="pushButton_Rampto3_CurrRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1784,6 +1883,9 @@
         </item>
         <item row="3" column="0">
          <widget class="QPushButton" name="pushButton_StopRamp_CurrRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Stop ramp</string>
           </property>
@@ -1807,6 +1909,9 @@
         </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="pushButton_Rampto2_CurrRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1846,6 +1951,9 @@
         </item>
         <item row="1" column="4">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1853,6 +1961,9 @@
         </item>
         <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1867,6 +1978,9 @@
         </item>
         <item row="1" column="0">
          <widget class="QPushButton" name="pushButton_Rampto1_CurrRamp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Ramp to</string>
           </property>
@@ -1874,6 +1988,9 @@
         </item>
         <item row="2" column="4">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_13">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -1881,13 +1998,20 @@
         </item>
         <item row="1" column="1">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
          </widget>
         </item>
         <item row="3" column="3">
-         <widget class="QSpinBox" name="spinBox_SpeedInput_CurrRamp"/>
+         <widget class="QSpinBox" name="spinBox_SpeedInput_CurrRamp">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="0" column="2">
          <spacer name="horizontalSpacer_7">
