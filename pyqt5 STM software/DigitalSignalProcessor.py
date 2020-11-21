@@ -4,7 +4,7 @@ Created on Sat Nov 14 18:35:18 2020
 
 @author: yaoji
 """
-from serial import *
+import serial
 import time
 from PyQt5.QtCore import *
 
@@ -12,34 +12,39 @@ class myDSP(QObject):
     succeed_signal = pyqtSignal(bool)          # Serial port open signal
     
     def __init__(self, parent = None, port = 'com1', baudrate = 38400):
-        super(DSP, self).__init__(parent, port, baudrate)
+        super(myDSP, self).__init__(parent, port, baudrate)
         self.port = port
         self.baudrate = baudrate
         self.idling = True              # Flag that indicates if dsp in an idling state
+        self.open = False
+        self.version_obtained = False
+        self.status_obtained = False
+        self.succeed = False
+        self.ver = 'No DSP found'       # DSP version
+        self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
+        self.dacrange = [10] * 16       # All DAC channels' current range
+        self.adcrange = [0] * 8         # All ADC channels' current range
+        self.last20bit = 0x80000        # Last ouput of 20bit DAC
+        self.lastdigital = [False] * 6  # 0 - 5 : bias dither, z dither, feedback, retract, coarse, translation
+        self.lastgain = [2] * 4         # 0 -> gain 10.0, 2 -> gain 1.0, 3 -> gain 0.1
+        self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
+        
+
+    
+    def intial_dsp(self):
         try:
-            self.ser = Serial(self.port, self.baudrate)   # Open serial port
+            self.ser = serial.Serial(self.port, self.baudrate)   # Open serial port
             self.open = True
             self.__flush()                  # Flush input and output
             self.version()                  # Update DSP version number
-            self.status()                   # Update DSP status information
-            
+            self.status()                   # Update DSP status information   
         except:
-            self.open = False               # Flag that indicates if com port successfully open
-            self.ver = 'No DSP found'       # DSP version
-            self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
-            self.dacrange = [10] * 16       # All DAC channels' current range
-            self.adcrange = [0] * 8         # All ADC channels' current range
-            self.last20bit = 0x80000        # Last ouput of 20bit DAC
-            self.lastdigital = [False] * 6  # 0 - 5 : bias dither, z dither, feedback, retract, coarse, translation
-            self.lastgain = [2] * 4         # 0 -> gain 10.0, 2 -> gain 1.0, 3 -> gain 0.1
-            self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
-            
-            self.version_obtained = False
-            self.status_obtained = False
-        
+            pass
+               
         # Set succeed flag
         self.succeed = self.open and self.version_obtained and self.status_obtained
         self.succeed_signal.emit(self.succeed)    # Emit succeed signal of finding dsp
+        
     
     # Check if it is ok to execute a dsp operation        
     def ok(self):
