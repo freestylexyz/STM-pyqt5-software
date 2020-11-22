@@ -11,10 +11,8 @@ from PyQt5.QtCore import *
 class myDSP(QObject):
     succeed_signal = pyqtSignal(bool)          # Serial port open signal
     
-    def __init__(self, parent = None, port = 'com1', baudrate = 38400):
+    def __init__(self, parent = None):
         super(myDSP, self).__init__(parent, port, baudrate)
-        self.port = port
-        self.baudrate = baudrate
         self.idling = True              # Flag that indicates if dsp in an idling state
         self.open = False
         self.version_obtained = False
@@ -31,7 +29,9 @@ class myDSP(QObject):
         
 
     
-    def intial_dsp(self):
+    def intial_dsp(self, port = 'com1', baudrate = 38400):
+        self.port = port
+        self.baudrate = baudrate
         try:
             self.ser = serial.Serial(self.port, self.baudrate)   # Open serial port
             self.open = True
