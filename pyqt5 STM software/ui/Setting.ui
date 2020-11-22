@@ -168,6 +168,31 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <item>
+            <property name="text">
+             <string>com1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>com2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>com3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>com4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>com5</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="0" column="2">
