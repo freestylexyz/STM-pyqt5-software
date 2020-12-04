@@ -160,6 +160,9 @@ class Ui_Setting(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.spinBox_Biasoffset25_Setting.setFont(font)
+        self.spinBox_Biasoffset25_Setting.setDecimals(5)
+        self.spinBox_Biasoffset25_Setting.setMinimum(-2.5)
+        self.spinBox_Biasoffset25_Setting.setMaximum(2.5)
         self.spinBox_Biasoffset25_Setting.setObjectName("spinBox_Biasoffset25_Setting")
         self.gridLayout_4.addWidget(self.spinBox_Biasoffset25_Setting, 0, 1, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.widget_6)
@@ -185,6 +188,9 @@ class Ui_Setting(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.spinBox_Biasoffset5_Setting.setFont(font)
+        self.spinBox_Biasoffset5_Setting.setDecimals(5)
+        self.spinBox_Biasoffset5_Setting.setMinimum(-2.5)
+        self.spinBox_Biasoffset5_Setting.setMaximum(2.5)
         self.spinBox_Biasoffset5_Setting.setObjectName("spinBox_Biasoffset5_Setting")
         self.gridLayout_4.addWidget(self.spinBox_Biasoffset5_Setting, 1, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.widget_6)
@@ -210,6 +216,9 @@ class Ui_Setting(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.spinBox_Biasoffset10_Setting.setFont(font)
+        self.spinBox_Biasoffset10_Setting.setDecimals(5)
+        self.spinBox_Biasoffset10_Setting.setMinimum(-2.5)
+        self.spinBox_Biasoffset10_Setting.setMaximum(2.5)
         self.spinBox_Biasoffset10_Setting.setObjectName("spinBox_Biasoffset10_Setting")
         self.gridLayout_4.addWidget(self.spinBox_Biasoffset10_Setting, 2, 1, 1, 1)
         self.label_6 = QtWidgets.QLabel(self.widget_6)
@@ -233,6 +242,9 @@ class Ui_Setting(object):
         font.setPointSize(9)
         self.spinBox_Isetoff_Setting.setFont(font)
         self.spinBox_Isetoff_Setting.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.spinBox_Isetoff_Setting.setDecimals(5)
+        self.spinBox_Isetoff_Setting.setMinimum(-10.0)
+        self.spinBox_Isetoff_Setting.setMaximum(10.0)
         self.spinBox_Isetoff_Setting.setObjectName("spinBox_Isetoff_Setting")
         self.gridLayout_4.addWidget(self.spinBox_Isetoff_Setting, 3, 1, 1, 1)
         self.gridLayout_2.addWidget(self.widget_6, 2, 0, 1, 1)
@@ -260,3 +272,13 @@ class Ui_Setting(object):
         self.label_5.setText(_translate("Setting", "Bias offset(+/-10V)"))
         self.label_6.setText(_translate("Setting", "Iset offset"))
 import logo_rc
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Setting = QtWidgets.QWidget()
+    ui = Ui_Setting()
+    ui.setupUi(Setting)
+    Setting.show()
+    sys.exit(app.exec_())

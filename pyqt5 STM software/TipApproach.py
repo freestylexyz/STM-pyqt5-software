@@ -13,12 +13,25 @@ from TipApproach_ui import Ui_TipApproach
 
 
 class myTipApproach(QWidget, Ui_TipApproach):
+    close_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
     def init_UI(self):
+        pass
+    
+    def init_tipAppr(self):
+        pass
+    
+    # Emit close signal
+    def closeEvent(self, event):
+        self.close_signal.emit()
+        event.accept()
+    
+    # Enable serial
+    def enable_serial(self, enable):
         pass
 
 

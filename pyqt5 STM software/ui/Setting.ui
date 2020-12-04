@@ -316,6 +316,15 @@
              <pointsize>9</pointsize>
             </font>
            </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-2.500000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.500000000000000</double>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
@@ -363,6 +372,15 @@
             <font>
              <pointsize>9</pointsize>
             </font>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-2.500000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.500000000000000</double>
            </property>
           </widget>
          </item>
@@ -412,6 +430,15 @@
              <pointsize>9</pointsize>
             </font>
            </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-2.500000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.500000000000000</double>
+           </property>
           </widget>
          </item>
          <item row="3" column="0">
@@ -457,6 +484,15 @@
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-10.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
            </property>
           </widget>
          </item>

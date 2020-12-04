@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>160</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -65,40 +65,6 @@
     <item row="0" column="0">
      <widget class="QWidget" name="widget_3" native="true">
       <layout class="QGridLayout" name="gridLayout_11">
-       <item row="7" column="2">
-        <widget class="QTextBrowser" name="Status">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
-         </property>
-         <property name="lineWidth">
-          <number>0</number>
-         </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::NoTextInteraction</set>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0" colspan="3">
         <widget class="QLabel" name="label_3">
          <property name="text">
@@ -148,43 +114,6 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QTextBrowser" name="DSPver">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
-         </property>
-         <property name="lineWidth">
-          <number>0</number>
-         </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::NoTextInteraction</set>
-         </property>
-         <property name="openLinks">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0" colspan="3">
         <spacer name="horizontalSpacer_47">
          <property name="orientation">
@@ -197,6 +126,20 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="versionLabel">
+         <property name="text">
+          <string>No DSP found</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>None</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -231,7 +174,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -317,8 +260,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>372</width>
-     <height>395</height>
+     <width>441</width>
+     <height>463</height>
     </size>
    </property>
    <property name="floating">
@@ -1196,8 +1139,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>356</width>
-     <height>400</height>
+     <width>436</width>
+     <height>470</height>
     </size>
    </property>
    <property name="contextMenuPolicy">
@@ -1734,8 +1677,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>350</width>
-     <height>299</height>
+     <width>428</width>
+     <height>345</height>
     </size>
    </property>
    <property name="acceptDrops">

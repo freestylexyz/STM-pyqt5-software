@@ -13,12 +13,24 @@ from Etest_ui import Ui_ElectronicTest
 
 
 class myEtest(QWidget, Ui_ElectronicTest):
+    close_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
     def init_UI(self):
+        pass
+    
+    def init_etest(self):
+        pass
+    
+    # Emit close signal
+    def closeEvent(self, event):
+        self.close_signal.emit()
+        event.accept()
+        
+    def enable_serial(self, enable):
         pass
 
 
