@@ -7,7 +7,7 @@ Created on Wed Dec  2 16:04:07 2020
 
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from Setting import mySetting
@@ -45,8 +45,18 @@ class myCurrentControl(myMainMenu):
         self.spinBox_Input_Setpoint.setValue(self.b2i(bits))
         
         # Set up ramp
-        self.current_spinbox_range
-        
+        self.current_spinbox_range()
+        self.current_spinbox_range()
+
+        # Set up UI
+        screen = QDesktopWidget().screenGeometry()
+        sapcerVer = int(screen.width()*0.006)
+        spacerHor = int(screen.height()*0.01)
+        self.Current.resize(430, 360)
+        sizeCurrent = self.Bias.geometry()
+        self.Current.move( screen.width()-sizeCurrent.width()-sapcerVer, spacerHor)
+        self.Current.setFixedSize(self.Current.width(), self.Current.height())
+
     def b2i(self, bits):
         value = cnv.bv(bits, 'd', self.dsp.dacrange[5])
         if self.preamp_gain == 8:
@@ -80,11 +90,28 @@ class myCurrentControl(myMainMenu):
 
         # Set minimum
         self.spinBox_Input_Setpoint.setMinimum(minimum)
-        # !!! ramp spin boxes
+        self.spinBox_Input1_CurrRamp.setMinimum(minimum)
+        self.spinBox_Input2_CurrRamp.setMinimum(minimum)
+        self.spinBox_Input3_CurrRamp.setMinimum(minimum)
+        self.spinBox_Input4_CurrRamp.setMinimum(minimum)
 
         # Set maximum
         self.spinBox_Input_Setpoint.setMaximum(maximum)
-        # !!! ramp spin boxes
+        self.spinBox_Input1_CurrRamp.setMaximum(maximum)
+        self.spinBox_Input2_CurrRamp.setMaximum(maximum)
+        self.spinBox_Input3_CurrRamp.setMaximum(maximum)
+        self.spinBox_Input4_CurrRamp.setMaximum(maximum)
+
+    # Set up all scrollbar input range
+    def current_scrollbar_range(self):
+        minimum = self.b2i(0xffff)
+        maximum = self.b2i(0x0)
+
+        # Set minimum
+        self.scrollBar_Input_Setpoint(minimum)
+
+        # Set maximum
+        self.scrollBar_Input_Setpoint(maximum)
         
     def current_gain(self):
         if self.dsp.lastdigital[3]:

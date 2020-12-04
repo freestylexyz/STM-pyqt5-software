@@ -7,7 +7,7 @@ Created on Wed Dec  2 16:04:05 2020
 
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from Setting import mySetting
@@ -28,4 +28,10 @@ class myZcontroller(myMainMenu):
         self.Zcontrol.show()
     
     def init_Zcontroller(self):
-        pass
+        # Set up UI
+        screen = QDesktopWidget().screenGeometry()
+        sapcerVer = int(screen.width()*0.006)
+        spacerHor = int(screen.height()*0.01)
+        self.Zcontrol.resize(430, 460)
+        self.Zcontrol.move(sapcerVer, spacerHor)
+        self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>200</height>
+    <height>160</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -53,9 +53,6 @@
   </property>
   <property name="dockNestingEnabled">
    <bool>false</bool>
-  </property>
-  <property name="dockOptions">
-   <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging</set>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -174,7 +171,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -205,10 +202,6 @@
     <property name="title">
      <string>Control</string>
     </property>
-    <addaction name="actionBias"/>
-    <addaction name="actionCurrent"/>
-    <addaction name="actionZ"/>
-    <addaction name="actionShow_All_A"/>
    </widget>
    <widget class="QMenu" name="menuTest">
     <property name="title">
@@ -260,8 +253,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>441</width>
-     <height>463</height>
+     <width>430</width>
+     <height>460</height>
     </size>
    </property>
    <property name="floating">
@@ -271,7 +264,7 @@
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::AllDockWidgetAreas</set>
+    <set>Qt::NoDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Z control</string>
@@ -1139,21 +1132,21 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>436</width>
-     <height>470</height>
+     <width>430</width>
+     <height>460</height>
     </size>
    </property>
-   <property name="contextMenuPolicy">
-    <enum>Qt::ActionsContextMenu</enum>
-   </property>
    <property name="acceptDrops">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="floating">
     <bool>true</bool>
    </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Bias</string>
@@ -1601,7 +1594,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Filp</string>
+           <string>Flip</string>
           </property>
          </widget>
         </item>
@@ -1677,18 +1670,21 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>428</width>
-     <height>345</height>
+     <width>430</width>
+     <height>360</height>
     </size>
    </property>
    <property name="acceptDrops">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="floating">
     <bool>true</bool>
    </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Current</string>
@@ -2011,7 +2007,7 @@
          </spacer>
         </item>
         <item row="1" column="4">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
+         <widget class="QDoubleSpinBox" name="spinBox_Input3_CurrRamp">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -2021,7 +2017,7 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+         <widget class="QDoubleSpinBox" name="spinBox_Input2_CurrRamp">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -2048,7 +2044,7 @@
          </widget>
         </item>
         <item row="2" column="4">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_13">
+         <widget class="QDoubleSpinBox" name="spinBox_Input4_CurrRamp">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -2058,7 +2054,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+         <widget class="QDoubleSpinBox" name="spinBox_Input1_CurrRamp">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -2204,8 +2200,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>457</x>
-     <y>423</y>
+     <x>435</x>
+     <y>494</y>
     </hint>
    </hints>
   </connection>
@@ -2248,12 +2244,12 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>628</x>
-     <y>338</y>
+     <x>405</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
      <x>360</x>
-     <y>414</y>
+     <y>531</y>
     </hint>
    </hints>
   </connection>
@@ -2264,8 +2260,8 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>63</x>
-     <y>131</y>
+     <x>73</x>
+     <y>153</y>
     </hint>
     <hint type="destinationlabel">
      <x>68</x>
@@ -2284,8 +2280,8 @@
      <y>104</y>
     </hint>
     <hint type="destinationlabel">
-     <x>140</x>
-     <y>135</y>
+     <x>150</x>
+     <y>153</y>
     </hint>
    </hints>
   </connection>
@@ -2296,8 +2292,8 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>166</x>
-     <y>194</y>
+     <x>257</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
      <x>78</x>
@@ -2312,12 +2308,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>30</x>
-     <y>183</y>
+     <x>41</x>
+     <y>215</y>
     </hint>
     <hint type="destinationlabel">
-     <x>260</x>
-     <y>191</y>
+     <x>351</x>
+     <y>213</y>
     </hint>
    </hints>
   </connection>

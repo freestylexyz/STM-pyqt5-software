@@ -6,7 +6,8 @@
 """
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from Setting import mySetting
@@ -39,14 +40,45 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.dsp = myDSP()                                          # DSP module
         self.cnfg = QSettings("config.ini", QSettings.IniFormat)    # Configuration module
 
+        self.init_mainui()            # Set up main menu UI
+
+    # Set up UI for main menu
+    def init_mainui(self):
+        screen = QDesktopWidget().screenGeometry()
+        size = self.frameGeometry()
+        self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
+        self.setFixedSize(self.width(), self.height())
+
+        self.init_menu_control()      # Init control menu
+
+    # Enable control  menu to call out docks
+    def init_menu_control(self):
+        actionCurrent = self.Current.toggleViewAction()
+        self.menuControl.addAction(actionCurrent)
+        self.Current.setVisible(False)
+        actionBias = self.Bias.toggleViewAction()
+        self.menuControl.addAction(actionBias)
+        self.Bias.setVisible(False)
+        actionZ = self.Zcontrol.toggleViewAction()
+        self.menuControl.addAction(actionZ)
+        self.Zcontrol.setVisible(False)
+        self.actionShowAll = QtWidgets.QAction("Show All",self)
+        self.menuControl.addAction(self.actionShowAll)
+        self.actionShowAll.triggered.connect(self.show_all_dock)
+
+    # Function for "Show all" under menu Control
+    def show_all_dock(self):
+        self.Current.setVisible(True)
+        self.Bias.setVisible(True)
+        self.Zcontrol.setVisible(True)
+
     # Enable serial window action
     def enable_serial_window(self, enable):
         self.menuTest.setEnabled(enable)
         self.menuTip_Approach.setEnabled(enable)
         self.menuScan.setEnabled(enable)
         self.menuSetting.setEnabled(enable)
-        
-    
+
     # !!! Enable dock widgets serial buttons
     def enable_dock_serial(self, enable):
         # Take care of all related dock buttons

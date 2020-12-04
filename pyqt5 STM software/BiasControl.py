@@ -7,7 +7,7 @@ Created on Wed Dec  2 13:52:10 2020
 
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow,  QDesktopWidget
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from Setting import mySetting
@@ -59,6 +59,15 @@ class myBiasControl(myMainMenu):
         self.radioButton_16bit_DAC.setChecked(not self.bias_dac)
         self.radioButton_20bit_DAC.setChecked(self.bias_dac)
         self.bias_dac_slot(self.bias_dac)
+
+        screen = QDesktopWidget().screenGeometry()
+        sapcerVer = int(screen.width()*0.006)
+        spacerHor = int(screen.height()*0.01)
+        self.Bias.resize(430, 460)
+        sizeBias = self.Bias.geometry()
+        sizeCurrent = self.Current.frameGeometry()
+        self.Bias.move(screen.width()-sizeBias.width()-sapcerVer, sizeCurrent.height() + 2 * spacerHor)
+        self.Bias.setFixedSize(self.Bias.width(), self.Bias.height())
     
     # Check feedback and cross zero to determin if OK to change current value
     # True stands for can not change    
