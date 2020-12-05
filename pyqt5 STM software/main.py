@@ -82,13 +82,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
     def dsp_succeed_slot(self, succeed):
         self.versionLabel.setText(self.dsp.ver)
-        # !!! Need to enable and disable buttons and pop dialog
         if self.mode == -1:
-            # !!! setting Q massage
-            pass
+            self.setting.succeed_message(succeed)
         elif self.mode == 0:
-            # !!! mainmenu Q massage
-            pass
+            self.succeed_message(succeed)
         if succeed:
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
 

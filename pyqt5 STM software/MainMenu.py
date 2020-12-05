@@ -7,7 +7,7 @@
 import sys
 sys.path.append("./ui/")
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget, QMessageBox
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from Setting import mySetting
@@ -85,6 +85,17 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.Zcontrol.move(sapcerVer, spacerHor)
         self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())
 
+    # Initial succeed message window
+    def succeed_message(self, succeed):
+        msgBox = QMessageBox()                          # Creat a message box
+        msgBox.setIcon(QMessageBox.Information)         # Set icon
+        if succeed:
+            msgBox.setText("Successfully found DSP")    # Successful finding DSP infomation
+        else:
+            msgBox.setText("No DSP found")              # Fail to find DSP information
+        msgBox.setWindowTitle("DSP initial message")    # Set title
+        msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
+        msgBox.exec_()
 
     # Enable serial window action
     def enable_serial_window(self, enable):
@@ -93,11 +104,51 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.menuScan.setEnabled(enable)
         self.menuSetting.setEnabled(enable)
 
-    # !!! Enable dock widgets serial buttons
+    # Enable dock widgets serial buttons
     def enable_dock_serial(self, enable):
-        # Take care of all related dock buttons
-        pass
+        self.enable_bias_serial(enable)
+        self.enable_current_serial(enable)
+        self.enable_Zcontrol_serial(enable)
+    
+    # Enable all serial related component in bias dock
+    def enable_bias_serial(self, enable):
+        self.groupBox_Bias_Bias.setEnabled(enable)
+        self.groupBox_Dither_Bias.setEnabled(enable)
+        self.groupBox_Range_Bias.setEnabled(enable)
+        self.pushButton_Rampto1_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto2_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto3_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto4_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto5_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto6_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto7_BiasRamp.setEnabled(enable)
+        self.pushButton_Rampto8_BiasRamp.setEnabled(enable)
+        self.pushButton_StopRamp_BiasRamp.setEnabled(enable)
         
+    # Enable all serial related component in current dock
+    def enable_current_serial(self, enable):
+        self.groupBox_Gain_Current.setEnabled(enable)
+        self.groupBox_Setpoint_Current.setEnabled(enable)
+        self.pushButton_Rampto1_CurrRamp.setEnabled(enable)
+        self.pushButton_Rampto2_CurrRamp.setEnabled(enable)
+        self.pushButton_Rampto3_CurrRamp.setEnabled(enable)
+        self.pushButton_Rampto4_CurrRamp.setEnabled(enable)
+        self.pushButton_StopRamp_CurrRamp.setEnabled(enable)
+    
+    # Enable all serial related component in Z control dock
+    def enable_Zcontrol_serial(self, enable):
+        self.groupBox_Gain_Zcontrol.setEnabled(enable)
+        self.groupBox_Feedack_Zcontrol.setEnabled(enable)
+        self.groupBox_Retract_Zcontrol.setEnabled(enable)
+        self.groupBox_Dither_Zcontrol.setEnabled(enable)
+        self.pushButton_Send_Zoffset.setEnabled(enable)
+        self.pushButton_Zauto_Zoffset.setEnabled(enable)
+        self.pushButton_HardRetract_Zoffset.setEnabled(enable)
+        self.pushButton_Advance_Zoffsetfine.setEnabled(enable)
+        self.pushButton_Zero_Zoffsetfine.setEnabled(enable)
+        self.pushButton_MatchCurrent_Zoffsetfine.setEnabled(enable)
+    
+    
     # Enable current mode related serial
     def enable_mode_serial(self, enable):
         if self.mode == 2:

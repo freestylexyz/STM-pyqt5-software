@@ -7,12 +7,7 @@ Created on Wed Dec  2 16:04:07 2020
 
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
-from Setting import mySetting
-from TipApproach import myTipApproach
-from Etest import myEtest
+from PyQt5.QtWidgets import QMessageBox
 from MainMenu import myMainMenu
 import conversion as cnv
 import threading
@@ -23,17 +18,17 @@ class myCurrentControl(myMainMenu):
     def init_current_dock(self):
         self.init_current()
         
-        # self.radioButton_8_Gain.toggled.connect(self.current_gain)
-        # self.radioButton_9_Gain.toggled.connect(self.current_gain)
-        # self.radioButton_10_Gain.toggled.connect(self.current_gain)
+        self.radioButton_8_Gain.toggled.connect(self.current_gain)
+        self.radioButton_9_Gain.toggled.connect(self.current_gain)
+        self.radioButton_10_Gain.toggled.connect(self.current_gain)
         
-        # self.spinBox_Input_Setpoint.editingFinished.connect(self.current_value)
-        # self.scrollBar_Input_Setpoint.valueChanged.connect(self.current_out)
+        self.spinBox_Input_Setpoint.editingFinished.connect(self.current_value)
+        self.scrollBar_Input_Setpoint.valueChanged.connect(self.current_out)
         
-        # self.pushButton_Rampto1_CurrRamp.clicked.connect(self.current_ramp_1)
-        # self.pushButton_Rampto2_CurrRamp.clicked.connect(self.current_ramp_2)
-        # self.pushButton_Rampto3_CurrRamp.clicked.connect(self.current_ramp_3)
-        # self.pushButton_Rampto4_CurrRamp.clicked.connect(self.current_ramp_4)
+        self.pushButton_Rampto1_CurrRamp.clicked.connect(self.current_ramp_1)
+        self.pushButton_Rampto2_CurrRamp.clicked.connect(self.current_ramp_2)
+        self.pushButton_Rampto3_CurrRamp.clicked.connect(self.current_ramp_3)
+        self.pushButton_Rampto4_CurrRamp.clicked.connect(self.current_ramp_4)
     
     # Show current dock
     def current_show(self):
@@ -41,10 +36,8 @@ class myCurrentControl(myMainMenu):
         self.Current.show()
     
     def init_current(self):
-        # !!! Enable serial related modules
-        self.groupBox_Gain_Current.setEnabled(self.dsp.succeed)
-        self.groupBox_Setpoint_Current.setEnabled(self.dsp.succeed)
-        self.groupBox_Ramp_Current.setEnabled(self.dsp.succeed)
+        # Enable serial related modules
+        self.enable_current_serial(self.dsp.succeed)
         
         # Set up preamp gain radio button
         self.current_set_radio()
@@ -55,7 +48,7 @@ class myCurrentControl(myMainMenu):
         self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))
         
         # Set up ramp
-        self.current_spinbox_range
+        self.current_spinbox_range()
         
     def b2i(self, bits, gain):
         value = cnv.bv(bits, 'd', self.dsp.dacrange[5])
@@ -124,10 +117,10 @@ class myCurrentControl(myMainMenu):
             maximum = self.b2i(0x0, gain)
             value = self.spinBox_Input_Setpoint.value()         # Current value
             if (value > maximum) and (value < minimum):
-                # !!! pop out window, out of range
+                self.current_out_of_range_message()         # Out of range message
                 self.current_set_radio()
             elif self.dsp.lastdigital[3]:
-                # !!! pop out window, turn feeedback off
+                self.current_feedback_off_message()         # Feedback off message
                 self.current_set_radio()
             else:
                 self.preamp_gain = gain
@@ -184,3 +177,21 @@ class myCurrentControl(myMainMenu):
     def current_ramp_4(self):
         value = self.spinBox_Input4_CurrRamp.value()
         threading.Thread(target = (lambda: self.current_ramp(value))).start()
+        
+    # Initial setpoint out of range message window
+    def current_out_of_range_message(self):
+        msgBox = QMessageBox()                          # Creat a message box
+        msgBox.setIcon(QMessageBox.Information)         # Set icon
+        msgBox.setText("Set point is out of target range")        # Out of range message
+        msgBox.setWindowTitle("Current")                # Set title
+        msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
+        msgBox.exec_()
+        
+    # Initial feedback off message window
+    def current_feedback_off_message(self):
+        msgBox = QMessageBox()                          # Creat a message box
+        msgBox.setIcon(QMessageBox.Information)         # Set icon
+        msgBox.setText("Need to turn the feedback off before changing preamplifier gain")        # Feedback off
+        msgBox.setWindowTitle("Current")                # Set title
+        msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
+        msgBox.exec_()

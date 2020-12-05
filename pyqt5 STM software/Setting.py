@@ -7,7 +7,7 @@
 """
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QWidget, QApplication, QDesktopWidget, QMessageBox
 from PyQt5.QtCore import pyqtSignal
 from Setting_ui import Ui_Setting
 import serial
@@ -28,6 +28,11 @@ class mySetting(QWidget, Ui_Setting):
     
     # Initial UI for setting
     def init_UI(self):
+        screen = QDesktopWidget().screenGeometry()
+        size = self.frameGeometry()
+        self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
+        self.setFixedSize(self.width(), self.height())
+        
         self.initButton.clicked.connect(self.initButton_slot)   # Coneect initial button to slot
         self.loadButton.clicked.connect(self.loadButton_slot)   # Connect load offset button to slot 
         self.comboBox_uart.activated.connect(self.find_port)    # Active updating COM port combo box
@@ -91,6 +96,18 @@ class mySetting(QWidget, Ui_Setting):
     # Enable serial
     def enable_serial(self, enable):
         self.loadButton.setEnabled(enable)  # Enable load offset button
+        
+    # Initial succeed message window
+    def succeed_message(self, succeed):
+        msgBox = QMessageBox()                          # Creat a message box
+        msgBox.setIcon(QMessageBox.Information)         # Set icon
+        if succeed:
+            msgBox.setText("Successfully found DSP")    # Successful finding DSP infomation
+        else:
+            msgBox.setText("No DSP found")              # Fail to find DSP information
+        msgBox.setWindowTitle("DSP initial message")    # Set title
+        msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
+        msgBox.exec_()
 
 
 if __name__ == "__main__":
