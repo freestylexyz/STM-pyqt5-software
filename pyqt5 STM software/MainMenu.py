@@ -46,10 +46,15 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     # Set up UI for main menu
     def init_UI(self):
         screen = QDesktopWidget().screenGeometry()
-        size = self.frameGeometry()
-        self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
+        sapcerVer = int(screen.width()*0.006)
+        spacerHor = int(screen.height()*0.01)
+
+        # Init Main menu size and position
+        sizeMain = self.frameGeometry()
+        self.move(sapcerVer, spacerHor)
         self.setFixedSize(self.width(), self.height())
 
+        # Init control menubar
         actionCurrent = self.Current.toggleViewAction()
         self.menuControl.addAction(actionCurrent)
         self.Current.setVisible(False)
@@ -61,28 +66,22 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.Zcontrol.setVisible(False)
         self.actionShowAll = QtWidgets.QAction("Show All",self)
         self.menuControl.addAction(self.actionShowAll)
-        
-        
-        screen = QDesktopWidget().screenGeometry()
-        sapcerVer = int(screen.width()*0.006)
-        spacerHor = int(screen.height()*0.01)
-        
+
+        # Init Current dock size and position
+        self.Current.resize(430, 360)
+        sizeCurrent = self.Current.frameGeometry()
+        self.Current.move( screen.width()-sizeCurrent.width()-sapcerVer, spacerHor)
+        self.Current.setFixedSize(self.Current.width(), self.Current.height())
+
         # Init bias dock size and position
         self.Bias.resize(430, 460)
         sizeBias = self.Bias.geometry()
-        sizeCurrent = self.Current.frameGeometry()
         self.Bias.move(screen.width()-sizeBias.width()-sapcerVer, sizeCurrent.height() + 2 * spacerHor)
         self.Bias.setFixedSize(self.Bias.width(), self.Bias.height())
         
-        # Init Current dock size and position
-        self.Current.resize(430, 360)
-        sizeCurrent = self.Bias.geometry()
-        self.Current.move( screen.width()-sizeCurrent.width()-sapcerVer, spacerHor)
-        self.Current.setFixedSize(self.Current.width(), self.Current.height())
-        
         # Init Z control dock size and poisition
         self.Zcontrol.resize(430, 460)
-        self.Zcontrol.move(sapcerVer, spacerHor)
+        self.Zcontrol.move(sapcerVer, sizeMain.height()+2*spacerHor)
         self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())
 
     # Initial succeed message window
@@ -155,6 +154,11 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             self.tipappr.enable_serial(enable)
         elif self.mode == 3:
             self.scan.enable_serial(enable)
+
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

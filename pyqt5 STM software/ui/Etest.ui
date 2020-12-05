@@ -47,15 +47,15 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="IO">
       <attribute name="title">
        <string>I/O</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_12">
-       <item row="1" column="0" colspan="2">
-        <widget class="QGroupBox" name="adc_G">
+       <item row="3" column="3">
+        <widget class="QGroupBox" name="rot_G">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -65,206 +65,73 @@
           </font>
          </property>
          <property name="title">
-          <string>ADC</string>
+          <string>ROT</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_23">
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="adc_b20">
+         <layout class="QGridLayout" name="gridLayout_22">
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="translation">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>+/- 10.24</string>
+             <string>Translation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="rotation">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Rotation</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="xgain_G">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>XIN gain</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="xgain0_1">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>0.1</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="adc_val">
+           <widget class="QRadioButton" name="xgain1">
             <property name="enabled">
              <bool>false</bool>
             </property>
-            <property name="decimals">
-             <number>6</number>
-            </property>
-            <property name="minimum">
-             <double>-10.240000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10.240000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
+            <property name="text">
+             <string>1.0</string>
             </property>
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QPushButton" name="adc_in">
+           <widget class="QRadioButton" name="xgain10">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Input</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="adc_u10">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>0V - 10.24V</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QComboBox" name="adc_ch">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <item>
-             <property name="text">
-              <string>AIN0</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN2</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN3</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN4</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN5</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN6 (ZOUT)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>AIN7 (PREAMP)</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="adc_b10">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>+/- 5.12</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QRadioButton" name="adc_u5">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>0V - 5.12V</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QRadioButton" name="adc_b5">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>+/- 2.56</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QGroupBox" name="feedback_G">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="title">
-          <string>Feedback</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_19">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="feedback_on">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>ON</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="feedback_off">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>OFF</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QGroupBox" name="dither0_G">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="title">
-          <string>Dither0</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_17">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="dither0_on">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>ON</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="dither0_off">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>OFF</string>
+             <string>10</string>
             </property>
            </widget>
           </item>
@@ -365,8 +232,8 @@
          </layout>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QGroupBox" name="dither1_G">
+       <item row="2" column="1">
+        <widget class="QGroupBox" name="dither0_G">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -376,11 +243,11 @@
           </font>
          </property>
          <property name="title">
-          <string>Dither1</string>
+          <string>Dither0</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_18">
+         <layout class="QGridLayout" name="gridLayout_17">
           <item row="0" column="0">
-           <widget class="QRadioButton" name="dither1_on">
+           <widget class="QRadioButton" name="dither0_on">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -390,7 +257,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QRadioButton" name="dither1_off">
+           <widget class="QRadioButton" name="dither0_off">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -486,8 +353,8 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QGroupBox" name="xgain_G">
+       <item row="1" column="3">
+        <widget class="QGroupBox" name="feedback_G">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -497,36 +364,63 @@
           </font>
          </property>
          <property name="title">
-          <string>XIN gain</string>
+          <string>Feedback</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_13">
+         <layout class="QGridLayout" name="gridLayout_19">
           <item row="0" column="0">
-           <widget class="QRadioButton" name="xgain0_1">
+           <widget class="QRadioButton" name="feedback_on">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>0.1</string>
+             <string>ON</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QRadioButton" name="xgain1">
+           <widget class="QRadioButton" name="feedback_off">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>1.0</string>
+             <string>OFF</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QRadioButton" name="xgain10">
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QGroupBox" name="dither1_G">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>Dither1</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_18">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="dither1_on">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>10</string>
+             <string>ON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="dither1_off">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>OFF</string>
             </property>
            </widget>
           </item>
@@ -548,7 +442,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_21">
           <item row="0" column="0">
-           <widget class="QRadioButton" name="fine">
+           <widget class="QRadioButton" name="coarse">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -558,7 +452,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QRadioButton" name="coarse">
+           <widget class="QRadioButton" name="fine">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -818,8 +712,8 @@
          </layout>
         </widget>
        </item>
-       <item row="3" column="3">
-        <widget class="QGroupBox" name="rot_G">
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="adc_G">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -829,26 +723,132 @@
           </font>
          </property>
          <property name="title">
-          <string>ROT</string>
+          <string>ADC</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_22">
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="translation">
+         <layout class="QGridLayout" name="gridLayout_23">
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="adc_b20">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Translation</string>
+             <string>+/- 10.24</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="adc_val">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.240000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.240000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="adc_in">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Input</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="adc_u10">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>0V - 10.24V</string>
             </property>
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QRadioButton" name="rotation">
+           <widget class="QComboBox" name="adc_ch">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>AIN0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN6 (ZOUT)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AIN7 (PREAMP)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="adc_b10">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Rotation</string>
+             <string>+/- 5.12</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QRadioButton" name="adc_u5">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>0V - 5.12V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QRadioButton" name="adc_b5">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>+/- 2.56</string>
             </property>
            </widget>
           </item>
@@ -1289,7 +1289,7 @@
           <item row="2" column="1">
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>Vlotage1</string>
+             <string>Voltage1</string>
             </property>
            </widget>
           </item>
@@ -1780,12 +1780,19 @@
            <number>9</number>
           </property>
           <property name="verticalSpacing">
-           <number>10</number>
+           <number>12</number>
           </property>
           <item row="4" column="0">
            <widget class="QLabel" name="label_20">
             <property name="text">
              <string>Input</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>A</string>
             </property>
            </widget>
           </item>
@@ -1796,63 +1803,14 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_DelayInput_FTest"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>A</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_AInput_FTest"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_17">
-            <property name="text">
-             <string>Z0</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_Z0Input_FTest"/>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_19">
             <property name="text">
              <string>Output</string>
             </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="comboBox_OutCh_FTest">
-            <item>
-             <property name="text">
-              <string>6 (DAC6)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>7 (DAC7)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>8 (DAC8)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>9 (DAC9)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>11 (DAC11)</string>
-             </property>
-            </item>
            </widget>
           </item>
           <item row="4" column="1">
@@ -1891,10 +1849,20 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="spinBox_DelayInput_FTest"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Z0</string>
+            </property>
+           </widget>
+          </item>
           <item row="5" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_IsptInput_FTest"/>
           </item>
-          <item row="6" column="0" colspan="2">
+          <item row="7" column="0" colspan="2">
            <widget class="QPushButton" name="pushButton_Start_FTest">
             <property name="enabled">
              <bool>false</bool>
@@ -1914,6 +1882,102 @@
             <property name="text">
              <string>Start</string>
             </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="spinBox_Z0Input_FTest"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="comboBox_OutCh_FTest">
+            <item>
+             <property name="text">
+              <string>6 (DAC6)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>7 (DAC7)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>8 (DAC8)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>9 (DAC9)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>11 (DAC11)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QGroupBox" name="groupBox_Feedback_FTest">
+            <property name="title">
+             <string>Feedback</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_26">
+             <property name="topMargin">
+              <number>9</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radioButton_ON_Fdbk">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>ON</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_OFF_Fdbk">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>OFF</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QGroupBox" name="groupBox_Retract_FTest">
+            <property name="title">
+             <string>Retract</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_28">
+             <property name="topMargin">
+              <number>9</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radioButton_ON_Retr">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>ON</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_OFF_Retr">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>OFF</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>

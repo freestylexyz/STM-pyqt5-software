@@ -6,7 +6,7 @@
 """
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication , QWidget
+from PyQt5.QtWidgets import QApplication , QWidget , QDesktopWidget
 from PyQt5.QtCore import pyqtSignal , Qt
 from TipApproach_ui import Ui_TipApproach
 
@@ -18,9 +18,13 @@ class myTipApproach(QWidget, Ui_TipApproach):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_UI()
 
     def init_UI(self):
-        pass
+        screen = QDesktopWidget().screenGeometry()
+        size = self.frameGeometry()
+        self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
+        self.setFixedSize(self.width(), self.height())
     
     def init_tipAppr(self):
         pass
@@ -32,7 +36,11 @@ class myTipApproach(QWidget, Ui_TipApproach):
     
     # Enable serial
     def enable_serial(self, enable):
-        pass
+        self.pushButton_Up_Steps.setEnabled(enable)
+        self.pushButton_Down_Steps.setEnabled(enable)
+        self.pushButton_TipAppr_Steps.setEnabled(enable)
+        self.groupBox_Trans_TipAppr.setEnabled(enable)
+        self.pushButton_STOP_Steps.setEnabled(enable)
 
 
 

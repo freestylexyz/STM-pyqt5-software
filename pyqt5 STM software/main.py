@@ -6,7 +6,7 @@
 """
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox
 from BiasControl import myBiasControl
 from Zcontroller import myZcontroller
 from CurrentControl import myCurrentControl
@@ -101,8 +101,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             # !!! Save configuration file
             event.accept()
         else:
-            # !!! Pop out window to remind close scan window first
+            QMessageBox.warning(None,"Reminder","Close Scan window first!", QMessageBox.Ok)
+            # !!! Quit with error
             event.reject()
+
     
     # Open setting window
     def open_setting(self):
@@ -119,7 +121,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.hide_all_dock()
             self.etest.init_etest()
             self.etest.show()
-    
+
+    # pop windown open scan first
+    def msg_open_scan(self):
+        QMessageBox.warning(None, "Reminder", "Open Scan window first!", QMessageBox.Ok)
+
     # Open tip approach window
     def open_tipappr(self):
         if self.mode == 0:
@@ -145,8 +151,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.spc.init_spc()
             self.scan.spc.show()
         else:
-            # !!! pop windown open scan first
-            pass
+            self.msg_open_scan()
             
     # Open deposition window
     def open_deposition(self):
@@ -156,8 +161,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.deposition.init_spc()
             self.scan.deposition.show()
         else:
-            # !!! pop windown open scan first
-            pass
+            self.msg_open_scan()
     
     # Open track window
     def open_track(self):
@@ -167,8 +171,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.track.init_spc()
             self.scan.track.show()
         else:
-            # !!! pop windown open scan first
-            pass
+            self.msg_open_scan()
     
     # Open hop window
     def open_hop(self):
@@ -178,8 +181,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.hop.init_spc()
             self.scan.hop.show()
         else:
-            # !!! pop windown open scan first
-            pass
+            self.msg_open_scan()
     
     # Open manipulation window
     def open_manipulation(self):
@@ -189,8 +191,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.manipulation.init_spc()
             self.scan.manipulation.show()
         else:
-            # !!! pop windown open scan first
-            pass
+            self.msg_open_scan()
             
     # Close serial window  
     def closeWindow(self):
