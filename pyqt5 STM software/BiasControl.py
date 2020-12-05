@@ -7,31 +7,31 @@ Created on Wed Dec  2 13:52:10 2020
 
 import sys
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QMainWindow,  QDesktopWidget
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
-from Setting import mySetting
-from TipApproach import myTipApproach
-from Etest import myEtest
 from MainMenu import myMainMenu
 import conversion as cnv
 import threading
 
+# myBiasControl - This class handles bias dock control
 class myBiasControl(myMainMenu):
     # Init bias dock
     def init_bias_dock(self):
-        self.init_bias()
+        self.init_bias()        # Initial bias dock view
         
-        # Connect slots
-        self.scrollBar_Input_Bias.valueChanged.connect(self.bias_out)
-        self.spinBox_Input_Bias.editingFinished.connect(self.bias_value)
-        self.pushButton_Filp_Bias.clicked.connect(self.bias_flip)
-        self.radioButton_ON_BiasDither.toggled.connect(self.bias_dither)
-        self.radioButton_20bit_DAC.toggled.connect(self.bias_dac_slot)
+        # Connect signals and slots
+        self.scrollBar_Input_Bias.valueChanged.connect(self.bias_out)       # Scroll bar
+        self.spinBox_Input_Bias.editingFinished.connect(self.bias_value)    # Main spinbox
+        self.pushButton_Filp_Bias.clicked.connect(self.bias_flip)           # Flip button
+        
+        self.radioButton_ON_BiasDither.toggled.connect(self.bias_dither)    # Bias dither radio button
+        
+        self.radioButton_20bit_DAC.toggled.connect(self.bias_dac_slot)      # Bias DAC selection
+        
+        # Range selection
         self.radioButton_25_Range.toggled.connect(self.bias_range)
         self.radioButton_5_Range.toggled.connect(self.bias_range)
         self.radioButton_10_Range.toggled.connect(self.bias_range)
-        self.pushButton_StopRamp_BiasRamp.clicked.connect(self.bias_stop)
+        
+        # Ramp button 1 to 8
         self.pushButton_Rampto1_BiasRamp.clicked.connect(self.bias_ramp_1)
         self.pushButton_Rampto2_BiasRamp.clicked.connect(self.bias_ramp_2)
         self.pushButton_Rampto3_BiasRamp.clicked.connect(self.bias_ramp_3)
@@ -40,11 +40,12 @@ class myBiasControl(myMainMenu):
         self.pushButton_Rampto6_BiasRamp.clicked.connect(self.bias_ramp_6)
         self.pushButton_Rampto7_BiasRamp.clicked.connect(self.bias_ramp_7)
         self.pushButton_Rampto8_BiasRamp.clicked.connect(self.bias_ramp_8)
+        self.pushButton_StopRamp_BiasRamp.clicked.connect(self.bias_stop)   # Stop ramp button
     
     # Show bias dock
     def bias_show(self):
-        self.init_bias()
-        self.Bias.show()
+        self.init_bias()    # Reinital bias dock view, every time call bias dock
+        self.Bias.show()    # Show bias dock
     
     # Init bias UI
     def init_bias(self):
@@ -54,46 +55,60 @@ class myBiasControl(myMainMenu):
         self.groupBox_Bias_Bias.setEnabled(self.dsp.succeed)
         
         # Set up UI
-        self.radioButton_ON_BiasDither.setChecked(self.dsp.lastdigital[0])
-        self.radioButton_OFF_BiasDither.setChecked(not self.dsp.lastdigital[0])
-        self.radioButton_16bit_DAC.setChecked(not self.bias_dac)
-        self.radioButton_20bit_DAC.setChecked(self.bias_dac)
-        self.bias_dac_slot(self.bias_dac)
-
-        screen = QDesktopWidget().screenGeometry()
-        sapcerVer = int(screen.width()*0.006)
-        spacerHor = int(screen.height()*0.01)
-        self.Bias.resize(430, 460)
-        sizeBias = self.Bias.geometry()
-        sizeCurrent = self.Current.frameGeometry()
-        self.Bias.move(screen.width()-sizeBias.width()-sapcerVer, sizeCurrent.height() + 2 * spacerHor)
-        self.Bias.setFixedSize(self.Bias.width(), self.Bias.height())
+        self.radioButton_ON_BiasDither.setChecked(self.dsp.lastdigital[0])      # Set up bias dither ON radio button
+        self.radioButton_OFF_BiasDither.setChecked(not self.dsp.lastdigital[0]) # Set up bias dither OFF radio button
+        self.radioButton_16bit_DAC.setChecked(not self.bias_dac)                # Set up 16bit DAC selection radio button
+        self.radioButton_20bit_DAC.setChecked(self.bias_dac)                    # Set up 20bit DAC selection radio buttion
+        self.bias_dac_slot(self.bias_dac)                                       # Set all other widgets based on bias DAC selection flag
+        
+    # Bias selection radio button slot
+    def bias_dac_slot(self, checked):
+        self.bias_dac = checked     # Change bias selection flag
+        # !!! Coerce problem
+        self.bias_spinbox_range()   # Set up all bias spin boxes range
+        self.bias_range_radio()     # Set up bias range radio buttons
+        
+        # Set up scroll bar and main spin box value
+        if self.bias_dac:   # 20bit DAC case
+            self.scrollBar_Input_Bias.setMaximum(0xfffff)                       # Set scroll bar maximum first
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)              # Set scroll bar value
+            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.last20bit, '20'))  # Set spin box value
+            self.spinBox_SpeedInput_BiasRamp.setValue(20)                       # Set default ramp speed
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])    # Set scroll bar value first
+            self.scrollBar_Input_Bias.setMaximum(0xffff)                # Set scroll bar maximum
+            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
+            self.spinBox_SpeedInput_BiasRamp.setValue(1)                # Set default ramp speed
     
     # Check feedback and cross zero to determin if OK to change current value
     # True stands for can not change    
     def check_feedback(self, bits, equal0):
-        fb = self.dsp.lastdigital[3]
-        if self.bias_dac:
+        fb = self.dsp.lastdigital[3]    # Obtain current feedback status
+        
+        if self.bias_dac: # Case with 20 bit DAC 
             if equal0:
-                cross_zero = ((bits - 0x80000) * self.dsp.last20bit) == 0
+                cross_zero = ((bits - 0x80000) * self.dsp.last20bit) == 0   # Only check equal to 0, use for direct output
             else:
-                cross_zero = ((bits - 0x80000) * self.dsp.last20bit) <= 0
-        else:
+                cross_zero = ((bits - 0x80000) * self.dsp.last20bit) <= 0   # Check if target and current cross zero, use for ramp
+        else: # Case with 16 bit DAC
             if equal0:
-                cross_zero = ((bits - 0x8000) * self.dsp.lastdac[13]) == 0
+                cross_zero = ((bits - 0x8000) * self.dsp.lastdac[13]) == 0  # Only check equal to 0, use for direct output
             else:
-                cross_zero = ((bits - 0x8000) * self.dsp.lastdac[13]) <= 0
-        return fb and cross_zero
+                cross_zero = ((bits - 0x8000) * self.dsp.lastdac[13]) <= 0  # Check if target and current cross zero, use for ramp
+        
+        return fb and cross_zero    # Return if output rule violated
     
     # Set up all spin boxes input range
     def bias_spinbox_range(self):
+        # Determin input limit based on selected DAC and DAC range
         if self.bias_dac:
             minimum = cnv.bv(0, '20')
             maximum = cnv.bv(0xfffff, '20')
         else:
             minimum = cnv.bv(0, 'd', self.dsp.dacrange[13])
             maximum = cnv.bv(0xffff, 'd', self.dsp.dacrange[13])
-        # Set minimum
+            
+        # Set minimum for main spin box and ramp spin boxes
         self.spinBox_Input_Bias.setMinimum(minimum)
         self.spinBox_Input1_BiasRamp.setMinimum(minimum)
         self.spinBox_Input2_BiasRamp.setMinimum(minimum)
@@ -103,7 +118,8 @@ class myBiasControl(myMainMenu):
         self.spinBox_Input6_BiasRamp.setMinimum(minimum)
         self.spinBox_Input7_BiasRamp.setMinimum(minimum)
         self.spinBox_Input8_BiasRamp.setMinimum(minimum)
-        # Set maximum
+        
+        # Set maximum for main spin box and ramp spin boxes
         self.spinBox_Input_Bias.setMaximum(maximum)
         self.spinBox_Input1_BiasRamp.setMaximum(maximum)
         self.spinBox_Input2_BiasRamp.setMaximum(maximum)
@@ -127,24 +143,8 @@ class myBiasControl(myMainMenu):
             elif self.dsp.dacrange[13] == 10:
                 self.radioButton_10_Range.setChecked(True)
             self.groupBox_Range_Bias.setEnabled(True)
-    
-    # Bias selection radio button slot
-    def bias_dac_slot(self, checked):
-        self.bias_dac = checked
-        self.bias_spinbox_range()
-        self.bias_range_radio()
-        if self.bias_dac:
-            self.scrollBar_Input_Bias.setMaximum(0xfffff)
-            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
-            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.last20bit, '20'))
-            self.spinBox_SpeedInput_BiasRamp.setValue(20)
-        else:
-            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
-            self.scrollBar_Input_Bias.setMaximum(0xffff)
-            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))
-            self.spinBox_SpeedInput_BiasRamp.setValue(1)
             
-    # Bias spinBox_Input_Bias slot
+    # Bias spinBox slot
     def bias_value(self):
         value = self.spinBox_Input_Bias.value()
         if self.bias_dac:
@@ -152,7 +152,7 @@ class myBiasControl(myMainMenu):
         else:
             self.scrollBar_Input_Bias.setValue(cnv.vb(value, 'd', self.dsp.dacrange[13]))
     
-    # Bias scrollBar_Input_Bias slot
+    # Bias scrollBar slot
     def bias_out(self, bits):
         if self.bias_dac:
             if bits != self.dsp.last20bit:
@@ -189,32 +189,33 @@ class myBiasControl(myMainMenu):
             ran = 9
         elif self.radioButton_10_Range.isChecked():
             ran = 10
-        minimum = cnv.bv(0, 'd', ran)                   # Target range minimum
-        maximum = cnv.bv(0xffff, 'd', ran)              # Target range maximum
-        value = self.spinBox_Input_Bias.value()         # Current value
         
-        if (value > maximum) or (value < minimum):
-            # Abort range changing if current value out of target range
-            # !!! pop window current bias is out of target range, can not change
-            # Restore to original radio button setup
-            self.bias_range_radio()
-        else:
-            # Proceed change if bias range is changed
-            if (not self.bias_dac) and (self.dsp.dacrange[13] != ran):
-                self.enable_dock_serial(False)
-                self.enable_mode_serial(False)
-                feedback_store = self.dsp.lastdigital[3]        # Store current feedback status
-                self.dsp.digital_o(3, False)                    # Feedback off
-                self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)   # Ramp to 0
-                self.dsp.dac_range(13, ran)                     # Change range
-                self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage
-                self.dsp.digital_o(3, feedback_store)           # Restore orignial feedback status
+        if self.dsp.dacrange[13] != ran:
+            minimum = cnv.bv(0, 'd', ran)                   # Target range minimum
+            maximum = cnv.bv(0xffff, 'd', ran)              # Target range maximum
+            value = self.spinBox_Input_Bias.value()         # Current value
+            if (value > maximum) or (value < minimum):
+                # Abort range changing if current value out of target range
+                # !!! pop window current bias is out of target range, can not change
+                # Restore to original radio button setup
+                self.bias_range_radio()
+            else:
+                # Proceed change if bias range is changed
+                if not self.bias_dac:
+                    self.enable_dock_serial(False)
+                    self.enable_mode_serial(False)
+                    feedback_store = self.dsp.lastdigital[3]        # Store current feedback status
+                    self.dsp.digital_o(3, False)                    # Feedback off
+                    self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)   # Ramp to 0
+                    self.dsp.dac_range(13, ran)                     # Change range
+                    self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage
+                    self.dsp.digital_o(3, feedback_store)           # Restore orignial feedback status
                 
-                self.bias_spinbox_range()                        # Set spin boxes range
-                self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
-                self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-                self.enable_dock_serial(True)
-                self.enable_mode_serial(True)
+                    self.bias_spinbox_range()                        # Set spin boxes range
+                    self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
+                    self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
+                    self.enable_dock_serial(True)
+                    self.enable_mode_serial(True)
 
     # Bias stop ramp button slot
     def bias_stop(self):

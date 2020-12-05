@@ -23,6 +23,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_UI()            # Set up main menu UI
         self.init_mainMenu()
         
     def init_mainMenu(self):
@@ -40,19 +41,15 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.dsp = myDSP()                                          # DSP module
         self.cnfg = QSettings("config.ini", QSettings.IniFormat)    # Configuration module
 
-        self.init_mainui()            # Set up main menu UI
+        
 
     # Set up UI for main menu
-    def init_mainui(self):
+    def init_UI(self):
         screen = QDesktopWidget().screenGeometry()
         size = self.frameGeometry()
         self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
         self.setFixedSize(self.width(), self.height())
 
-        self.init_menu_control()      # Init control menu
-
-    # Enable control  menu to call out docks
-    def init_menu_control(self):
         actionCurrent = self.Current.toggleViewAction()
         self.menuControl.addAction(actionCurrent)
         self.Current.setVisible(False)
@@ -64,13 +61,30 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.Zcontrol.setVisible(False)
         self.actionShowAll = QtWidgets.QAction("Show All",self)
         self.menuControl.addAction(self.actionShowAll)
-        self.actionShowAll.triggered.connect(self.show_all_dock)
+        
+        
+        screen = QDesktopWidget().screenGeometry()
+        sapcerVer = int(screen.width()*0.006)
+        spacerHor = int(screen.height()*0.01)
+        
+        # Init bias dock size and position
+        self.Bias.resize(430, 460)
+        sizeBias = self.Bias.geometry()
+        sizeCurrent = self.Current.frameGeometry()
+        self.Bias.move(screen.width()-sizeBias.width()-sapcerVer, sizeCurrent.height() + 2 * spacerHor)
+        self.Bias.setFixedSize(self.Bias.width(), self.Bias.height())
+        
+        # Init Current dock size and position
+        self.Current.resize(430, 360)
+        sizeCurrent = self.Bias.geometry()
+        self.Current.move( screen.width()-sizeCurrent.width()-sapcerVer, spacerHor)
+        self.Current.setFixedSize(self.Current.width(), self.Current.height())
+        
+        # Init Z control dock size and poisition
+        self.Zcontrol.resize(430, 460)
+        self.Zcontrol.move(sapcerVer, spacerHor)
+        self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())
 
-    # Function for "Show all" under menu Control
-    def show_all_dock(self):
-        self.Current.setVisible(True)
-        self.Bias.setVisible(True)
-        self.Zcontrol.setVisible(True)
 
     # Enable serial window action
     def enable_serial_window(self, enable):

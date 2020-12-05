@@ -18,13 +18,13 @@ from ScanControl import myScanControl
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
         super().__init__()
-        self.init_UI()
+        self.init_menu()
         self.init_STM()
         self.init_bias_dock()
         self.init_Zcontroller_dock()
         self.init_current_dock()
         
-    def init_UI(self):
+    def init_menu(self):
         # Menu bar
         self.actionSetting.triggered['bool'].connect(self.open_setting)     # Connect open setting window
         self.actionTipAppr.triggered['bool'].connect(self.open_tipappr)     # Connect open tip approach window
@@ -37,12 +37,13 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.actionHop.triggered['bool'].connect(self.open_hop)
         self.actionManipulation.triggered['bool'].connect(self.open_manipulation)
         
-        # Connect open control dock window
-        self.actionBias.triggered['bool'].connect(self.bias_show)           # Connect open bias dock
-        self.actionZ.triggered['bool'].connect(self.Zcontroller_show)          # Connect open Z control dock
-        self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock
-        self.actionShow_All_A.triggered['bool'].connect(self.show_all_dock) # Connect open all docks
         
+        # Connect open control dock window
+        self.actionShowAll.triggered.connect(self.show_all_dock)            # Connect open all docks
+        self.actionBias.triggered['bool'].connect(self.bias_show)           # Connect open bias dock
+        self.actionZ.triggered['bool'].connect(self.Zcontroller_show)       # Connect open Z control dock
+        self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock       
+
 
     def init_STM(self):
         # Connect DSP singal
@@ -81,8 +82,13 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
     def dsp_succeed_slot(self, succeed):
         self.versionLabel.setText(self.dsp.ver)
-        
         # !!! Need to enable and disable buttons and pop dialog
+        if self.mode == -1:
+            # !!! setting Q massage
+            pass
+        elif self.mode == 0:
+            # !!! mainmenu Q massage
+            pass
         if succeed:
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
 

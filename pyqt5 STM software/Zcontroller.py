@@ -18,7 +18,7 @@ import conversion as cnv
 import threading
 
 class myZcontroller(myMainMenu):
-    # Init bias dock
+    # Init Zcontroller dock
     def init_Zcontroller_dock(self):
         self.init_Zcontroller()
     
@@ -28,10 +28,4 @@ class myZcontroller(myMainMenu):
         self.Zcontrol.show()
     
     def init_Zcontroller(self):
-        # Set up UI
-        screen = QDesktopWidget().screenGeometry()
-        sapcerVer = int(screen.width()*0.006)
-        spacerHor = int(screen.height()*0.01)
-        self.Zcontrol.resize(430, 460)
-        self.Zcontrol.move(sapcerVer, spacerHor)
-        self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())
+        pass

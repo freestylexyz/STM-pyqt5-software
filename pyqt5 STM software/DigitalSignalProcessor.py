@@ -67,7 +67,10 @@ class myDSP(QObject):
                 self.init_output()
         except:
             pass
+        if not self.succeed:
+            self.close()
         self.succeed_signal.emit(self.succeed)    # Emit succeed signal of finding dsp  
+        
     
     #
     # Check if it is ok to execute a dsp operation 
@@ -110,26 +113,27 @@ class myDSP(QObject):
     #
     # Initial output
     #
-    def init_output(self):        
-        # Initial all DAC output to 0 and range to +/- 10V
-        for i in range(16):
-            self.dac_W(i + 16, 0x8000)
-            self.dac_range(i, 10)
+    def init_output(self):
+        if self.ok():        
+            # Initial all DAC output to 0 and range to +/- 10V
+            for i in range(16):
+                self.dac_W(i + 16, 0x8000)
+                self.dac_range(i, 10)
         
-        # Initila all ADC range to +/- 10.24V
-        for i in range(8):
-            self.adc_W(((i + 5) << 1), 0)
+            # Initila all ADC range to +/- 10.24V
+            for i in range(8):
+                self.adc_W(((i + 5) << 1), 0)
             
-        self.bit20_W(0x10, 0x828f5)         # Initial 20bit bias to 0.1V
-        self.dac_range(2, 14)               # Initial Z offset fine range to +/- 2.5V
-        self.dac_range(12, 14)              # Initial bias offset range to +/- 2.5V
-        self.dac_range(13, 9)               # Initial bias range to +/- 5V
+            self.bit20_W(0x10, 0x828f5)         # Initial 20bit bias to 0.1V
+            self.dac_range(2, 14)               # Initial Z offset fine range to +/- 2.5V
+            self.dac_range(12, 14)              # Initial bias offset range to +/- 2.5V
+            self.dac_range(13, 9)               # Initial bias range to +/- 5V
         
-        self.dac_W(0x14, self.offset[15])   # Initial I set offset output
-        self.dac_W(0x15, 0xffff)            # Initial I set
-        self.dac_W(0x1c, self.offset[9])    # Initial bias offset output
-        self.dac_W(0x1d, 0x828f)            # Initial 16bit bias output to 0.1V
-        self.digital_scan(1)                # Set up digital output ready for tip approach
+            self.dac_W(0x14, self.offset[15])   # Initial I set offset output
+            self.dac_W(0x15, 0xffff)            # Initial I set
+            self.dac_W(0x1c, self.offset[9])    # Initial bias offset output
+            self.dac_W(0x1d, 0x828f)            # Initial 16bit bias output to 0.1V
+            self.digital_scan(1)                # Set up digital output ready for tip approach
     
     #   
     # Acquire DSP version number
