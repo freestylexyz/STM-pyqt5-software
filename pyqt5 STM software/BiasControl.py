@@ -212,8 +212,8 @@ class myBiasControl(myMainMenu):
                 self.bias_range_radio()                                 # Restore to original radio button setup
             else:                                           # Continue if current bias in the target range
                 if not self.bias_dac:
-                    self.enable_dock_serial(False)                      # Disable all serial related dock component
                     self.enable_mode_serial(False)                      # Disable all serial related component in current window
+                    self.idling = False                                 # Toggle dock idling flag
                     feedback_store = self.dsp.lastdigital[3]            # Store current feedback status
                     self.dsp.digital_o(3, False)                        # Feedback off
                     self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)    # Ramp bias to 0
@@ -224,7 +224,7 @@ class myBiasControl(myMainMenu):
                     self.bias_spinbox_range()                           # Set spin boxes range
                     self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
                     self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-                    self.enable_dock_serial(True)                       # Enable all serial related dock component
+                    self.idling = True                                  # Toggle dock idling flag
                     self.enable_mode_serial(True)                       # Enable all serial related component in current window
 
     # Bias stop ramp button slot
@@ -234,8 +234,8 @@ class myBiasControl(myMainMenu):
     
     # Bias ramp function
     def bias_ramp(self, value):
-        self.enable_dock_serial(False)                      # Disable all serial related dock component
         self.enable_mode_serial(False)                      # Disable all serial related component in current window
+        self.idling = False                                 # Toggle dock idling flag
         self.pushButton_StopRamp_BiasRamp.setEnabled(True)  # Enable stop push button
         step = self.spinBox_SpeedInput_BiasRamp.value()     # Obtain step value
         
@@ -259,7 +259,7 @@ class myBiasControl(myMainMenu):
         else:
             self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
             
-        self.enable_dock_serial(True)       # Enable all serial related dock component
+        self.idling = True                  # Toggle dock idling flag
         self.enable_mode_serial(True)       # Enable all serial related component in current window
         
     # Bias ramp button 1 slot
@@ -305,7 +305,7 @@ class myBiasControl(myMainMenu):
     # Initial bias out of range message window
     def bias_out_of_range_message(self):
         msgBox = QMessageBox()                          # Creat a message box
-        msgBox.setIcon(QMessageBox.Information)         # Set icon
+        msgBox.setIcon(QMessageBox.Warning)             # Set icon
         msgBox.setText("Current bias is out of target range")        # Out of range message
         msgBox.setWindowTitle("Bias")                   # Set title
         msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
@@ -314,7 +314,7 @@ class myBiasControl(myMainMenu):
     # Initial cross zero message window
     def cross_zero_message(self):
         msgBox = QMessageBox()                          # Creat a message box
-        msgBox.setIcon(QMessageBox.Information)         # Set icon
+        msgBox.setIcon(QMessageBox.Warning)             # Set icon
         msgBox.setText("Feedback in on can not cross zero")        # Cross zero message
         msgBox.setWindowTitle("Bias")                   # Set title
         msgBox.setStandardButtons(QMessageBox.Ok)       # OK button

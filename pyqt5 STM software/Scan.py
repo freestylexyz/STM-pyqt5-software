@@ -33,7 +33,11 @@ class myScan(QWidget):
                             # Track(3), Hop(4), Manipulation(5)
 
     def init_UI(self):
-        pass
+        self.close_signal.clicked(self.spc.close_signal)
+        self.close_signal.clicked(self.depostion.close_signal)
+        self.close_signal.clicked(self.track.close_signal)
+        self.close_signal.clicked(self.hop.close_signal)
+        self.close_signal.clicked(self.manipulation.close_signal)
     
     def init_scan(self):
         self.spc.init_spc()
@@ -44,8 +48,13 @@ class myScan(QWidget):
     
     # Emit close signal
     def closeEvent(self, event):
-        self.close_signal.emit()
-        event.accept()
+        if self.mode == 0:
+            # !!! pop window to double check
+            self.close_signal.emit()
+            event.accept()
+        else:
+            # !!! pop message close other windows
+            event.ignore()
         
     def enable_serial(self, enable):
         pass

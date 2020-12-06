@@ -28,6 +28,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
     def init_mainMenu(self):
         # Initial flags
+        self.idling = True          # Dock idling flag
         self.preamp_gain = 9        # Preamp gain flag gain 8(8), gain 9(9), gain(10)
         self.bias_dac = False       # Bias DAC selection 16bit DAC (False), 20bit DAC (True)
         self.mode = 0               # Software operation mode: None(0), Setting(-1), Electronics test(1)
@@ -96,18 +97,28 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
         msgBox.exec_()
 
-    # Enable serial window action
-    def enable_serial_window(self, enable):
+    # Enable menu bar
+    def enable_menubar(self, enable):
         self.menuTest.setEnabled(enable)
         self.menuTip_Approach.setEnabled(enable)
         self.menuScan.setEnabled(enable)
         self.menuSetting.setEnabled(enable)
+        
 
-    # Enable dock widgets serial buttons
+    # Enable serial related features in all docks
     def enable_dock_serial(self, enable):
-        self.enable_bias_serial(enable)
-        self.enable_current_serial(enable)
-        self.enable_Zcontrol_serial(enable)
+        self.enable_bias_serial(enable)             # Bias dock
+        self.enable_current_serial(enable)          # Current dcok
+        self.enable_Zcontrol_serial(enable)         # Z control dock
+        self.menuControl.setEnabled(enable)         # Controll menu
+        # if enable:
+        #     self.Bias.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetClosable)
+        #     self.Current.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetClosable)
+        #     self.Zcontrol.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetClosable)
+        # else:
+        #     self.Bias.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
+        #     self.Current.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
+        #     self.Zcontrol.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
     
     # Enable all serial related component in bias dock
     def enable_bias_serial(self, enable):
@@ -147,17 +158,18 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.pushButton_Zero_Zoffsetfine.setEnabled(enable)
         self.pushButton_MatchCurrent_Zoffsetfine.setEnabled(enable)
     
-    
-    # Enable current mode related serial
+    # Enable serial related features in current mode
     def enable_mode_serial(self, enable):
         if self.mode == 2:
-            self.tipappr.enable_serial(enable)
+            self.enable_dock_serial(enable)     # All docks
+            self.tipappr.enable_serial(enable)  # Tip approach
         elif self.mode == 3:
-            self.scan.enable_serial(enable)
-
-
-
-
+            self.scan.enable_serial(enable)     # All docks
+            self.enable_dock_serial(enable)     # Scan
+            self.menuScan.setEnabled(enable)    # Scan menu
+        elif self.mode == 0:
+            self.enable_dock_serial(enable)     # All docks
+            self.enable_serial_window(enable)   # All windows
 
 
 if __name__ == "__main__":

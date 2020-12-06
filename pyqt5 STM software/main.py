@@ -19,10 +19,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def __init__(self, parent=None):
         super().__init__()
         self.init_menu()
-        self.init_STM()
         self.init_bias_dock()
         self.init_Zcontroller_dock()
         self.init_current_dock()
+        self.init_STM()
         
     def init_menu(self):
         # Menu bar
@@ -66,7 +66,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.etest.close_signal.connect(self.closeWindow)
         
         # Connect scan signal
-        self.scan.close_signal.connect(self.closeWindow)
+        self.scan.close_signal.connect(self.close_scan)
 
         # Do some real stuff
         self.load_config()              # Load DSP settings
@@ -79,13 +79,15 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
         self.initO = True
         
-
+    # DSP intial succeed slot
     def dsp_succeed_slot(self, succeed):
-        self.versionLabel.setText(self.dsp.ver)
-        if self.mode == -1:
-            self.setting.succeed_message(succeed)
-        elif self.mode == 0:
-            self.succeed_message(succeed)
+        self.versionLabel.setText(self.dsp.ver)     # Change version label
+        if self.mode == -1:                         # Initial from setting
+            self.setting.succeed_message(succeed)       # Pop out succeed message from setting
+        elif self.mode == 0:                        # Initial form mian menu
+            self.succeed_message(succeed)               # Pop out succeed message from main menu
+        
+        # Reinital setting view if succeed
         if succeed:
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
 
@@ -102,8 +104,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             event.accept()
         else:
             QMessageBox.warning(None,"Reminder","Close Scan window first!", QMessageBox.Ok)
-            # !!! Quit with error
-            event.reject()
+            event.ignore()
 
     
     # Open setting window
@@ -130,7 +131,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_tipappr(self):
         if self.mode == 0:
             self.mode = 2
-            self.enable_serial_window(False)
+            self.enable_menubar(False)
             self.tipappr.init_tipAppr()
             self.tipappr.show()
 
@@ -138,7 +139,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_scan(self):
         if self.mode == 0:
             self.mode = 3
-            self.enable_serial_window(False)
+            self.enable_menubar(False)
             self.menuScan.setEnabled(True)
             self.scan.init_scan()
             self.scan.show()
@@ -147,7 +148,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_spc(self):
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 1
-            self.enable_serial_window(False)
+            self.menuScan.setEnabled(False)
             self.scan.spc.init_spc()
             self.scan.spc.show()
         else:
@@ -157,7 +158,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_deposition(self):
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 2
-            self.enable_serial_window(False)
+            self.menuScan.setEnabled(False)
             self.scan.deposition.init_spc()
             self.scan.deposition.show()
         else:
@@ -167,7 +168,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_track(self):
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 3
-            self.enable_serial_window(False)
+            self.menuScan.setEnabled(False)
             self.scan.track.init_spc()
             self.scan.track.show()
         else:
@@ -177,7 +178,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_hop(self):
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 4
-            self.enable_serial_window(False)
+            self.menuScan.setEnabled(False)
             self.scan.hop.init_spc()
             self.scan.hop.show()
         else:
@@ -187,7 +188,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def open_manipulation(self):
         if self.mode == 3:
             self.scan.mode = 5
-            self.enable_serial_window(False)
+            self.menuScan.setEnabled(False)
             self.scan.manipulation.init_spc()
             self.scan.manipulation.show()
         else:
@@ -196,7 +197,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     # Close serial window  
     def closeWindow(self):
         self.mode = 0
-        self.enable_serial_window(True)
+        self.enable_menubar(True)
+    
+    # Close function for scan mode
+    def close_scan(self):
+        if self.scan.mode == 0:
+            # !!! Do some close sequence
+            self.closeWindow()
+        else:
+            self.scan.mode = 0
+            self.menuScan.setEnabled(True)
     
     # Show all dock windows    
     def show_all_dock(self):

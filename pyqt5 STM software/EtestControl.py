@@ -18,4 +18,10 @@ import conversion as cnv
 import threading
 
 class myEtestControl(myMainMenu):
-    pass
+    
+    def etest_ramp():
+        pass
+    
+    def etest_ramp_start(self):
+        # lambda
+        threading.Thread(self.etest_ramp).start()

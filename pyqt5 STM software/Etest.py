@@ -17,6 +17,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
 
     def __init__(self):
         super().__init__()
+        self.idling = True
         self.setupUi(self)
         self.init_UI()
 
@@ -31,8 +32,12 @@ class myEtest(QWidget, Ui_ElectronicTest):
     
     # Emit close signal
     def closeEvent(self, event):
-        self.close_signal.emit()
-        event.accept()
+        if self.idling:
+            self.close_signal.emit()
+            event.accept()
+        else:
+            # !!! pop window, ongoing
+            event.ignore()
 
     # Enable serial
     def enable_serial(self, enable):
