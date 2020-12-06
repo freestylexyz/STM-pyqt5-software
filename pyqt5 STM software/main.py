@@ -15,6 +15,9 @@ from EtestControl import myEtestControl
 from TipApproachControl import myTipApproachControl
 from ScanControl import myScanControl
 
+def str2bool(v):
+ return v.lower() in ("yes","true","t","1","True")
+
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
         super().__init__()
@@ -70,12 +73,49 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Do some real stuff
         self.load_config()              # Load DSP settings
         self.dsp.init_dsp(self.initO)   # Try to initial DSP
-        
+
+
+    def write_cnfg(self):
+        self.cnfg.clear()
+        self.cnfg.setValue("CONFIG/BAUD_VALUE",self.dsp.baudrate)
+        self.cnfg.setValue("CONFIG/COM_VALUE",self.dsp.port)
+        self.cnfg.setValue("CONFIG/EXIT",self.exit)
+        self.cnfg.setValue("SETTING/LAST_DAC",self.dsp.lastdac)
+        self.cnfg.setValue("SETTING/DAC_RANGE",self.dsp.dacrange)
+        self.cnfg.setValue("SETTING/ADC_RANGE",self.dsp.adcrange)
+        self.cnfg.setValue("SETTING/LAST_20BIT",self.dsp.last20bit)
+        self.cnfg.setValue("SETTING/LAST_DIGITAL",self.dsp.lastdigital)
+        self.cnfg.setValue("SETTING/LAST_GAIN",self.dsp.lastgain)
+        self.cnfg.setValue("SETTING/PREAMP_GAIN",self.preamp_gain)
+        self.cnfg.setValue("SETTING/MODE",self.mode)
+        self.cnfg.setValue("SETTING/BIAS_DAC",self.bias_dac)
+        self.cnfg.sync()
+
     # !!! Load all settings stored in configuration file to dsp module
     def load_config(self):
-        self.dsp.baudrate = self.cnfg.value("SETUP/BAUD_VALUE")
-        # self.dsp.port = 
+        self.dsp.baudrate = self.cnfg.value("CONFIG/BAUD_VALUE")
+        self.dsp.port = self.cnfg.value("CONFIG/COM_VALUE")
+        self.exit = str2bool(self.cnfg.value("CONFIG/EXIT"))
         # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
+        if self.exit:
+            pass
+        else:
+            reply = QMessageBox.question(None,"Load output","Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                print("load settings!!")
+                # !!! Initialize output but then self.dsp.init_dsp(self.initO) ?
+                # self.dsp.lastdac = self.cnfg.value("SETTING/LAST_DAC")
+                # self.dsp.dacrange = self.cnfg.value("SETTING/DAC_RANGE")
+                # self.dsp.adcrange = self.cnfg.value("SETTING/ADC_RANGE")
+                # self.dsp.last20bit = self.cnfg.value("SETTING/LAST_20BIT")
+                # lastdigital = self.cnfg.value("SETTING/LAST_DIGITAL")
+                # self.dsp.lastgain = self.cnfg.value("SETTING/LAST_GAIN")
+                # self.preamp_gain = self.cnfg.value("SETTING/PREAMP_GAIN")
+                # self.mode = self.cnfg.value("SETTING/MODE")
+                # self.bias_dac = str2bool(self.cnfg.value("SETTING/BIAS_DAC"))
+                pass
+            else:
+                pass
         self.initO = True
         
     # DSP intial succeed slot
@@ -90,7 +130,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if succeed:
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
 
-
     # Close dsp serial port before exit application
     def closeEvent(self, event):
         if self.mode != 3:
@@ -99,7 +138,9 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.Current.close()
             self.tipappr.close()
             self.dsp.close()
-            # !!! Save configuration file
+            # !!! Flag to record exit status (not work now)
+            self.exit = True
+            self.write_cnfg()
             event.accept()
         else:
             QMessageBox.warning(None,"Reminder","Close Scan window first!", QMessageBox.Ok)
@@ -218,6 +259,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.Bias.hide()
         self.Zcontrol.hide()
         self.Current.hide()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
