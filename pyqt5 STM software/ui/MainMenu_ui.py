@@ -816,6 +816,10 @@ class Ui_HoGroupSTM(object):
         self.Bias.raise_()
         self.Current.raise_()
         self.toolBar.addSeparator()
+        self.menuControl.addAction(self.actionBias)
+        self.menuControl.addAction(self.actionZ)
+        self.menuControl.addAction(self.actionCurrent)
+        self.menuControl.addAction(self.actionShow_All_A)
         self.menuFile.addAction(self.actionOpen_O)
         self.menuFile.addAction(self.actionSave_S)
         self.menuTip_Approach.addAction(self.actionTipAppr)
@@ -838,12 +842,6 @@ class Ui_HoGroupSTM(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(HoGroupSTM)
-        self.actionBias.triggered['bool'].connect(self.Bias.close)
-        self.actionCurrent.triggered['bool'].connect(self.Current.repaint)
-        self.actionZ.triggered['bool'].connect(self.Zcontrol.hide)
-        self.radioButton_16bit_DAC.clicked['bool'].connect(self.groupBox_Range_Bias.setChecked)
-        self.scrollBar_Input_Zoffset.valueChanged['int'].connect(self.spinBox_Input_Zoffset.setValue)
-        self.spinBox_Input_Zoffset.valueChanged['int'].connect(self.scrollBar_Input_Zoffset.setValue)
         QtCore.QMetaObject.connectSlotsByName(HoGroupSTM)
 
     def retranslateUi(self, HoGroupSTM):

@@ -81,18 +81,18 @@ class myBiasControl(myMainMenu):
     # Check feedback and cross zero to determin if OK to change current value
     # True stands for can not change    
     def check_feedback(self, bits, equal0):
-        fb = self.dsp.lastdigital[3]    # Obtain current feedback status
+        fb = self.dsp.lastdigital[2]    # Obtain current feedback status
         
         if self.bias_dac: # Case with 20 bit DAC 
             if equal0:
-                cross_zero = ((bits - 0x80000) * self.dsp.last20bit) == 0   # Only check equal to 0, use for direct output
+                cross_zero = ((bits - 0x80000) * (self.dsp.last20bit - 0x80000)) == 0   # Only check equal to 0, use for direct output
             else:
-                cross_zero = ((bits - 0x80000) * self.dsp.last20bit) <= 0   # Check if target and current cross zero, use for ramp
+                cross_zero = ((bits - 0x80000) * (self.dsp.last20bit - 0x80000)) <= 0   # Check if target and current cross zero, use for ramp
         else: # Case with 16 bit DAC
             if equal0:
-                cross_zero = ((bits - 0x8000) * self.dsp.lastdac[13]) == 0  # Only check equal to 0, use for direct output
+                cross_zero = ((bits - 0x8000) * (self.dsp.lastdac[13] - 0x8000)) == 0  # Only check equal to 0, use for direct output
             else:
-                cross_zero = ((bits - 0x8000) * self.dsp.lastdac[13]) <= 0  # Check if target and current cross zero, use for ramp
+                cross_zero = ((bits - 0x8000) * (self.dsp.lastdac[13] - 0x8000)) <= 0  # Check if target and current cross zero, use for ramp
         
         return fb and cross_zero    # Return if output rule violated
     
@@ -214,12 +214,12 @@ class myBiasControl(myMainMenu):
                 if not self.bias_dac:
                     self.enable_mode_serial(False)                      # Disable all serial related component in current window
                     self.idling = False                                 # Toggle dock idling flag
-                    feedback_store = self.dsp.lastdigital[3]            # Store current feedback status
-                    self.dsp.digital_o(3, False)                        # Feedback off
+                    feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
+                    self.dsp.digital_o(2, False)                        # Feedback off
                     self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)    # Ramp bias to 0
                     self.dsp.dac_range(13, ran)                         # Change range
                     self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage
-                    self.dsp.digital_o(3, feedback_store)               # Restore orignial feedback status
+                    self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status
                 
                     self.bias_spinbox_range()                           # Set spin boxes range
                     self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
@@ -232,15 +232,10 @@ class myBiasControl(myMainMenu):
         self.dsp.stop = True                                    # Toggle DSP stop flag
         self.pushButton_StopRamp_BiasRamp.setEnabled(False)     # Disable stop push button (no need to push again)
     
-    # Bias ramp function
-    def bias_ramp(self, value):
-        self.enable_mode_serial(False)                      # Disable all serial related component in current window
-        self.idling = False                                 # Toggle dock idling flag
-        self.pushButton_StopRamp_BiasRamp.setEnabled(True)  # Enable stop push button
-        step = self.spinBox_SpeedInput_BiasRamp.value()     # Obtain step value
-        
+    # Bias check ramp function
+    def bias_check_ramp(self, value):
         # Figure out target based on bias DAC
-        if self.bias:
+        if self.bias_dac:
             channel = 0x20
             target = cnv.vb(value, '20')
         else:
@@ -249,58 +244,132 @@ class myBiasControl(myMainMenu):
             
         # Check if able to ramp
         if self.check_feedback(target, False):  # Can not ramp
-            self.cross_zero_message()   # Cross zero message box
+            self.cross_zero_message()           # Cross zero message box
+            ok = False
         else:                                   # Can ramp
-            self.rampTo(channel, target, step, 1000, 0, True)   # Ramp
-            
+            ok = True
+        return ok, channel, target
+    
+    
+    # Bias ramp function
+    def bias_ramp(self, channel, target):
+        self.enable_mode_serial(False)                      # Disable all serial related component in current window
+        self.idling = False                                 # Toggle dock idling flag
+        self.pushButton_StopRamp_BiasRamp.setEnabled(True)  # Enable stop push button
+        step = self.spinBox_SpeedInput_BiasRamp.value()     # Obtain step value
+        self.dsp.rampTo(channel, target, step * 10, 10000, 0, True)   # Ramp
+
         # Update scroll bar with DSP status variable
-        if self.bias:
+        if self.bias_dac:
             self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
         else:
-            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
-            
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])           
         self.idling = True                  # Toggle dock idling flag
         self.enable_mode_serial(True)       # Enable all serial related component in current window
         
     # Bias ramp button 1 slot
     def bias_ramp_1(self):
         value = self.spinBox_Input1_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
         
     # Bias ramp button 2 slot
     def bias_ramp_2(self):
         value = self.spinBox_Input2_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
     
     # Bias ramp button 3 slot
     def bias_ramp_3(self):
         value = self.spinBox_Input3_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
     
     # Bias ramp button 4 slot
     def bias_ramp_4(self):
         value = self.spinBox_Input4_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
 
     # Bias ramp button 5 slot
     def bias_ramp_5(self):
         value = self.spinBox_Input5_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
         
     # Bias ramp button 6 slot
     def bias_ramp_6(self):
         value = self.spinBox_Input6_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
     
     # Bias ramp button 7 slot
     def bias_ramp_7(self):
         value = self.spinBox_Input7_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
     
     # Bias ramp button 8 slot
     def bias_ramp_8(self):
         value = self.spinBox_Input8_BiasRamp.value()                        # Obtain target
-        threading.Thread(target = (lambda: self.bias_ramp(value))).start()  # Ramp with thread
+        ok, channel, bits = self.bias_check_ramp(value)                     # Check ramp
+        if ok:
+            threading.Thread(target = (lambda: self.bias_ramp(channel, bits))).start()  # Ramp with thread
+        
+        # Update scroll bar with DSP status variable
+        if self.bias_dac:
+            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+        else:
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])
 
     # Initial bias out of range message window
     def bias_out_of_range_message(self):

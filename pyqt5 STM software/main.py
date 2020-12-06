@@ -37,9 +37,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.actionHop.triggered['bool'].connect(self.open_hop)
         self.actionManipulation.triggered['bool'].connect(self.open_manipulation)
         
-        
         # Connect open control dock window
-        self.actionShowAll.triggered.connect(self.show_all_dock)            # Connect open all docks
+        self.actionShow_All_A.triggered.connect(self.show_all_dock)         # Connect open all docks
         self.actionBias.triggered['bool'].connect(self.bias_show)           # Connect open bias dock
         self.actionZ.triggered['bool'].connect(self.Zcontroller_show)       # Connect open Z control dock
         self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock       

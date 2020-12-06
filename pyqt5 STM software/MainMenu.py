@@ -56,17 +56,9 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.setFixedSize(self.width(), self.height())
 
         # Init control menubar
-        actionCurrent = self.Current.toggleViewAction()
-        self.menuControl.addAction(actionCurrent)
         self.Current.setVisible(False)
-        actionBias = self.Bias.toggleViewAction()
-        self.menuControl.addAction(actionBias)
         self.Bias.setVisible(False)
-        actionZ = self.Zcontrol.toggleViewAction()
-        self.menuControl.addAction(actionZ)
         self.Zcontrol.setVisible(False)
-        self.actionShowAll = QtWidgets.QAction("Show All",self)
-        self.menuControl.addAction(self.actionShowAll)
 
         # Init Current dock size and position
         self.Current.resize(430, 360)
@@ -111,20 +103,13 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.enable_current_serial(enable)          # Current dcok
         self.enable_Zcontrol_serial(enable)         # Z control dock
         self.menuControl.setEnabled(enable)         # Controll menu
-        # if enable:
-        #     self.Bias.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetClosable)
-        #     self.Current.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetClosable)
-        #     self.Zcontrol.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetClosable)
-        # else:
-        #     self.Bias.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
-        #     self.Current.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
-        #     self.Zcontrol.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
     
     # Enable all serial related component in bias dock
     def enable_bias_serial(self, enable):
         self.groupBox_Bias_Bias.setEnabled(enable)
         self.groupBox_Dither_Bias.setEnabled(enable)
         self.groupBox_Range_Bias.setEnabled(enable)
+        self.groupBox_Bias_Bias.setEnabled(enable)
         self.pushButton_Rampto1_BiasRamp.setEnabled(enable)
         self.pushButton_Rampto2_BiasRamp.setEnabled(enable)
         self.pushButton_Rampto3_BiasRamp.setEnabled(enable)
@@ -169,7 +154,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             self.menuScan.setEnabled(enable)    # Scan menu
         elif self.mode == 0:
             self.enable_dock_serial(enable)     # All docks
-            self.enable_serial_window(enable)   # All windows
+            self.enable_menubar(enable)         # All windows
 
 
 if __name__ == "__main__":

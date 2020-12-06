@@ -649,7 +649,10 @@ class myDSP(QObject):
             self.ser.write(int(limit).to_bytes(2, byteorder="big"))     # Send out limit for crash protection and check stop flag
             
             i = self.current_last(channel)
-            step = int((target - i) * step / abs(target - i))
+            if target != i:
+                step = int((target - i) * step / abs(target - i))
+            else:
+                step = 0
             # If receive start command
             if int.from_bytes(self.ser.read(1) ,"big") == 0xf0:
                 self.stop = False                       # Set stop flag to false
