@@ -840,6 +840,18 @@ class Ui_HoGroupSTM(object):
         self.menubar.addAction(self.menuData_Manipulation.menuAction())
         self.menubar.addAction(self.menuSetting.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
+        
+        self.scrollBar_Input_Bias.setSingleStep(1)
+        self.scrollBar_Input_Bias.setPageStep(2500)
+        self.scrollBar_Input_Setpoint.setSingleStep(1)
+        self.scrollBar_Input_Sepoint.setPageStep(200)
+        self.scrollBar_Input_Zoffset.setSingleStep(1)
+        self.scrollBar_Input_Zoffset.setPageStep(10)
+        
+        self.spinBox_Input_Bias.setSingleStep(1)
+        self.spinBox_Input_Setpoint.setSingleStep(1)
+        self.spinBox_Input_Zoffset.setSingleStep(10)
+        self.spinBox_Input_Zoffsetfine.setSingleStep(100)
 
         self.retranslateUi(HoGroupSTM)
         QtCore.QMetaObject.connectSlotsByName(HoGroupSTM)

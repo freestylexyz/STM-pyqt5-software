@@ -40,7 +40,8 @@ class myDSP(QObject):
         self.adcrange = [0] * 8         # All ADC channels' current range
         self.last20bit = 0x80000        # Last ouput of 20bit DAC
         self.lastdigital = [False] * 6  # 0 - 5 : bias dither, z dither, feedback, retract, coarse, translation
-        self.lastgain = [2] * 4         # 0 -> gain 10.0, 2 -> gain 1.0, 3 -> gain 0.1
+        self.lastgain = [1] * 4         # 0 -> gain 10.0, 1 -> gain 1.0, 3 -> gain 0.1
+                                        # Z1 gain is different from others, 3 -> gain 10.0, 1 -> gain 1.0, 0 -> gain 0.1
         self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
         self.port = 'com1'
         self.baudrate = 38400
@@ -198,6 +199,7 @@ class myDSP(QObject):
             # Load last20bit
             self.last20bit = int.from_bytes(self.ser.read(3), byteorder='big')
             self.idling = True
+            
     #        
     # Acuire offset data from DSP
     #
@@ -330,9 +332,6 @@ class myDSP(QObject):
         if self.ok():
             channel = channel & 0x3
             data = data & 0x3
-            # Z1 gain is different from others, reverse data for gain 0.1 and gain 10
-            if (channel == 2) and (data != 1):
-                data = (~ data) & 0x3
             self.idling = False                                 
             sdata = (channel << 4) | data
             self.ser.write(int(0xd4).to_bytes(1, byteorder="big"))        # 0xd4 for changing gain
@@ -357,7 +356,7 @@ class myDSP(QObject):
                 self.lastgain = [3] * 4
             elif data == 0:
                 self.lastdigital = [False, False, True, False, False, True]
-                self.lastgain = [2] * 4
+                self.lastgain = [1] * 4
 
     #
     # bit20_W - This function command dsp to write data (20-bit) to a specific 20bit DAC register (3-bit address)

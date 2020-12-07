@@ -43,6 +43,10 @@ class myBiasControl(myMainMenu):
         self.pushButton_Rampto8_BiasRamp.clicked.connect(self.bias_ramp_8)
         self.pushButton_StopRamp_BiasRamp.clicked.connect(self.bias_stop)   # Stop ramp button
     
+    # Update bias indication
+    def bias_update(self, value):
+        self.spinBox_Input_Bias.setValue(value)
+    
     # Show bias dock
     def bias_show(self):
         self.init_bias()    # Reinital bias dock view, every time call bias dock
@@ -71,12 +75,14 @@ class myBiasControl(myMainMenu):
             self.scrollBar_Input_Bias.setMaximum(0xfffff)                       # Set scroll bar maximum first
             self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)              # Set scroll bar value
             self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.last20bit, '20'))  # Set spin box value
-            self.spinBox_SpeedInput_BiasRamp.setValue(20)                       # Set default ramp speed
+            self.spinBox_SpeedInput_BiasRamp.setValue(30)                       # Set default ramp speed
+            self.scrollBar_Input_Bias.setPageStep(2500)                         # Set scroll bar page step
         else:
             self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])    # Set scroll bar value first
             self.scrollBar_Input_Bias.setMaximum(0xffff)                # Set scroll bar maximum
             self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-            self.spinBox_SpeedInput_BiasRamp.setValue(1)                # Set default ramp speed
+            self.spinBox_SpeedInput_BiasRamp.setValue(2)                # Set default ramp speed
+            self.scrollBar_Input_Bias.setPageStep(150)                  # Set scroll bar page step
     
     # Check feedback and cross zero to determin if OK to change current value
     # True stands for can not change    
@@ -212,20 +218,26 @@ class myBiasControl(myMainMenu):
                 self.bias_range_radio()                                 # Restore to original radio button setup
             else:                                           # Continue if current bias in the target range
                 if not self.bias_dac:
-                    self.enable_mode_serial(False)                      # Disable all serial related component in current window
-                    self.idling = False                                 # Toggle dock idling flag
-                    feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
-                    self.dsp.digital_o(2, False)                        # Feedback off
-                    self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)    # Ramp bias to 0
-                    self.dsp.dac_range(13, ran)                         # Change range
-                    self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage
-                    self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status
+                    threading.Thread(target = (lambda: self.bias_range_excu(ran, value))).start()  # Execute with thread
+
+                    
+    # Bias range execution
+    def bias_range_excu(self, ran, value):
+        self.enable_mode_serial(False)                      # Disable all serial related component in current window
+        self.idling = False                                 # Toggle dock idling flag
+        feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
+        self.dsp.digital_o(2, False)                        # Feedback off
+        self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)    # Ramp bias to 0
+        self.dsp.dac_range(13, ran)                         # Change range
+        self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage
+        self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status
                 
-                    self.bias_spinbox_range()                           # Set spin boxes range
-                    self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
-                    self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-                    self.idling = True                                  # Toggle dock idling flag
-                    self.enable_mode_serial(True)                       # Enable all serial related component in current window
+        self.bias_spinbox_range()                           # Set spin boxes range
+        self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
+        self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
+        self.idling = True                                  # Toggle dock idling flag
+        self.enable_mode_serial(True)                       # Enable all serial related component in current window
+        
 
     # Bias stop ramp button slot
     def bias_stop(self):
