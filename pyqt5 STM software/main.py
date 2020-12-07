@@ -6,6 +6,7 @@
 """
 import sys
 sys.path.append("./ui/")
+import os
 from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox
 from BiasControl import myBiasControl
 from Zcontroller import myZcontroller
@@ -15,6 +16,7 @@ from EtestControl import myEtestControl
 from TipApproachControl import myTipApproachControl
 from ScanControl import myScanControl
 import conversion as cnv
+from logger import Logger
 
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
@@ -42,8 +44,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.actionShow_All_A.triggered.connect(self.show_all_dock)         # Connect open all docks
         self.actionBias.triggered['bool'].connect(self.bias_show)           # Connect open bias dock
         self.actionZ.triggered['bool'].connect(self.Zcontroller_show)       # Connect open Z control dock
-        self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock       
-
+        self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock
 
     def init_STM(self):
         # Connect DSP singal
@@ -75,8 +76,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         #     pass
         # !!! self.write_cnfg()         # Update config in real time
 
-
-
     def write_cnfg(self):
         self.cnfg.clear()
         self.cnfg.setValue("CONFIG/BAUD_VALUE",self.dsp.baudrate)
@@ -90,10 +89,9 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def load_config(self):
         self.dsp.baudrate = self.cnfg.value("CONFIG/BAUD_VALUE")
         self.dsp.port = self.cnfg.value("CONFIG/COM_VALUE")
-        # self.initO = cnv.str2bool(self.cnfg.value("CONFIG/EXIT"))         # !!! log crash
-        self.preamp_gain = self.cnfg.value("SETTING/PREAMP_GAIN")
-        # self.bias_dac = cnv.str2bool(self.cnfg.value("SETTING/BIAS_DAC"))
         # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
+        self.initO = bool(os.stat("initO.log").st_size != 0)  # Get initO from initO.log
+        self.preamp_gain = self.cnfg.value("SETTING/PREAMP_GAIN")
         if self.initO:
             pass
         else:
@@ -101,8 +99,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             if reply == QMessageBox.Yes:
                 self.initO = True
             else:
-                print("load settings!!")
-                # !!! Initialize output but then self.dsp.init_dsp(self.initO) ?
                 self.mode_last = self.cnfg.value("SETTING/MODE")
         
     # DSP intial succeed slot
@@ -112,7 +108,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.setting.succeed_message(succeed)       # Pop out succeed message from setting
         elif self.mode == 0:                        # Initial form mian menu
             self.succeed_message(succeed)               # Pop out succeed message from main menu
-        
+
         # Reinital setting view if succeed
         if succeed:
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
@@ -125,8 +121,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.Current.close()
             self.tipappr.close()
             self.dsp.close()
-            # !!! Flag to record exit status (not work now)
-            self.exit = True
             self.write_cnfg()
             event.accept()
         else:
@@ -252,5 +246,13 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = mySTM()
     window.show()
+    sys.stdout = Logger("initO.log")    # Temporary method used to record initO value
+    print("running!!")
     sys.exit(app.exec_())
 
+'''
+About the temporary method for initO:
+    initO.log records "running!!" for normal shutdown; nothing for dan's bug
+    dan's bug is a trick to make it crash:
+    click "Scan" --> click "Spectra/Deposition/Track/Hop/Manipulation"
+'''

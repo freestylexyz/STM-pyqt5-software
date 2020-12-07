@@ -28,6 +28,9 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.setFixedSize(self.width(), self.height())
     
     def init_etest(self):
+        # self.enable_serial(self.dsp.succeed)
+        # if succeed:  # Set up view in case of successfully finding DSP
+
         pass
     
     # Emit close signal
