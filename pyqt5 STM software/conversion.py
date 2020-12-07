@@ -9,6 +9,9 @@ dacu = [5.0, 10.0, 20.0, 2 ** 24, 40.0] + [2 ** 24] * 4 + [5.0, 10.0, 2 ** 24, 2
 adcl = [-10.24, -5.12, -2.56, 0.0, 0.0, 0.0, 0.0]
 adcu = [10.24, 5.12, 2.56, 2 ** 24, 2 ** 24, 10.24, 5.12]
 
+def str2bool(v):
+    return v.lower() in ("yes","true","t","1","True")
+
 def b2v(b, bit_num = 16, lower_limit = -10, upper_limit = 10):
     return ((upper_limit - lower_limit) * b / (2 ** bit_num)) + lower_limit
 

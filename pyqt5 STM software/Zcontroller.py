@@ -28,4 +28,10 @@ class myZcontroller(myMainMenu):
         self.Zcontrol.show()
     
     def init_Zcontroller(self):
+        # Enable serial related modules
+        self.enable_Zcontrol_serial(self.dsp.succeed)
+    
+    # Z offset coarser scroll bar
+    def z_coarse_control(self):
         pass
+        

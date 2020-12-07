@@ -14,9 +14,7 @@ from SettingControl import mySettingControl
 from EtestControl import myEtestControl
 from TipApproachControl import myTipApproachControl
 from ScanControl import myScanControl
-
-def str2bool(v):
- return v.lower() in ("yes","true","t","1","True")
+import conversion as cnv
 
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
@@ -73,19 +71,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Do some real stuff
         self.load_config()              # Load DSP settings
         self.dsp.init_dsp(self.initO)   # Try to initial DSP
+        # if self.mode_last != 0:
+        #     pass
+        # !!! self.write_cnfg()         # Update config in real time
+
 
 
     def write_cnfg(self):
         self.cnfg.clear()
         self.cnfg.setValue("CONFIG/BAUD_VALUE",self.dsp.baudrate)
         self.cnfg.setValue("CONFIG/COM_VALUE",self.dsp.port)
-        self.cnfg.setValue("CONFIG/EXIT",self.exit)
-        self.cnfg.setValue("SETTING/LAST_DAC",self.dsp.lastdac)
-        self.cnfg.setValue("SETTING/DAC_RANGE",self.dsp.dacrange)
-        self.cnfg.setValue("SETTING/ADC_RANGE",self.dsp.adcrange)
-        self.cnfg.setValue("SETTING/LAST_20BIT",self.dsp.last20bit)
-        self.cnfg.setValue("SETTING/LAST_DIGITAL",self.dsp.lastdigital)
-        self.cnfg.setValue("SETTING/LAST_GAIN",self.dsp.lastgain)
         self.cnfg.setValue("SETTING/PREAMP_GAIN",self.preamp_gain)
         self.cnfg.setValue("SETTING/MODE",self.mode)
         self.cnfg.setValue("SETTING/BIAS_DAC",self.bias_dac)
@@ -95,28 +90,20 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def load_config(self):
         self.dsp.baudrate = self.cnfg.value("CONFIG/BAUD_VALUE")
         self.dsp.port = self.cnfg.value("CONFIG/COM_VALUE")
-        self.exit = str2bool(self.cnfg.value("CONFIG/EXIT"))
+        # self.initO = cnv.str2bool(self.cnfg.value("CONFIG/EXIT"))         # !!! log crash
+        self.preamp_gain = self.cnfg.value("SETTING/PREAMP_GAIN")
+        # self.bias_dac = cnv.str2bool(self.cnfg.value("SETTING/BIAS_DAC"))
         # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
-        if self.exit:
+        if self.initO:
             pass
         else:
             reply = QMessageBox.question(None,"Load output","Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
+                self.initO = True
+            else:
                 print("load settings!!")
                 # !!! Initialize output but then self.dsp.init_dsp(self.initO) ?
-                # self.dsp.lastdac = self.cnfg.value("SETTING/LAST_DAC")
-                # self.dsp.dacrange = self.cnfg.value("SETTING/DAC_RANGE")
-                # self.dsp.adcrange = self.cnfg.value("SETTING/ADC_RANGE")
-                # self.dsp.last20bit = self.cnfg.value("SETTING/LAST_20BIT")
-                # lastdigital = self.cnfg.value("SETTING/LAST_DIGITAL")
-                # self.dsp.lastgain = self.cnfg.value("SETTING/LAST_GAIN")
-                # self.preamp_gain = self.cnfg.value("SETTING/PREAMP_GAIN")
-                # self.mode = self.cnfg.value("SETTING/MODE")
-                # self.bias_dac = str2bool(self.cnfg.value("SETTING/BIAS_DAC"))
-                pass
-            else:
-                pass
-        self.initO = True
+                self.mode_last = self.cnfg.value("SETTING/MODE")
         
     # DSP intial succeed slot
     def dsp_succeed_slot(self, succeed):

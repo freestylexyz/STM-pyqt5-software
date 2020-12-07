@@ -28,6 +28,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
     def init_mainMenu(self):
         # Initial flags
+        self.initO = True           # Inital output
         self.idling = True          # Dock idling flag
         self.preamp_gain = 9        # Preamp gain flag gain 8(8), gain 9(9), gain(10)
         self.bias_dac = False       # Bias DAC selection 16bit DAC (False), 20bit DAC (True)
