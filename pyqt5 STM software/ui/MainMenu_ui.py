@@ -844,7 +844,7 @@ class Ui_HoGroupSTM(object):
         self.scrollBar_Input_Bias.setSingleStep(1)
         self.scrollBar_Input_Bias.setPageStep(2500)
         self.scrollBar_Input_Setpoint.setSingleStep(1)
-        self.scrollBar_Input_Sepoint.setPageStep(200)
+        self.scrollBar_Input_Setpoint.setPageStep(200)
         self.scrollBar_Input_Zoffset.setSingleStep(1)
         self.scrollBar_Input_Zoffset.setPageStep(10)
         

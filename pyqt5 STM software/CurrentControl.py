@@ -39,6 +39,11 @@ class myCurrentControl(myMainMenu):
         self.init_current() # Reinit current dock view
         self.Current.show() # Show current dock
     
+    # Update current indication
+    def current_update(self, bits):
+        value = self.b2v(bits, self.preamp_gain)
+        self.spinBox_Input_Current.setValue(value)  # Update main spinbox only, scrollbar will not follow
+    
     def init_current(self):
         self.enable_current_serial(self.dsp.succeed)    # Enable serial related modules
         self.current_set_radio()                        # Set up preamp gain radio button
@@ -57,10 +62,10 @@ class myCurrentControl(myMainMenu):
             multiplier = 10.0
         elif gain == 9:
             multiplier = 1.0
-        elif gain == 9:
+        elif gain == 10:
             multiplier = 0.1
         else:
-            multiplier = 0.0
+            multiplier = 1000.0
             
         return 10.0 ** (-value / 10.0) * multiplier     # Return current setpoint
     
@@ -71,10 +76,10 @@ class myCurrentControl(myMainMenu):
             multiplier = 10.0
         elif gain == 9:
             multiplier = 1.0
-        elif gain == 9:
+        elif gain == 10:
             multiplier = 0.1
         else:
-            multiplier = 0.0
+            multiplier = 1000.0
             
         value = value / multiplier                      # Divide multiplier
         value = -10.0 * math.log(value, 10)             # Calculate I set voltage
@@ -110,6 +115,18 @@ class myCurrentControl(myMainMenu):
         elif self.preamp_gain == 10:
             self.radioButton_10_Gain.setChecked(True)   # Set gain 10 radio button if gain 10
     
+    # Pream gain execution
+    def current_gain_excu(self, gain, value):
+        self.enable_mode_serial(False)                  # Disable all serial component in current window
+        self.idling = False                             # Toggle dock idling flag
+        self.preamp_gain = gain                         # Change preamp gain flag
+        self.current_spinbox_range()                    # Set all spin boxes range
+        bits = self.i2b(value, self.preamp_gain)        # Obtain target bits after changing gain
+        self.dsp.rampTo(0x15, bits, 2, 1000, 0, False)  # Ramp to target
+        self.scrollBar_Input_Setpoint.setValue(bits)    # Set scroll bar to current status
+        self.idling = True                              # Toggle dock idling flag
+        self.enable_mode_serial(True)                   # Enable all serial component in current window
+    
     # Preamp gain radio button slot
     def current_gain(self):
         # Determin gain based on radio button check status
@@ -132,15 +149,8 @@ class myCurrentControl(myMainMenu):
                 self.current_feedback_off_message()             # Remind turn the feedback off
                 self.current_set_radio()                        # Set the radio button back
             else:                                           # Everythin is good
-                self.enable_mode_serial(False)                  # Disable all serial component in current window
-                self.idling = False                             # Toggle dock idling flag
-                self.preamp_gain = gain                         # Change preamp gain flag
-                self.current_spinbox_range()                    # Set all spin boxes range
-                bits = self.i2b(value, self.preamp_gain)        # Obtain target bits after changing gain
-                self.dsp.rampTo(0x15, bits, 2, 1000, 0, False)  # Ramp to target
-                self.scrollBar_Input_Setpoint.setValue(bits)    # Set scroll bar to current status
-                self.idling = True                              # Toggle dock idling flag
-                self.enable_mode_serial(True)                   # Enable all serial component in current window
+                threading.Thread(target = (lambda: self.current_gain_excu(gain, value))).start()    # Execute with thread
+
                 
     # Setpoint spinBox slot
     def current_value(self):
