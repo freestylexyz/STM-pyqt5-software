@@ -11,6 +11,7 @@ from MainMenu import myMainMenu
 from PyQt5.QtWidgets import QMessageBox
 import conversion as cnv
 import threading
+import time
 
 # myBiasControl - This class handles bias dock control
 class myBiasControl(myMainMenu):
@@ -94,15 +95,16 @@ class myBiasControl(myMainMenu):
         fb = self.dsp.lastdigital[2]    # Obtain current feedback status
         
         if self.bias_dac: # Case with 20 bit DAC 
-            if equal0:
-                cross_zero = ((bits - 0x80000) * (self.dsp.last20bit - 0x80000)) == 0   # Only check equal to 0, use for direct output
-            else:
-                cross_zero = ((bits - 0x80000) * (self.dsp.last20bit - 0x80000)) <= 0   # Check if target and current cross zero, use for ramp
+            equal_zero = ((bits - 0x80000) == 0)   # Only check equal to 0, use for direct output
+            cross_zero = (((bits - 0x80000) * (self.dsp.last20bit - 0x80000)) < 0)   # Check if target and current cross zero, use for ramp
         else: # Case with 16 bit DAC
-            if equal0:
-                cross_zero = ((bits - 0x8000) * (self.dsp.lastdac[13] - 0x8000)) == 0  # Only check equal to 0, use for direct output
-            else:
-                cross_zero = ((bits - 0x8000) * (self.dsp.lastdac[13] - 0x8000)) <= 0  # Check if target and current cross zero, use for ramp
+            equal_zero = ((bits - 0x8000) == 0)  # Only check equal to 0, use for direct output
+            cross_zero = (((bits - 0x8000) * (self.dsp.lastdac[13] - 0x8000)) < 0)  # Check if target and current cross zero, use for ramp
+        
+        if equal0:
+            cross_zero = equal_zero
+        else:
+            cross_zero = cross_zero or equal_zero
         
         return fb and cross_zero    # Return if output rule violated
     
@@ -231,6 +233,7 @@ class myBiasControl(myMainMenu):
         self.idling = False                                 # Toggle dock idling flag
         feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
         self.dsp.digital_o(2, False)                        # Feedback off
+        time.sleep(0.5)                                     # The reed relay will take some time
         self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)    # Ramp bias to 0
         self.dsp.dac_range(13, ran)                         # Change range
         self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage

@@ -841,6 +841,9 @@ class Ui_HoGroupSTM(object):
         self.menubar.addAction(self.menuSetting.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         
+        self.spinBox_SpeedInput_BiasRamp.setMinimum(1)
+        self.spinBox_SpeedInput_CurrRamp.setMinimum(1)
+        
         self.scrollBar_Input_Bias.setSingleStep(1)
         self.scrollBar_Input_Bias.setPageStep(2500)
         self.scrollBar_Input_Setpoint.setSingleStep(1)

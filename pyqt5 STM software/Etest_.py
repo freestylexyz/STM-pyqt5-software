@@ -51,7 +51,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.bit20_bit.valueChanged.connect(self.bit20_val.setValue)
         self.bit20_val.valueChanged.connect(self.bit20_bit.setValue)
         self.bit20_out.clicked.connect(lambda: self.bit20_output_slot(self.bit20_bit.value()))
-        self.nit20_0.clicked.connect(lambda: self.bit20_output_slot(0x8000))
+        self.nit20_0.clicked.connect(lambda: self.bit20_output_slot(0x80000))
 
         # set bit20_dac scrollBar and spinBox range
         self.bit20_val.setMinimum(cnv.bv(0, '20'))
@@ -178,11 +178,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
     def dac_range_slot(self,range):
         ch = self.dac_ch.currentIndex()
         self.dac_range_signal.emit(ch,range)
+        
+    def adc_update(self, data):
+        pass
 
     # adc input button slot
     def adc_input_slot(self):
         ch = self.adc_ch.currentIndex()
-        self.get_adc_range()
+        # self.get_adc_range()
         self.adc_input_signal.emit((ch+5)<<1)
 
     # adc output/zero button slot

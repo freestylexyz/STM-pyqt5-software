@@ -189,7 +189,12 @@ class myZcontroller(myMainMenu):
     # Feedback toggle
     def z_feedback(self, feedback):
         if feedback != self.dsp.lastdigital[2]:     # If it is a real toggle
-            self.dsp.digital_o(2, feedback)         # Command DSP to toggle feedback
+            if (not feedback) and  self.dsp.lastdigital[3]:
+                QMessageBox.warning(None, "Z control", "Retract is ON, CANNOT turn off feedback!", QMessageBox.Ok)
+            else:
+                self.dsp.digital_o(2, feedback)         # Command DSP to toggle feedback
+            self.radioButton_ON_Feedback.setChecked(self.dsp.lastdigital[2])        # Set feedback radio button to sync status
+            self.radioButton_OFF_Feedback.setChecked(not self.dsp.lastdigital[2])   # Set feedback radio button to sync status
 
     # Retract toggle
     def z_retract(self, hard, retract):
@@ -203,7 +208,8 @@ class myZcontroller(myMainMenu):
             else:                                       # If feedback is OFF
                 QMessageBox.warning(None, "Z control", "Feedback is OFF!", QMessageBox.Ok)  # Pop out remider message and abort
                 popped = True                               # Toggle popped flag to avoid to avoid pop same message twice
-            self.radioButton_ON_Retract.setChecked(self.dsp.lastdigital[3]) # Set retract radio button to sync status
+        self.radioButton_ON_Retract.setChecked(self.dsp.lastdigital[3])         # Set retract radio button to sync status
+        self.radioButton_OFF_Retract.setChecked(not self.dsp.lastdigital[3])    # Set retract radio button to sync status
         
         if hard and self.dsp.lastdigital[2]:                # If hard retract and feedback is on
             self.hard_retracted = not self.hard_retracted       # Toggle hard retracted flag
@@ -236,6 +242,7 @@ class myZcontroller(myMainMenu):
                 self.dsp.gain(2, gain)              # Command DSP to toggle Z1 gain
             else:                               # If feedback is OFF
                 QMessageBox.warning(None, "Z control", "Feedback is OFF!", QMessageBox.Ok)  # Pop out window to remind
+        self.load_z1_gain()                 # Load the real Z1 gain
     
     # Z2 gain execution
     def z_gain2_excu(self, gain):
@@ -259,6 +266,7 @@ class myZcontroller(myMainMenu):
         self.dsp.zAuto0()                               # Command DSP to execute Z auto one more time
         self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offset scroll bar
         self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset spin box
+        self.load_z2_gain()                             # Load the real Z2 gain
         self.idling = True                              # Toggle back idling flag
         self.enable_mode_serial(True)                   # Enable all serial related component in current mode
     
@@ -276,5 +284,7 @@ class myZcontroller(myMainMenu):
                 threading.Thread(target = (lambda: self.z_gain2_excu(gain))).start()        # Execute Z2 gain changing sequence with thread
             else:                               # If feedback is OFF
                 QMessageBox.warning(None, "Z control", "Feedback is OFF!", QMessageBox.Ok)  # Pop out window to remind
-        
+                self.load_z2_gain()         # Load the real Z2 gain
+        else:
+            self.load_z2_gain()             # Load the real Z2 gain
             

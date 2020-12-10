@@ -91,7 +91,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.dsp.port = self.cnfg.value("CONFIG/COM_VALUE")
         # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
         self.initO = bool(os.stat("initO.log").st_size != 0)  # Get initO from initO.log
-        self.preamp_gain = self.cnfg.value("SETTING/PREAMP_GAIN")
+        # self.initO = True
+        # self.bias_dac = self.cnfg.value()
         if self.initO:
             pass
         else:
@@ -99,7 +100,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             if reply == QMessageBox.Yes:
                 self.initO = True
             else:
-                self.mode_last = self.cnfg.value("SETTING/MODE")
+                self.mode_last = int(self.cnfg.value("SETTING/MODE"))
+                self.preamp_gain = int(self.cnfg.value("SETTING/PREAMP_GAIN"))
         
     # DSP intial succeed slot
     def dsp_succeed_slot(self, succeed):

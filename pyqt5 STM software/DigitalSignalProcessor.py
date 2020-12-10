@@ -321,7 +321,7 @@ class myDSP(QObject):
             self.ser.write(int(0xd3).to_bytes(1, byteorder="big"))        # 0xd3 for digital output
             self.ser.write(int(sdata).to_bytes(1, byteorder="big"))       # send data
             self.idling = True
-            self.lastdigital[channel] = data            # Updata last digital variable
+            self.lastdigital[channel] = bool(data)            # Updata last digital variable
     
     #
     # gain - This function command dsp to change gain of a specific channel

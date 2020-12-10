@@ -18,6 +18,7 @@ class myCurrentControl(myMainMenu):
     # Init current dock
     def init_current_dock(self):
         self.init_current()     # Init current dock view
+        self.spinBox_SpeedInput_CurrRamp.setValue(10)               # Some initial speed value
         
         # Connect signals and slots
         self.radioButton_8_Gain.toggled.connect(self.current_gain)  # Preamp gain 8 radio button
@@ -50,7 +51,7 @@ class myCurrentControl(myMainMenu):
         self.current_spinbox_range()                    # Set up all spin boxes range
         
         bits = self.dsp.lastdac[5]                      # Fetch current I ser bits
-        self.scrollBar_Input_Setpoint.setValue(bits)    # Set up scroll bar
+        self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set up scroll bar
         self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))  # Set up main spin box 
 
     # Convert I set bits to current setpoint based on current status
@@ -64,9 +65,6 @@ class myCurrentControl(myMainMenu):
             multiplier = 1.0
         elif gain == 10:
             multiplier = 0.1
-        else:
-            multiplier = 1000.0
-            
         return 10.0 ** (-value / 10.0) * multiplier     # Return current setpoint
     
     # Convert current setpoint to I set bits based on current status
@@ -78,9 +76,6 @@ class myCurrentControl(myMainMenu):
             multiplier = 1.0
         elif gain == 10:
             multiplier = 0.1
-        else:
-            multiplier = 1000.0
-            
         value = value / multiplier                      # Divide multiplier
         value = -10.0 * math.log(value, 10)             # Calculate I set voltage
         bits = cnv.vb(value, 'd', self.dsp.dacrange[5]) # Convert it to I set bits
@@ -122,8 +117,8 @@ class myCurrentControl(myMainMenu):
         self.preamp_gain = gain                         # Change preamp gain flag
         self.current_spinbox_range()                    # Set all spin boxes range
         bits = self.i2b(value, self.preamp_gain)        # Obtain target bits after changing gain
-        self.dsp.rampTo(0x15, bits, 2, 1000, 0, False)  # Ramp to target
-        self.scrollBar_Input_Setpoint.setValue(bits)    # Set scroll bar to current status
+        self.dsp.rampTo(0x15, bits, 200, 10000, 0, False)  # Ramp to target
+        self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set scroll bar to current status
         self.idling = True                              # Toggle dock idling flag
         self.enable_mode_serial(True)                   # Enable all serial component in current window
     
@@ -141,12 +136,12 @@ class myCurrentControl(myMainMenu):
         if gain != self.preamp_gain:
             minimum = self.b2i(0xffff, gain)                # Target gain setpoint minimum
             maximum = self.b2i(0x0, gain)                   # Target gain setpoint maximum
-            value = self.spinBox_Input_Setpoint.value()     # Current setpoint
-            if (value > maximum) and (value < minimum):     # If current setpoint out of target range
+            value = self.b2i(self.dsp.lastdac[5], self.preamp_gain)     # Current setpoint
+            if (value > maximum) or (value < minimum):      # If current setpoint out of target range
                 self.current_out_of_range_message()             # Out of range message
                 self.current_set_radio()                        # Set the radio button back
-            elif self.dsp.lastdigital[3]:                   # If feedack is on
-                self.current_feedback_off_message()             # Remind turn the feedback off
+            elif self.dsp.lastdigital[2] and (not self.dsp.lastdigital[3]):    # If feedack is on and retract is off
+                QMessageBox.warning(None, "Current", "Turn the FEEDBACK OFF or RETRACT ON!", QMessageBox.Ok)  # Pop out window to remind
                 self.current_set_radio()                        # Set the radio button back
             else:                                           # Everythin is good
                 threading.Thread(target = (lambda: self.current_gain_excu(gain, value))).start()    # Execute with thread
@@ -155,13 +150,14 @@ class myCurrentControl(myMainMenu):
     # Setpoint spinBox slot
     def current_value(self):
         value = self.spinBox_Input_Setpoint.value()     # Current setpoint
-        self.scrollBar_Input_Setpoint.setValue(self.i2b(value, self.preamp_gain))   # Change I set by changing scrollbar value
+        self.scrollBar_Input_Setpoint.setValue(0xffff - self.i2b(value, self.preamp_gain))   # Change I set by changing scrollbar value
     
     # Setpoint scroll bar slot
     def current_out(self, bits):
+        bits = 0xffff - bits
         if bits != self.dsp.lastdac[5]:     # It it is a real change
-            self.dsp.bit20_W(0x15, bits)    # Direct output I set
-            self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))  # Set main spin box for indication
+            self.dsp.dac_W(0x15, bits)    # Direct output I set
+        self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))  # Set main spin box for indication
     
     # Current stop ramp button slot
     def current_stop(self):
@@ -176,8 +172,8 @@ class myCurrentControl(myMainMenu):
         self.pushButton_StopRamp_CurrRamp.setEnabled(True)              # Enable stop button
         step = self.spinBox_SpeedInput_CurrRamp.value()                 # Obtain ramp speed
         target = self.i2b(value, self.preamp_gain)                      # Obtain target
-        self.rampTo(0x15, target, step, 1000, 0, True)                  # Ramp
-        self.scrollBar_Input_Setpoint.setValue(self.dsp.lastdac[5])     # Set scroll bar
+        self.dsp.rampTo(0x15, target, step * 10, 10000, 0, True)                 # Ramp
+        self.scrollBar_Input_Setpoint.setValue(0xffff - self.dsp.lastdac[5])     # Set scroll bar
         self.idling = True                                              # Toggle dock idling flag
         self.enable_mode_serial(True)                                   # Enable all serial component in current window
         
