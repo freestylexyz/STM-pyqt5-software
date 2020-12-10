@@ -7,17 +7,20 @@
 import sys
 
 sys.path.append("./ui/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox,QButtonGroup
 from PyQt5.QtCore import pyqtSignal, Qt
 from Etest_ui import Ui_ElectronicTest
 import conversion as cnv
+import functools as ft
 
 class myEtest(QWidget, Ui_ElectronicTest):
     close_signal = pyqtSignal()
     # I/O signals
-    adc_range_signal = pyqtSignal(int, int)
-    dac_range_signal = pyqtSignal(int, int)
-    adc_input_signal = pyqtSignal(int)
+    range_changed_signal = pyqtSignal(int, int)
+    ch_changed_signal = pyqtSignal(int, int)
+    digital_changed_signal = pyqtSignal(int, int)
+    gain_changed_signal = pyqtSignal(int, int)
+    adc_input_signal = pyqtSignal()
     dac_output_signal = pyqtSignal(int, int)
     bit20_output_signal = pyqtSignal(int)
 
@@ -28,7 +31,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.init_UI()
 
     def init_UI(self):
-
         # init ui position and size
         screen = QDesktopWidget().screenGeometry()
         self.resize(780, 540)
@@ -36,169 +38,214 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
         self.setFixedSize(self.width(), self.height())
 
-        # connect push button slot, spinbox and scrollbar
-        # adc
-        self.adc_in.clicked.connect(self.adc_input_slot)
+        # adc | pushButton
+        self.adc_in.clicked.connect(self.adc_input_signal)
 
-        # dac
+        # adc | radioButton
+        self.adc_range_group = QButtonGroup()
+        self.adc_range_group.addButton(self.adc_b20,0)
+        self.adc_range_group.addButton(self.adc_b10, 1)
+        self.adc_range_group.addButton(self.adc_b5, 2)
+        self.adc_range_group.addButton(self.adc_u10, 5)
+        self.adc_range_group.addButton(self.adc_u5, 6)
+        self.adc_range_group.buttonToggled[int,bool].connect(ft.partial(self.range_changed_emit,0))
+
+        # adc | comboBox
+        self.adc_ch.currentIndexChanged.connect(lambda : self.ch_changed_emit(0))
+
+        # dac | spinBox and scrollBar
         self.dac_bit.valueChanged.connect(self.dac_val.setValue)
         self.dac_val.valueChanged.connect(self.dac_bit.setValue)
-        self.dac_out.clicked.connect(lambda: self.dac_output_slot(self.dac_bit.value()+0x8000))
-        self.dac_0.clicked.connect(lambda: self.dac_output_slot(0x8000))
-        # self.dac_bit.setPageStep(150)         # same as bias dock
 
-        # 20 bit dac
+        # dac | pushButton
+        self.dac_out.clicked.connect(lambda: self.dac_output_emit(1))    # output button clicked
+        self.dac_0.clicked.connect(lambda: self.dac_output_emit(0))      # zero button clicked
+        self.dac_bit.setMaximum(0xffff)
+
+        # dac | radioButton
+        self.dac_range_group = QButtonGroup()
+        self.dac_range_group.addButton(self.dac_u5, 0)
+        self.dac_range_group.addButton(self.dac_b10_4, 1)
+        self.dac_range_group.addButton(self.dac_b10, 9)
+        self.dac_range_group.addButton(self.dac_b20, 10)
+        self.dac_range_group.addButton(self.dac_b5, 14)
+        self.dac_range_group.buttonToggled[int, bool].connect(ft.partial(self.range_changed_emit, 1))
+
+        # dac | comboBox
+        self.dac_ch.currentIndexChanged.connect(lambda : self.ch_changed_emit(1))
+
+        # 20 bit dac | spinBox and scrollBar
         self.bit20_bit.valueChanged.connect(self.bit20_val.setValue)
         self.bit20_val.valueChanged.connect(self.bit20_bit.setValue)
-        self.bit20_out.clicked.connect(lambda: self.bit20_output_slot(self.bit20_bit.value()))
-        self.nit20_0.clicked.connect(lambda: self.bit20_output_slot(0x80000))
-
-        # set bit20_dac scrollBar and spinBox range
         self.bit20_val.setMinimum(cnv.bv(0, '20'))
         self.bit20_val.setMaximum(cnv.bv(0xfffff, '20'))
         self.bit20_bit.setMaximum(0xfffff)
-        # self.bit20_bit.setPageStep(2500)      # same as bias dock
 
-        # ramp test
-        self.pushButton_Ramp_RTest.clicked.connect(self.rtest_ramp_slot)
-        self.pushButton_RRread_RTest.clicked.connect(self.rtest_rread_slot)
+        # 20 bit dac | pushButton
+        self.bit20_out.clicked.connect(lambda: self.bit20_output_emit(1))    # output button clicked
+        self.bit20_0.clicked.connect(lambda: self.bit20_output_emit(0))      # zero button clicked
 
-        # square wave
-        self.pushButton_Start_SWave.clicked.connect(self.swave_start_slot)
+        # last digital | radioButton
+        self.dither0_on.toggled.connect(lambda: self.digital_changed_emit(0))
+        self.dither1_on.toggled.connect(lambda: self.digital_changed_emit(1))
+        self.feedback_on.toggled.connect(lambda: self.digital_changed_emit(2))
+        self.retract_on.toggled.connect(lambda: self.digital_changed_emit(3))
+        self.coarse.toggled.connect(lambda: self.digital_changed_emit(4))
+        self.translation.toggled.connect(lambda: self.digital_changed_emit(5))
 
-        # oscilloscope test
-        self.pushButton_SorS_Osci.clicked.connect(self.osci_start_slot)
+        # last gain | radioButton
+        self.x_gain_group = QButtonGroup()
+        self.x_gain_group.addButton(self.xgain10, 0)
+        self.x_gain_group.addButton(self.xgain1, 1)
+        self.x_gain_group.addButton(self.xgain0_1, 3)
+        self.x_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 0))
+        self.y_gain_group = QButtonGroup()
+        self.y_gain_group.addButton(self.ygain10, 0)
+        self.y_gain_group.addButton(self.ygain1, 1)
+        self.y_gain_group.addButton(self.ygain0_1, 3)
+        self.y_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 1))
+        self.z1_gain_group = QButtonGroup()
+        self.z1_gain_group.addButton(self.z1gain0_1, 0)
+        self.z1_gain_group.addButton(self.z1gain1, 1)
+        self.z1_gain_group.addButton(self.z1gain10, 3)
+        self.z1_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 2))
+        self.z2_gain_group = QButtonGroup()
+        self.z2_gain_group.addButton(self.z2gain10, 0)
+        self.z2_gain_group.addButton(self.z2gain1, 1)
+        self.z2_gain_group.addButton(self.z2gain0_1, 3)
+        self.z2_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 3))
 
-        # echo
-        self.pushButton_Query_Echo.clicked.connect(self.echo_query_slot)
-        self.pushButton_Start_Echo.clicked.connect(self.echo_start_slot)
+        # # ramp test
+        # self.pushButton_Ramp_RTest.clicked.connect(self.rtest_ramp_slot)
+        # self.pushButton_RRread_RTest.clicked.connect(self.rtest_rread_slot)
+        #
+        # # square wave
+        # self.pushButton_Start_SWave.clicked.connect(self.swave_start_slot)
+        #
+        # # oscilloscope test
+        # self.pushButton_SorS_Osci.clicked.connect(self.osci_start_slot)
+        #
+        # # echo
+        # self.pushButton_Query_Echo.clicked.connect(self.echo_query_slot)
+        # self.pushButton_Start_Echo.clicked.connect(self.echo_start_slot)
+        #
+        # # feedback test
+        # self.pushButton_Start_FTest.clicked.connect(self.ftest_start_slot)
 
-        # feedback test
-        self.pushButton_Start_FTest.clicked.connect(self.ftest_start_slot)
+    def init_etest(self, succeed, dacrange, adcrange, lastdigital, lastgain):
+        # Set up view in case of successfully finding DSP
+        self.enable_serial(succeed)
+        '''
+        self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
+        self.dacrange = [10] * 16       # All DAC channels' current range
+        self.adcrange = [0] * 8         # All ADC channels' current range
+        self.last20bit = 0x80000        # Last ouput of 20bit DAC
+        self.lastdigital = [False] * 6  # 0 - 5 : bias dither, z dither, feedback, retract, coarse, translation
+        self.lastgain = [1] * 4         # 0 -> gain 10.0, 1 -> gain 1.0, 3 -> gain 0.1
+                                        # Z1 gain is different from others, 3 -> gain 10.0, 1 -> gain 1.0, 0 -> gain 0.1
+        self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
+        '''
+        # load digital status from dsp
+        self.dither0_on.setChecked(lastdigital[0])
+        self.dither0_off.setChecked(not lastdigital[0])
+        self.dither1_on.setChecked(lastdigital[1])
+        self.dither1_off.setChecked(not lastdigital[1])
+        self.feedback_on.setChecked(lastdigital[2])
+        self.feedback_off.setChecked(not lastdigital[2])
+        self.retract_on.setChecked(lastdigital[3])
+        self.retract_off.setChecked(not lastdigital[3])
+        self.coarse.setChecked(lastdigital[4])
+        self.fine.setChecked(not lastdigital[4])
+        self.rotation.serChecked(not lastdigital[5])
+        self.translation.setCheked(lastdigital[5])
+        self.load_x_gain(lastgain)
+        self.load_y_gain(lastgain)
+        self.load_z1_gain(lastgain)
+        self.load_z2_gain(lastgain)
 
-    def init_etest(self, succeed, lastdac, dacrange, adcrange, last20bit, lastdigital, lastgain):
+        # load adc range from dsp
+        adc_ch = self.adc_ch.currentIndex()
+        adc_ran = adcrange[adc_ch]
+        self.load_range(0, adc_ran)
 
-        if succeed:  # Set up view in case of successfully finding DSP
-            self.enable_serial(succeed)
-            '''
-            self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
-            self.dacrange = [10] * 16       # All DAC channels' current range
-            self.adcrange = [0] * 8         # All ADC channels' current range
-            self.last20bit = 0x80000        # Last ouput of 20bit DAC
-            self.lastdigital = [False] * 6  # 0 - 5 : bias dither, z dither, feedback, retract, coarse, translation
-            self.lastgain = [1] * 4         # 0 -> gain 10.0, 1 -> gain 1.0, 3 -> gain 0.1
-                                            # Z1 gain is different from others, 3 -> gain 10.0, 1 -> gain 1.0, 0 -> gain 0.1
-            self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
-            '''
-            # load digital status from dsp
-            self.dither0_on.setChecked(lastdigital[0])
-            self.dither0_off.setChecked(not lastdigital[0])
-            self.dither1_on.setChecked(lastdigital[1])
-            self.dither1_off.setChecked(not lastdigital[1])
-            self.feedback_on.setChecked(lastdigital[2])
-            self.feedback_off.setChecked(not lastdigital[2])
-            self.retract_on.setChecked(lastdigital[3])
-            self.retract_off.setChecked(not lastdigital[3])
-            self.coarse.setChecked(lastdigital[4])
-            self.fine.setChecked(not lastdigital[4])
-            self.rotation.serChecked(not lastdigital[5])
-            self.translation.setCheked(lastdigital[5])
-            self.load_x_gain(lastgain)
-            self.load_y_gain(lastgain)
-            self.load_z1_gain(lastgain)
-            self.load_z2_gain(lastgain)
+        # load dac range from dsp
+        dac_ch = self.dac_ch.currentIndex()
+        dac_ran = dacrange[dac_ch]
+        self.load_range(1, dac_ran)
 
-            # load adc status from dsp
-            adc_ch = self.adc_ch.currentIndex()
-            adc_ran = adcrange[adc_ch]
-            self.load_adc_range(adc_ran)
+            
+    # load adc(index = 0) or dac(index = 1) range from dsp
+    def load_range(self, index, range):
+        if index == 0:      # adc 
+            if range == 0:
+                self.adc_b20.setChecked(True)
+            elif range == 1:
+                self.adc_b10.setChecked(True)
+            elif range == 2:
+                self.adc_b5.setChecked(True)
+            elif range == 5:
+                self.adc_u10.setChecked(True)
+            elif range == 6:
+                self.adc_u5.setChecked(True)
+        elif index == 1:    # dac
+            if range == 0:
+                self.dac_u5.setChecked(True)
+            elif range == 1:
+                self.dac_b10_4.setChecked(True)
+            elif range == 9:
+                self.dac_b10.setChecked(True)
+            elif range == 10:
+                self.dac_u10.setChecked(True)
+            elif range == 14:
+                self.dac_b5.setChecked(True)
+            self.set_dac_spinBox_range(range)
 
-            # load dac status from dsp
-            dac_ch = self.dac_ch.currentIndex()
-            dac_ran = dacrange[dac_ch]
-            self.load_dac_range(dac_ran)
-            minimum = cnv.bv(0, 'd', dacrange[dac_ch])
-            maximum = cnv.bv(0xffff, 'd', dacrange[dac_ch])
-            self.dac_val.setMinimum(minimum)
-            self.dac_val.setMaximum(maximum)
-            self.dac_bit.setMaximum(0xffff)
+    # set dac spinBox range
+    def set_dac_spinBox_range(self, range):
+        minimum = cnv.bv(0, 'd', range)
+        maximum = cnv.bv(0xffff, 'd', range)
+        self.dac_val.setMinimum(minimum)
+        self.dac_val.setMaximum(maximum)
 
+    # when adc(index = 0) or dac(index = 1) range changed by user, send signal
+    def range_changed_emit(self, index, range, status):
+        if status:              # only receive signal from checked button
+            self.range_changed_signal.emit(index, range)
         else:
-            QMessageBox.warning(None,"Etest","No DSP found!",QMessageBox.Ok)
+            pass
 
+    # when adc(index = 0) or dac(index = 1) channel changed by user, send signal
+    def ch_changed_emit(self, index, ch):
+        self.ch_changed_signal.emit(index, ch)
 
-    # load adc range from dsp
-    def load_adc_range(self,adc_ran):
-        if adc_ran == 0:
-            self.adc_b20.setChecked(True)
-        elif adc_ran == 1:
-            self.adc_b10.setChecked(True)
-        elif adc_ran == 2:
-            self.adc_b5.setChecked(True)
-        elif adc_ran == 5:
-            self.adc_u10.setChecked(True)
-        elif adc_ran == 6:
-            self.adc_u5.setChecked(True)
+    # when digital changed by user, send signal
+    def digital_changed_emit(self, ch, status):
+        self.digital_changed_signal.emit(ch, status)
 
-    # load dac range from dsp
-    def load_dac_range(self,dac_ran):
-        if dac_ran == 0:
-            self.dac_u5.setChecked(True)
-        elif dac_ran == 1:
-            self.dac_b10_4.setChecked(True)
-        elif dac_ran == 9:
-            self.dac_b10.setChecked(True)
-        elif dac_ran == 10:
-            self.dac_u10.setChecked(True)
-        elif dac_ran == 14:
-            self.dac_b5.setChecked(True)
+    # when gain changed by user, send signal
+    def gain_changed_emit(self, ch, val, status):
+        if status:  # only receive signal from checked button
+            self.gain_cahnged_signal.emit(ch, val)
+        else:
+            pass
 
-    # send adc range to dsp
-    def get_adc_range(self):
-        self.adc_b20.toggled.connect(lambda: self.adc_range_slot(0))
-        self.adc_b10.toggled.connect(lambda: self.adc_range_slot(1))
-        self.adc_b5.toggled.connect(lambda: self.adc_range_slot(2))
-        self.adc_u10.toggled.connect(lambda: self.adc_range_slot(5))
-        self.adc_u5.toggled.connect(lambda: self.adc_range_slot(6))
+    # dac output/zero button clicked, send output signal
+    def dac_output_emit(self, index):
+        if index == 0:          # zero button clicked
+            bits = 0x8000;
+            self.dac_bit.setValue(ox8000)
+        else:
+            bits = self.dac_bit.value() + 0x8000
+        self.dac_output_signal.emit(bits)
 
-    # send dac range to dsp
-    def get_dac_range(self):
-        self.dac_u5.toggled.connect(lambda: self.dac_range_slot(0))
-        self.dac_b10_4.toggled.connect(lambda: self.dac_range_slot(1))
-        self.dac_b10.toggled.connect(lambda: self.dac_range_slot(9))
-        self.dac_b20.toggled.connect(lambda: self.dac_range_slot(10))
-        self.dac_b5.toggled.connect(lambda: self.dac_range_slot(14))
-
-    # when adc range changed by user, tell dsp
-    def adc_range_slot(self,range):
-        ch = self.adc_ch.currentIndex()
-        self.adc_range_signal.emit(ch,range)
-
-    # when dac range changed by user, tell dsp
-    def dac_range_slot(self,range):
-        ch = self.dac_ch.currentIndex()
-        self.dac_range_signal.emit(ch,range)
-        
-    def adc_update(self, data):
-        pass
-
-    # adc input button slot
-    def adc_input_slot(self):
-        ch = self.adc_ch.currentIndex()
-        # self.get_adc_range()
-        self.adc_input_signal.emit((ch+5)<<1)
-
-    # adc output/zero button slot
-    def dac_output_slot(self,bits):
-        ch = self.dac_ch.currentIndex()
-        self.get_dac_range()
-        self.dac_output_signal.emit(ch+16,bits)
-        # self.dac_val.setValue()
-
-    # bit20 output/zero button slot
-    def bit20_output_slot(self,bits):
+    # 20 bit dac output/zero button clicked, send output signal
+    def bit20_output_emit(self, index):
+        if index == 0:  # zero button clicked
+            bits = 0x80000;
+            self.dac_bit.setValue(ox80000)
+        else:
+            bits = self.bit20_bit.value()
         self.bit20_output_signal.emit(bits)
-        # self.bit20_val.setValue()
 
     # load x gain radio button status from dsp
     def load_x_gain(self,lastgain):
@@ -221,11 +268,11 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # load z1 gain radio button status from dsp
     def load_z1_gain(self,lastgain):
         if lastgain[2] == 0:
-            self.z1gain10.setChecked(True)
+            self.z1gain0_1.setChecked(True)
         elif lastgain[2] == 1:
             self.z1gain1.setChecked(True)
         elif lastgain[2] == 3:
-            self.z1gain0_1.setChecked(True)
+            self.z1gain10.setChecked(True)
 
     # load z2 gain radio button status from dsp
     def load_z2_gain(self,lastgain):
@@ -331,10 +378,13 @@ if __name__ == "__main__":
 
     '''
       in main control
-    # self.adc_range_signal.connect(self.dsp.adc_W(addr,range))
-    # self.dac_range_signal.connect(self.dsp.dac_range(addr,range))
-    # self.adc_input_signal.connect(self.dsp.adc_R(addr))
-    # self.dac_output_signal.connect(self.dsp.dac_R(adrr,data))
-    # self.bit20_output_signal.connect(self.dsp.bit20_W(0x10, data))
+    # self.range_changed_signal.connect(self.range_changed_slot)
+    # self.ch_changed_signal.connect(self.ch_changed_slot)
+    # self.digital_changed_signal.connect(self.digital_changed_slot)
+    # self.gain_changed_signal.connect(self.gain_changed_slot)
+    # self.adc_input_signal.connect(self.adc_input_slot)
+    # self.dac_output_signal.connect(self.dac_output_slot)
+    # self.bit20_output_signal.connect(self.bit20_output_slot)
+
     '''
 

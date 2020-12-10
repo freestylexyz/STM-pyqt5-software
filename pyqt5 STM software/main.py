@@ -158,6 +158,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 0:
             self.mode = 1
             self.hide_all_dock()
+            # self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain)
             self.etest.init_etest()
             self.etest.show()
 
