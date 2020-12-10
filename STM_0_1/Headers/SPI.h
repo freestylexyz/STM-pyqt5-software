@@ -18,7 +18,7 @@
 //
 #if CPU_FRQ_200MHZ
 #define SPI_BRRA        5        // Corresponding to 8.333MHz clock frequency
-#define SPI_BRRB        7        // Corresponding to 6.25MHz clock frequency
+#define SPI_BRRB        13        // Corresponding to 3.57MHz clock frequency
 #endif
 //((200E6 / 4) / 10E6) - 1
 

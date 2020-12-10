@@ -155,7 +155,7 @@ void rampTo_DSP()
     step = combine(serialIn(3));        // Acquire step data
     delay = combine(serialIn(2));       // Acquire delay data
     limit = combine(serialIn(2));       // Acquire limit data
-    checkstop = limit > 0x8000;         // The MSB of limit is check stop flag
+    checkstop = limit >= 0x8000;        // The MSB of limit is check stop flag
     limit = limit & 0x7FFF;             // Rest of bits are real limit data
 
     // Ramp

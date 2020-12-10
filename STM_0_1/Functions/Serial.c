@@ -114,7 +114,7 @@ void serialOutCharArray(char * array, Uint16 n)
 char serialCheck()
 {
     char rdata = Null;                              // 0x00 is Null code (received nothing)
-    if(SciaRegs.SCIFFRX.bit.RXFFST == 0)            // Check if SCI has received a character
+    if(SciaRegs.SCIFFRX.bit.RXFFST != 0)            // Check if SCI has received a character
     {
         rdata = SciaRegs.SCIRXBUF.all;              // Read the character
     }
