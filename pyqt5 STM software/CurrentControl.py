@@ -41,9 +41,9 @@ class myCurrentControl(myMainMenu):
         self.Current.show() # Show current dock
     
     # Update current indication
-    def current_update(self, bits):
-        value = self.b2v(bits, self.preamp_gain)
-        self.spinBox_Input_Current.setValue(value)  # Update main spinbox only, scrollbar will not follow
+    def current_update(self):
+        value = self.b2i(self.dsp.lastdac[5], self.preamp_gain)
+        self.spinBox_Input_Setpoint.setValue(value)  # Update main spinbox only, scrollbar will not follow
     
     def init_current(self):
         self.enable_current_serial(self.dsp.succeed)    # Enable serial related modules
@@ -112,15 +112,16 @@ class myCurrentControl(myMainMenu):
     
     # Pream gain execution
     def current_gain_excu(self, gain, value):
-        self.enable_mode_serial(False)                  # Disable all serial component in current window
-        self.idling = False                             # Toggle dock idling flag
-        self.preamp_gain = gain                         # Change preamp gain flag
-        self.current_spinbox_range()                    # Set all spin boxes range
-        bits = self.i2b(value, self.preamp_gain)        # Obtain target bits after changing gain
-        self.dsp.rampTo(0x15, bits, 200, 10000, 0, False)  # Ramp to target
-        self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set scroll bar to current status
-        self.idling = True                              # Toggle dock idling flag
-        self.enable_mode_serial(True)                   # Enable all serial component in current window
+        if self.idling:
+            self.enable_mode_serial(False)                  # Disable all serial component in current window
+            self.idling = False                             # Toggle dock idling flag
+            self.preamp_gain = gain                         # Change preamp gain flag
+            self.current_spinbox_range()                    # Set all spin boxes range
+            bits = self.i2b(value, self.preamp_gain)        # Obtain target bits after changing gain
+            self.dsp.rampTo(0x15, bits, 200, 10000, 0, True)  # Ramp to target
+            self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set scroll bar to current status
+            self.idling = True                              # Toggle dock idling flag
+            self.enable_mode_serial(True)                   # Enable all serial component in current window
     
     # Preamp gain radio button slot
     def current_gain(self):
@@ -167,15 +168,16 @@ class myCurrentControl(myMainMenu):
         
     # Setpoint ramp function
     def current_ramp(self, value):
-        self.enable_mode_serial(False)                                  # Disable all serial component in current window
-        self.idling = False                                              # Toggle dock idling flag
-        self.pushButton_StopRamp_CurrRamp.setEnabled(True)              # Enable stop button
-        step = self.spinBox_SpeedInput_CurrRamp.value()                 # Obtain ramp speed
-        target = self.i2b(value, self.preamp_gain)                      # Obtain target
-        self.dsp.rampTo(0x15, target, step * 10, 10000, 0, True)                 # Ramp
-        self.scrollBar_Input_Setpoint.setValue(0xffff - self.dsp.lastdac[5])     # Set scroll bar
-        self.idling = True                                              # Toggle dock idling flag
-        self.enable_mode_serial(True)                                   # Enable all serial component in current window
+        if self.idling:
+            self.enable_mode_serial(False)                                  # Disable all serial component in current window
+            self.idling = False                                              # Toggle dock idling flag
+            self.pushButton_StopRamp_CurrRamp.setEnabled(True)              # Enable stop button
+            step = self.spinBox_SpeedInput_CurrRamp.value()                 # Obtain ramp speed
+            target = self.i2b(value, self.preamp_gain)                      # Obtain target
+            self.dsp.rampTo(0x15, target, step * 10, 10000, 0, True)                 # Ramp
+            self.scrollBar_Input_Setpoint.setValue(0xffff - self.dsp.lastdac[5])     # Set scroll bar
+            self.idling = True                                              # Toggle dock idling flag
+            self.enable_mode_serial(True)                                   # Enable all serial component in current window
         
     # Setpoint ramp button 1 slot
     def current_ramp_1(self):

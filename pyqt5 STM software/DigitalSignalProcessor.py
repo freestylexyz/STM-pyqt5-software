@@ -577,6 +577,22 @@ class myDSP(QObject):
             self.last20bit = bits & 0x0fffff
         else:
             self.lastdac[channel - 16] = bits & 0xffff 
+    
+    #
+    # limit_output - limit output based on channel
+    #
+    def limit_out(self, channel, bits):
+        if channel == 0x20:
+            maximum = 0xfffff
+        else:
+            maximum = 0xffff
+        
+        if bits > maximum:
+            bits = maximum
+        elif bits < 0:
+            bits = 0
+        
+        return bits
             
     #
     # current_last - return current last analog output
@@ -632,6 +648,7 @@ class myDSP(QObject):
     #
     def rampTo(self, channel, target, step, delay, limit, checkstop):
         if self.ok():
+            target = self.limit_out(channel, target)
             channel = channel & 0x3f
             target = target & 0x0fffff
             step = step & 0x0fffff
@@ -662,10 +679,10 @@ class myDSP(QObject):
                     else:
                         self.update_last(channel, i)
                         self.rampTo_signal.emit(channel)
-                        i =+ step
+                        i += step
                     if checkstop and self.stop:    # If check stop is enabled and stop event is issued
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
-                        self.stop = False  
+                        self.stop = False
                 # Receive finish command
                 if command == 0x1f:             # If crash protection triggered
                     self.lastdac[3] = int.from_bytes(self.ser.read(2) ,"big")   # Update last Z offset coarse output
@@ -683,6 +700,7 @@ class myDSP(QObject):
     #
     def rampMeasure(self, channel, target, step, move_delay, measure_delay, command_list, data_list):
         if self.ok():
+            target = self.limit_out(channel, target)
             channel = channel & 0x3f
             target = target & 0x0fffff
             step = step & 0x0fffff

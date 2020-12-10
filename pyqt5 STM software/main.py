@@ -52,7 +52,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # self.dsp.oscc_signal.connect()
         # self.dsp.rampMeasure_signal.connect()
         # self.dsp.giantStep_signal.connect()
-        # self.dsp.rampTo_signal.connect()
+        self.dsp.rampTo_signal.connect(self.dsp_rampTo_slot)
         # self.dsp.rampDiag_signal.connect()
         
         # Connect setting signal
@@ -114,6 +114,21 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Reinital setting view if succeed
         if succeed:
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
+            
+    # DSP ramp to update signal:
+    def dsp_rampTo_slot(self, channel):
+        if self.mode != 1:
+            if (channel == 0x1d) or (channel == 0x20):
+                self.bias_update()
+            elif channel == 0x15:
+                self.current_update()
+            elif channel == 0x12:
+                self.z_fine_update()
+            elif channel == 0x13:
+                self.z_offset_update()
+        else:
+            # !!! Etest update ramp
+            pass
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):

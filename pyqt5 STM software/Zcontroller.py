@@ -27,8 +27,9 @@ class myZcontroller(myMainMenu):
         
         # Z offset fine
         self.spinBox_Input_Zoffsetfine.valueChanged.connect(self.slider_Input_Zoffsetfine.setValue)
+        self.slider_Input_Zoffsetfine.valueChanged.connect(self.spinBox_Input_Zoffsetfine.setValue)
         self.pushButton_Advance_Zoffsetfine.clicked.connect(self.z_advance)
-        self.pushButton_Zero_Zoffsetfine.clicked.connect(self.z_advance)
+        self.pushButton_Zero_Zoffsetfine.clicked.connect(self.z_zero)
         self.pushButton_MatchCurrent_Zoffsetfine.clicked.connect(self.z_match_i)
         
         # Digital toggle
@@ -45,13 +46,12 @@ class myZcontroller(myMainMenu):
         self.radioButton_Z2gain10_Gain.toggled.connect(self.z_gain_2)
         
     # Z offset update
-    def z_offset_update(self, bits):
-        self.spinBox_Indication_Zoffset.setValue(bits)  # Update indication spinbox
-        self.scrollBar_Input_Zoffset.setValue(bits)     # Update scrollbar, input spin box will follow
+    def z_offset_update(self):
+        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update indication spinbox
         
     # Z offset fine update
-    def z_fine_update(self, bits):
-        self.spinBox_Input_Zoffsetfine.setValue(bits)   # Update spinbox, slider will follow
+    def z_fine_update(self):
+        self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update spinbox, slider will follow
     
     # Show Zcontroller dock
     def Zcontroller_show(self):
@@ -113,13 +113,14 @@ class myZcontroller(myMainMenu):
     
     # Z offset coarse ramp exectuion
     def z_send_excu(self, bits):
-        self.enable_mode_serial(False)                      # Disable all serial related component in current mode
-        self.idling = False                                 # Toggle idling flag
-        self.dsp.rampTo(0x13, bits, 1, 100, 0, False)       # Ramp Z offset to target value
-        self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update scrollbar value
-        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update indication
-        self.idling = True                                  # Toggle back idling flag
-        self.enable_mode_serial(True)                       # Enable all serial related compnent in current mode
+        if self.idling:
+            self.enable_mode_serial(False)                      # Disable all serial related component in current mode
+            self.idling = False                                 # Toggle idling flag
+            self.dsp.rampTo(0x13, bits, 1, 100, 0, False)       # Ramp Z offset to target value
+            self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update scrollbar value
+            self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update indication
+            self.idling = True                                  # Toggle back idling flag
+            self.enable_mode_serial(True)                       # Enable all serial related compnent in current mode
     
     # Z auto 0
     def z_auto(self):
@@ -130,27 +131,29 @@ class myZcontroller(myMainMenu):
     
     # Z auto 0 exectuion
     def z_auto_excu(self, delay):
-        if delay != 0:              # Some times need to delay a little bit
-            time.sleep(delay)
+        if self.idling:
+            if delay != 0:              # Some times need to delay a little bit
+                time.sleep(delay)
             
-        self.enable_mode_serial(False)                              # Disable all serial related component in current mode
-        self.idling = False                                         # Toggle idling flag
-        self.dsp.rampTo(0x12, 0x8000, 100, 100, 0, False)           # Return Z offset fine to zero
-        self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine indication
-        self.dsp.zAuto0()                                                       # Command DSP to do Z auto 0
-        self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offest scroll bar
-        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset indication
-        self.idling = True                                          # Toggle back idling flag
-        self.enable_mode_serial(True)                               # Enable all serial related compnent in current mode
+            self.enable_mode_serial(False)                              # Disable all serial related component in current mode
+            self.idling = False                                         # Toggle idling flag
+            self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)           # Return Z offset fine to zero
+            self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine indication
+            self.dsp.zAuto0()                                                       # Command DSP to do Z auto 0
+            self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offest scroll bar
+            self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset indication
+            self.idling = True                                          # Toggle back idling flag
+            self.enable_mode_serial(True)                               # Enable all serial related compnent in current mode
     
     # Z offset fine advance exection
     def z_advance_excu(self, bits):
-        self.enable_mode_serial(False)                          # Disable all serial related component in current mode
-        self.idling = False                                     # Toggle idling flage
-        self.dsp.rampTo(0x12, bits, 100, 100, 0, False)         # Return Z offset fine to target bits
-        self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine spin box
-        self.idling = True                                      # Toggle back idling flag
-        self.enable_mode_serial(True)                           # Enable all serial related compnent in current mode
+        if self.idling:
+            self.enable_mode_serial(False)                          # Disable all serial related component in current mode
+            self.idling = False                                     # Toggle idling flage
+            self.dsp.rampTo(0x12, bits, 100, 1000, 0, False)         # Return Z offset fine to target bits
+            self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine spin box
+            self.idling = True                                      # Toggle back idling flag
+            self.enable_mode_serial(True)                           # Enable all serial related compnent in current mode
     
     # Z offset fine advance
     def z_advance(self):
@@ -166,7 +169,7 @@ class myZcontroller(myMainMenu):
     # Z offset fine zero
     def z_zero(self):
         if self.dsp.lastdac[2] != 0x8000:       # If current z offset fine is not 0
-            threading.Thread(target = (lambda: self.z_advance_excu(0x8000)))    # Send to zero with thread
+            threading.Thread(target = (lambda: self.z_advance_excu(0x8000))).start()    # Send to zero with thread
     
     # Z match current execution
     def z_match_excu(self):
@@ -246,29 +249,30 @@ class myZcontroller(myMainMenu):
     
     # Z2 gain execution
     def z_gain2_excu(self, gain):
-        self.enable_mode_serial(False)                      # Disable all serial related component in current mode
-        self.idling = False                                 # Toggle idling flag
-        self.dsp.rampTo(0x12, 0x8000, 100, 100, 0, False)   # Return Z offset fine to zero
-        self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine spin box
-        self.dsp.zAuto0()                                                       # Command DSP to do Z auto
-        self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offset scroll bar
-        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset spin box
-        bits = self.dsp.lastdac[3]              # Obtain current Z offset bits
-        if gain < self.dsp.lastgain[2]:                 # If changing to a smaller gain
-            bits -= 300                                     # Adjust Z feedback to be little bit extended
+        if self.idling:
+            self.enable_mode_serial(False)                      # Disable all serial related component in current mode
+            self.idling = False                                 # Toggle idling flag
+            self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)   # Return Z offset fine to zero
+            self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine spin box
+            self.dsp.zAuto0()                                                       # Command DSP to do Z auto
+            self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offset scroll bar
+            self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset spin box
+            bits = self.dsp.lastdac[3]              # Obtain current Z offset bits
+            if gain < self.dsp.lastgain[2]:                 # If changing to a smaller gain
+                bits -= 300                                     # Adjust Z feedback to be little bit extended
                                                             # So that it get less extended after changing gain (Piezo gets shorter)
-        elif gain > self.dsp.lastgain[2]:               # If changing to a bigger gain
-            bits += 300                                     # Adjust Z feedback to be little bit contracted
+            elif gain > self.dsp.lastgain[2]:               # If changing to a bigger gain
+                bits += 300                                     # Adjust Z feedback to be little bit contracted
                                                             # So that it get more contracted after changing gain (Piezo gets shorter)
-        self.dsp.rampTo(0x13, bits, 1, 500, 0, False)   # Execute the adjustment
-        time.sleep(1)                                   # Wait 1 seconds to wait for feeback Z to respond
-        self.dsp.gain(3, gain)                          # Command DSP to toggle Z2 gain
-        self.dsp.zAuto0()                               # Command DSP to execute Z auto one more time
-        self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offset scroll bar
-        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset spin box
-        self.load_z2_gain()                             # Load the real Z2 gain
-        self.idling = True                              # Toggle back idling flag
-        self.enable_mode_serial(True)                   # Enable all serial related component in current mode
+            self.dsp.rampTo(0x13, bits, 1, 500, 0, False)   # Execute the adjustment
+            time.sleep(1)                                   # Wait 1 seconds to wait for feeback Z to respond
+            self.dsp.gain(3, gain)                          # Command DSP to toggle Z2 gain
+            self.dsp.zAuto0()                               # Command DSP to execute Z auto one more time
+            self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offset scroll bar
+            self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset spin box
+            self.load_z2_gain()                             # Load the real Z2 gain
+            self.idling = True                              # Toggle back idling flag
+            self.enable_mode_serial(True)                   # Enable all serial related component in current mode
     
     # Z2 gain toggle
     def z_gain_2(self):

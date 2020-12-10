@@ -45,11 +45,11 @@ class myBiasControl(myMainMenu):
         self.pushButton_StopRamp_BiasRamp.clicked.connect(self.bias_stop)   # Stop ramp button
     
     # Update bias indication
-    def bias_update(self, bits):
+    def bias_update(self):
         if self.bias_dac:
-            value = cnv.bv(bits, '20')
+            value = cnv.bv(self.dsp.last20bit, '20')
         else:
-            value = cnv.bv(bits, 'd', self.dsp.dacrange[13])
+            value = cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13])
         self.spinBox_Input_Bias.setValue(value)                 # Update main spin box only, scroll bar will not follow
     
     # Show bias dock
@@ -223,27 +223,27 @@ class myBiasControl(myMainMenu):
                 self.bias_out_of_range_message()                        # Out of range message
                 self.bias_range_radio()                                 # Restore to original radio button setup
             else:                                           # Continue if current bias in the target range
-                if not self.bias_dac:
+                if (not self.bias_dac) and self.idling:
                     threading.Thread(target = (lambda: self.bias_range_excu(ran, value))).start()  # Execute with thread
 
                     
     # Bias range execution
     def bias_range_excu(self, ran, value):
-        self.enable_mode_serial(False)                      # Disable all serial related component in current window
-        self.idling = False                                 # Toggle dock idling flag
-        feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
-        self.dsp.digital_o(2, False)                        # Feedback off
-        time.sleep(0.5)                                     # The reed relay will take some time
-        self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, False)    # Ramp bias to 0
-        self.dsp.dac_range(13, ran)                         # Change range
-        self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, False)  # Restore to original bias voltage
-        self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status
-                
-        self.bias_spinbox_range()                           # Set spin boxes range
-        self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
-        self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-        self.idling = True                                  # Toggle dock idling flag
-        self.enable_mode_serial(True)                       # Enable all serial related component in current window
+        if self.idling:
+            self.enable_mode_serial(False)                      # Disable all serial related component in current window
+            self.idling = False                                 # Toggle dock idling flag
+            feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
+            self.dsp.digital_o(2, False)                        # Feedback off
+            time.sleep(0.5)                                     # The reed relay will take some time
+            self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, True)    # Ramp bias to 0
+            self.dsp.dac_range(13, ran)                         # Change range
+            self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, True)  # Restore to original bias voltage
+            self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status  
+            self.bias_spinbox_range()                           # Set spin boxes range
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
+            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
+            self.idling = True                                  # Toggle dock idling flag
+            self.enable_mode_serial(True)                       # Enable all serial related component in current window
         
 
     # Bias stop ramp button slot
@@ -271,19 +271,20 @@ class myBiasControl(myMainMenu):
     
     # Bias ramp function
     def bias_ramp(self, channel, target):
-        self.enable_mode_serial(False)                      # Disable all serial related component in current window
-        self.idling = False                                 # Toggle dock idling flag
-        self.pushButton_StopRamp_BiasRamp.setEnabled(True)  # Enable stop push button
-        step = self.spinBox_SpeedInput_BiasRamp.value()     # Obtain step value
-        self.dsp.rampTo(channel, target, step * 10, 10000, 0, True)   # Ramp
-
-        # Update scroll bar with DSP status variable
-        if self.bias_dac:
-            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
-        else:
-            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])           
-        self.idling = True                  # Toggle dock idling flag
-        self.enable_mode_serial(True)       # Enable all serial related component in current window
+        if self.idling:
+            self.enable_mode_serial(False)                      # Disable all serial related component in current window
+            self.idling = False                                 # Toggle dock idling flag
+            self.pushButton_StopRamp_BiasRamp.setEnabled(True)  # Enable stop push button
+            step = self.spinBox_SpeedInput_BiasRamp.value()     # Obtain step value
+            self.dsp.rampTo(channel, target, step * 10, 10000, 0, True)   # Ramp
+            
+            # Update scroll bar with DSP status variable
+            if self.bias_dac:
+                self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)
+            else:
+                self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])           
+            self.idling = True                  # Toggle dock idling flag
+            self.enable_mode_serial(True)       # Enable all serial related component in current window
         
     # Bias ramp button 1 slot
     def bias_ramp_1(self):
