@@ -13,12 +13,21 @@
 void zAutoT(Uint16 target, Uint16 step)
 {
     bool condition, dir, inrange;
-    Uint32 zfeedback, zoffset;
+    Uint32 zfeedback, zoffset, delay;
+
+    if(step >= 10)
+    {
+        delay = 300000;          // Delay long time for large step
+    }
+    else
+    {
+        delay = 80000;           // Delay short time for small step
+    }
 
     if(lastdac[Zofff -16] != Zero_16)
     {
         dac_W(Zofff, Zero_16);                      // Set Z offset fine to 0, if it is not.
-        DELAY_US(8000);                             // Delay 8ms
+        DELAY_US(delay);                             // Delay
     }
 
     condition = (lastdigital[2] & 0x01);             // Check if feedback is on, otherwise skip the loop
@@ -29,13 +38,13 @@ void zAutoT(Uint16 target, Uint16 step)
     while(condition)
     {
         dac_W(Zoffc, zoffset);                       // Output Z offset coarse
-        DELAY_US(8000);                             // Wait 8 ms for the feedback to respond
+        DELAY_US(delay);                             // Wait delay for the feedback to respond
         zfeedback = adc_CNV_N(Zout, 50);            // Read Z feedback signal average 50 times
 
         // Update Z offset coarse value and condition based on direction for next loop
         inrange = rampCore(dir, Zoffc, target, step, &zfeedback, &zoffset, &condition);
     }
-    if(inrange)
+    if(! inrange)
     {
         if(dir){dac_W(Zoffc, 0xFFFF);}
         else{dac_W(Zoffc, 0);}
@@ -73,7 +82,11 @@ void zAuto0()
         break;
     }
 
-    if(gap > 101){zAutoT(Zero_16, 100);}    // Auto Z feedback to 0 with a big step size, if the gap is big
+    if(gap > 101)
+    {
+        zAutoT(Zero_16, 100);               // Auto Z feedback to 0 with a big step size, if the gap is big
+        zAutoT(Zero_16, 10);                // Continue on auto z feedback with medium step size
+    }
     if(gap > 11){zAutoT(Zero_16, 10);}      // Auto Z feedback to 0 with a medium step size, if the gap is medium
     zAutoT(Zero_16, 1);                     // Auto Z feedback to 0 with minimum step size to finish
 }
@@ -96,21 +109,22 @@ void iAutoT(Uint16 target, Uint16 step)
     bool condition, dir, inrange;
     Uint32 i, zoffset;
 
+    target = abs16(target);                      // Absolute target current
     condition = ((lastdigital[2] & 0x01) == 0);  // Check if feedback is off, otherwise skip the loop
-    zoffset = lastdac[Zofff - 16];              // Initial zoffset to current Z offset fine
-    i = adc_CNV_N(Preamp, 50);                  // Read pre-amp, measure 50 times
-    dir = i < target;                           // Check ramping direction
+    zoffset = lastdac[Zofff - 16];               // Initial zoffset to current Z offset fine
+    i = abs16(adc_CNV_N(Preamp, 100));           // Read pre-amp, measure 100 times
+    dir = i < target;                            // Check ramping direction
 
     while(condition)
     {
-        dac_W(Zofff, zoffset);       // Output Z offset coarse
-        DELAY_US(600);              // Wait 600 us for the pre-amp to respond (pre-amp rise time is 450 us @ gain 10)
-        i = adc_CNV_N(Zout, 50);    // Read Z feedback signal average 50 times
+        dac_W(Zofff, zoffset);              // Output Z offset coarse
+        DELAY_US(60000);                    // Wait 600 us for the pre-amp to respond (pre-amp rise time is 450 us @ gain 10)
+        i = abs16(adc_CNV_N(Preamp, 100));    // Read pre-amp signal average 100 times
 
         // Update Z offset fine value and condition based on direction for next loop
         inrange = rampCore(dir, Zofff, target, step, &i, &zoffset, &condition);
     }
-    if(inrange)
+    if(! inrange)
     {
         if(dir){dac_W(Zofff, 0xFFFF);}
         else{dac_W(Zofff, 0);}
@@ -123,10 +137,11 @@ void iAutoT(Uint16 target, Uint16 step)
 //
 void iAuto(Uint16 target)
 {
-    zAutoT(target, 500);
-    zAutoT(target, 100);
-    zAutoT(target, 20);
-    zAutoT(target, 5);
+    iAutoT(target, 625);
+    iAutoT(target, 125);
+    iAutoT(target, 25);
+    iAutoT(target, 5);
+    iAutoT(target, 1);
 }
 
 //
@@ -137,10 +152,11 @@ void iAuto_DSP()
 {
     Uint16 target;
     target = combine(serialIn(2));
-    zAutoT(target, 500);
-    zAutoT(target, 100);
-    zAutoT(target, 20);
-    zAutoT(target, 5);
+    iAutoT(target, 625);
+    iAutoT(target, 125);
+    iAutoT(target, 25);
+    iAutoT(target, 5);
+    iAutoT(target, 1);
     serialOut(split(lastdac[Zofff -16], 2));
 }
 
