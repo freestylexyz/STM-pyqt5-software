@@ -47,7 +47,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="IO">
       <attribute name="title">
@@ -478,13 +478,19 @@
           <string>DAC</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_25">
-          <item row="5" column="0">
-           <widget class="QLabel" name="dac_Iset_l">
+          <item row="2" column="0" colspan="4">
+           <widget class="QScrollBar" name="dac_bit">
             <property name="enabled">
              <bool>true</bool>
             </property>
-            <property name="text">
-             <string>ISET</string>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="pageStep">
+             <number>1000</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -498,54 +504,6 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="dac_Iset_val">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="decimals">
-             <number>6</number>
-            </property>
-            <property name="minimum">
-             <double>-10.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QLabel" name="dac_Iset_unit">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>V</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QDoubleSpinBox" name="dac_val">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="decimals">
-             <number>6</number>
-            </property>
-            <property name="minimum">
-             <double>-10.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="2">
            <widget class="QPushButton" name="dac_0">
             <property name="enabled">
@@ -553,6 +511,16 @@
             </property>
             <property name="text">
              <string>Zero</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QRadioButton" name="dac_u5">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>0V - 5V</string>
             </property>
            </widget>
           </item>
@@ -566,6 +534,16 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="2">
+           <widget class="QRadioButton" name="dac_b5">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>+/-2.5V</string>
+            </property>
+           </widget>
+          </item>
           <item row="3" column="0">
            <widget class="QRadioButton" name="dac_b20">
             <property name="enabled">
@@ -573,6 +551,16 @@
             </property>
             <property name="text">
              <string>+/-10V</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QRadioButton" name="dac_b10">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>+/-5V</string>
             </property>
            </widget>
           </item>
@@ -663,49 +651,22 @@
             </item>
            </widget>
           </item>
-          <item row="2" column="0" colspan="4">
-           <widget class="QScrollBar" name="dac_bit">
+          <item row="1" column="0" colspan="2">
+           <widget class="QDoubleSpinBox" name="dac_val">
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.000000000000000</double>
+            </property>
             <property name="maximum">
-             <number>65535</number>
+             <double>10.000000000000000</double>
             </property>
-            <property name="pageStep">
-             <number>1000</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QRadioButton" name="dac_b10">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>+/-5V</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QRadioButton" name="dac_u5">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>0V - 5V</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QRadioButton" name="dac_b5">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>+/-2.5V</string>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
             </property>
            </widget>
           </item>
@@ -1007,13 +968,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="spinBox_FinVal_RTest">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_5">
             <property name="text">
@@ -1021,24 +975,10 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="spinBox_StepSize_RTest">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
              <string>Out channel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="spinBox_InitVal_RTest">
-            <property name="enabled">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1200,6 +1140,33 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_InitVal_RTest">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_FinVal_RTest">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="spinBox_StepSize_RTest">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1284,6 +1251,9 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
            </widget>
           </item>
           <item row="2" column="1">
@@ -1304,6 +1274,9 @@
            <widget class="QDoubleSpinBox" name="spinBox_V1_SWave">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="decimals">
+             <number>4</number>
             </property>
            </widget>
           </item>
