@@ -79,9 +79,9 @@ class myZcontroller(myMainMenu):
         
         # Hard retract
         if self.hard_retracted:
-            self.pushButton_HardRetract_Zoffset.setText("Hard retract")
-        else:
             self.pushButton_HardRetract_Zoffset.setText("Hard unretract")
+        else:
+            self.pushButton_HardRetract_Zoffset.setText("Hard retract")
         
     # Load Z1 gain from DSP
     def load_z1_gain(self):
@@ -125,20 +125,18 @@ class myZcontroller(myMainMenu):
     # Z auto 0
     def z_auto(self):
         if self.dsp.lastdigital[2]:                             # If feedback is on
-           threading.Thread(target = (lambda: self.z_auto_excu(0))).start()                 # Execute Z auto with thread
+           threading.Thread(target = self.z_auto_excu).start()                 # Execute Z auto with thread
         else:                                                   # If feedback is off
             QMessageBox.warning(None, "Z control", "Feedback is OFF!", QMessageBox.Ok)      # Pop out remider and abort action
     
     # Z auto 0 exectuion
-    def z_auto_excu(self, delay):
-        if self.idling:
-            if delay != 0:              # Some times need to delay a little bit
-                time.sleep(delay)
-            
+    def z_auto_excu(self):
+        if self.idling:            
             self.enable_mode_serial(False)                              # Disable all serial related component in current mode
             self.idling = False                                         # Toggle idling flag
             self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)           # Return Z offset fine to zero
             self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)   # Update Z offset fine indication
+            time.sleep(2)                                                           # Wait 2 seconds to let it stablize
             self.dsp.zAuto0()                                                       # Command DSP to do Z auto 0
             self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offest scroll bar
             self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset indication
@@ -183,7 +181,7 @@ class myZcontroller(myMainMenu):
     # Z match current
     def z_match_i(self):
         if not (self.dsp.lastdigital[2] or self.dsp.lastdigital[3]):    # If feedback off and retract off
-            threading.Thread(target = (lambda: self.z_match_excu)).start()              # Execute i auto with thread
+            threading.Thread(target = self.z_match_excu).start()              # Execute i auto with thread
         elif self.dsp.lastdigital[2]:                                   # If feedback on
             QMessageBox.warning(None, "Z control", "Feedback is ON!", QMessageBox.Ok)   # Pop out reminding message and abort
         elif self.dsp.lastdigital[3]:                                   # If retract on
@@ -198,6 +196,24 @@ class myZcontroller(myMainMenu):
                 self.dsp.digital_o(2, feedback)         # Command DSP to toggle feedback
             self.radioButton_ON_Feedback.setChecked(self.dsp.lastdigital[2])        # Set feedback radio button to sync status
             self.radioButton_OFF_Feedback.setChecked(not self.dsp.lastdigital[2])   # Set feedback radio button to sync status
+    
+    # Hard retract execution
+    def z_hard_excu(self):
+        self.enable_mode_serial(False)                              # Disable all serial related component in current mode
+        self.idling = False                                         # Toggle idling flag
+        time.sleep(5)
+        self.hard_retracted = not self.hard_retracted       # Toggle hard retracted flag
+        # Change push button text based on hard retracted flag
+        if self.hard_retracted:
+            self.pushButton_HardRetract_Zoffset.setText("Hard unetract")
+            self.dsp.rampTo(0x13, 0, 1, 100, 0, False)                          # Send Z offset to 0
+        else:
+            self.pushButton_HardRetract_Zoffset.setText("Hard retract")
+            self.dsp.zAuto0()                                                   # Command DSP to do Z auto 0
+        self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)     # Update Z offest scroll bar
+        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)  # Update Z offset indication
+        self.idling = True                                  # Toggle back idling flag
+        self.enable_mode_serial(True)                       # Enable all serial related compnent in current mode
 
     # Retract toggle
     def z_retract(self, hard, retract):
@@ -215,13 +231,7 @@ class myZcontroller(myMainMenu):
         self.radioButton_OFF_Retract.setChecked(not self.dsp.lastdigital[3])    # Set retract radio button to sync status
         
         if hard and self.dsp.lastdigital[2]:                # If hard retract and feedback is on
-            self.hard_retracted = not self.hard_retracted       # Toggle hard retracted flag
-            # Change push button text based on hard retracted flag
-            if self.hard_retracted:
-                self.pushButton_HardRetract_Zoffset.setText("Hard retract")
-            else:
-                self.pushButton_HardRetract_Zoffset.setText("Hard unretract")
-            threading.Thread(target = (lambda: self.z_auto_excu(5))).start()    # Execute Z auto after with 5 seconds delay
+            threading.Thread(target = self.z_hard_excu).start()    # Execute Z auto after with 5 seconds delay
         elif hard and (not popped):                         # If need to hard retract and haven't remind feedback is off
             QMessageBox.warning(None, "Z control", "Feedback is OFF!", QMessageBox.Ok)  # pop out window to remind
         # All other situation, directly abort
@@ -283,8 +293,8 @@ class myZcontroller(myMainMenu):
             gain = 1
         elif self.radioButton_Z2gain10_Gain.isChecked():
             gain = 3
-        if gain != self.dsp.lastgain[2]:    # If it is a real toggle
-            if self.dsp.lastdigital[3]:         # If feedback is ON
+        if gain != self.dsp.lastgain[3]:    # If it is a real toggle
+            if self.dsp.lastdigital[2]:         # If feedback is ON
                 threading.Thread(target = (lambda: self.z_gain2_excu(gain))).start()        # Execute Z2 gain changing sequence with thread
             else:                               # If feedback is OFF
                 QMessageBox.warning(None, "Z control", "Feedback is OFF!", QMessageBox.Ok)  # Pop out window to remind
