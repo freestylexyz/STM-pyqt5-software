@@ -1,14 +1,18 @@
 <RCC>
   <qresource prefix="logo">
-    <file>STMlogo_blackhole.png</file>
-    <file>STMlogo_NiCp2.png</file>
+    <file>../data/STMlogo_blackhole.png</file>
+    <file>../data/STMlogo_NiCp2.png</file>
   </qresource>
   <qresource prefix="menuIcon">
-    <file>squarewaveiconblack.png</file>
-    <file>helpiconblack.png</file>
-    <file>testiconblack.png</file>
-    <file>ramptesticonblack.png</file>
-    <file>tipappriconblack.png</file>
-    <file>settingiconblack.png</file>
+    <file>../data/helpiconblack.png</file>
+    <file>../data/ramptesticonblack.png</file>
+    <file>../data/settingiconblack.png</file>
+    <file>../data/squarewaveiconblack.png</file>
+    <file>../data/testiconblack.png</file>
+    <file>../data/tipappriconblack.png</file>
+  </qresource>
+  <qresource prefix="indication">
+    <file>../data/scanner piezo.png</file>
+    <file>../data/square.png</file>
   </qresource>
 </RCC>

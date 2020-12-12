@@ -23,9 +23,9 @@ class myEtest(QWidget, Ui_ElectronicTest):
     adc_input_signal = pyqtSignal()
     dac_output_signal = pyqtSignal(int, int)
     bit20_output_signal = pyqtSignal(int, int)
-    # ramp test signals
+    # Ramp Test signals
     rtest_ramp_signal = pyqtSignal(int, int, int, int, int, int, int)
-
+    rtest_stop_signal = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -42,6 +42,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.setFixedSize(self.width(), self.height())
 
         self.dac_range = 10     # dac range variable
+        self.range_text_dict = {2: {0: '-10.24V to +10.24V', 1: '-5.12 V to +5.12 V', \
+                                    2: '-2.56 V to +2.56 V', 5: '0 to 10.24 V', \
+                                    6: '0 to 5.12 V'}, \
+                                3: {0: '0 to 5V', 1: '0 to 10V', 2: '0 to 20V', 4: '0 to 40 V', \
+                                    9: '-5 V to +5 V', 10: '-10 V to +10 V', 12: '-20 V to +20 V', \
+                                    14: '-2.5 V to +2.5 V', 20: '-5V to +5V'}}    # input(2), output(3) range -> text dictionary
+        self.rtest_ramp_data = []           # Ramp Test | ramp received channel
+        self.rtest_ramp_read_data = []    # Ramp Test | ramp read received data
 
         # adc | pushButton
         self.adc_in.clicked.connect(self.adc_input_signal)
@@ -120,10 +128,18 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.z2_gain_group.addButton(self.z2gain0_1, 3)
         self.z2_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 3))
 
-        # ramp test
-        self.pushButton_Ramp_RTest.clicked.connect(lambda: self.rtest_ramp_emit(0))
-        self.pushButton_RRread_RTest.clicked.connect(lambda: self.rtest_ramp_emit(1))
-        #
+        # Ramp Test | pushButton
+        if not self.idling:
+            self.pushButton_Ramp_RTest.clicked.connect(lambda: self.rtest_ramp_emit(0))
+            self.pushButton_RRread_RTest.clicked.connect(lambda: self.rtest_ramp_emit(1))
+        else:
+            self.pushButton_Ramp_RTest.clicked.connect(lambda: self.rtest_stop_emit(0))
+            self.pushButton_RRread_RTest.clicked.connect(lambda: self.rtest_stop_emit(1))
+
+        # Ramp Test | comboBox
+        self.comboBox_InCh_RTest.currentIndexChanged.connect(lambda: self.ch_changed_emit(2))
+        self.comboBox_OutCh_RTest.currentIndexChanged.connect(lambda: self.ch_changed_emit(3))
+
         # # square wave
         # self.pushButton_Start_SWave.clicked.connect(self.swave_start_slot)
         #
@@ -137,9 +153,10 @@ class myEtest(QWidget, Ui_ElectronicTest):
         # # feedback test
         # self.pushButton_Start_FTest.clicked.connect(self.ftest_start_slot)
 
-    def init_etest(self, succeed, dacrange, adcrange, lastdigital, lastgain):
+    def init_etest(self, succeed, dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit):
         # Set up view in case of successfully finding DSP
         self.enable_serial(succeed)
+        self.init_io(dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit)
         '''
         self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
         self.dacrange = [10] * 16       # All DAC channels' current range
@@ -150,6 +167,10 @@ class myEtest(QWidget, Ui_ElectronicTest):
                                         # Z1 gain is different from others, 3 -> gain 10.0, 1 -> gain 1.0, 0 -> gain 0.1
         self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
         '''
+
+    # init I/O tab
+    def init_io(self, dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit):
+
         # load digital status from dsp
         self.dither0_on.setChecked(lastdigital[0])
         self.dither0_off.setChecked(not lastdigital[0])
@@ -168,16 +189,39 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.load_z1_gain(lastgain)
         self.load_z2_gain(lastgain)
 
-        # load adc range from dsp
+        # load adc status from dsp
         adc_ch = self.adc_ch.currentIndex()
         adc_ran = adcrange[adc_ch]
         self.load_range(0, adc_ran)
 
-        # load dac range from dsp
+        # load 16 bit dac status from dsp
         dac_ch = self.dac_ch.currentIndex()
         dac_ran = dacrange[dac_ch]
         self.load_range(1, dac_ran)
+        self.load_dac_output(0, lastdac[dac_ch])
 
+        # load 20 bit dac status from dsp
+        self.load_dac_output(1, last20bit)
+
+    # init Ramp Test tab
+    def init_rtest(self, adcrange, dacrange):
+        # load range from dsp
+        # !!! rtest_get_inch() and rtest_get_outch() can NOT be merged into one function
+        outch = self.rtest_get_outch()
+        outran = dacrange[outch]
+        self.set_rtest_spinBox_range(outch, outran)
+        self.set_range_text(3, outran)
+
+        inch = self.rtest_get_inch()
+        inran = adcrange[inch]
+        self.set_range_text(2, inran)
+
+    # I/O | load dac(index = 0) and 20 bit dac(index = 1) output from dsp
+    def load_dac_output(self, index, bits):
+        if index == 0:  # 16 bit dac
+            self.dac_bit.setValue(bits)
+        else:           # 20 bit dac
+            self.bit20_bit.setValue(bits)
             
     # I/O | load adc(index = 0) or dac(index = 1) range from dsp
     def load_range(self, index, ran):
@@ -220,9 +264,18 @@ class myEtest(QWidget, Ui_ElectronicTest):
         else:
             pass
 
-    # I/O | when adc(index = 0) or dac(index = 1) channel changed by user, send signal
+    # I/O & Ramp Test |
+    # when I/O adc(index = 0) or dac(index = 1) channel changed by user, send signal
+    # when Ramp Test input(index = 2) or output(index = 3) channel changed by user, send signal
     def ch_changed_emit(self, index, ch):
-        self.ch_changed_signal.emit(index, ch)
+        if index == 0 or index ==1:     # I/O
+            self.ch_changed_signal.emit(index, ch)
+        elif index == 2:                # Ramp Test input
+            ch = self.rtest_get_inch()
+            self.ch_changed_emit(index, ch)
+        elif index == 3:                # Ramp Test output
+            ch = self.rtest_get_outch()
+            self.ch_changed_emit(index, ch)
 
     # I/O | when digital changed by user, send signal
     def digital_changed_emit(self, ch, status):
@@ -326,21 +379,45 @@ class myEtest(QWidget, Ui_ElectronicTest):
             return inch+1
         else:
             return inch
+
+    # Ramp Text | set initial and final spinBox range, set step size minimum
+    def set_rtest_spinBox_range(self, ch, ran):
+        if ch != 20:
+            minimum = cnv.bv(0, 'd', ran)
+            maximum = cnv.bv(0xffff, 'd', ran)
+            self.spinBox_InitVal_RTest.setMinimum(minimum)
+            self.spinBox_FinVal_RTest.setMaximum(maximum)
+            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, 'd', ran))
+        else:
+            minimum = cnv.bv(0, '20')
+            maximum = cnv.bv(0xfffff, '20')
+            self.spinBox_InitVal_RTest.setMinimum(minimum)
+            self.spinBox_FinVal_RTest.setMaximum(maximum)
+            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, '20'))
+
+    # Ramp Test | load input(index =2) and output(index = 3) range from dsp
+    def set_range_text(self, index, ran):
+        self.label_InRan_RTest.setText(self.range_text_dict[index][ran])
+        self.label_OutRan_RTest.setText(self.range_text_dict[index][ran])
     
     # Ramp Test | ramp (index=0) / ramp read (index=1) button
     def rtest_ramp_emit(self, index):
             outch = self.rtest_get_outch()
             inch = self.rtest_get_in_ch()
-            # !!! step size : int or double?
-            step_size = self.spinBox_StepSize.value()
             if outch == 20:   # 20 bit DAC
                 init = cnv.vb(self.spinBox_InitVal_RTest.value(), '20')
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), '20')
+                step_size = cnv.vb(self.spinBox_StepSize.value(), '20')
 
             else:             # 16 bit DAC
                 init = cnv.vb(self.spinBox_InitVal_RTest.value(), 'd', self.dac_range)
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), 'd', self.dac_range)
-            self.rtest_ramp_signal.emit(index, outch, inch, init, final, step_size)
+                step_size = cnv.vb(self.spinBox_StepSize.value(), 'd', self.dac_range)
+            self.rtest_ramp_signal.emit(index, outch, init, final, step_size)
+
+    # Ramp Test | ramp stop(index=0) / ramp read stop(index=1) button
+    def rtest_stop_emit(self, index):
+        self.rtest_stop_signal.emit(index)
 
     # Enable serial
     def enable_serial(self, enable):
@@ -399,8 +476,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.z2gain10.setEnabled(enable)
 
         # Ramp test
-        self.pushButton_Ramp_RTest.setEnabled(enable)
-        self.pushButton_RRead_RTest.setEnabled(enable)
+        # self.pushButton_Ramp_RTest.setEnabled(enable)
+        # self.pushButton_RRead_RTest.setEnabled(enable)
 
         # Square wave
         self.pushButton_Start_SWave.setEnabled(enable)
@@ -442,14 +519,14 @@ if __name__ == "__main__":
     # # I/O
     # self.etest.range_changed_signal.connect(self.range_changed_slot)
     # self.etest.ch_changed_signal.connect(self.ch_changed_slot)
-    # self.etest.digital_changed_signal.connect(self.digital_changed_slot)
-    # self.etest.gain_changed_signal.connect(self.gain_changed_slot)
+    # self.etest.digital_changed_signal.connect(self.dsp.digital_o)   
+    # self.etest.gain_changed_signal.connect(self.dsp.gain)  
     # self.etest.adc_input_signal.connect(self.adc_input_slot)
     # self.etest.dac_output_signal.connect(self.dsp.dac_W)   
-    # self.etest.bit20_output_signal.connect(dsp.bit20_W)
+    # self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
     # # Ramp Test
     self.etest.rtest_ramp_signal.connect(self.rtest_ramp_slot)
-    
+    self.etest.rtest_stop_signal.connect(self.rtest_stop_slot)
 
     '''
 

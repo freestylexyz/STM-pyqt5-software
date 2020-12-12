@@ -65,6 +65,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         
         # Connect electronic test signal
         self.etest.close_signal.connect(self.closeWindow)
+        # # I/O
+        # self.etest.range_changed_signal.connect(self.range_changed_slot)
+        # self.etest.ch_changed_signal.connect(self.ch_changed_slot)
+        # self.etest.digital_changed_signal.connect(self.dsp.digital_o)
+        # self.etest.gain_changed_signal.connect(self.dsp.gain)
+        # self.etest.adc_input_signal.connect(self.adc_input_slot)
+        # self.etest.dac_output_signal.connect(self.dsp.dac_W)
+        # self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
         
         # Connect scan signal
         self.scan.close_signal.connect(self.close_scan)
