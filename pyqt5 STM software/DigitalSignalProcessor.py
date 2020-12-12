@@ -739,7 +739,7 @@ class myDSP(QObject):
                     for i in range(readnum):
                         rdata = [int.from_bytes(self.ser.read(2) ,"big")]
                         self.rampMeasure_signal(rdata)
-                        current += step
+                    current += step
                 # If stopped
                 if self.stop:
                     self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
