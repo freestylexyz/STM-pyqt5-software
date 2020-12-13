@@ -19,10 +19,10 @@ class myDSP(QObject):
     
     succeed_signal = pyqtSignal(bool)       # Serial port open signal
     oscc_signal = pyqtSignal(int)           # Continuous oscilloscope data emit signal
-    rampMeasure_signal = pyqtSignal(int)    # Ramp measure data emit signal
+    rampMeasure_signal = pyqtSignal(int, list)    # Ramp measure data emit signal
     giantStep_signal = pyqtSignal(int)      # Gian step number signal
     rampTo_signal = pyqtSignal(int)         # Ramp to signal
-    rampDiag_signal = pyqtSignal(int, int)  # Ramp diagonal signal
+    rampDiag_signal = pyqtSignal(int, int) # Ramp diagonal signal
     
     #
     # Initial class and all flags and status variable
@@ -735,10 +735,10 @@ class myDSP(QObject):
                 
                 # Loop to read data unless stopped
                 while (current <= target) and (not self.stop):
-                    self.rampMeasure_signal(current)
+                    rdata = []
                     for i in range(readnum):
-                        rdata = [int.from_bytes(self.ser.read(2) ,"big")]
-                        self.rampMeasure_signal(rdata)
+                        rdata += [int.from_bytes(self.ser.read(2) ,"big")]
+                    self.rampMeasure_signal(current, rdata)
                     current += step
                 # If stopped
                 if self.stop:
