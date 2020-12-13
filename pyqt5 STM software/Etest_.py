@@ -25,7 +25,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
     bit20_output_signal = pyqtSignal(int, int)
     # Ramp Test signals
     rtest_ramp_signal = pyqtSignal(int, int, int, int, int, int, int)
-    rtest_stop_signal = pyqtSignal(int)
+    stop_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -129,12 +129,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.z2_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 3))
 
         # Ramp Test | pushButton
-        if not self.idling:
-            self.pushButton_Ramp_RTest.clicked.connect(lambda: self.rtest_ramp_emit(0))
-            self.pushButton_RRread_RTest.clicked.connect(lambda: self.rtest_ramp_emit(1))
-        else:
-            self.pushButton_Ramp_RTest.clicked.connect(lambda: self.rtest_stop_emit(0))
-            self.pushButton_RRread_RTest.clicked.connect(lambda: self.rtest_stop_emit(1))
+        self.pushButton_Ramp_RTest.clicked.connect(lambda: self.rtest_ramp_emit(0))
+        self.pushButton_RRread_RTest.clicked.connect(lambda: self.rtest_ramp_emit(1))
 
         # Ramp Test | comboBox
         self.comboBox_InCh_RTest.currentIndexChanged.connect(lambda: self.ch_changed_emit(2))
@@ -208,9 +204,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
         # load range from dsp
         # !!! rtest_get_inch() and rtest_get_outch() can NOT be merged into one function
         outch = self.rtest_get_outch()
-        outran = dacrange[outch]
-        self.set_rtest_spinBox_range(outch, outran)
-        self.set_range_text(3, outran)
+        if outch != 20:
+            outran = dacrange[outch]
+            self.set_rtest_spinBox_range(outch, outran)
+            self.set_range_text(3, outran)
+        else:
+            outran = 20
+            self.set_rtest_spinBox_range(outch, outran)
+            self.set_range_text(3, outran)
 
         inch = self.rtest_get_inch()
         inran = adcrange[inch]
@@ -387,13 +388,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
             maximum = cnv.bv(0xffff, 'd', ran)
             self.spinBox_InitVal_RTest.setMinimum(minimum)
             self.spinBox_FinVal_RTest.setMaximum(maximum)
-            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, 'd', ran))
+            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, 'd', ran) - cnv.bv(0,'d',ran))
         else:
             minimum = cnv.bv(0, '20')
             maximum = cnv.bv(0xfffff, '20')
             self.spinBox_InitVal_RTest.setMinimum(minimum)
             self.spinBox_FinVal_RTest.setMaximum(maximum)
-            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, '20'))
+            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, '20') - cnv.bv(0,'20'))
 
     # Ramp Test | load input(index =2) and output(index = 3) range from dsp
     def set_range_text(self, index, ran):
@@ -403,21 +404,23 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # Ramp Test | ramp (index=0) / ramp read (index=1) button
     def rtest_ramp_emit(self, index):
             outch = self.rtest_get_outch()
-            inch = self.rtest_get_in_ch()
-            if outch == 20:   # 20 bit DAC
+            inch = self.rtest_get_inch()
+            if outch == 20:                     # 20 bit DAC
                 init = cnv.vb(self.spinBox_InitVal_RTest.value(), '20')
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), '20')
                 step_size = cnv.vb(self.spinBox_StepSize.value(), '20')
 
-            else:             # 16 bit DAC
+            else:                               # 16 bit DAC
                 init = cnv.vb(self.spinBox_InitVal_RTest.value(), 'd', self.dac_range)
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), 'd', self.dac_range)
                 step_size = cnv.vb(self.spinBox_StepSize.value(), 'd', self.dac_range)
-            self.rtest_ramp_signal.emit(index, outch, init, final, step_size)
-
-    # Ramp Test | ramp stop(index=0) / ramp read stop(index=1) button
-    def rtest_stop_emit(self, index):
-        self.rtest_stop_signal.emit(index)
+            if self.idling:                     # emit ramp signal
+                self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
+                self.rtest_ramp_data = []       # init ramp data list
+                self.rtest_ramp_read_data = []  # init ramp read data list
+            else:                               # emit stop signal
+                self.stop_signal.emit()
+                self.enable_serial(False)
 
     # Enable serial
     def enable_serial(self, enable):
@@ -476,8 +479,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.z2gain10.setEnabled(enable)
 
         # Ramp test
-        # self.pushButton_Ramp_RTest.setEnabled(enable)
-        # self.pushButton_RRead_RTest.setEnabled(enable)
+        self.pushButton_Ramp_RTest.setEnabled(enable)
+        self.pushButton_RRead_RTest.setEnabled(enable)
 
         # Square wave
         self.pushButton_Start_SWave.setEnabled(enable)
@@ -515,18 +518,20 @@ if __name__ == "__main__":
     sys.exit(app.exec_())
 
     '''
-      in main control
-    # # I/O
-    # self.etest.range_changed_signal.connect(self.range_changed_slot)
-    # self.etest.ch_changed_signal.connect(self.ch_changed_slot)
-    # self.etest.digital_changed_signal.connect(self.dsp.digital_o)   
-    # self.etest.gain_changed_signal.connect(self.dsp.gain)  
-    # self.etest.adc_input_signal.connect(self.adc_input_slot)
-    # self.etest.dac_output_signal.connect(self.dsp.dac_W)   
-    # self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
-    # # Ramp Test
+       -> signal - slot connection <-
+       
+    # I/O
+    self.etest.range_changed_signal.connect(self.range_changed_slot)
+    self.etest.ch_changed_signal.connect(self.ch_changed_slot)
+    self.etest.digital_changed_signal.connect(self.dsp.digital_o)   
+    self.etest.gain_changed_signal.connect(self.dsp.gain)  
+    self.etest.adc_input_signal.connect(self.adc_input_slot)
+    self.etest.dac_output_signal.connect(self.dsp.dac_W)   
+    self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
+    
+    # Ramp Test
     self.etest.rtest_ramp_signal.connect(self.rtest_ramp_slot)
-    self.etest.rtest_stop_signal.connect(self.rtest_stop_slot)
-
+    self.etest.stop_signal.connect(self.stop_slot)
+    self.dsp.rampMeasure_signal[int][list].connect(self.record_ramp_read_data)
     '''
 
