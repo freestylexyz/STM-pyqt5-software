@@ -60,32 +60,21 @@ class myEtestControl(myMainMenu):
             if index == 0:                                                  # ramp button clicked
                 self.etest.pushButton_Ramp_RTest.setText("Stop")            # change ramp button text
                 self.etest.pushButton_Ramp_RTest.setEnabled(True)           # enable stop button
-                self.dsp.rampTo(outch, init, 1, 100, 0, False)     # Ramp to initial value
-                self.dsp.rampTo(outch, final, step_size, 10000, 0, True)    # Ramp to final value
-                self.rtest_ramp_update(index, outch)                        # update ramp data
+                self.dsp.rampTo(outch, init, step_size, 10000, 0, False)    # ramp to initial value
             else:                                                           # ramp read button clicked
                 self.etest.pushButton_RRead_RTest.setText("Stop")           # change ramp read button text
                 self.etest.pushButton_RRead_RTest.setEnabled(True)          # enable stop button
                 command = 4 * inch + 0xC000
-                self.dsp.rampMeasure(outch, init, 1, 100, 10000, [command], [10])   # Ramp Read to initial value
                 self.dsp.rampMeasure(outch, final, step_size, 10000, 10000, [command], [10])  # Ramp Read to final value
-                # !!! update current and rdata by signal
             self.etest.idling = True
             self.etest.enable_serial(True)
             self.etest.pushButton_Ramp_RTest.setText("Ramp")                 # reset ramp button
             self.etest.pushButton_RRead_RTest.setEnabled("Ramp read")        # reset ramp read button
 
-    # Ramp Test | update ramp data
-    def rtest_ramp_update(self, index, channel):
-        if index == 0:  # ramp
-            if channel != 20:
-                self.etest.rtest_ramp_data += [self.dsp.lastdac[channel - 16]]
-            else:
-                self.etest.rtest_ramp_data += [self.dsp.last20bit]
-
     # Ramp Test | update ramp read data
-    def record_ramp_read_data(self, current, rdata):
-        self.etest.rtest_ramp_read_data += [(current, rdata)]
+    def ramp_read_update(self, current, rdata):
+        self.etest.rtest_ramp_data += [current]
+        self.etest.rtest_ramp_read_data += rdata
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):

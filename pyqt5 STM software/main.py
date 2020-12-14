@@ -50,7 +50,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Connect DSP singal
         self.dsp.succeed_signal.connect(self.dsp_succeed_slot)
         # self.dsp.oscc_signal.connect()
-        # self.dsp.rampMeasure_signal.connect()
+        self.dsp.rampMeasure_signal[int, list].connect(self.dsp_rampMeasure_slot)
         # self.dsp.giantStep_signal.connect()
         self.dsp.rampTo_signal.connect(self.dsp_rampTo_slot)
         # self.dsp.rampDiag_signal.connect()
@@ -137,6 +137,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         else:
             # !!! Etest update ramp
             pass
+
+    # DSP ramp measure update signal:
+    def dsp_rampMeasure_slot(self, current, rdata):
+        if self.mode == 1:
+            self.ramp_read_update(current, rdata)
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):

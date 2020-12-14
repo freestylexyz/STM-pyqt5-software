@@ -48,8 +48,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
                                 3: {0: '0 to 5V', 1: '0 to 10V', 2: '0 to 20V', 4: '0 to 40 V', \
                                     9: '-5 V to +5 V', 10: '-10 V to +10 V', 12: '-20 V to +20 V', \
                                     14: '-2.5 V to +2.5 V', 20: '-5V to +5V'}}    # input(2), output(3) range -> text dictionary
-        self.rtest_ramp_data = []           # Ramp Test | ramp received channel
-        self.rtest_ramp_read_data = []    # Ramp Test | ramp read received data
+        self.rtest_ramp_data = []         # Ramp Test | ramp read output data
+        self.rtest_ramp_read_data = []    # Ramp Test | ramp read input data
 
         # adc | pushButton
         self.adc_in.clicked.connect(self.adc_input_signal)
@@ -61,7 +61,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.adc_range_group.addButton(self.adc_b5, 2)
         self.adc_range_group.addButton(self.adc_u10, 5)
         self.adc_range_group.addButton(self.adc_u5, 6)
-        self.adc_range_group.buttonToggled[int,bool].connect(ft.partial(self.range_changed_emit,0))
+        self.adc_range_group.buttonToggled[int, bool].connect(ft.partial(self.range_changed_emit,0))
 
         # adc | comboBox
         self.adc_ch.currentIndexChanged.connect(lambda: self.ch_changed_emit(0))
@@ -388,13 +388,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
             maximum = cnv.bv(0xffff, 'd', ran)
             self.spinBox_InitVal_RTest.setMinimum(minimum)
             self.spinBox_FinVal_RTest.setMaximum(maximum)
-            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, 'd', ran) - cnv.bv(0,'d',ran))
+            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, 'd', ran) - cnv.bv(0, 'd', ran))
         else:
             minimum = cnv.bv(0, '20')
             maximum = cnv.bv(0xfffff, '20')
             self.spinBox_InitVal_RTest.setMinimum(minimum)
             self.spinBox_FinVal_RTest.setMaximum(maximum)
-            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, '20') - cnv.bv(0,'20'))
+            self.spinBox_StepSize_RTest.setMinmum(cnv.bv(-1, '20') - cnv.bv(0, '20'))
 
     # Ramp Test | load input(index =2) and output(index = 3) range from dsp
     def set_range_text(self, index, ran):
@@ -415,12 +415,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), 'd', self.dac_range)
                 step_size = cnv.vb(self.spinBox_StepSize.value(), 'd', self.dac_range)
             if self.idling:                     # emit ramp signal
-                self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
                 self.rtest_ramp_data = []       # init ramp data list
                 self.rtest_ramp_read_data = []  # init ramp read data list
+                self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
             else:                               # emit stop signal
-                self.stop_signal.emit()
                 self.enable_serial(False)
+                self.stop_signal.emit()
+
 
     # Enable serial
     def enable_serial(self, enable):
@@ -530,8 +531,6 @@ if __name__ == "__main__":
     self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
     
     # Ramp Test
-    self.etest.rtest_ramp_signal.connect(self.rtest_ramp_slot)
     self.etest.stop_signal.connect(self.stop_slot)
-    self.dsp.rampMeasure_signal[int][list].connect(self.record_ramp_read_data)
     '''
 
