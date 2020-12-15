@@ -120,7 +120,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.pushButton_Rampto6_BiasRamp.setEnabled(enable)
         self.pushButton_Rampto7_BiasRamp.setEnabled(enable)
         self.pushButton_Rampto8_BiasRamp.setEnabled(enable)
-        self.pushButton_StopRamp_BiasRamp.setEnabled(enable)
+        self.pushButton_StopRamp_BiasRamp.setEnabled(False)
         
     # Enable all serial related component in current dock
     def enable_current_serial(self, enable):
@@ -130,7 +130,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.pushButton_Rampto2_CurrRamp.setEnabled(enable)
         self.pushButton_Rampto3_CurrRamp.setEnabled(enable)
         self.pushButton_Rampto4_CurrRamp.setEnabled(enable)
-        self.pushButton_StopRamp_CurrRamp.setEnabled(enable)
+        self.pushButton_StopRamp_CurrRamp.setEnabled(False)
     
     # Enable all serial related component in Z control dock
     def enable_Zcontrol_serial(self, enable):
@@ -157,7 +157,10 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         elif self.mode == 0:
             self.enable_dock_serial(enable)     # All docks
             self.enable_menubar(enable)         # All windows
-
+            
+    # stop button slot
+    def stop_slot(self):
+        self.dsp.stop = True
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

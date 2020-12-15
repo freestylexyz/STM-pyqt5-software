@@ -10,11 +10,11 @@
     <x>0</x>
     <y>0</y>
     <width>960</width>
-    <height>520</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -77,7 +77,7 @@
       <item row="0" column="1">
        <widget class="QLabel" name="label_Status_Status">
         <property name="text">
-         <string/>
+         <string>Idling</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -95,9 +95,9 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLabel" name="label_Pass_Status">
+       <widget class="QLabel" name="label_Pass">
         <property name="text">
-         <string/>
+         <string>0</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -209,38 +209,40 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_NumInput_Steps">
+               <widget class="QSpinBox" name="spinBox_StepNum">
                 <property name="font">
                  <font>
                   <pointsize>8</pointsize>
                  </font>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>30000</number>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
             <item>
-             <widget class="QScrollBar" name="scrollBar_NumInput_Steps">
+             <widget class="QScrollBar" name="scrollBar_StepNum">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>30000</number>
+              </property>
+              <property name="singleStep">
+               <number>1</number>
+              </property>
+              <property name="pageStep">
+               <number>10</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
              </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -305,22 +307,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </widget>
          </item>
@@ -332,26 +318,58 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="title">
          <string>Approach parameters</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="3" column="2">
-          <widget class="QScrollBar" name="scrollBar_BstepInput_ApprPar">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="spinBox_Giant">
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
            </property>
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
+           <property name="minimum">
+            <number>1</number>
            </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+           <property name="maximum">
+            <number>20</number>
+           </property>
+           <property name="singleStep">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="spinBox_Baby">
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>2</number>
            </property>
           </widget>
          </item>
@@ -373,25 +391,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QSpinBox" name="spinBox_GstepInput_ApprPar">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_BstepInput_ApprPar">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_10">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -409,8 +409,8 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QScrollBar" name="scrollBar_GstepInput_ApprPar">
+         <item row="2" column="2">
+          <widget class="QScrollBar" name="scrollBar_Baby">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -423,23 +423,53 @@
              <height>0</height>
             </size>
            </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+           <property name="pageStep">
+            <number>2</number>
+           </property>
+           <property name="value">
+            <number>2</number>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
-         <item row="2" column="2">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="1" column="2">
+          <widget class="QScrollBar" name="scrollBar_Giant">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="sizeHint" stdset="0">
+           <property name="minimumSize">
             <size>
-             <width>40</width>
+             <width>120</width>
              <height>0</height>
             </size>
            </property>
-          </spacer>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>20</number>
+           </property>
+           <property name="pageStep">
+            <number>2</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -450,13 +480,19 @@
          <bool>true</bool>
         </property>
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>500</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="title">
-         <string>Wave form control</string>
+         <string>Waveform control</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_9">
          <item row="0" column="0">
@@ -475,9 +511,15 @@
              <number>0</number>
             </property>
             <item row="3" column="0" colspan="5">
-             <widget class="QScrollBar" name="horizontalScrollBar_2">
+             <widget class="QScrollBar" name="scrollBar_Accel">
               <property name="enabled">
                <bool>true</bool>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -485,9 +527,15 @@
              </widget>
             </item>
             <item row="1" column="0" colspan="5">
-             <widget class="QScrollBar" name="horizontalScrollBar">
+             <widget class="QScrollBar" name="scrollBar_Delay">
               <property name="enabled">
                <bool>true</bool>
+              </property>
+              <property name="minimum">
+               <number>1000</number>
+              </property>
+              <property name="maximum">
+               <number>30000</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -557,20 +605,8 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <widget class="QDoubleSpinBox" name="spinBox_DelayInput_WaveForm">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="2">
-             <widget class="QDoubleSpinBox" name="spinBox_AcceInput_WaveForm">
+             <widget class="QDoubleSpinBox" name="spinBox_Accel">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -578,6 +614,12 @@
                <font>
                 <pointsize>8</pointsize>
                </font>
+              </property>
+              <property name="minimum">
+               <double>0.010000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -590,6 +632,16 @@
               </property>
               <property name="text">
                <string>% of g</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QSpinBox" name="spinBox_Delay">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>30</number>
               </property>
              </widget>
             </item>
@@ -618,15 +670,63 @@
              </widget>
             </item>
             <item row="1" column="0" colspan="6">
-             <widget class="QScrollBar" name="scrollBar_XstepInput_WaveForm">
+             <widget class="QScrollBar" name="scrollBar_Xstep">
               <property name="enabled">
                <bool>true</bool>
               </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
               <property name="maximum">
-               <number>65535</number>
+               <number>32767</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QDoubleSpinBox" name="spinBox_Xstep">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>8</pointsize>
+               </font>
+              </property>
+              <property name="decimals">
+               <number>5</number>
+              </property>
+              <property name="minimum">
+               <double>0.000300000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="4">
+             <widget class="QDoubleSpinBox" name="spinBox_Zstep">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>8</pointsize>
+               </font>
+              </property>
+              <property name="decimals">
+               <number>5</number>
+              </property>
+              <property name="minimum">
+               <double>0.000300000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>5.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -666,19 +766,6 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0" colspan="6">
-             <widget class="QScrollBar" name="scrollBar_ZstepInput_WaveForm">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="maximum">
-               <number>65535</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="5">
              <widget class="QLabel" name="label_6">
               <property name="font">
@@ -691,27 +778,19 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="4">
-             <widget class="QDoubleSpinBox" name="spinBox_ZouterInput_WaveForm">
+            <item row="3" column="0" colspan="6">
+             <widget class="QScrollBar" name="scrollBar_Zstep">
               <property name="enabled">
                <bool>true</bool>
               </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
+              <property name="minimum">
+               <number>1</number>
               </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QDoubleSpinBox" name="spinBox_XstepInput_WaveForm">
-              <property name="enabled">
-               <bool>true</bool>
+              <property name="maximum">
+               <number>32767</number>
               </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -721,7 +800,7 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="1" column="1" colspan="2">
        <widget class="QGroupBox" name="groupBox_MInCurr_TipAppr">
         <property name="enabled">
          <bool>true</bool>
@@ -734,7 +813,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>240</width>
+          <width>200</width>
           <height>0</height>
          </size>
         </property>
@@ -742,15 +821,8 @@
          <string>Min tunneling current</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>V</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0">
-          <widget class="QDoubleSpinBox" name="spinBox_Input_MInCurr">
+          <widget class="QDoubleSpinBox" name="spinBox_MInCurr">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -769,36 +841,42 @@
              <underline>false</underline>
             </font>
            </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>0.000300000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>V</string>
+           </property>
           </widget>
          </item>
          <item row="5" column="0" colspan="2">
-          <widget class="QScrollBar" name="scrollBar_Input_MInCurr">
+          <widget class="QScrollBar" name="scrollBar_MInCurr">
            <property name="minimumSize">
             <size>
              <width>160</width>
              <height>0</height>
             </size>
            </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>9600</number>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
-         </item>
-         <item row="6" column="0" colspan="2">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -812,7 +890,7 @@
       <bool>false</bool>
      </property>
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+      <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -821,6 +899,12 @@
       <size>
        <width>0</width>
        <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>350</width>
+       <height>16777215</height>
       </size>
      </property>
      <property name="title">
@@ -847,6 +931,12 @@
       </property>
       <item row="0" column="1">
        <widget class="QPushButton" name="pushButton_Xfwd_Trans">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>+X</string>
         </property>
@@ -854,6 +944,12 @@
       </item>
       <item row="3" column="1">
        <widget class="QPushButton" name="pushButton_Ybkwd_Trans">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>-Y</string>
         </property>
@@ -861,6 +957,12 @@
       </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="pushButton_Yfwd_Trans">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>+Y</string>
         </property>
@@ -868,23 +970,32 @@
       </item>
       <item row="3" column="0">
        <widget class="QPushButton" name="pushButton_Xbkwd_Trans">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>-X</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
+      <item row="1" column="0" rowspan="2" colspan="2">
        <widget class="QLabel" name="label_ScannerPiezo_TipAppr">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>340</width>
-          <height>340</height>
+          <width>170</width>
+          <height>170</height>
          </size>
         </property>
         <property name="text">
@@ -902,15 +1013,21 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QPushButton" name="pushButton_STOP_Steps">
+    <widget class="QPushButton" name="pushButton_Stop">
      <property name="enabled">
       <bool>false</bool>
      </property>
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+      <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>350</width>
+       <height>75</height>
+      </size>
      </property>
      <property name="font">
       <font>

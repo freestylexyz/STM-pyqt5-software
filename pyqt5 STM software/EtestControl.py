@@ -80,7 +80,4 @@ class myEtestControl(myMainMenu):
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):
         threading.Thread(target=(lambda: self.rtest_ramp(self, index, inch, outch, init, final, step_size))).start()
 
-    # stop button slot
-    def stop_slot(self):
-        self.dsp.stop = True
 

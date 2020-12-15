@@ -51,7 +51,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.dsp.succeed_signal.connect(self.dsp_succeed_slot)
         # self.dsp.oscc_signal.connect()
         self.dsp.rampMeasure_signal[int, list].connect(self.dsp_rampMeasure_slot)
-        # self.dsp.giantStep_signal.connect()
+        self.dsp.giantStep_signal.connect(self.giantStep_update)
         self.dsp.rampTo_signal.connect(self.dsp_rampTo_slot)
         # self.dsp.rampDiag_signal.connect()
         
@@ -62,6 +62,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         
         # Connect tip approach signal
         self.tipappr.close_signal.connect(self.closeWindow)
+        self.tipappr.stop_signal.connect(self.stop_slot)
+        self.tipappr.mode_signal.connect(self.dsp.digital_o)
+        self.tipappr.giant_signal.connect(self.giant_slot)
+        self.tipappr.approach_signal.connect(self.tip_appr_slot)
         
         # Connect electronic test signal
         self.etest.close_signal.connect(self.closeWindow)
@@ -104,7 +108,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.initO:
             pass
         else:
-            reply = QMessageBox.question(None,"Load output","Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            reply = QMessageBox.question(None,"STM","Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 self.initO = True
             else:
@@ -125,15 +129,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             
     # DSP ramp to update signal:
     def dsp_rampTo_slot(self, channel):
+        # If not in the etest mode
         if self.mode != 1:
             if (channel == 0x1d) or (channel == 0x20):
-                self.bias_update()
+                self.bias_update()                          # Update bias dock if ramping bias
             elif channel == 0x15:
-                self.current_update()
+                self.current_update()                       # Update current dock if ramping I set
             elif channel == 0x12:
-                self.z_fine_update()
+                self.z_fine_update()                        # Update Z controller if ramping Z offset fine
             elif channel == 0x13:
-                self.z_offset_update()
+                self.z_offset_update()                      # Update Z controller if ramping Z offset
         else:
             # !!! Etest update ramp
             pass
@@ -141,51 +146,57 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     # DSP ramp measure update signal:
     def dsp_rampMeasure_slot(self, current, rdata):
         if self.mode == 1:
-            self.ramp_read_update(current, rdata)
+            self.ramp_read_update(current, rdata)           # Update etest if in etest mode
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):
-        if self.mode != 3:
-            self.Bias.close()
-            self.Zcontrol.close()
-            self.Current.close()
-            self.tipappr.close()
-            self.dsp.close()
-            self.write_cnfg()
-            event.accept()
+        if self.mode == 0:          # Can exit software, when in fundamental mode
+            self.Bias.close()       # Close bias dock
+            self.Zcontrol.close()   # Close Z controller dock
+            self.Current.close()    # Close Current dock
+            self.dsp.close()        # Terminate DSP serial communication
+            self.write_cnfg()       # Write configuration file
+            event.accept()          # Accept close event
         else:
-            QMessageBox.warning(None,"Reminder","Close Scan window first!", QMessageBox.Ok)
-            event.ignore()
+            QMessageBox.warning(None,"STM","Close top window first!", QMessageBox.Ok)   # Pop out window to remind close the tip window
+            event.ignore()          # Reject close event
 
     
     # Open setting window
     def open_setting(self):
+        # Only can open setting window when software is in fundamental mode
         if self.mode == 0:
-            self.mode = -1
-            self.hide_all_dock()
-            self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
-            self.setting.show()
+            self.mode = -1          # Change the mode variable
+            self.hide_all_dock()    # Hide all dock windows
+            self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)  # Init setting view
+            self.setting.show()     # Show setting window
 
     # Open electronic test window
     def open_etest(self):
+        # only can open electronic test window when software is in fundamental mode
         if self.mode == 0:
-            self.mode = 1
-            self.hide_all_dock()
-            # self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain)
-            self.etest.init_etest()
-            self.etest.show()
+            self.mode = 1           # Change the mode variable
+            self.hide_all_dock()    # Hide all dock windows
+            # self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain)  # Init etest view
+            self.etest.init_etest() # Init setting view
+            self.etest.show()       # Show electronics test window
 
     # pop windown open scan first
     def msg_open_scan(self):
-        QMessageBox.warning(None, "Reminder", "Open Scan window first!", QMessageBox.Ok)
+        QMessageBox.warning(None, "STM", "Open Scan window first!", QMessageBox.Ok)
 
     # Open tip approach window
     def open_tipappr(self):
+        # Only can open tip approach window when software is in fundamental mode
         if self.mode == 0:
-            self.mode = 2
-            self.enable_menubar(False)
-            self.tipappr.init_tipAppr()
-            self.tipappr.show()
+            self.mode = 2                                   # Change the mode variable
+            self.enable_menubar(False)                      # Disable menubar to prevent softeware enter other mode
+            self.dsp.init_output()                          # Prepare all electronics to tip approach mode
+            self.init_bias()                                # Update bias dock view
+            self.init_current()                             # Update current dock view
+            self.init_Zcontroller()                         # Update Z controller dock view
+            self.tipappr.init_tipAppr(self.dsp.succeed, self.dsp.lastdigital)     # Init tip approach view
+            self.tipappr.show()                             # Show tip approach window
 
     # Open scan window
     def open_scan(self):
@@ -193,6 +204,9 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.mode = 3
             self.enable_menubar(False)
             self.menuScan.setEnabled(True)
+            self.init_bias()
+            self.init_current()
+            self.init_Zcontroller()
             self.scan.init_scan()
             self.scan.show()
     
