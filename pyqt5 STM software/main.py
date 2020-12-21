@@ -6,6 +6,12 @@
 """
 import sys
 sys.path.append("./ui/")
+sys.path.append("./MainMenu/")
+sys.path.append("./Setting/")
+sys.path.append("./Model/")
+sys.path.append("./TipApproach/")
+sys.path.append("./Scan/")
+sys.path.append("./Etest/")
 import os
 from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox
 from BiasControl import myBiasControl
@@ -124,8 +130,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.succeed_message(succeed)               # Pop out succeed message from main menu
 
         # Reinital setting view if succeed
-        if succeed:
-            self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
+        self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
             
     # DSP ramp to update signal:
     def dsp_rampTo_slot(self, channel):
@@ -150,6 +155,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):
+        # if True:                  # !!! For testing use
         if self.mode == 0:          # Can exit software, when in fundamental mode
             self.Bias.close()       # Close bias dock
             self.Zcontrol.close()   # Close Z controller dock

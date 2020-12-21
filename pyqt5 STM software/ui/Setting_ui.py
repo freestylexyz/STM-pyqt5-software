@@ -92,6 +92,7 @@ class Ui_Setting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox_uart.sizePolicy().hasHeightForWidth())
         self.comboBox_uart.setSizePolicy(sizePolicy)
+        self.comboBox_uart.setMinimumSize(QtCore.QSize(80, 0))
         self.comboBox_uart.setObjectName("comboBox_uart")
         self.comboBox_uart.addItem("")
         self.comboBox_uart.addItem("")
