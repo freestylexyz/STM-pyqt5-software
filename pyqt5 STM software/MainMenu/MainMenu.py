@@ -18,7 +18,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from Setting import mySetting
 from TipApproach import myTipApproach
-from Etest import myEtest
+from Etest_ import myEtest
 from MainMenu_ui import Ui_HoGroupSTM
 from DigitalSignalProcessor import myDSP
 from Scan import myScan

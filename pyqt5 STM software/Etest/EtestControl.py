@@ -16,9 +16,6 @@ sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
-from Setting import mySetting
-from TipApproach import myTipApproach
-from Etest import myEtest
 from MainMenu import myMainMenu
 import conversion as cnv
 import threading
@@ -36,7 +33,7 @@ class myEtestControl(myMainMenu):
             # !!! use "ran" or "self.dsp.dacrange[ch]" ?
             self.etest.set_dac_spinBox_range(ran)                   # update spinBox range from dsp
             self.etest.dac_range = ran                              # update range variable
-            self.etset.load_dac_output(0, self.dsp.lastdac[ch])     # update dac output view from dsp
+            self.etest.load_dac_output(0, self.dsp.lastdac[ch])     # update dac output view from dsp
 
     # I/O & Ramp Text | channel changed slot
     def ch_changed_slot(self, index, ch):
@@ -44,7 +41,7 @@ class myEtestControl(myMainMenu):
             self.etest.load_range(index, self.dsp.adcrange[ch])             # update range view from dsp
         elif index == 1:                                                    # dac channel changed
             self.etest.load_range(index, self.dsp.dacrange[ch])             # update range view from dsp
-            self.etset.load_dac_output(0, self.dsp.lastdac[ch])             # update output view from dsp
+            self.etest.load_dac_output(0, self.dsp.lastdac[ch])             # update output view from dsp
         elif index == 2:                                                    # ramp test input
             self.etest.set_range_text(index, self.dsp.adcrange[ch])         # update range view from dsp
         elif index == 3:                                                    # ramp test output
@@ -74,16 +71,31 @@ class myEtestControl(myMainMenu):
                 self.dsp.rampMeasure(outch, final, step_size, 10000, 10000, [command], [10])  # Ramp Read to final value
             self.etest.idling = True
             self.etest.enable_serial(True)
-            self.etest.pushButton_Ramp_RTest.setText("Ramp")                 # reset ramp button
-            self.etest.pushButton_RRead_RTest.setEnabled("Ramp read")        # reset ramp read button
+            # self.etest.timer.stop()                                     # stop plot
+            self.etest.pushButton_Ramp_RTest.setText("Ramp")              # reset ramp button
+            self.etest.pushButton_RRead_RTest.setText("Ramp read")        # reset ramp read button
 
     # Ramp Test | update ramp read data
     def ramp_read_update(self, current, rdata):
         self.etest.rtest_ramp_data += [current]
         self.etest.rtest_ramp_read_data += rdata
+        # self.etest.ptr2 += 1
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):
-        threading.Thread(target=(lambda: self.rtest_ramp(self, index, inch, outch, init, final, step_size))).start()
+        threading.Thread(target=(lambda: self.rtest_ramp(index, inch, outch, init, final, step_size))).start()
 
-
+    # init current tab
+    def init_tab_slot(self, index):
+        if index == 0:
+            self.etest.init_io(self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)
+        elif index == 1:
+            self.etest.init_rtest(self.dsp.adcrange, self.dsp.dacrange)
+        elif index == 2:
+            self.etest.init_swave()
+        elif index == 3:
+            self.etest.init_osci()
+        elif index == 4:
+            self.etest.init_echo()
+        elif index == 5:
+            self.etest.init_ftest()

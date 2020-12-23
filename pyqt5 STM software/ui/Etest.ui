@@ -933,12 +933,15 @@
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_FinVal_RTest">
+           <widget class="QDoubleSpinBox" name="spinBox_FinVal_RTest">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="decimals">
              <number>4</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
            </widget>
           </item>
@@ -950,7 +953,7 @@
            </widget>
           </item>
           <item row="8" column="0" colspan="2">
-           <widget class="QPushButton" name="pushButton_Ramp_RTest">
+           <widget class="QPushButton" name="pushButton_RRead_RTest">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -1019,12 +1022,15 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_InitVal_RTest">
+           <widget class="QDoubleSpinBox" name="spinBox_InitVal_RTest">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="decimals">
              <number>4</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
            </widget>
           </item>
@@ -1036,7 +1042,7 @@
            </widget>
           </item>
           <item row="7" column="0" colspan="2">
-           <widget class="QPushButton" name="pushButton_RRread_RTest">
+           <widget class="QPushButton" name="pushButton_Ramp_RTest">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -1201,12 +1207,15 @@
            </widget>
           </item>
           <item row="6" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_StepSize_RTest">
+           <widget class="QDoubleSpinBox" name="spinBox_StepSize_RTest">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="decimals">
              <number>4</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
            </widget>
           </item>
@@ -1214,7 +1223,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QGraphicsView" name="view_RTest">
+        <widget class="GraphicsLayoutWidget" name="view_RTest">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1223,7 +1232,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>380</width>
+           <width>470</width>
            <height>380</height>
           </size>
          </property>
@@ -1281,6 +1290,9 @@
             <property name="decimals">
              <number>4</number>
             </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
            </widget>
           </item>
           <item row="2" column="1">
@@ -1295,6 +1307,9 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
            </widget>
           </item>
           <item row="2" column="2">
@@ -1304,6 +1319,9 @@
             </property>
             <property name="decimals">
              <number>4</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
            </widget>
           </item>
@@ -1540,6 +1558,9 @@
               <widget class="QDoubleSpinBox" name="spinBox_Delay_Osci">
                <property name="enabled">
                 <bool>true</bool>
+               </property>
+               <property name="stepType">
+                <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
                </property>
               </widget>
              </item>
@@ -1835,7 +1856,11 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_AInput_FTest"/>
+           <widget class="QDoubleSpinBox" name="spinBox_AInput_FTest">
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_19">
@@ -1881,7 +1906,11 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_DelayInput_FTest"/>
+           <widget class="QDoubleSpinBox" name="spinBox_DelayInput_FTest">
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_17">
@@ -1891,7 +1920,11 @@
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_IsptInput_FTest"/>
+           <widget class="QDoubleSpinBox" name="spinBox_IsptInput_FTest">
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
           </item>
           <item row="7" column="0" colspan="2">
            <widget class="QPushButton" name="pushButton_Start_FTest">
@@ -1916,7 +1949,11 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_Z0Input_FTest"/>
+           <widget class="QDoubleSpinBox" name="spinBox_Z0Input_FTest">
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
           </item>
           <item row="3" column="1">
            <widget class="QComboBox" name="comboBox_OutCh_FTest">
@@ -2036,6 +2073,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicsLayoutWidget</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="logo.qrc"/>
  </resources>

@@ -725,6 +725,7 @@ class myDSP(QObject):
                 self.ser.write(int(seq.command_list[i] & 0xff).to_bytes(1, byteorder="big"))        # Send command list
                 self.ser.write(int(seq.data_list[i] & 0xffffffff).to_bytes(4, byteorder="big"))     # Send data list
 
+
     #
     # rampMeasure - This function ramp an output to specific value
     #

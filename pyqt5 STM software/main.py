@@ -56,7 +56,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Connect DSP singal
         self.dsp.succeed_signal.connect(self.dsp_succeed_slot)
         # self.dsp.oscc_signal.connect()
-        self.dsp.rampMeasure_signal[int, list].connect(self.dsp_rampMeasure_slot)
+        self.dsp.rampMeasure_signal.connect(self.dsp_rampMeasure_slot)
         self.dsp.giantStep_signal.connect(self.giantStep_update)
         self.dsp.rampTo_signal.connect(self.dsp_rampTo_slot)
         # self.dsp.rampDiag_signal.connect()
@@ -74,16 +74,20 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.tipappr.approach_signal.connect(self.tip_appr_slot)
         
         # Connect electronic test signal
+        self.etest.Etest.currentChanged.connect(self.init_tab_slot)
         self.etest.close_signal.connect(self.closeWindow)
-        # # I/O
-        # self.etest.range_changed_signal.connect(self.range_changed_slot)
-        # self.etest.ch_changed_signal.connect(self.ch_changed_slot)
-        # self.etest.digital_changed_signal.connect(self.dsp.digital_o)
-        # self.etest.gain_changed_signal.connect(self.dsp.gain)
-        # self.etest.adc_input_signal.connect(self.adc_input_slot)
-        # self.etest.dac_output_signal.connect(self.dsp.dac_W)
-        # self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
-        
+        # I/O
+        self.etest.range_changed_signal.connect(self.range_changed_slot)
+        self.etest.ch_changed_signal.connect(self.ch_changed_slot)
+        self.etest.digital_changed_signal.connect(self.dsp.digital_o)
+        self.etest.gain_changed_signal.connect(self.dsp.gain)
+        self.etest.adc_input_signal.connect(self.adc_input_slot)
+        self.etest.dac_output_signal.connect(self.dsp.dac_W)
+        self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
+        # Ramp Test
+        self.etest.rtest_ramp_signal.connect(self.rtest_ramp_slot)
+        self.etest.stop_signal.connect(self.stop_slot)
+
         # Connect scan signal
         self.scan.close_signal.connect(self.close_scan)
 
@@ -96,11 +100,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
     def write_cnfg(self):
         self.cnfg.clear()
-        self.cnfg.setValue("CONFIG/BAUD_VALUE",self.dsp.baudrate)
-        self.cnfg.setValue("CONFIG/COM_VALUE",self.dsp.port)
-        self.cnfg.setValue("SETTING/PREAMP_GAIN",self.preamp_gain)
-        self.cnfg.setValue("SETTING/MODE",self.mode)
-        self.cnfg.setValue("SETTING/BIAS_DAC",self.bias_dac)
+        self.cnfg.setValue("CONFIG/BAUD_VALUE", self.dsp.baudrate)
+        self.cnfg.setValue("CONFIG/COM_VALUE", self.dsp.port)
+        self.cnfg.setValue("SETTING/PREAMP_GAIN", self.preamp_gain)
+        self.cnfg.setValue("SETTING/MODE", self.mode)
+        self.cnfg.setValue("SETTING/BIAS_DAC", self.bias_dac)
         self.cnfg.sync()
 
     # !!! Load all settings stored in configuration file to dsp module
@@ -114,7 +118,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.initO:
             pass
         else:
-            reply = QMessageBox.question(None,"STM","Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            reply = QMessageBox.question(None, "STM", "Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 self.initO = True
             else:
@@ -183,8 +187,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 0:
             self.mode = 1           # Change the mode variable
             self.hide_all_dock()    # Hide all dock windows
-            # self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain)  # Init etest view
-            self.etest.init_etest() # Init setting view
+            self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)  # Init etest view
             self.etest.show()       # Show electronics test window
 
     # pop windown open scan first
