@@ -462,8 +462,9 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 step_size = (cnv.vb(self.spinBox_StepSize_RTest.value(), 'd', self.dac_range) - cnv.vb(0, 'd', self.dac_range))
             if self.idling:                             # emit ramp signal
                 self.ptr2 = 0                           # init ramp update count
-                self.rtest_ramp_read_outdata = [] * 100         # init ramp data list
-                self.rtest_ramp_read_indata = [] * 100    # init ramp read data list
+                self.rtest_ramp_read_outdata = [] * 100 # init ramp read output data
+                self.rtest_ramp_read_indata = [] * 100  # init ramp read input data
+                self.rtest_ramp_data = [] * 100         # init ramp data
                 self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
                 self.timer.start(50)                    # plot update start
             else:                                       # emit stop signal
