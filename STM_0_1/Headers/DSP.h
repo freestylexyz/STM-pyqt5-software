@@ -29,6 +29,8 @@
 #include "Ramp.h"               // Ramp header file
 #include "TipApproach.h"        // Tip approach header file
 #include "RampDiag.h"           // Ramp diagonal header file
+#include "Image.h"              // Image header file
+#include "Deposition.h"         // Deposition header file
 
 //
 // Function declaration
@@ -68,8 +70,8 @@ void testLoop();
 #define SQUARE          0xA8
 #define IAUTO_DSP       0xA9
 
-#define OSCC            0xC0
-#define OSCN            0xC1
+#define OSCC_DSP        0xC0
+#define OSCN_DSP        0xC1
 
 #define DAC_W_DSP       0xD0
 #define DAC_R_DSP       0xD1
@@ -81,5 +83,10 @@ void testLoop();
 
 #define SERIALECHO      0xEC
 #define FLOATT          0xFD
+
+#define TIP_PROTECT_DSP 0x90
+#define SCAN            0x91
+#define DEPOSITION      0x92
+#define TRACK           0x93
 
 #endif /* HEADERS_DSP_H_ */

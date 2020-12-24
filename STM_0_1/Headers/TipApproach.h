@@ -14,7 +14,7 @@
 // Function declaration
 //
 void parabSlide(char, Uint16, Uint16);
-void parabSteady(char, Uint16, Uint16);
+void parabSteady(char, Uint32, Uint16);
 bool babyStep(Uint16, Uint16, Uint16);
 void oneGiant(char, Uint16, Uint16, Uint16, Uint16, Uint16);
 void giantStep();

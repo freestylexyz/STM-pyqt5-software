@@ -125,7 +125,7 @@ void rampStep(char channel, Uint32 target, Uint32 step, Uint16 delay, bool dir)
     max = output_limit(channel);            // Obtain output limit
 
     if(dir){target = smaller(max, i + target);} // dir = True, shift up
-    else{target = bigger(0, i - target);}        // dir = False, shift down
+    else{target = bigger(0, i - target);}       // dir = False, shift down
     condition = true;                       // Initial loop condition to true
 
     while(condition)
@@ -166,41 +166,36 @@ void rampTo_DSP()
 // rampMeasure - Ramp a DAC channel to specific value and read with an ADC channel.
 // No protection and always check stop. Return if measurement stopped
 //
-bool rampMeasure(char channel, Uint32 target, Uint32 step, Uint16 move_delay, Uint16 measure_delay)
+void rampMeasure(char channel, Uint32 stepnum, Uint32 stepsize, Uint16 move_delay, Uint16 measure_delay, bool dir)
 {
-    bool stopped, condition, dir;
-    Uint32 i;
+    bool stopped;
+    Uint16 i;
+    Uint32 current, stored;
 
     stopped = false;                // Initial stopped flag
-    i = current_output(channel); // Initial i to last output value
-    dir = i < target;               // Figure out ramp direction
-    condition = true;               // Initial loop condition to true
+    stored = current_output(channel); // Initial i to last output value
 
     serialOut(split(Start, 1));     // Send out start command
-    while(condition)
+    for (i = 0; i < stepnum; i++)
     {
-        rampTo_S(channel, i, 10, move_delay);   // Ramp to next step
+        if(dir){current = stored + (i * stepsize);}
+        else{current = stored - (i * stepsize);}
+        rampTo_S(channel, current, 1, move_delay);
         DELAY_US(measure_delay);                // Delay before measurement
-        pointSeq(0);                       // Perform measurement sequence
-
-        // Update Z offset fine value and condition based on direction for next loop
-        rampCore(dir, channel, target, step, &i, &i, &condition);
-
+        pointSeq(0, ptSeq);                       // Perform measurement sequence
         if (serialCheck() == Stop)
         {
             stopped = true;
             break;
         }
     }
-    // Dump the last point (target)
 
     serialOut(split(Finish, 1));        // Send out Finish command only
     if(stopped)                         // If stopped
     {
         serialOut(split(0xAA55A55A, 4));// Send out a stop sequence to distinguish with remaining data
     }
-    serialOut(split(current_output(channel), 3));   // Serial out current output of this channel
-    return stopped;
+    serialOut(split(current_output(channel), 3));   // Send out the current output
 }
 
 //
@@ -209,18 +204,20 @@ bool rampMeasure(char channel, Uint32 target, Uint32 step, Uint16 move_delay, Ui
 void rampMeasure_DSP()
 {
     char channel;
-    Uint32 target, step;
+    bool dir;
+    Uint32 stepnum, stepsize;
     Uint16 move_delay, measure_delay;
 
-    channel = combine(serialIn(1));         // Acquire channel data
-    target = combine(serialIn(3));          // Acquire target data
-    step = combine(serialIn(3));            // Acquire step data
-    move_delay = combine(serialIn(2));      // Acquire move delay data
-    measure_delay = combine(serialIn(2));   // Acquire measure delay data
+    channel = combine(serialIn(1));                 // Acquire channel data
+    stepnum = combine(serialIn(2));                 // Acquire step number data
+    stepsize = combine(serialIn(3));                // Acquire step size data
+    move_delay = combine(serialIn(2));              // Acquire move delay data
+    measure_delay = combine(serialIn(2));           // Acquire measure delay data
+    dir = ((combine(serialIn(1)) & 0x01) == 0x01);  // Acquire direction data
     setup_pointSeq();
 
     // Ramp and measure
-    rampMeasure(channel, target, step, move_delay, measure_delay);
+    rampMeasure(channel, stepnum, stepsize, move_delay, measure_delay, dir);
 }
 
 

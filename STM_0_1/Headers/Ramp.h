@@ -18,7 +18,7 @@ void rampTo(char, Uint32, Uint32, Uint16, Uint16, bool);
 void rampTo_S(char, Uint32, Uint32, Uint16);
 void rampStep(char, Uint32, Uint32, Uint16, bool);
 void rampTo_DSP();
-bool rampMeasure(char, Uint32, Uint32, Uint16, Uint16);
+void rampMeasure(char, Uint32, Uint32, Uint16, Uint16, bool);
 void rampMeasure_DSP();
 
 

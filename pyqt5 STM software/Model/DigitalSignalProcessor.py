@@ -8,7 +8,7 @@ import serial
 import time
 from PyQt5.QtCore import pyqtSignal, QObject
 import conversion as cnv
-import numpy as np
+from sequence import mySequence
 import math
 
 # class myDSP():

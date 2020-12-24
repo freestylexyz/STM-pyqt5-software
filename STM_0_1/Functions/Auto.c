@@ -119,7 +119,7 @@ void iAutoT(Uint16 target, Uint16 step)
     {
         dac_W(Zofff, zoffset);              // Output Z offset coarse
         DELAY_US(60000);                    // Wait 600 us for the pre-amp to respond (pre-amp rise time is 450 us @ gain 10)
-        i = abs16(adc_CNV_N(Preamp, 100));    // Read pre-amp signal average 100 times
+        i = abs16(adc_CNV_N(Preamp, 100));  // Read pre-amp signal average 100 times
 
         // Update Z offset fine value and condition based on direction for next loop
         inrange = rampCore(dir, Zofff, target, step, &i, &zoffset, &condition);
@@ -135,9 +135,9 @@ void iAutoT(Uint16 target, Uint16 step)
 // iAuto - This function adjust Z offset fine so that current can reach a specific target
 // No need to to specific step. DO NOT USE IT FOR LARGE CURRENT DIFFERENCE
 //
-void iAuto(Uint16 target)
+void iAuto(Uint16 target, bool fast)
 {
-    iAutoT(target, 625);
+    if(fast){iAutoT(target, 625);}
     iAutoT(target, 125);
     iAutoT(target, 25);
     iAutoT(target, 5);

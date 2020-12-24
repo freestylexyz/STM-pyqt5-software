@@ -25,8 +25,10 @@ ORDERED_OBJS += \
 "./Functions/Aout.obj" \
 "./Functions/Auto.obj" \
 "./Functions/DAC.obj" \
+"./Functions/Deposition.obj" \
 "./Functions/Digital.obj" \
 "./Functions/Fundamental.obj" \
+"./Functions/Image.obj" \
 "./Functions/Oscilloscope.obj" \
 "./Functions/PinInit.obj" \
 "./Functions/Protection.obj" \
@@ -37,6 +39,7 @@ ORDERED_OBJS += \
 "./Functions/Serial.obj" \
 "./Functions/Status.obj" \
 "./Functions/TipApproach.obj" \
+"./Functions/Track.obj" \
 $(GEN_CMDS__FLAG) \
 -l2837xD_FLASH_lnk_cpu1.cmd \
 -lrts2800_fpu32.lib \
@@ -183,8 +186,8 @@ STM_0_1.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "F2837xD_CodeStartBranch.obj" "F2837xD_DefaultISR.obj" "F2837xD_GlobalVariableDefs.obj" "F2837xD_Gpio.obj" "F2837xD_Ipc.obj" "F2837xD_PieCtrl.obj" "F2837xD_PieVect.obj" "F2837xD_SysCtrl.obj" "F2837xD_usDelay.obj" "main.obj" "Functions\20bitDAC.obj" "Functions\ADC.obj" "Functions\Aout.obj" "Functions\Auto.obj" "Functions\DAC.obj" "Functions\Digital.obj" "Functions\Fundamental.obj" "Functions\Oscilloscope.obj" "Functions\PinInit.obj" "Functions\Protection.obj" "Functions\Ramp.obj" "Functions\RampDiag.obj" "Functions\SPI.obj" "Functions\Sequence.obj" "Functions\Serial.obj" "Functions\Status.obj" "Functions\TipApproach.obj" 
-	-$(RM) "F2837xD_DefaultISR.d" "F2837xD_GlobalVariableDefs.d" "F2837xD_Gpio.d" "F2837xD_Ipc.d" "F2837xD_PieCtrl.d" "F2837xD_PieVect.d" "F2837xD_SysCtrl.d" "main.d" "Functions\20bitDAC.d" "Functions\ADC.d" "Functions\Aout.d" "Functions\Auto.d" "Functions\DAC.d" "Functions\Digital.d" "Functions\Fundamental.d" "Functions\Oscilloscope.d" "Functions\PinInit.d" "Functions\Protection.d" "Functions\Ramp.d" "Functions\RampDiag.d" "Functions\SPI.d" "Functions\Sequence.d" "Functions\Serial.d" "Functions\Status.d" "Functions\TipApproach.d" 
+	-$(RM) "F2837xD_CodeStartBranch.obj" "F2837xD_DefaultISR.obj" "F2837xD_GlobalVariableDefs.obj" "F2837xD_Gpio.obj" "F2837xD_Ipc.obj" "F2837xD_PieCtrl.obj" "F2837xD_PieVect.obj" "F2837xD_SysCtrl.obj" "F2837xD_usDelay.obj" "main.obj" "Functions\20bitDAC.obj" "Functions\ADC.obj" "Functions\Aout.obj" "Functions\Auto.obj" "Functions\DAC.obj" "Functions\Deposition.obj" "Functions\Digital.obj" "Functions\Fundamental.obj" "Functions\Image.obj" "Functions\Oscilloscope.obj" "Functions\PinInit.obj" "Functions\Protection.obj" "Functions\Ramp.obj" "Functions\RampDiag.obj" "Functions\SPI.obj" "Functions\Sequence.obj" "Functions\Serial.obj" "Functions\Status.obj" "Functions\TipApproach.obj" "Functions\Track.obj" 
+	-$(RM) "F2837xD_DefaultISR.d" "F2837xD_GlobalVariableDefs.d" "F2837xD_Gpio.d" "F2837xD_Ipc.d" "F2837xD_PieCtrl.d" "F2837xD_PieVect.d" "F2837xD_SysCtrl.d" "main.d" "Functions\20bitDAC.d" "Functions\ADC.d" "Functions\Aout.d" "Functions\Auto.d" "Functions\DAC.d" "Functions\Deposition.d" "Functions\Digital.d" "Functions\Fundamental.d" "Functions\Image.d" "Functions\Oscilloscope.d" "Functions\PinInit.d" "Functions\Protection.d" "Functions\Ramp.d" "Functions\RampDiag.d" "Functions\SPI.d" "Functions\Sequence.d" "Functions\Serial.d" "Functions\Status.d" "Functions\TipApproach.d" "Functions\Track.d" 
 	-$(RM) "F2837xD_CodeStartBranch.d" "F2837xD_usDelay.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

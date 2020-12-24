@@ -87,6 +87,8 @@ Functions/ADC.obj: C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci
 Functions/ADC.obj: C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/Ramp.h
 Functions/ADC.obj: C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/TipApproach.h
 Functions/ADC.obj: C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/RampDiag.h
+Functions/ADC.obj: C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/Image.h
+Functions/ADC.obj: C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/Deposition.h
 
 ../Functions/ADC.c: 
 C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/ADC.h: 
@@ -175,3 +177,5 @@ C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/He
 C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/Ramp.h: 
 C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/TipApproach.h: 
 C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/RampDiag.h: 
+C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/Image.h: 
+C:/Users/yaoji/OneDrive//\ -//\ personalmicrosoftsoftware.uci.edu/DSP/STM_0_1/Headers/Deposition.h: 

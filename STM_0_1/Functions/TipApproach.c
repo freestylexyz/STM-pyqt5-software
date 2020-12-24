@@ -18,7 +18,7 @@ void parabSlide(char channel, Uint16 target, Uint16 g)
     currentvalue = lastdac[channel - 16];    // Obtain the current value
     dir = currentvalue < target;            // Figure out direction
     condition = true;                       // Initial condition to start loop
-    slope = g;                              // Initial slope
+    slope = 0;                              // Initial slope
 
     // Parabola ramp to the target
     while(condition)
@@ -46,16 +46,17 @@ void parabSlide(char channel, Uint16 target, Uint16 g)
 // parabSteady - This function ramp an output channel with two parabola functions and end with near 0 speed
 // No intend to use this 20bitDAC channel
 //
-void parabSteady(char channel, Uint16 target, Uint16 g)
+void parabSteady(char channel, Uint32 target, Uint16 g)
 {
-    Uint16 currentvalue, slope, halftarget;
+    Uint32 currentvalue;
+    Uint16 slope, halftarget;
     bool dir, condition;
 
     currentvalue = lastdac[channel - 16];        // Obtain the current value
     dir = currentvalue < target;                // Figure out direction
     halftarget = (target + currentvalue) / 2;   // Calculate the half way target
     condition = true;                           // Initial condition to start loop
-    slope = g;                                  // Initial slope
+    slope = 0;                                  // Initial slope
 
     // Parabola ramp to half way to the target
     while(condition)
@@ -133,7 +134,7 @@ bool babyStep(Uint16 stepSize, Uint16 limit, Uint16 babyg)
             DELAY_US(5000);             // Wait for 5 ms
             i = adc_CNV_N(Preamp, 10);  // Read current again.
         }
-        nottunnel = (abs16(i) > limit); // If reading smaller than the minimum tunneling limit, not tunneled
+        nottunnel = (abs16(i) < limit); // If reading smaller than the minimum tunneling limit, not tunneled
         condition = ( nottunnel && (currentzouter < (0xFFFF - stepSize)));  // Loop condition is decided by not tunnel flag and reach the maximum output together
         currentzouter += stepSize;      // Value to be output for next cycle
     }
@@ -204,7 +205,7 @@ void tipApproach()
     babyg = combine(serialIn(2));   // Serial in 2 bytes to get baby step parabola ramp acceleration, GET RIDE OF IT AFTER TESTING
     limit = combine(serialIn(2));   // Serial in 3 bytes to get minimum tunneling current
 
-    condition = ! babyStep(baby, limit, babyg); // Initialize the loop condition to if tunneling occurred
+    condition = babyStep(baby, limit, babyg); // Initialize the loop condition to if tunneling occurred
     serialOut(split(Start, 1));     // Send out start command
     while(condition)
     {

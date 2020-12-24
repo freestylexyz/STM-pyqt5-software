@@ -298,11 +298,11 @@ void commandLoop()
            case IAUTO_DSP:
                iAuto_DSP();
                break;
-           case OSCC:
-               OSC_C();
+           case OSCC_DSP:
+               OSC_C_DSP();
                break;
-           case OSCN:
-               OSC_N();
+           case OSCN_DSP:
+               OSC_N_DSP();
                break;
            case DAC_W_DSP:
                dac_W_DSP();
@@ -328,6 +328,14 @@ void commandLoop()
            case FLOATT:
                floatT();
                break;
+           case TIP_PROTECT_DSP:
+               protectTip_DSP();
+           case SCAN:
+               scan();
+           case DEPOSITION:
+               deposition();
+           case TRACK:
+               track();
            default:
                serialOut(split(inTypeTest,1));
                break;

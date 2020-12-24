@@ -11,8 +11,10 @@ C_SRCS += \
 ../Functions/Aout.c \
 ../Functions/Auto.c \
 ../Functions/DAC.c \
+../Functions/Deposition.c \
 ../Functions/Digital.c \
 ../Functions/Fundamental.c \
+../Functions/Image.c \
 ../Functions/Oscilloscope.c \
 ../Functions/PinInit.c \
 ../Functions/Protection.c \
@@ -22,7 +24,8 @@ C_SRCS += \
 ../Functions/Sequence.c \
 ../Functions/Serial.c \
 ../Functions/Status.c \
-../Functions/TipApproach.c 
+../Functions/TipApproach.c \
+../Functions/Track.c 
 
 C_DEPS += \
 ./Functions/20bitDAC.d \
@@ -30,8 +33,10 @@ C_DEPS += \
 ./Functions/Aout.d \
 ./Functions/Auto.d \
 ./Functions/DAC.d \
+./Functions/Deposition.d \
 ./Functions/Digital.d \
 ./Functions/Fundamental.d \
+./Functions/Image.d \
 ./Functions/Oscilloscope.d \
 ./Functions/PinInit.d \
 ./Functions/Protection.d \
@@ -41,7 +46,8 @@ C_DEPS += \
 ./Functions/Sequence.d \
 ./Functions/Serial.d \
 ./Functions/Status.d \
-./Functions/TipApproach.d 
+./Functions/TipApproach.d \
+./Functions/Track.d 
 
 OBJS += \
 ./Functions/20bitDAC.obj \
@@ -49,8 +55,10 @@ OBJS += \
 ./Functions/Aout.obj \
 ./Functions/Auto.obj \
 ./Functions/DAC.obj \
+./Functions/Deposition.obj \
 ./Functions/Digital.obj \
 ./Functions/Fundamental.obj \
+./Functions/Image.obj \
 ./Functions/Oscilloscope.obj \
 ./Functions/PinInit.obj \
 ./Functions/Protection.obj \
@@ -60,7 +68,8 @@ OBJS += \
 ./Functions/Sequence.obj \
 ./Functions/Serial.obj \
 ./Functions/Status.obj \
-./Functions/TipApproach.obj 
+./Functions/TipApproach.obj \
+./Functions/Track.obj 
 
 OBJS__QUOTED += \
 "Functions\20bitDAC.obj" \
@@ -68,8 +77,10 @@ OBJS__QUOTED += \
 "Functions\Aout.obj" \
 "Functions\Auto.obj" \
 "Functions\DAC.obj" \
+"Functions\Deposition.obj" \
 "Functions\Digital.obj" \
 "Functions\Fundamental.obj" \
+"Functions\Image.obj" \
 "Functions\Oscilloscope.obj" \
 "Functions\PinInit.obj" \
 "Functions\Protection.obj" \
@@ -79,7 +90,8 @@ OBJS__QUOTED += \
 "Functions\Sequence.obj" \
 "Functions\Serial.obj" \
 "Functions\Status.obj" \
-"Functions\TipApproach.obj" 
+"Functions\TipApproach.obj" \
+"Functions\Track.obj" 
 
 C_DEPS__QUOTED += \
 "Functions\20bitDAC.d" \
@@ -87,8 +99,10 @@ C_DEPS__QUOTED += \
 "Functions\Aout.d" \
 "Functions\Auto.d" \
 "Functions\DAC.d" \
+"Functions\Deposition.d" \
 "Functions\Digital.d" \
 "Functions\Fundamental.d" \
+"Functions\Image.d" \
 "Functions\Oscilloscope.d" \
 "Functions\PinInit.d" \
 "Functions\Protection.d" \
@@ -98,7 +112,8 @@ C_DEPS__QUOTED += \
 "Functions\Sequence.d" \
 "Functions\Serial.d" \
 "Functions\Status.d" \
-"Functions\TipApproach.d" 
+"Functions\TipApproach.d" \
+"Functions\Track.d" 
 
 C_SRCS__QUOTED += \
 "../Functions/20bitDAC.c" \
@@ -106,8 +121,10 @@ C_SRCS__QUOTED += \
 "../Functions/Aout.c" \
 "../Functions/Auto.c" \
 "../Functions/DAC.c" \
+"../Functions/Deposition.c" \
 "../Functions/Digital.c" \
 "../Functions/Fundamental.c" \
+"../Functions/Image.c" \
 "../Functions/Oscilloscope.c" \
 "../Functions/PinInit.c" \
 "../Functions/Protection.c" \
@@ -117,6 +134,7 @@ C_SRCS__QUOTED += \
 "../Functions/Sequence.c" \
 "../Functions/Serial.c" \
 "../Functions/Status.c" \
-"../Functions/TipApproach.c" 
+"../Functions/TipApproach.c" \
+"../Functions/Track.c" 
 
 

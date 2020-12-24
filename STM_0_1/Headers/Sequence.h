@@ -16,7 +16,7 @@
 struct sequence_command
 {
     Uint16 seqnum;
-    Uint16 commandlist[64];
+    char commandlist[64];
     Uint32 datalist[64];
 };
 
@@ -26,12 +26,15 @@ typedef struct sequence_command sc;
 // Global variables declaration
 //
 extern sc ptSeq;
+extern sc depSeqF;
+extern sc depSeqB;
 
 //
 // Function declaration
 //
-void pointSeq(Uint32);
+void pointSeq(Uint32, sc);
 void setup_pointSeq();
+void setup_depSeq();
 
 
 #endif /* HEADERS_SEQUENCE_H_ */

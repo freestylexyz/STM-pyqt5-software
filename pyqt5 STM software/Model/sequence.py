@@ -14,11 +14,11 @@ class mySequence():
         # Basic property
         self.command_list = command_list        # Initialize command list
         self.data_list = data_list              # Intialize data list
-        self.seq_num = len(self.command_list)        # Figure out sequence number
+        self.seq_num = len(self.command_list)   # Figure out sequence number
         self.read_num = 0                       # Initialize read number
         # Figure out read number
         for i in self.command_list:
-            if (i >= 0xc000) and (i <= 0xdc00):
+            if (i >= 0xc0) and (i <= 0xdc):
                 self.read_num += 1
         
         if self.seq_num > 0:
