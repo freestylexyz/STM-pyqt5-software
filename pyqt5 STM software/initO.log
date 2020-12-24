@@ -1,1 +1,21 @@
 running!!
+---------------------------------------------
+Before start: original =  32768
+RampTo init: init =  36044
+RampTo final: final =  49152
+RampTo origin again: origin =  32768
+---------------------------------------------
+Before start: original =  32768
+RampTo init: init =  36044
+RampTo final: final =  42598
+RampTo origin again: origin =  32768
+---------------------------------------------
+Before start: original =  32768
+RampTo init: init =  36044
+RampTo final: final =  42598
+RampTo origin again: origin =  32768
+---------------------------------------------
+Before start: original =  32768
+RampTo init: init =  36044
+RampTo final: final =  42598
+RampTo origin again: origin =  32768

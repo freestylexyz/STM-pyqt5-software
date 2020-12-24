@@ -16,6 +16,7 @@ sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
+from sequence import mySequence
 from MainMenu import myMainMenu
 import conversion as cnv
 import threading
@@ -60,15 +61,35 @@ class myEtestControl(myMainMenu):
         if self.etest.idling:
             self.etest.enable_serial(False)
             self.etest.idling = False
+            if outch == 20:                                                 # 20 bit dac
+                origin = self.dsp.last20bit                                 # get initial value
+            else:                                                           # 16 bit dac
+                origin = self.dsp.lastdac[outch]                            # get initial value
             if index == 0:                                                  # ramp button clicked
                 self.etest.pushButton_Ramp_RTest.setText("Stop")            # change ramp button text
                 self.etest.pushButton_Ramp_RTest.setEnabled(True)           # enable stop button
+                print("---------------------------------------------")
+                print("Before start: original = ", origin)
+                self.etest.rtest_ramp_data += [origin]
                 self.dsp.rampTo(outch, init, step_size, 10000, 0, False)    # ramp to initial value
+                print("RampTo init: init = ", init)
+                self.dsp.rampTo(outch, final, step_size, 10000, 0, True)    # ramp to final value
+                print("RampTo final: final = ", final)
+                self.dsp.rampTo(outch, origin, step_size, 10000, 0, False)  # ramp back to original value
+                print("RampTo origin again: origin = ", origin)
             else:                                                           # ramp read button clicked
                 self.etest.pushButton_RRead_RTest.setText("Stop")           # change ramp read button text
                 self.etest.pushButton_RRead_RTest.setEnabled(True)          # enable stop button
                 command = 4 * inch + 0xC000
-                self.dsp.rampMeasure(outch, final, step_size, 10000, 10000, [command], [10])  # Ramp Read to final value
+                read_seq = mySequence([command], [10])
+                print(read_seq)
+                # ramp up True, ramp down False
+                # def rampMeasure(self, channel, step_num, step_size, move_delay, measure_delay, direction, seq):
+                direction = (final - init) >= 0
+                step_num = int(abs((final - init)/step_size))
+                self.dsp.rampTo(outch, init, step_size, 10000, 0, False)    # ramp to initial value
+                self.dsp.rampMeasure(outch, step_num, step_size, 10000, 10000, direction, read_seq)  # ramp meaure to final value
+                self.dsp.rampTo(outch, origin, step_size, 10000, 0, False)    # ramp back to original value
             self.etest.idling = True
             self.etest.enable_serial(True)
             # self.etest.timer.stop()                                     # stop plot
@@ -76,10 +97,24 @@ class myEtestControl(myMainMenu):
             self.etest.pushButton_RRead_RTest.setText("Ramp read")        # reset ramp read button
 
     # Ramp Test | update ramp read data
-    def ramp_read_update(self, current, rdata):
-        self.etest.rtest_ramp_data += [current]
-        self.etest.rtest_ramp_read_data += rdata
-        # self.etest.ptr2 += 1
+    def ramp_read_update(self, rdata):
+        self.etest.rtest_ramp_read_outdata += [rdata[0]]
+        self.etest.rtest_ramp_read_indata += [rdata[1]]
+
+    # Ramp Test | update ramp data
+    def ramp_update(self, channel):
+        if channel != 20:
+            self.etest.rtest_ramp_data += [self.dsp.lastdac[channel]]
+        else:
+            self.etest.rtest_ramp_data += [self.dsp.last20bit]
+
+        self.etest.ptr2 += 1
+        if self.etest.ptr2 >= len(self.etest.rtest_ramp_data):
+            tmp1 = self.etest.rtest_ramp_data
+            self.etest.rtest_ramp_data = [0] * (len(self.etest.rtest_ramp_data) * 2)
+            self.etest.rtest_ramp_data[:len(tmp1)] = tmp1
+        self.etest.rtest_output_curve1.setData(self.etest.rtest_ramp_data[:self.etest.ptr2])
+        self.etest.rtest_output_curve1.setPos(self.etest.ptr2, 0)
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):

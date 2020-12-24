@@ -757,7 +757,7 @@ class myDSP(QObject):
             self.serialSeq(seq)                                              # Send sequence command and data
             
             # If receive start command
-            if int.from_bytes(self.ser.read(1) ,"big") == 0xf0:
+            if int.from_bytes(self.ser.read(1), "big") == 0xf0:
                 self.stop = False                                   # Set stop flag to false
                 
                 for i in range(step_num):
@@ -771,14 +771,14 @@ class myDSP(QObject):
                     rdata = [current]
                     for i in range(seq.read_num):
                         rdata += [int.from_bytes(self.ser.read(2) ,"big")]  # Read data
-                    self.rampMeasure_signal(rdata)
+                    self.rampMeasure_signal.emit(rdata)
                     
                 # If stopped
                 if self.stop:
                     self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
                     self.checkStopSeq()                                     # Check stop sequence
                 else:
-                    int.from_bytes(self.ser.read(1) ,"big") == 0x0f         # Otherwise, just wait for the finish command
+                    int.from_bytes(self.ser.read(1), "big") == 0x0f         # Otherwise, just wait for the finish command
                 self.stop = True  
                 lastout = int.from_bytes(self.ser.read(3) ,"big")           # Return data to update last output
                 self.update_last(channel, lastout)                          # Update last output

@@ -9,15 +9,15 @@ import conversion as cnv
 import numpy as np
 import math
 
-class mySeqence():
+class mySequence():
     def __init__(self, command_list = [], data_list = []):
         # Basic property
         self.command_list = command_list        # Initialize command list
         self.data_list = data_list              # Intialize data list
-        self.seq_num = len(self.command)        # Figure out sequence number
+        self.seq_num = len(self.command_list)        # Figure out sequence number
         self.read_num = 0                       # Initialize read number
         # Figure out read number
-        for i in self.command:
+        for i in self.command_list:
             if (i >= 0xc000) and (i <= 0xdc00):
                 self.read_num += 1
         

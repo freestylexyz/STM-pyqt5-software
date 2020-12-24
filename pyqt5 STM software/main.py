@@ -150,12 +150,13 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
                 self.z_offset_update()                      # Update Z controller if ramping Z offset
         else:
             # !!! Etest update ramp
+            self.ramp_update(channel)
             pass
 
     # DSP ramp measure update signal:
-    def dsp_rampMeasure_slot(self, current, rdata):
+    def dsp_rampMeasure_slot(self, rdata):
         if self.mode == 1:
-            self.ramp_read_update(current, rdata)           # Update etest if in etest mode
+            self.ramp_read_update(rdata)           # Update etest if in etest mode
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):

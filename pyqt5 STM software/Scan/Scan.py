@@ -15,6 +15,7 @@ sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget
 from PyQt5.QtCore import pyqtSignal , Qt
+from Scan_ui import Ui_Scan
 from Spectroscopy import mySpc
 from Deposition import myDeposition
 from Track import myTrack
@@ -23,7 +24,7 @@ from Manipulation import myManipulation
 
 
 
-class myScan(QWidget):
+class myScan(QWidget, Ui_Scan):
     close_signal = pyqtSignal()
 
     def __init__(self):

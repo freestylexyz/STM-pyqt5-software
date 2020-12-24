@@ -61,8 +61,9 @@ class myEtest(QWidget, Ui_ElectronicTest):
                                 3: {0: '0 to 5V', 1: '0 to 10V', 2: '0 to 20V', 4: '0 to 40 V', \
                                     9: '-5 V to +5 V', 10: '-10 V to +10 V', 12: '-20 V to +20 V', \
                                     14: '-2.5 V to +2.5 V', 20: '-5V to +5V'}}    # input(2), output(3) range -> text dictionary
-        self.rtest_ramp_data = [] * 100        # Ramp Test | ramp read output data
-        self.rtest_ramp_read_data = [] * 100   # Ramp Test | ramp read input data
+        self.rtest_ramp_read_outdata = [] * 100        # Ramp Test | ramp read output data
+        self.rtest_ramp_read_indata = [] * 100         # Ramp Test | ramp read input data
+        self.rtest_ramp_data = [] * 100                # Ramp Test | ramp data
         self.ptr2 = 0                          # Ramp Test | ramp plot update count
         self.plot_test_data1 = [0] * 100       # !!! just for plot test
         self.plot_test_data2 = [0] * 100
@@ -157,8 +158,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.rtest_ramp_plot.setDownsampling(mode='peak')
         self.rtest_ramp_plot.setClipToView(True)
         self.rtest_ramp_plot.addLegend()
-        self.rtest_output_curve1 = self.rtest_ramp_plot.plot(pen='y', name='noise')
-        self.rtest_output_curve2 = self.rtest_ramp_plot.plot(pen='w', name='sin')
+        self.rtest_output_curve1 = self.rtest_ramp_plot.plot(pen='y', name='RampTo')
+        self.rtest_output_curve2 = self.rtest_ramp_plot.plot(pen='w', name='RampMeasure')
         self.timer.timeout.connect(self.rtest_plot_update)
 
 
@@ -454,52 +455,52 @@ class myEtest(QWidget, Ui_ElectronicTest):
             if outch == 20:                             # 20 bit DAC
                 init = cnv.vb(self.spinBox_InitVal_RTest.value(), '20')
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), '20')
-                step_size = cnv.vb(self.spinBox_StepSize_RTest.value(), '20')
-
+                step_size = (cnv.vb(self.spinBox_StepSize_RTest.value(), '20') - cnv.vb(0, '20'))
             else:                                       # 16 bit DAC
                 init = cnv.vb(self.spinBox_InitVal_RTest.value(), 'd', self.dac_range)
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), 'd', self.dac_range)
-                step_size = cnv.vb(self.spinBox_StepSize_RTest.value(), 'd', self.dac_range)
+                step_size = (cnv.vb(self.spinBox_StepSize_RTest.value(), 'd', self.dac_range) - cnv.vb(0, 'd', self.dac_range))
             if self.idling:                             # emit ramp signal
                 self.ptr2 = 0                           # init ramp update count
-                self.rtest_ramp_data = [] * 100         # init ramp data list
-                self.rtest_ramp_read_data = [] * 100    # init ramp read data list
+                self.rtest_ramp_read_outdata = [] * 100         # init ramp data list
+                self.rtest_ramp_read_indata = [] * 100    # init ramp read data list
                 self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
                 self.timer.start(50)                    # plot update start
             else:                                       # emit stop signal
                 self.timer.stop()
-                self.enable_serial(False)
-                self.stop_signal.emit()
+                # self.enable_serial(False)
+                self.stop_signal.emit()                 # flip dsp.stop to True
 
     # Ramp Test | plot update
     def rtest_plot_update(self):
 
-        # if self.ptr2 >= len(self.rtest_ramp_data):
-        #     tmp = self.rtest_ramp_data
-        #     self.rtest_ramp_data = [0] * (len(self.rtest_ramp_data) * 2)
-        #     self.rtest_ramp_data[:len(tmp)] = tmp
-        # self.rtest_output_curve.setData(self.rtest_ramp_data[:self.ptr2])
+        # if self.ptr2 >= len(self.rtest_ramp_read_outdata):
+        #     tmp = self.rtest_ramp_read_outdata
+        #     self.rtest_ramp_read_outdata = [0] * (len(self.rtest_ramp_read_outdata) * 2)
+        #     self.rtest_ramp_read_outdata[:len(tmp)] = tmp
+        # self.rtest_output_curve.setData(self.rtest_ramp_read_outdata[:self.ptr2])
         # self.rtest_output_curve.setPos(self.ptr2, 0)
 
         #
         # !!! just for plot test
         #
-        self.plot_test_data1[self.ptr2] = np.random.normal()
-        self.plot_test_data2[self.ptr2] = np.sin(self.ptr2/10)
-        self.ptr2 += 1
-        if self.ptr2 >= len(self.plot_test_data1):
-            tmp1 = self.plot_test_data1
-            self.plot_test_data1 = [0] * (len(self.plot_test_data1) * 2)
-            self.plot_test_data1[:len(tmp1)] = tmp1
-        self.rtest_output_curve1.setData(self.plot_test_data1[:self.ptr2])
-        self.rtest_output_curve1.setPos(self.ptr2, 0)
-
-        if self.ptr2 >= len(self.plot_test_data2):
-            tmp2 = self.plot_test_data2
-            self.plot_test_data2 = [0] * (len(self.plot_test_data2) * 2)
-            self.plot_test_data2[:len(tmp2)] = tmp2
-        self.rtest_output_curve2.setData(self.plot_test_data2[:self.ptr2])
-        self.rtest_output_curve2.setPos(self.ptr2, 0)
+        # self.plot_test_data1[self.ptr2] = np.random.normal()
+        # self.plot_test_data2[self.ptr2] = np.sin(self.ptr2/10)
+        # self.ptr2 += 1
+        # if self.ptr2 >= len(self.plot_test_data1):
+        #     tmp1 = self.plot_test_data1
+        #     self.plot_test_data1 = [0] * (len(self.plot_test_data1) * 2)
+        #     self.plot_test_data1[:len(tmp1)] = tmp1
+        # self.rtest_output_curve1.setData(self.plot_test_data1[:self.ptr2])
+        # self.rtest_output_curve1.setPos(self.ptr2, 0)
+        #
+        # if self.ptr2 >= len(self.plot_test_data2):
+        #     tmp2 = self.plot_test_data2
+        #     self.plot_test_data2 = [0] * (len(self.plot_test_data2) * 2)
+        #     self.plot_test_data2[:len(tmp2)] = tmp2
+        # self.rtest_output_curve2.setData(self.plot_test_data2[:self.ptr2])
+        # self.rtest_output_curve2.setPos(self.ptr2, 0)
+        pass
 
     # Enable serial
     def enable_serial(self, enable):

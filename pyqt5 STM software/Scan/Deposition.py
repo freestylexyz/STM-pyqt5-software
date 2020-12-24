@@ -15,10 +15,10 @@ sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget
 from PyQt5.QtCore import pyqtSignal , Qt
+from Deposition_ui import Ui_Deposition
 
 
-
-class myDeposition(QWidget):
+class myDeposition(QWidget, Ui_Deposition):
     close_signal = pyqtSignal()
 
     def __init__(self):
