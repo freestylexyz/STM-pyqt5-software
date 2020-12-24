@@ -464,7 +464,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 self.ptr2 = 0                           # init ramp update count
                 self.rtest_ramp_read_outdata = [] * 100 # init ramp read output data
                 self.rtest_ramp_read_indata = [] * 100  # init ramp read input data
-                self.rtest_ramp_data = [] * 100         # init ramp data
+                self.rtest_ramp_data = [self.spinBox_InitVal_RTest.value()]       # init ramp data
                 self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
                 self.timer.start(50)                    # plot update start
             else:                                       # emit stop signal

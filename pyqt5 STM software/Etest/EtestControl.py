@@ -63,14 +63,15 @@ class myEtestControl(myMainMenu):
             self.etest.idling = False
             if outch == 20:                                                 # 20 bit dac
                 origin = self.dsp.last20bit                                 # get initial value
+                # self.etest.rtest_ramp_data += [cnv.bv(origin, '20')]
             else:                                                           # 16 bit dac
                 origin = self.dsp.lastdac[outch]                            # get initial value
+                # self.etest.rtest_ramp_data += [cnv.bv(origin, 'd', self.dsp.dacrange[outch])]
             if index == 0:                                                  # ramp button clicked
                 self.etest.pushButton_Ramp_RTest.setText("Stop")            # change ramp button text
                 self.etest.pushButton_Ramp_RTest.setEnabled(True)           # enable stop button
                 print("---------------------------------------------")
                 print("Before start: original = ", origin)
-                self.etest.rtest_ramp_data += [origin]
                 self.dsp.rampTo(outch, init, step_size, 10000, 0, False)    # ramp to initial value
                 print("RampTo init: init = ", init)
                 self.dsp.rampTo(outch, final, step_size, 10000, 0, True)    # ramp to final value
@@ -104,17 +105,17 @@ class myEtestControl(myMainMenu):
     # Ramp Test | update ramp data
     def ramp_update(self, channel):
         if channel != 20:
-            self.etest.rtest_ramp_data += [self.dsp.lastdac[channel]]
+            self.etest.rtest_ramp_data += [cnv.bv(self.dsp.lastdac[channel], 'd', self.dsp.dacrange[channel])]
         else:
-            self.etest.rtest_ramp_data += [self.dsp.last20bit]
+            self.etest.rtest_ramp_data += [cnv.bv(self.dsp.last20bit, '20')]
 
         self.etest.ptr2 += 1
         if self.etest.ptr2 >= len(self.etest.rtest_ramp_data):
             tmp1 = self.etest.rtest_ramp_data
-            self.etest.rtest_ramp_data = [0] * (len(self.etest.rtest_ramp_data) * 2)
+            self.etest.rtest_ramp_data = [] * (len(self.etest.rtest_ramp_data) * 2)
             self.etest.rtest_ramp_data[:len(tmp1)] = tmp1
         self.etest.rtest_output_curve1.setData(self.etest.rtest_ramp_data[:self.etest.ptr2])
-        self.etest.rtest_output_curve1.setPos(self.etest.ptr2, 0)
+        # self.etest.rtest_output_curve1.setPos(self.etest.ptr2, 0)
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):
