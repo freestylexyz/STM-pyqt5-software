@@ -18,7 +18,7 @@
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
-       <widget class="QListView" name="listView"/>
+       <widget class="QListWidget" name="listWidget"/>
       </item>
      </layout>
     </widget>

@@ -938,7 +938,7 @@
              <bool>true</bool>
             </property>
             <property name="decimals">
-             <number>4</number>
+             <number>6</number>
             </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
@@ -1027,7 +1027,7 @@
              <bool>true</bool>
             </property>
             <property name="decimals">
-             <number>4</number>
+             <number>6</number>
             </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
@@ -1167,7 +1167,7 @@
             </item>
             <item>
              <property name="text">
-              <string>20 (20bitDAC)</string>
+              <string>16 (20bitDAC)</string>
              </property>
             </item>
            </widget>
@@ -1212,7 +1212,7 @@
              <bool>true</bool>
             </property>
             <property name="decimals">
-             <number>4</number>
+             <number>6</number>
             </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
@@ -1268,60 +1268,17 @@
           <property name="verticalSpacing">
            <number>10</number>
           </property>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QLabel" name="label_9">
             <property name="text">
              <string>Voltage2</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_7">
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_6">
             <property name="text">
-             <string>Delay</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="spinBox_V2_SWave">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="decimals">
-             <number>4</number>
-            </property>
-            <property name="stepType">
-             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Voltage1</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="spinBox_Delay_SWave">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="stepType">
-             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="spinBox_V1_SWave">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="decimals">
-             <number>4</number>
-            </property>
-            <property name="stepType">
-             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+             <string>Channel</string>
             </property>
            </widget>
           </item>
@@ -1402,19 +1359,12 @@
             </item>
             <item>
              <property name="text">
-              <string>20 (20bitDAC)</string>
+              <string>16 (20bitDAC)</string>
              </property>
             </item>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Channel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1" colspan="2">
+          <item row="5" column="1" colspan="2">
            <widget class="QPushButton" name="pushButton_Start_SWave">
             <property name="enabled">
              <bool>false</bool>
@@ -1438,6 +1388,85 @@
             </property>
             <property name="text">
              <string>Start</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QSpinBox" name="spinBox_Delay_SWave">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Voltage1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Delay (us)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QDoubleSpinBox" name="spinBox_V1_SWave">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>Range</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QDoubleSpinBox" name="spinBox_V2_SWave">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_Range_SWave">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>
@@ -1489,7 +1518,7 @@
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="QGraphicsView" name="view_Osci"/>
+           <widget class="GraphicsLayoutWidget" name="view_Osci"/>
           </item>
           <item row="1" column="0">
            <widget class="QWidget" name="widget_5" native="true">
@@ -1551,16 +1580,6 @@
                </property>
                <property name="text">
                 <string>Start</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="6">
-              <widget class="QDoubleSpinBox" name="spinBox_Delay_Osci">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="stepType">
-                <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
                </property>
               </widget>
              </item>
@@ -1655,6 +1674,13 @@
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="6">
+              <widget class="QSpinBox" name="spinBox_Delay_Osci">
+               <property name="enabled">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1857,6 +1883,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_AInput_FTest">
+            <property name="decimals">
+             <number>6</number>
+            </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
@@ -1905,13 +1934,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_DelayInput_FTest">
-            <property name="stepType">
-             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_17">
             <property name="text">
@@ -1921,6 +1943,9 @@
           </item>
           <item row="5" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_IsptInput_FTest">
+            <property name="decimals">
+             <number>6</number>
+            </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
@@ -1950,6 +1975,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_Z0Input_FTest">
+            <property name="decimals">
+             <number>6</number>
+            </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
@@ -2047,6 +2075,9 @@
              </item>
             </layout>
            </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="spinBox_DelayInput_FTest"/>
           </item>
          </layout>
         </widget>

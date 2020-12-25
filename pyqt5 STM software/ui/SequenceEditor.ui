@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
+    <width>648</width>
     <height>430</height>
    </rect>
   </property>
@@ -222,7 +222,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>76</height>
+       <height>60</height>
       </size>
      </property>
      <property name="title">
@@ -262,13 +262,6 @@
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="1" column="0" colspan="4">
-       <widget class="QTableView" name="tableView">
-        <attribute name="horizontalHeaderCascadingSectionResizes">
-         <bool>false</bool>
-        </attribute>
-       </widget>
-      </item>
       <item row="0" column="2">
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -296,10 +289,75 @@
        <widget class="QLineEdit" name="lineEdit"/>
       </item>
       <item row="0" column="3">
-       <widget class="QRadioButton" name="radioButton_8">
+       <widget class="QCheckBox" name="checkBox_8">
         <property name="text">
          <string>Moving Feedback ON</string>
         </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="4">
+       <widget class="QTableWidget" name="table_Content_SeqEditor">
+        <property name="columnCount">
+         <number>7</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>Command</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Channel</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Option 1</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Option 2</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>data</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>units</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string/>
+         </property>
+        </column>
        </widget>
       </item>
      </layout>
