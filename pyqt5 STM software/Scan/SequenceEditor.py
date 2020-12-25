@@ -33,7 +33,14 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.init_UI()
 
     def init_UI(self):
-        pass
+        # set up table widget
+        self.table_Content_SeqEditor.setColumnWidth(0, 70)
+        self.table_Content_SeqEditor.setColumnWidth(1, 60)
+        self.table_Content_SeqEditor.setColumnWidth(2, 60)
+        self.table_Content_SeqEditor.setColumnWidth(3, 60)
+        self.table_Content_SeqEditor.setColumnWidth(4, 40)
+        self.table_Content_SeqEditor.setColumnWidth(5, 40)
+        self.table_Content_SeqEditor.setColumnWidth(6, 40)
 
     def init_seqeditor(self):
         pass
