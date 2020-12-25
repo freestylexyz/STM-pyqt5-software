@@ -87,6 +87,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Ramp Test
         self.etest.rtest_ramp_signal.connect(self.rtest_ramp_slot)
         self.etest.stop_signal.connect(self.stop_slot)
+        # Square Wave
+        self.etest.swave_start_signal.connect(self.swave_start_slot)
+        # Oscilloscope
+        self.etest.osci_start_signal.connect(self.osci_start_slot)
+        self.dsp.oscc_signal.connect(self.osci_update)
 
         # Connect scan signal
         self.scan.close_signal.connect(self.close_scan)
