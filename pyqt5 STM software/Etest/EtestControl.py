@@ -77,9 +77,9 @@ class myEtestControl(myMainMenu):
             if index == 0:                                                  # ramp button clicked
                 self.etest.pushButton_Ramp_RTest.setText("Stop")            # change ramp button text
                 self.etest.pushButton_Ramp_RTest.setEnabled(True)           # enable stop button
-                self.dsp.rampTo(outch+16, init, step_size, 10000, 0, False)    # ramp to initial value
+                self.dsp.rampTo(outch+16, init, 10, 100, 0, False)    # ramp to initial value
                 self.dsp.rampTo(outch+16, final, step_size, 10000, 0, True)    # ramp to final value
-                self.dsp.rampTo(outch+16, origin, step_size, 10000, 0, False)  # ramp back to original value
+                self.dsp.rampTo(outch+16, origin, 10, 100, 0, False)  # ramp back to original value
             else:                                                           # ramp read button clicked
                 self.etest.pushButton_RRead_RTest.setText("Stop")           # change ramp read button text
                 self.etest.pushButton_RRead_RTest.setEnabled(True)          # enable stop button
@@ -87,9 +87,9 @@ class myEtestControl(myMainMenu):
                 read_seq = mySequence([command], [10])
                 direction = (final - init) >= 0
                 step_num = int(abs((final - init)/step_size))
-                self.dsp.rampTo(outch+16, init, step_size, 10000, 0, False)    # ramp to initial value
-                self.dsp.rampMeasure(outch+16, step_num, step_size, 10000, 10000, direction, read_seq)  # ramp meaure to final value
-                self.dsp.rampTo(outch+16, origin, step_size, 10000, 0, False)    # ramp back to original value
+                self.dsp.rampTo(outch+16, init, 10, 100, 0, False)    # ramp to initial value
+                self.dsp.rampMeasure(outch+16, step_num, step_size, 1, 10000, direction, read_seq)  # ramp meaure to final value
+                self.dsp.rampTo(outch+16, origin, 10, 100, 0, False)    # ramp back to original value
             self.etest.idling = True
             self.etest.enable_serial(True)
             self.etest.pushButton_Ramp_RTest.setText("Ramp")              # reset ramp button
@@ -122,8 +122,8 @@ class myEtestControl(myMainMenu):
         self.etest.rtest_output_curve3.setData(self.etest.rtest_ramp_read_indata[:self.etest.ptr2])
 
     # Ramp Test | update ramp data
-    def ramp_update(self, channel):
-        ramp_data = self.dsp.current_last(channel)
+    def ramp_update(self, channel, ramp_data):
+        # ramp_data = self.dsp.current_last(channel)
         channel = channel - 16
         if channel != 16:   # 16 bit dac
             self.etest.rtest_ramp_data += [cnv.bv(ramp_data, 'd', self.dsp.dacrange[channel])]

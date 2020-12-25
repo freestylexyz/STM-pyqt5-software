@@ -142,7 +142,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
             
     # DSP ramp to update signal:
-    def dsp_rampTo_slot(self, channel):
+    def dsp_rampTo_slot(self, channel, current):
         # If not in the etest mode
         if self.mode != 1:
             if (channel == 0x1d) or (channel == 0x20):
@@ -155,7 +155,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
                 self.z_offset_update()                      # Update Z controller if ramping Z offset
         else:
             # !!! Etest update ramp
-            self.ramp_update(channel)
+            self.ramp_update(channel, current)
             pass
 
     # DSP ramp measure update signal:
