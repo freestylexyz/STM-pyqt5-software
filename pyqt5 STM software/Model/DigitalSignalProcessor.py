@@ -19,10 +19,11 @@ class myDSP(QObject):
     
     succeed_signal = pyqtSignal(bool)       # Serial port open signal
     oscc_signal = pyqtSignal(int)           # Continuous oscilloscope data emit signal
-    rampMeasure_signal = pyqtSignal(list)    # Ramp measure data emit signal
+    rampMeasure_signal = pyqtSignal(list)   # Ramp measure data emit signal
     giantStep_signal = pyqtSignal(int)      # Gian step number signal
     rampTo_signal = pyqtSignal(int)         # Ramp to signal
-    rampDiag_signal = pyqtSignal(int, int) # Ramp diagonal signal
+    rampDiag_signal = pyqtSignal(int, int)  # Ramp diagonal signal
+    scan_signal = pyqtSignal(list)          # Ramp scan data emit signal
     
     #
     # Initial class and all flags and status variable
@@ -938,7 +939,170 @@ class myDSP(QObject):
                         self.giantStep_signal.emit(i)   # Emit Giant step counter
                 self.stop = True                # Set stop flag to true
             self.idling = True    
+    
+    #
+    # tipProtect - This function perform tip protection
+    #
+    def tipProtect(self, bits, unprotect):
+        if self.ok():
+            bits = bits & 0xffff
+            if unprotect:
+                unprotect_data = 0x01
+            else:
+                unprotect_data = 0x00
+            self.idling = False
+            self.ser.write(int(0x90).to_bytes(1, byteorder="big"))              # 0x90 for tip protect function
+            self.ser.write(int(bits).to_bytes(2, byteorder="big"))              # Send retract bits data
+            self.ser.write(int(unprotect_data).to_bytes(1, byteorder="big"))    # Send unprotect flag
+            self.idling = True
+                
+    #
+    # scan - This function perform scan
+    #
+    def scan(self, channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
+             limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x, dir_y):
+        if self.ok():
+            channel_x = channel_x & 0xff
+            channel_y = channel_y & 0xff
+            flag = 0x00
+            step_size = step_size & 0xffff
+            step_num = step_num & 0xffff
+            move_delay = move_delay & 0xffff
+            measure_delay = measure_delay & 0xffff
+            line_delay = line_delay & 0xffff
+            limit = limit & 0xffff
+            tip_protect_data = tip_protect_data & 0xffff
             
+            tip_protect_flag = 0x08 if tip_protection else 0x00
+            dir_x_flag = 0x10 if tip_protection else 0x00
+            dir_y_flag = 0x20 if tip_protection else 0x00           
+            flag = tip_protect_flag | dir_x_flag | dir_y_flag | (scan_protect_flag & 0x03)
+            
+            self.idling = False
+            self.ser.write(int(0x91).to_bytes(1, byteorder="big"))              # 0x91 for scan function
+            self.ser.write(int(channel_x).to_bytes(1, byteorder="big"))         # Send X channel
+            self.ser.write(int(channel_y).to_bytes(1, byteorder="big"))         # Send Y channel
+            self.ser.write(int(flag).to_bytes(1, byteorder="big"))              # Send flag data
+            self.ser.write(int(step_size).to_bytes(2, byteorder="big"))         # Send step size
+            self.ser.write(int(step_num).to_bytes(2, byteorder="big"))          # Send step number
+            self.ser.write(int(move_delay).to_bytes(2, byteorder="big"))        # Send move delay
+            self.ser.write(int(measure_delay).to_bytes(2, byteorder="big"))     # Send measure delay
+            self.ser.write(int(line_delay).to_bytes(2, byteorder="big"))        # Send line delay
+            self.ser.write(int(limit).to_bytes(2, byteorder="big"))             # Send limit for scan protection
+            self.ser.write(int(tip_protect_data).to_bytes(2, byteorder="big"))  # Send tip protection data
+            self.serialSeq(seq)                                                 # Send sequence command and data
+            
+            # If receive start command
+            if int.from_bytes(self.ser.read(1), "big") == 0xf0:
+                self.stop = False                                   # Set stop flag to false
+                
+                for i in range(step_num * step_num):
+                    if self.stop:
+                        break
+                    rdata = []
+                    for i in range(seq.read_num):
+                        rdata += [int.from_bytes(self.ser.read(2) ,"big")]  # Read data
+                    self.scan_signal.emit(rdata)
+                    
+                # If stopped
+                if self.stop:
+                    self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
+                    self.checkStopSeq()                                     # Check stop sequence
+                else:
+                    int.from_bytes(self.ser.read(1), "big") == 0x0f         # Otherwise, just wait for the finish command
+                self.stop = True  
+                
+            self.idling = True
+            
+    
+    #
+    # deposition - This function perform deposition
+    #
+    def depostion(self, read_ch, read_flag, read_delay, read_dealy2, read_num, \
+                  average, limit, stop_num, seq):
+        if self.ok():
+            read_ch = read_ch & 0xff
+            read_flag = read_flag & 0x03
+            read_delay = read_delay & 0xffff
+            read_dealy2 = read_dealy2 & 0xffff
+            read_num = read_num & 0xffff
+            average = average & 0xffff
+            limit = limit & 0xffff
+            stop_num = stop_num & 0xffff
+
+            self.idling = False
+            self.ser.write(int(0x92).to_bytes(1, byteorder="big"))           # 0x92 for deposition function
+            self.ser.write(int(read_ch).to_bytes(1, byteorder="big"))        # Send read channel
+            self.ser.write(int(read_flag).to_bytes(1, byteorder="big"))      # Send read flag
+            self.ser.write(int(read_delay).to_bytes(2, byteorder="big"))     # Send read delay
+            self.ser.write(int(read_dealy2).to_bytes(2, byteorder="big"))    # Send read delay 2
+            self.ser.write(int(read_num).to_bytes(2, byteorder="big"))       # Send read number
+            self.ser.write(int(average).to_bytes(2, byteorder="big"))        # Send average number
+            self.ser.write(int(limit).to_bytes(2, byteorder="big"))          # Send limit for read until
+            self.ser.write(int(stop_num).to_bytes(2, byteorder="big"))       # Send stop number for read until
+            self.serialSeq(seq)                                              # Send sequence command and data
+            
+            # If receive start command
+            if int.from_bytes(self.ser.read(1), "big") == 0xf0:
+                if read_flag == 1:
+                    self.stop = False                                               # Set stop flag to false
+                    while True:        
+                        if self.stop:                                               # Wait until external source change the stop flag
+                            self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
+                            break       # Break loop
+                        else:
+                            rdata = int.from_bytes(self.ser.read(2) ,"big")         # Read data
+                            self.oscc_signal.emit(rdata)                            # Send out data through signal
+                        
+                self.checkStopSeq()                                                 # Check stop sequence
+                rdata_list = []                                                     # Initialize read data list
+            
+                if (read_flag == 2) and (read_flag == 3):
+                    return_num = int.from_bytes(self.ser.read(2) ,"big")            # Read the number of returned data
+                    for i in range(return_num):
+                        rdata_list += [int.from_bytes(self.ser.read(2) ,"big")]     # Read list data
+        return rdata_list
+    
+    #
+    # tract - this function perform track
+    #
+    def track(self, in_ch, delay, stay_delay, step, average, track_min, tiltx, tilty):
+        if self.ok():
+            in_ch = in_ch & 0xff
+            delay = delay & 0xffff
+            stay_delay = stay_delay & 0xffff
+            step = step & 0xffff
+            average = average & 0xffff
+            track_min_flag = 0x01 if track_min else 0x00
+            
+            tiltx_data = int(tiltx * 0x7fff) & 0x7fffffff
+            tilty_data = int(tilty * 0x7fff) & 0x7fffffff
+            
+            self.idling = False
+            self.ser.write(int(0x93).to_bytes(1, byteorder="big"))              # 0x93 for track function
+            self.ser.write(int(in_ch).to_bytes(1, byteorder="big"))             # Send read channel
+            self.ser.write(int(delay).to_bytes(2, byteorder="big"))             # Send scan delay
+            self.ser.write(int(stay_delay).to_bytes(2, byteorder="big"))        # Send stay delay
+            self.ser.write(int(step).to_bytes(2, byteorder="big"))              # Send scan step size
+            self.ser.write(int(average).to_bytes(2, byteorder="big"))           # Send average number
+            self.ser.write(int(track_min_flag).to_bytes(1, byteorder="big"))    # Send track min flag
+            self.ser.write(int(tiltx_data).to_bytes(4, byteorder="big"))        # Send tilt x data
+            self.ser.write(int(tilty_data).to_bytes(4, byteorder="big"))        # Send tilt y data
+            
+            # If receive start command
+            if int.from_bytes(self.ser.read(1), "big") == 0xf0:
+                self.stop = False
+                data = int.from_bytes(self.ser.read(1), "big")
+                while data != 0x0f:
+                    if self.stop:
+                        self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
+                        self.stop = False
+                    dx = (data & 0xc0) >> 6 - 2
+                    dy = ((data & 0x30) >> 4) - 2
+                    self.update_last(0x10, self.current_last(0x10) + (dx * step))
+                    self.update_last(0x1f, self.current_last(0x1f) + (dy * step))
+                    data = int.from_bytes(self.ser.read(1), "big")
+                
             
             
             
