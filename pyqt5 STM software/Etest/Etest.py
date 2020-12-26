@@ -56,7 +56,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.setFixedSize(self.width(), self.height())
 
         # define variables
-        self.dac_range = 10     # dac range variable
+        self.dac_range = [10,10,10]            # dac range variable: 0: I/O, 1: Ramp Test, 2: Square Wave
         self.range_text_dict = {2: {0: '-10.24V to +10.24V', 1: '-5.12 V to +5.12 V', \
                                     2: '-2.56 V to +2.56 V', 5: '0 to 10.24 V', \
                                     6: '0 to 5.12 V'}, \
@@ -69,7 +69,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.ptr2 = 0                          # Ramp Test | ramp plot update count
         self.ptr1 = 0                          # Oscilloscope | plot update count
         self.osci_nsample_data = []            # Oscilloscope | N sample data
-        self.osci_continuous_data = [] * 100   # Oscilloscope | Continuous data
+        self.osci_continuous_data = np.empty(300)         # Oscilloscope | Continuous data
 
 
         # adc | pushButton
@@ -162,17 +162,17 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.rtest_ramp_plot.setDownsampling(mode='peak')
         self.rtest_ramp_plot.setClipToView(True)
         self.rtest_ramp_plot.addLegend()
-        self.rtest_output_curve1 = self.rtest_ramp_plot.plot(pen='w', name='RampTo')
-        self.rtest_output_curve2 = self.rtest_ramp_plot.plot(pen='y', name='RampMeasure - Output')
-        self.rtest_output_curve3 = self.rtest_ramp_plot.plot(pen='g', name='RampMeasure - Input')
+        self.rtest_output_curve = self.rtest_ramp_plot.plot(pen='w', name='Output')
+        self.rtest_input_curve = self.rtest_ramp_plot.plot(pen='y', name='Input')
 
         # Square Wave | pushButton
         self.pushButton_Start_SWave.clicked.connect(self.swave_start_emit)
         self.comboBox_Ch_SWave.currentIndexChanged.connect(ft.partial(self.ch_changed_emit, 4))
 
-        # # Oscilloscope | radioButton
-        # self.radioButton_NSample_Osci.toggled.connect(lambda :self.osci_get_mode(0))
-        # self.radioButton_Contin_Osci.toggled.connect(lambda :self.osci_get_mode(1))
+        # Oscilloscope | radioButton
+        self.radioButton_NSample_Osci.toggled.connect(lambda: self.osci_set_delay_range(0))
+        self.radioButton_Contin_Osci.toggled.connect(lambda: self.osci_set_delay_range(1))
+        self.radioButton_NSample_Osci.setChecked(True)
 
         # Oscilloscope | pushButton
         self.pushButton_SorS_Osci.clicked.connect(self.osci_start_emit)
@@ -321,7 +321,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
             elif ran == 14:
                 self.dac_b5.setChecked(True)
             self.set_dac_spinBox_range(ran)   # update spinBox range
-            self.dac_range = ran              # update range variable
+            self.dac_range[0] = ran              # update range variable
 
     # I/O | set dac spinBox range
     def set_dac_spinBox_range(self, ran):
@@ -425,7 +425,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
     def spin2scroll(self, dac):
         if dac == 0:   # 16 bit dac
             value = self.dac_val.value()
-            self.dac_bit.setValue(cnv.vb(value, 'd', self.dac_range))
+            self.dac_bit.setValue(cnv.vb(value, 'd', self.dac_range[0]))
         else:  # 20 bit dac
             value = self.bit20_val.value()
             self.bit20_bit.setValue(cnv.vb(value,'20'))
@@ -433,7 +433,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # I/O | convert scrollBar to spinBox
     def scroll2spin(self, dac, bit):
         if dac == 0:   # 16 bit dac
-            self.dac_val.setValue(cnv.bv(bit, 'd', self.dac_range))
+            self.dac_val.setValue(cnv.bv(bit, 'd', self.dac_range[0]))
         else:  # 20 bit dac
             self.bit20_val.setValue(cnv.bv(bit, '20'))
     
@@ -515,14 +515,16 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 final = cnv.vb(self.spinBox_FinVal_RTest.value(), '20')
                 step_size = (cnv.vb(self.spinBox_StepSize_RTest.value(), '20') - cnv.vb(0, '20'))
             else:                                       # 16 bit DAC
-                init = cnv.vb(self.spinBox_InitVal_RTest.value(), 'd', self.dac_range)
-                final = cnv.vb(self.spinBox_FinVal_RTest.value(), 'd', self.dac_range)
-                step_size = (cnv.vb(self.spinBox_StepSize_RTest.value(), 'd', self.dac_range) - cnv.vb(0, 'd', self.dac_range))
+                init = cnv.vb(self.spinBox_InitVal_RTest.value(), 'd', self.dac_range[1])
+                final = cnv.vb(self.spinBox_FinVal_RTest.value(), 'd', self.dac_range[1])
+                step_size = (cnv.vb(self.spinBox_StepSize_RTest.value(), 'd', self.dac_range[1]) - cnv.vb(0, 'd', self.dac_range[1]))
             if self.idling:                             # emit ramp signal
                 self.ptr2 = 0                           # init ramp update count
                 self.rtest_ramp_read_outdata = [] * 100 # init ramp read output data
                 self.rtest_ramp_read_indata = [] * 100  # init ramp read input data
-                self.rtest_ramp_data = [] * 100
+                self.rtest_ramp_data = [] * 100         # init ramp data
+                self.rtest_output_curve.clear()         # clear old plot
+                self.rtest_input_curve.clear()          # clear old plot
                 self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
             else:                                       # emit stop signal
                 # self.enable_serial(False)
@@ -536,8 +538,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
             voltage1 = cnv.vb(self.spinBox_V1_SWave.value(), '20')
             voltage2 = cnv.vb(self.spinBox_V2_SWave.value(), '20')
         else:                           # 16 bit DAC
-            voltage1 = cnv.vb(self.spinBox_V1_SWave.value(), 'd', self.dac_range)
-            voltage2 = cnv.vb(self.spinBox_V2_SWave.value(), 'd', self.dac_range)
+            voltage1 = cnv.vb(self.spinBox_V1_SWave.value(), 'd', self.dac_range[2])
+            voltage2 = cnv.vb(self.spinBox_V2_SWave.value(), 'd', self.dac_range[2])
         if self.idling:                 # emit signal
             self.swave_start_signal.emit(ch, voltage1, voltage2)
         else:                           # emit stop signal
@@ -581,11 +583,26 @@ class myEtest(QWidget, Ui_ElectronicTest):
         if self.idling:                             # emit signal
             self.ptr1 = 0                           # init osc update count
             self.osci_nsample_data = []             # init N sample data
-            self.osci_continuous_data = [] * 100    # init Continuous data
+            self.osci_continuous_data = np.empty(300)          # init Continuous data
+            self.osci_continuous_curve.clear()      # clear old plot
+            self.osci_nsample_curve.clear()         # clear old plot
             self.osci_start_signal.emit(ch, mode, N, avg_times, delay)
         else:                                       # emit stop signal
             self.enable_serial(False)
             self.stop_signal.emit()                 # flip dsp.stop to True
+
+    # Oscilloscope | change delay range based on mode
+    def osci_set_delay_range(self, index):
+        if index == 0:  # N sample mode selected
+            minimum = 0
+            maximum = 5000
+            self.spinBox_Delay_Osci.setMinimum(minimum)
+            self.spinBox_Delay_Osci.setMaximum(maximum)
+        else:           # Continuous mode selected
+            minimum = 1000
+            maximum = 65535
+            self.spinBox_Delay_Osci.setMinimum(minimum)
+            self.spinBox_Delay_Osci.setMaximum(maximum)
 
     # Enable serial
     def enable_serial(self, enable):

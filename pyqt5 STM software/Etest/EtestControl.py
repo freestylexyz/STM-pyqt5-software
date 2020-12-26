@@ -34,10 +34,10 @@ class myEtestControl(myMainMenu):
             self.dsp.dac_range(ch, ran)                             # output to dsp
             # !!! Function dsp.dac_range() requires channel, not addr?
             self.etest.set_dac_spinBox_range(ran)                   # update spinBox range from dsp
-            self.etest.dac_range = ran                              # update range variable
+            self.etest.dac_range[0] = ran                              # update range variable
             self.etest.load_dac_output(0, self.dsp.current_last(ch+16))     # update dac output view from dsp
 
-    # I/O & Ramp Text | channel changed slot
+    # I/O & Ramp Text & Square Wave | channel changed slot
     def ch_changed_slot(self, index, ch):
         if index == 0:                                                          # adc channel changed
             self.etest.load_range(index, self.dsp.adcrange[ch])                 # update range view from dsp
@@ -50,16 +50,20 @@ class myEtestControl(myMainMenu):
             if ch != 16:                                                        # 16 bit dac
                 self.etest.set_spinBox_range(index, ch, self.dsp.dacrange[ch])  # update spinBox range from dsp
                 self.etest.set_range_text(index, self.dsp.dacrange[ch])         # update range view from dsp
+                self.etest.dac_range[1] = self.dsp.dacrange[ch]                 # update range variable
             else:                                                               # 20 bit dac
                 self.etest.set_spinBox_range(index, ch, 16)                     # update spinBox range from dsp
                 self.etest.set_range_text(index, 16)                            # update range view from dsp
+                self.etest.dac_range[1] = 16                                    # update range variable
         elif index == 4:                                                        # square wave output
             if ch != 16:                                                        # 16 bit dac
                 self.etest.set_spinBox_range(index, ch, self.dsp.dacrange[ch])  # update spinBox range from dsp
                 self.etest.set_range_text(index, self.dsp.dacrange[ch])         # update range view from dsp
+                self.etest.dac_range[2] = self.dsp.dacrange[ch]                 # update range variable
             else:                                                               # 20 bit dac
                 self.etest.set_spinBox_range(index, ch, 16)                     # update spinBox range from dsp
                 self.etest.set_range_text(index, 16)                            # update range view from dsp
+                self.etest.dac_range[2] = 16                                    # update range variable
 
     # I/O | adc input button slot
     def adc_input_slot(self):
@@ -113,13 +117,13 @@ class myEtestControl(myMainMenu):
             tmp1 = self.etest.rtest_ramp_read_outdata
             self.etest.rtest_ramp_read_outdata = [] * (len(self.etest.rtest_ramp_read_outdata) * 2)
             self.etest.rtest_ramp_read_outdata[:len(tmp1)] = tmp1
-        self.etest.rtest_output_curve2.setData(self.etest.rtest_ramp_read_outdata[:self.etest.ptr2])
+        self.etest.rtest_output_curve.setData(self.etest.rtest_ramp_read_outdata[:self.etest.ptr2])
 
         if self.etest.ptr2 >= len(self.etest.rtest_ramp_read_indata):
             tmp2 = self.etest.rtest_ramp_read_indata
             self.etest.rtest_ramp_read_indata = [] * (len(self.etest.rtest_ramp_read_indata) * 2)
             self.etest.rtest_ramp_read_indata[:len(tmp2)] = tmp2
-        self.etest.rtest_output_curve3.setData(self.etest.rtest_ramp_read_indata[:self.etest.ptr2])
+        self.etest.rtest_input_curve.setData(self.etest.rtest_ramp_read_indata[:self.etest.ptr2])
 
     # Ramp Test | update ramp data
     def ramp_update(self, channel, ramp_data):
@@ -135,7 +139,7 @@ class myEtestControl(myMainMenu):
             tmp1 = self.etest.rtest_ramp_data
             self.etest.rtest_ramp_data = [] * (len(self.etest.rtest_ramp_data) * 2)
             self.etest.rtest_ramp_data[:len(tmp1)] = tmp1
-        self.etest.rtest_output_curve1.setData(self.etest.rtest_ramp_data[:self.etest.ptr2])
+        self.etest.rtest_output_curve.setData(self.etest.rtest_ramp_data[:self.etest.ptr2])
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):
@@ -161,7 +165,7 @@ class myEtestControl(myMainMenu):
             self.etest.idling = False
             if mode == 0:   # N sample
                 rdata = self.dsp.osc_N(ch*4+0xC0, N, avg_times, delay)
-                data = cnv.bv(rdata, 'a', self.dsp.adcrange[ch])
+                data = [cnv.bv(i, 'a', self.dsp.adcrange[ch]) for i in rdata]
                 self.etest.osci_nsample_data = data
                 self.etest.osci_nsample_curve.setData(self.etest.osci_nsample_data)
             else:           # Continuous
@@ -180,13 +184,12 @@ class myEtestControl(myMainMenu):
     def osci_update(self, rdata):
         ch = self.etest.osci_get_ch()
         data = cnv.bv(rdata, 'a', self.dsp.adcrange[ch])
-        self.etest.osci_continuous_data += [data]
+        self.etest.osci_continuous_data[:-1] = self.etest.osci_continuous_data[1:]
+        self.etest.osci_continuous_data[-1] = data
         self.etest.ptr1 += 1
-        if self.etest.ptr1 >= len(self.etest.osci_continuous_data):
-            tmp1 = self.etest.osci_continuous_data
-            self.etest.osci_continuous_data = [] * (len(self.etest.osci_continuous_data) * 2)
-            self.etest.osci_continuous_data[:len(tmp1)] = tmp1
-        self.etest.osci_continuous_curve.setData(self.etest.osci_continuous_data[:self.etest.ptr1])
+        self.etest.osci_continuous_curve.setData(self.etest.osci_continuous_data)
+        self.etest.osci_continuous_curve.setPos(self.etest.ptr1, 0)
+
 
     # init current tab
     def init_tab_slot(self, index):
