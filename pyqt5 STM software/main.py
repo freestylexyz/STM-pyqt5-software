@@ -174,7 +174,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.write_cnfg()       # Write configuration file
             event.accept()          # Accept close event
         else:
-            QMessageBox.warning(None,"STM","Close top window first!", QMessageBox.Ok)   # Pop out window to remind close the tip window
+            QMessageBox.warning(None, "STM", "Close top window first!", QMessageBox.Ok)   # Pop out window to remind close the tip window
             event.ignore()          # Reject close event
 
     
