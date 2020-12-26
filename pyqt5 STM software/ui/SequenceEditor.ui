@@ -15,20 +15,20 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
    <item row="0" column="1">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="Mode">
      <property name="title">
       <string>Mode</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="radioButton_Deposition_Mode">
         <property name="text">
          <string>Deposition</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="radioButton_ReadSeq_Mode">
         <property name="text">
          <string>Read Sequence</string>
         </property>
@@ -38,20 +38,20 @@
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="Bias">
      <property name="title">
       <string>Bias bit</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton_3">
+       <widget class="QRadioButton" name="radioButton_16bit_Bias">
         <property name="text">
          <string>16 bit</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButton_4">
+       <widget class="QRadioButton" name="radioButton_20bit_Bias">
         <property name="text">
          <string>20 bit</string>
         </property>
@@ -61,7 +61,7 @@
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
-    <widget class="QWidget" name="widget" native="true">
+    <widget class="QWidget" name="Edit" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -79,7 +79,7 @@
        <number>14</number>
       </property>
       <item row="3" column="1">
-       <widget class="QPushButton" name="pushButton_6">
+       <widget class="QPushButton" name="pushButton_Simulation_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -92,7 +92,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="pushButton_Save_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -105,7 +105,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_8">
+       <widget class="QPushButton" name="pushButton_Remove_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -118,7 +118,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pushButton_Insert_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -131,7 +131,7 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="pushButton_Validate_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -144,7 +144,7 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_AddStep_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -157,7 +157,7 @@
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QPushButton" name="pushButton_5">
+       <widget class="QPushButton" name="pushButton_AddtoList_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -170,7 +170,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QPushButton" name="pushButton_10">
+       <widget class="QPushButton" name="pushButton_Cancel_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -183,7 +183,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QPushButton" name="pushButton_9">
+       <widget class="QPushButton" name="pushButton_Clear_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -196,7 +196,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QPushButton" name="pushButton_7">
+       <widget class="QPushButton" name="pushButton_SaveAs_Edit">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -212,7 +212,7 @@
     </widget>
    </item>
    <item row="1" column="1" colspan="2">
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="Preamp">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -230,21 +230,21 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton_5">
+       <widget class="QRadioButton" name="radioButton_Gain8_Preamp">
         <property name="text">
          <string>8</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton_6">
+       <widget class="QRadioButton" name="radioButton_Gain9_Preamp">
         <property name="text">
          <string>9</string>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="radioButton_7">
+       <widget class="QRadioButton" name="radioButton_Gain10_Preamp">
         <property name="text">
          <string>10</string>
         </property>
@@ -254,7 +254,7 @@
     </widget>
    </item>
    <item row="0" column="0" rowspan="3">
-    <widget class="QWidget" name="widget_2" native="true">
+    <widget class="QWidget" name="Table" native="true">
      <property name="minimumSize">
       <size>
        <width>360</width>
@@ -286,10 +286,10 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="lineEdit_Name_SeqEditor"/>
       </item>
       <item row="0" column="3">
-       <widget class="QCheckBox" name="checkBox_8">
+       <widget class="QCheckBox" name="checkBox_FeedbackON__SeqEditor">
         <property name="text">
          <string>Moving Feedback ON</string>
         </property>

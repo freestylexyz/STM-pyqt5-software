@@ -21,7 +21,7 @@
        <number>9</number>
       </property>
       <item row="6" column="1">
-       <widget class="QSpinBox" name="spinBox_3">
+       <widget class="QSpinBox" name="spinBox_ScanDelay_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -37,7 +37,7 @@
        </widget>
       </item>
       <item row="6" column="3">
-       <widget class="QSpinBox" name="spinBox_5">
+       <widget class="QSpinBox" name="spinBox_StayDelay_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -79,7 +79,7 @@
        </widget>
       </item>
       <item row="9" column="0" rowspan="2">
-       <widget class="QGroupBox" name="groupBox_3">
+       <widget class="QGroupBox" name="groupBox_PlaneFit_Track">
         <property name="title">
          <string>Plane fit</string>
         </property>
@@ -100,7 +100,7 @@
           <number>6</number>
          </property>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox">
+          <widget class="QDoubleSpinBox" name="spinBox_X_PlaneFit">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -122,7 +122,7 @@
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+          <widget class="QDoubleSpinBox" name="spinBox_Y_PlaneFit">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -189,7 +189,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="QSpinBox" name="spinBox_TrackSize_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -218,7 +218,7 @@
        </widget>
       </item>
       <item row="9" column="1">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="radioButton_Max_PlaneFit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -231,7 +231,7 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="comboBox_ReadCh_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -257,7 +257,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QSpinBox" name="spinBox_2">
+       <widget class="QSpinBox" name="spinBox_StepSize_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -286,7 +286,7 @@
        </widget>
       </item>
       <item row="9" column="2">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="radioButton_Min_PlaneFit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -315,7 +315,7 @@
        </widget>
       </item>
       <item row="5" column="3">
-       <widget class="QSpinBox" name="spinBox_4">
+       <widget class="QSpinBox" name="spinBox_Avg_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -331,7 +331,7 @@
        </widget>
       </item>
       <item row="3" column="2" colspan="2">
-       <widget class="QScrollBar" name="horizontalScrollBar">
+       <widget class="QScrollBar" name="scrollBar_TrackSize_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -344,7 +344,7 @@
        </widget>
       </item>
       <item row="4" column="2" colspan="2">
-       <widget class="QScrollBar" name="horizontalScrollBar_2">
+       <widget class="QScrollBar" name="scrollBar_StepSize_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -357,7 +357,7 @@
        </widget>
       </item>
       <item row="10" column="1" colspan="3">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_Start_Track">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>

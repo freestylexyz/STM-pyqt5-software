@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="OrderandDirection">
      <property name="title">
       <string>Scan order and Read direction</string>
      </property>
@@ -24,14 +24,14 @@
        <widget class="QWidget" name="widget" native="true">
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QRadioButton" name="radioButton">
+          <widget class="QRadioButton" name="radioButton_XFirst_OrderandDirection">
            <property name="text">
             <string>X first</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QRadioButton" name="radioButton_2">
+          <widget class="QRadioButton" name="radioButton_YFirst_OrderandDirection">
            <property name="text">
             <string>Y first</string>
            </property>
@@ -44,14 +44,14 @@
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
-          <widget class="QRadioButton" name="radioButton_3">
+          <widget class="QRadioButton" name="radioButton_ReadForward_OrderandDirection">
            <property name="text">
             <string>Read Forward</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QRadioButton" name="radioButton_4">
+          <widget class="QRadioButton" name="radioButton_ReadBackward_OrderandDirection">
            <property name="text">
             <string>Read Backward</string>
            </property>
@@ -64,7 +64,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBox_Tip_ScanOptions">
      <property name="title">
       <string>Tip protection</string>
      </property>
@@ -73,7 +73,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="QSpinBox" name="spinBox_Retract_Tip">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -110,7 +110,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+       <widget class="QDoubleSpinBox" name="spinBox_SaferIset_Tip">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -136,7 +136,7 @@
     </widget>
    </item>
    <item row="0" column="2" rowspan="2">
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="groupBox_Scan_ScanOptions">
      <property name="title">
       <string>Scan protection</string>
      </property>
@@ -145,14 +145,14 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButton_7">
+       <widget class="QRadioButton" name="radioButton_Stop_Scan">
         <property name="text">
          <string>Stop Scan</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0" colspan="3">
-       <widget class="QRadioButton" name="radioButton_9">
+       <widget class="QRadioButton" name="radioButton_AutoPre_Scan">
         <property name="text">
          <string>Auto to previous midpoint and continue</string>
         </property>
@@ -172,14 +172,14 @@
        </widget>
       </item>
       <item row="2" column="0" colspan="3">
-       <widget class="QRadioButton" name="radioButton_8">
+       <widget class="QRadioButton" name="radioButton_Auto0_Scan">
         <property name="text">
          <string>Auto 0 and continue</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+       <widget class="QDoubleSpinBox" name="spinBox_ZoutLmit_Scan">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -205,7 +205,7 @@
     </widget>
    </item>
    <item row="1" column="0" rowspan="2" colspan="2">
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBox_Delay_ScanOptions">
      <property name="title">
       <string>Delay</string>
      </property>
@@ -272,7 +272,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton_6">
+       <widget class="QRadioButton" name="radioButton_Variable_Delay">
         <property name="text">
          <string>Variable</string>
         </property>
@@ -308,14 +308,14 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton_5">
+       <widget class="QRadioButton" name="radioButton_Fixed_Delay">
         <property name="text">
          <string>Fixed</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="spinBox_2">
+       <widget class="QSpinBox" name="spinBox_MoveControl_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -343,7 +343,7 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QSpinBox" name="spinBox_3">
+       <widget class="QSpinBox" name="spinBox_MoveOFF_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -371,7 +371,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QSpinBox" name="spinBox_4">
+       <widget class="QSpinBox" name="spinBox_MoveON_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -399,7 +399,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QSpinBox" name="spinBox_5">
+       <widget class="QSpinBox" name="spinBox_ReadControl_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -427,7 +427,7 @@
        </widget>
       </item>
       <item row="4" column="2">
-       <widget class="QSpinBox" name="spinBox_6">
+       <widget class="QSpinBox" name="spinBox_ReadOFF_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -455,7 +455,7 @@
        </widget>
       </item>
       <item row="4" column="3">
-       <widget class="QSpinBox" name="spinBox_7">
+       <widget class="QSpinBox" name="spinBox_ReadON_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -483,7 +483,7 @@
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QSpinBox" name="spinBox_8">
+       <widget class="QSpinBox" name="spinBox_LineControl_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -511,7 +511,7 @@
        </widget>
       </item>
       <item row="6" column="2">
-       <widget class="QSpinBox" name="spinBox_9">
+       <widget class="QSpinBox" name="spinBox_LineOFF_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -539,7 +539,7 @@
        </widget>
       </item>
       <item row="6" column="3">
-       <widget class="QSpinBox" name="spinBox_10">
+       <widget class="QSpinBox" name="spinBox_LineON_Delay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -570,7 +570,7 @@
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QGroupBox" name="groupBox_5">
+    <widget class="QGroupBox" name="groupBox_Feedback_ScanOptions">
      <property name="title">
       <string>Feedback off before and on after</string>
      </property>
@@ -579,7 +579,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="checkBox_MatchCurr_Feedback">
         <property name="text">
          <string>Match current</string>
         </property>
@@ -599,14 +599,14 @@
        </widget>
       </item>
       <item row="3" column="0" colspan="4">
-       <widget class="QScrollBar" name="horizontalScrollBar">
+       <widget class="QScrollBar" name="scrollBar_Advance_Feedback">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="spinBox_11">
+       <widget class="QSpinBox" name="spinBox_Advance_Feedback">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>

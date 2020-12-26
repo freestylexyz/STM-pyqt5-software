@@ -42,7 +42,7 @@
           <number>19</number>
          </property>
          <item row="0" column="2">
-          <widget class="QGraphicsView" name="graphicsView_3">
+          <widget class="QGraphicsView" name="graphicsView_After_Deposition">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -58,7 +58,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QGraphicsView" name="graphicsView_4">
+          <widget class="QGraphicsView" name="graphicsView_Before_Deposition">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -80,7 +80,7 @@
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QGridLayout" name="gridLayout_12">
          <item row="0" column="0">
-          <widget class="QGraphicsView" name="graphicsView">
+          <widget class="QGraphicsView" name="graphicsView_During_Deposition">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -105,7 +105,7 @@
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QGridLayout" name="gridLayout_10">
       <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBox">
+       <widget class="QGroupBox" name="groupBox_Seq_Deposition">
         <property name="title">
          <string>Sequence</string>
         </property>
@@ -114,7 +114,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label_Seq_Deposition">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -139,7 +139,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="pushButton_SeqEditor_Deposition">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -155,7 +155,7 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QGroupBox" name="groupBox_4">
+       <widget class="QGroupBox" name="groupBox_Read_Deposition">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -186,7 +186,7 @@
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QComboBox" name="comboBox">
+          <widget class="QComboBox" name="comboBox_Ch_Read">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -238,7 +238,7 @@
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QSpinBox" name="spinBox_4">
+          <widget class="QSpinBox" name="spinBox_Num_Read">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -267,7 +267,7 @@
           </widget>
          </item>
          <item row="1" column="7">
-          <widget class="QSpinBox" name="spinBox_6">
+          <widget class="QSpinBox" name="spinBox_Delay_Read">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -283,7 +283,7 @@
           </widget>
          </item>
          <item row="0" column="7">
-          <widget class="QSpinBox" name="spinBox_9">
+          <widget class="QSpinBox" name="spinBox_AvgNum_Read">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -365,7 +365,7 @@
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QSpinBox" name="spinBox_7">
+          <widget class="QSpinBox" name="spinBox_Wait_Pulse">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -381,7 +381,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_2">
+          <widget class="QComboBox" name="comboBox_Ch_Pulse">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -407,7 +407,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_5">
+          <widget class="QSpinBox" name="spinBox_AvgNum_Pulse">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -436,7 +436,7 @@
           </widget>
          </item>
          <item row="2" column="4">
-          <widget class="QSpinBox" name="spinBox_8">
+          <widget class="QSpinBox" name="spinBox_Delay_Pulse">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -455,7 +455,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QGroupBox" name="groupBox_6">
+       <widget class="QGroupBox" name="groupBox_NoRead_Deposition">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -498,7 +498,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox_10">
+          <widget class="QSpinBox" name="spinBox_Wait_NoRead">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -517,7 +517,7 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QGroupBox" name="groupBox_7">
+       <widget class="QGroupBox" name="groupBox_Continuous_Deposition">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -563,7 +563,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox_14">
+          <widget class="QSpinBox" name="spinBox_Delay_Continuous">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -592,7 +592,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_15">
+          <widget class="QSpinBox" name="spinBox_Avg_Continuous">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -611,7 +611,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QGroupBox" name="groupBox_8">
+       <widget class="QGroupBox" name="groupBox_ReadNSample_Deposition">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -648,7 +648,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_11">
+          <widget class="QSpinBox" name="spinBox_Num_ReadNSample">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -667,7 +667,7 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="pushButton_Stop_Deposition">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -686,7 +686,7 @@
        </widget>
       </item>
       <item row="4" column="1" colspan="2">
-       <widget class="QGroupBox" name="groupBox_9">
+       <widget class="QGroupBox" name="groupBox_ReadUntil_Deposition">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -714,7 +714,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox_12">
+          <widget class="QSpinBox" name="spinBox_Change_ReadUntil">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -743,7 +743,7 @@
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QSpinBox" name="spinBox_13">
+          <widget class="QSpinBox" name="spinBox_StopNum_ReadUntil">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -759,7 +759,7 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="2">
-          <widget class="QRadioButton" name="radioButton">
+          <widget class="QRadioButton" name="radioButton_Continuous_ReadUntil">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -772,7 +772,7 @@
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QRadioButton" name="radioButton_2">
+          <widget class="QRadioButton" name="radioButton_NSample_ReadUntil">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -807,7 +807,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox">
+          <widget class="QSpinBox" name="spinBox_Duration_PokeTip">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -836,7 +836,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_2">
+          <widget class="QSpinBox" name="spinBox_Bias_PokeTip">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -865,7 +865,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_3">
+          <widget class="QSpinBox" name="spinBox_DeltaZ_PokeTip">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -881,7 +881,7 @@
           </widget>
          </item>
          <item row="3" column="0" colspan="2">
-          <widget class="QScrollBar" name="horizontalScrollBar">
+          <widget class="QScrollBar" name="scrollBar_PokeTip">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -894,7 +894,7 @@
        <widget class="QWidget" name="widget" native="true">
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="pushButton_Save_Deposition">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -907,7 +907,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="pushButton_DoIt_Deposition">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -923,7 +923,7 @@
        </widget>
       </item>
       <item row="3" column="0" rowspan="2">
-       <widget class="QGroupBox" name="groupBox_3">
+       <widget class="QGroupBox" name="groupBox_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -935,7 +935,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="1">
-          <widget class="QScrollBar" name="horizontalScrollBar_2">
+          <widget class="QScrollBar" name="scrollBar_Max_VerScale">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -955,14 +955,14 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QScrollBar" name="horizontalScrollBar_3">
+          <widget class="QScrollBar" name="scrollBar_Min_VerScale">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item row="3" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="checkBox_Auto_VerScale">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>

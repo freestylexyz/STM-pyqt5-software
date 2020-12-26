@@ -27,14 +27,14 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="radioButton_FeedbackON_BetPasses">
         <property name="text">
          <string>ON</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="radioButton_FeedbackOFF_BetPasses">
         <property name="text">
          <string>OFF</string>
         </property>
@@ -44,7 +44,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBox_ZDrift_BetPasses">
      <property name="title">
       <string>Z Drift correction</string>
      </property>
@@ -56,14 +56,14 @@
        <number>9</number>
       </property>
       <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="checkBox_FeedbackON_ZDrift">
         <property name="text">
          <string>Feedback On</string>
         </property>
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QSpinBox" name="spinBox_2">
+       <widget class="QSpinBox" name="spinBox_Delay1_ZDrift">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -79,7 +79,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="checkBox_2">
+       <widget class="QCheckBox" name="checkBox_MatchCurr_ZDrift">
         <property name="text">
          <string>Match Curent</string>
         </property>
@@ -106,7 +106,7 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="QSpinBox" name="spinBox_DoZCorrection_ZDrift">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -125,7 +125,7 @@
        </widget>
       </item>
       <item row="3" column="3">
-       <widget class="QSpinBox" name="spinBox_3">
+       <widget class="QSpinBox" name="spinBox_Delay2_ZDrift">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -148,7 +148,7 @@
        </widget>
       </item>
       <item row="3" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_CorrectionPoint_ZDrift">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -183,7 +183,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBox_XYDrift_BetPasses">
      <property name="title">
       <string>XY Drift correction</string>
      </property>
@@ -208,7 +208,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QSpinBox" name="spinBox_4">
+       <widget class="QSpinBox" name="spinBox_DoXYDrift_XYDrift">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -231,21 +231,21 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox_3">
+       <widget class="QCheckBox" name="checkBox_Scan_XYDrift">
         <property name="text">
          <string>Scan</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="checkBox_4">
+       <widget class="QCheckBox" name="checkBox_Tracking_XYDrift">
         <property name="text">
          <string>Tracking</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1" colspan="3">
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="pushButton_TrackingPoint_XYDrift">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -258,7 +258,7 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="3">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pushButton_Pattern_XYDrift">
         <property name="minimumSize">
          <size>
           <width>0</width>

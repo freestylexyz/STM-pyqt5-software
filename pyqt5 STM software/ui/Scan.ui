@@ -18,7 +18,7 @@
     <widget class="QWidget" name="widget_5" native="true">
      <layout class="QGridLayout" name="gridLayout_9">
       <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_10">
+       <widget class="QPushButton" name="pushButton_Info_Scan">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -31,7 +31,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_11">
+       <widget class="QPushButton" name="pushButton_Load_Scan">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -44,7 +44,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QPushButton" name="pushButton_12">
+       <widget class="QPushButton" name="pushButton_SaveAll_Scan">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -57,7 +57,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QPushButton" name="pushButton_13">
+       <widget class="QPushButton" name="pushButton_Start_Scan">
         <property name="minimumSize">
          <size>
           <width>140</width>
@@ -73,7 +73,7 @@
     </widget>
    </item>
    <item row="0" column="1" colspan="2">
-    <widget class="QFrame" name="frame">
+    <widget class="QFrame" name="XY">
      <property name="frameShape">
       <enum>QFrame::Box</enum>
      </property>
@@ -116,14 +116,14 @@
           </widget>
          </item>
          <item row="3" column="0" colspan="2">
-          <widget class="QScrollBar" name="horizontalScrollBar_2">
+          <widget class="QScrollBar" name="scrollBar_Xin_XY">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QSpinBox" name="spinBox_5">
+          <widget class="QSpinBox" name="spinBox_XinInput_XY">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -145,7 +145,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QSpinBox" name="spinBox_7">
+          <widget class="QSpinBox" name="spinBox_XinIndication_XY">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -170,7 +170,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_8">
+          <widget class="QSpinBox" name="spinBox_YinIndication_XY">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -214,7 +214,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_6">
+          <widget class="QSpinBox" name="spinBox_YinInput_XY">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -236,7 +236,7 @@
           </widget>
          </item>
          <item row="0" column="2" rowspan="4">
-          <widget class="QScrollBar" name="verticalScrollBar_2">
+          <widget class="QScrollBar" name="scrollBar_Yin_XY">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -256,28 +256,28 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QRadioButton" name="radioButton_5">
+          <widget class="QRadioButton" name="radioButton_Gain0_1_XY">
            <property name="text">
             <string>0.1</string>
            </property>
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QRadioButton" name="radioButton_6">
+          <widget class="QRadioButton" name="radioButton_Gain1_XY">
            <property name="text">
             <string>1</string>
            </property>
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QRadioButton" name="radioButton_7">
+          <widget class="QRadioButton" name="radioButton_Gain10_XY">
            <property name="text">
             <string>10</string>
            </property>
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="pushButton_Zero_XY">
            <property name="minimumSize">
             <size>
              <width>90</width>
@@ -290,7 +290,7 @@
           </widget>
          </item>
          <item row="0" column="5">
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="pushButton_Send_XY">
            <property name="minimumSize">
             <size>
              <width>90</width>
@@ -318,14 +318,14 @@
           <number>9</number>
          </property>
          <item row="0" column="2" rowspan="4">
-          <widget class="QScrollBar" name="verticalScrollBar">
+          <widget class="QScrollBar" name="scrollBar_Yoffset_XY">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_4">
+          <widget class="QSpinBox" name="spinBox_YoffsetIndication_XY">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -369,14 +369,14 @@
           </widget>
          </item>
          <item row="3" column="0" colspan="2">
-          <widget class="QScrollBar" name="horizontalScrollBar">
+          <widget class="QScrollBar" name="scrollBar_Xoffset_XY">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_2">
+          <widget class="QSpinBox" name="spinBox_YoffsetInput_XY">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -398,7 +398,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QSpinBox" name="spinBox">
+          <widget class="QSpinBox" name="spinBox_XoffsetInput_XY">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -439,7 +439,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QSpinBox" name="spinBox_3">
+          <widget class="QSpinBox" name="spinBox_XoffsetIndication_XY">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -479,7 +479,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0" colspan="6">
-       <widget class="QGraphicsView" name="graphicsView">
+       <widget class="QGraphicsView" name="graphicsView_Scan">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>1</horstretch>
@@ -489,7 +489,7 @@
        </widget>
       </item>
       <item row="1" column="0" colspan="6">
-       <widget class="QGraphicsView" name="graphicsView_2">
+       <widget class="QGraphicsView" name="graphicsView_ColorBar_Scan">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -511,7 +511,7 @@
        </widget>
       </item>
       <item row="2" column="5">
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="checkBox_PlaneFit_Scan">
         <property name="text">
          <string>Plane fit</string>
         </property>
@@ -525,21 +525,21 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="radioButton_Gray_Scan">
         <property name="text">
          <string>Gray</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QRadioButton" name="radioButton_3">
+       <widget class="QRadioButton" name="radioButton_Color_Scan">
         <property name="text">
          <string>Color</string>
         </property>
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QRadioButton" name="radioButton_4">
+       <widget class="QRadioButton" name="radioButton_Reverse_Scan">
         <property name="text">
          <string>Reverse</string>
         </property>
@@ -549,7 +549,7 @@
     </widget>
    </item>
    <item row="2" column="2" rowspan="2">
-    <widget class="QFrame" name="frame_3">
+    <widget class="QFrame" name="ScanControl">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -606,7 +606,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QPushButton" name="pushButton_9">
+       <widget class="QPushButton" name="pushButton_SeqEditor_ScanControl">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -625,7 +625,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLabel" name="label_19">
+       <widget class="QLabel" name="label_Seq_ScanControl">
         <property name="minimumSize">
          <size>
           <width>60</width>
@@ -644,7 +644,7 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QScrollBar" name="horizontalScrollBar_4">
+       <widget class="QScrollBar" name="scrollBar_StepSize_ScanControl">
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -657,7 +657,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QScrollBar" name="horizontalScrollBar_3">
+       <widget class="QScrollBar" name="scrollBar_ScanSize_ScanControl">
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -670,7 +670,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_10">
+       <widget class="QSpinBox" name="spinBox_StepSize_ScanControl">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -692,7 +692,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox_9">
+       <widget class="QSpinBox" name="spinBox_ScanSize_ScanControl">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -732,7 +732,7 @@
        <number>6</number>
       </property>
       <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_7">
+       <widget class="QPushButton" name="pushButton_SendOptions_Scan">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -745,7 +745,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_8">
+       <widget class="QPushButton" name="pushButton_ScanOptions_Scan">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -761,7 +761,7 @@
     </widget>
    </item>
    <item row="1" column="1" rowspan="3">
-    <widget class="QFrame" name="frame_2">
+    <widget class="QFrame" name="ViewControl">
      <property name="minimumSize">
       <size>
        <width>110</width>
@@ -788,7 +788,7 @@
        <number>14</number>
       </property>
       <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="pushButton_ZoomIn_ViewControl">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -801,7 +801,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="pushButton_ZoomOut_ViewControl">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -814,7 +814,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="pushButton_5">
+       <widget class="QPushButton" name="pushButton_Full_ViewControl">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -827,7 +827,7 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QPushButton" name="pushButton_6">
+       <widget class="QPushButton" name="pushButton_Detail_ViewControl">
         <property name="minimumSize">
          <size>
           <width>0</width>
