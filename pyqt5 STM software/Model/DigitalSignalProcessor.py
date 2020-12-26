@@ -21,7 +21,7 @@ class myDSP(QObject):
     oscc_signal = pyqtSignal(int)           # Continuous oscilloscope data emit signal
     rampMeasure_signal = pyqtSignal(list)   # Ramp measure data emit signal
     giantStep_signal = pyqtSignal(int)      # Gian step number signal
-    rampTo_signal = pyqtSignal(int)         # Ramp to signal
+    rampTo_signal = pyqtSignal(int, int)         # Ramp to signal
     rampDiag_signal = pyqtSignal(int, int)  # Ramp diagonal signal
     scan_signal = pyqtSignal(list)          # Ramp scan data emit signal
     
@@ -700,7 +700,7 @@ class myDSP(QObject):
                         break
                     else:
                         self.update_last(channel, i)
-                        self.rampTo_signal.emit(channel)
+                        self.rampTo_signal.emit(channel, i)
                         i += step
                     if checkstop and self.stop:    # If check stop is enabled and stop event is issued
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
