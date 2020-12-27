@@ -17,13 +17,13 @@ class myDSP(QObject):
     
     # Define signals
     
-    succeed_signal = pyqtSignal(bool)       # Serial port open signal
-    oscc_signal = pyqtSignal(int)           # Continuous oscilloscope data emit signal
-    rampMeasure_signal = pyqtSignal(list)   # Ramp measure data emit signal
-    giantStep_signal = pyqtSignal(int)      # Gian step number signal
-    rampTo_signal = pyqtSignal(int, int)         # Ramp to signal
-    rampDiag_signal = pyqtSignal(int, int)  # Ramp diagonal signal
-    scan_signal = pyqtSignal(list)          # Ramp scan data emit signal
+    succeed_signal = pyqtSignal(bool)                   # Serial port open signal
+    oscc_signal = pyqtSignal(int)                       # Continuous oscilloscope data emit signal
+    rampMeasure_signal = pyqtSignal(list)               # Ramp measure data emit signal
+    giantStep_signal = pyqtSignal(int)                  # Gian step number signal
+    rampTo_signal = pyqtSignal(int, int)                # Ramp to signal
+    rampDiag_signal = pyqtSignal(int, int, int, int)    # Ramp diagonal signal
+    scan_signal = pyqtSignal(list)                      # Ramp scan data emit signal
     
     #
     # Initial class and all flags and status variable
@@ -477,7 +477,7 @@ class myDSP(QObject):
     #
     # square - This function ask DSP to output a square wave of a specific channel
     #
-    def square(self, channel, bias1, bias2):
+    def square(self, channel, bias1, bias2, delay):
         if self.ok():
             channel = channel & 0x3f
             bias1 = bias1 & 0x0fffff
@@ -487,6 +487,7 @@ class myDSP(QObject):
             self.ser.write(int(channel).to_bytes(1, byteorder="big"))   # Send out channel data
             self.ser.write(int(bias1).to_bytes(3, byteorder="big"))     # Send out the first bias
             self.ser.write(int(bias2).to_bytes(3, byteorder="big"))     # Send out the second bias
+            self.ser.write(int(delay).to_bytes(2, byteorder="big"))     # Send out the delay
             
             # If receive start command
             if int.from_bytes(self.ser.read(1) ,"big") == 0xf0:
@@ -828,7 +829,7 @@ class myDSP(QObject):
                     else:
                         self.lastdac[channels - 16] = int(currents) & 0xffff
                         self.lastdac[channell - 16] = int(currentl) & 0xffff
-                        self.rampDiag_signal.emit(channels, channell)
+                        self.rampDiag_signal.emit(channels, channell, currents, currentl)
                         currents += steps
                         currentl += stepl
                     if checkstop and self.stop:    # If check stop is enabled and stop event is issued

@@ -8,10 +8,12 @@ Created on Sun Dec 20 13:52:32 2020
 import conversion as cnv
 import numpy as np
 import math
+import pickle
 
 class mySequence():
     def __init__(self, command_list = [], data_list = []):
         # Basic property
+        self.name = 'New Sequence'              # Intialize sequence name
         self.command_list = command_list        # Initialize command list
         self.data_list = data_list              # Intialize data list
         self.seq_num = len(self.command_list)   # Figure out sequence number
@@ -21,10 +23,9 @@ class mySequence():
             if (i >= 0xc0) and (i <= 0xdc):
                 self.read_num += 1
         
-        if self.seq_num > 0:
-            self.valid = True       # For dirct use without compile
-        else:
-            self.valid = False      # Need to be compiled
+        # Flag initialization
+        self.validation_required = False        # Initialize validation required to false
+        self.validated = False                  # Initialize validated to false
                 
         # Raw code
         self.command = []
@@ -36,41 +37,90 @@ class mySequence():
         # For compile use
         self.commandDict = {'Wait': [0x00, 0x00, 0x00000000, 0x00000000, 0xffffffff],\
                            'Match': [0x20, 0x00, 0x10000000, 0x00000000, 0x0000ffff],\
-                           'Dout': [0x40, 0x07, 0x00000000, 0x00000000, 0x00000001],\
+                           'Dout': [0x40, 0x03, 0x00000000, 0x00000000, 0x00000001],\
                            'Shift': [0x60, 0x1f, 0x10000000, 0x00000000, 0x000fffff],\
                            'Aout': [0x80, 0x1f, 0x00000000, 0x00000000, 0x000fffff],\
                            'Ramp': [0xa0, 0x1f, 0x00000000, 0xfff00000, 0x000fffff],\
                            'Read': [0xc0, 0x1c, 0x00000000, 0x00000000, 0x0000ffff],\
                            'ShiftRamp': [0xe0, 0x1f, 0x10000000, 0x7ff00000, 0x000fffff]}
         self.channelDict = {'Z offset fine': 2, 'Z offset': 3, 'Iset': 5, 'DAC6': 6, 'DAC7': 7, 'DAC8': 8, 'DAC9': 9, 'DAC11': 11, 'Bias' : 13,\
-                           'AIN0': 0x00, 'AIN1': 0x04, 'AIN2': 0x08, 'AIN3': 0x0c, 'AIN4': 0x10, 'AIN5': 0x14, 'ZOUT': 0x18, 'PREAMP': 0x1c}
+                           'AIN0': 0x00, 'AIN1': 0x04, 'AIN2': 0x08, 'AIN3': 0x0c, 'AIN4': 0x10, 'AIN5': 0x14, 'ZOUT': 0x18, 'PREAMP': 0x1c,\
+                           'DitherB': 0, 'DitherZ': 1, 'Feedback': 2, ' ': 0}
         self.dataDict = {'Wait': self.bb, 'Match': self.mb, 'Dout': self.bb, 'Shift': self.ab,\
                         'Aout': self.ab, 'Ramp': self.ab, 'Read': self.bb, 'ShiftRamp': self.ab}
         
-        # System status
+        # Sequence status
         self.mode = True                        # True for read sequence, False for deposition sequence
                                                 # Default read sequence
-        # !!! may need to optimze
-        self.range = [10] * 17                  # Default +/- 10V range for all
+        self.bias_dac = False                   # Default 16 bitDAC for bias
+        self.range = [10, 10, 14] + ([10] * 9) + [14, 9] + ([10] * 3)  # Default DAC range
         self.pream_gain = 9                     # Default preamp gain
-        self.dac = [0x8000] * 16 +  [0x80000]   # Default all DAC to middle scale
-        self.digital = [False] * 6              # Default all digital to false
+        self.dac = [0x8000] * 16 +  [0x828f5]   # Default DAC last output
+        self.dac[13] = 0x828f                   # Default 16bit bias last output
+        self.feedback = True                    # Default feedback on
+        self.ditherB = False                    # Default bias dither off
+        self.ditherZ = False                    # Default Z dither off
 
     
     #
     # Configure current STM setting
+    # If all system status same as previous sequence status, keep validated flag unchanged
+    # Otherwise validated flag set to False
     #
-    def configure(self, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac, lastdigital):
-        if bias_dac:
-            self.bias_mode = '20'
-            self.channel.update({'Bias' : 16})
+    def configure(self, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac, feedback, ditherB, ditherZ):
+        # Update bias DAC selection
+        if self.bias_dac == bias_dac:
+            self.validated = self.validated and True
         else:
-            self.bias_mode = 'd'
-            self.channel.update({'Bias' : 13})
-        self.range = dacrange
-        self.dac = lastdac + [last20bitdac]
-        self.digital = lastdigital
-        self.pream_gain = preamp_gain
+            self.validated = False
+            self.bias_dac = bias_dac
+            if self.bias_dac:
+                self.channelDict.update({'Bias' : 16})
+            else:
+                self.channelDict.update({'Bias' : 13})
+                
+        # Update pre-amp gain
+        if self.pream_gain == preamp_gain:
+            self.validated = self.validated and True
+        else:
+            self.validated = False
+            self.pream_gain = preamp_gain
+        
+        # Update all DAC range
+        if self.range == dacrange:
+            self.validated = self.validated and True
+        else:
+            self.validated = False
+            self.range = dacrange
+        
+        # Update all DAC last output
+        if self.dac == (lastdac + [last20bitdac]):
+            self.validated = self.validated and True
+        else:
+            self.validated = False
+            self.dac = lastdac + [last20bitdac]
+        
+        # Update feedback
+        if self.feedback == feedback:
+            self.validated = self.validated and True
+        else:
+            self.feedback = feedback
+            self.validated = False
+            
+        # Update Bias dither
+        if self.ditherB == ditherB:
+            self.validated = self.validated and True
+        else:
+            self.ditherB = ditherB
+            self.validated = False
+        
+        # Update Z dither
+        if self.ditherZ == ditherZ:
+            self.validated = self.validated and True
+        else:
+            self.ditherZ = ditherZ
+            self.validated = False
+        
 
     #
     # Load raw code
@@ -83,21 +133,18 @@ class mySequence():
         self.option1 = option1
         self.option2 = option2
         self.data = data
-    
-    #
-    # Load squence from file
-    #
-    def load_sequence(self):
-        pass
+        self.seq_num = len(self.command)
+        self.validation_required = True
 
     #
     # Validate raw code
     #
     def validation(self):
-        if self.mode:       # Validate read sequence
-            self.valid = True
-        else:               # Validate deposition sequence
-            self.valid = True
+        if self.validation_required:
+            if self.mode:       # Validate read sequence
+                self.validated = True
+            else:               # Validate deposition sequence
+                self.validated = True
     
     #
     # Simulate image, return image data
@@ -120,27 +167,30 @@ class mySequence():
     def build(self):
         self.command_list = []              # Initialize command list
         self.data_list = []                 # Intialize data list
-        self.seq_num = len(self.command)    # Total sequence number
         self.read_num = 0                   # Re-initialize read number
         
-        # Figure out read number
-        for i in range(self.seq_num):
-            comm = self.command[i]
-            comp = self.commandDict[comm]
-            ch = self.channelDict[self.channel[i]]
-            op1 = self.option1[i]
-            op2 = self.option2[i]
-            dstr = self.data[i]
-            
-            self.command_list += (self.comp[0] & 0xe0) | (ch & comp[1])
-            self.data_list += (self.dataDict[comm](dstr, ch) & comp[4]) | ((op2 << 20) & comp[3]) | ((op1 * comp[2]) & 0x10000000)
-            
-            if comm == 'Read':
-                self.read_num += 1
+        if self.validation_required and self.validated:
+            # Figure out read number
+            for i in range(self.seq_num):
+                comm = self.command[i]
+                comp = self.commandDict[comm]
+                ch = self.channelDict[self.channel[i]]
+                op1 = self.option1[i]
+                op2 = self.option2[i]
+                dstr = self.data[i]
+                
+                self.command_list += [(comp[0] & 0xe0) | (ch & comp[1])]
+                self.data_list += [(self.dataDict[comm](dstr, ch) & comp[4]) | ((op2 << 20) & comp[3]) | ((op1 * comp[2]) & 0x10000000)]
+                
+                if comm == 'Read':
+                    self.read_num += 1
     
     # Data comipling fuction for general use
     def bb(self, dstr, ch):
-        return int(dstr)
+        if dstr == 'Origin':        # If back to orgin
+            return self.dac[ch]
+        else:
+            return int(dstr)
     
     # Data comipling function for matching current
     def mb(self, dstr, ch):
@@ -150,27 +200,30 @@ class mySequence():
                 
     # Data comipling function for analog output related
     def ab(self, dstr, ch):
-        if (ch == 2) or (ch == 3):
-            b = int(dstr)                       # Convert data string to bits value
-        elif ch == 5:           
-            # Determin mulitplier based on gain
-            if self.pream_gain == 8:
-                multiplier = 10.0
-            elif self.pream_gain == 9:
-                multiplier = 1.0
-            elif self.pream_gain == 10:
-                multiplier = 0.1
-                
-            i = float(dstr)                     # Convert data string to current value
-            i = i / multiplier                  # Divide multiplier
-            i = -10.0 * math.log(i, 10)         # Calculate I set voltage
-            b = cnv.vb(i, 'd', self.range[5])   # Convert it to I set bits
+        if dstr == 'Origin':                    # If back to orgin
+            b = self.dac[ch]
         else:
-            v = float(dstr)                     # Convert data string to voltage value
-            if ch != 16:
-                b = cnv.vb(v, 'd', self.range[ch])
+            if (ch == 2) or (ch == 3):
+                b = int(dstr)                       # Convert data string to bits value
+            elif ch == 5:           
+                # Determin mulitplier based on gain
+                if self.pream_gain == 8:
+                    multiplier = 10.0
+                elif self.pream_gain == 9:
+                    multiplier = 1.0
+                elif self.pream_gain == 10:
+                    multiplier = 0.1
+                
+                i = float(dstr)                     # Convert data string to current value
+                i = i / multiplier                  # Divide multiplier
+                i = -10.0 * math.log(i, 10)         # Calculate I set voltage
+                b = cnv.vb(i, 'd', self.range[5])   # Convert it to I set bits
             else:
-                b = cnv.vb(v, '20')
+                v = float(dstr)                     # Convert data string to voltage value
+                if ch != 16:
+                    b = cnv.vb(v, 'd', self.range[ch])
+                else:
+                    b = cnv.vb(v, '20')
         return b
 
 
