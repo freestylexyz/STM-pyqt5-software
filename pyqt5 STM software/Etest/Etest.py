@@ -15,12 +15,14 @@ sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
 from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtGui import QIntValidator
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph
 from Etest_ui import Ui_ElectronicTest
 import numpy as np
 import conversion as cnv
 import functools as ft
+import math
 
 class myEtest(QWidget, Ui_ElectronicTest):
     # Common signal
@@ -45,10 +47,20 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # Oscilloscope signals
     osci_start_signal = pyqtSignal(int, int, int, int, int)
 
+    # Echo signals
+    echo_start_signal = pyqtSignal()
+    echo_query_signal = pyqtSignal(int)
+
+    # Feedback Test
+    ftest_stop_signal = pyqtSignal()
+    ftest_start_signal = pyqtSignal(int, int)
+    ftest_data_signal = pyqtSignal(int, list)
+
     def __init__(self):
         super().__init__()
         self.idling = True
         self.mode = 0   # 0: I/O, 1: RampTest, 2: SquareWave, 3: Oscilloscope, 4: Echo, 5: FeedbackTest
+        self.ftest_stop = False
         self.setupUi(self)
         self.init_UI()
 
@@ -73,8 +85,11 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.rtest_ramp_data = [] * 100                # Ramp Test | ramp data
         self.ptr2 = 0                          # Ramp Test | ramp plot update count
         self.ptr1 = 0                          # Oscilloscope | plot update count
+        self.ptr3 = 0                          # Feedback Test | plot update count
         self.osci_nsample_data = []            # Oscilloscope | N sample data
-        self.osci_continuous_data = np.empty(300)         # Oscilloscope | Continuous data
+        self.osci_continuous_data = np.zeros(1)         # Oscilloscope | Continuous data
+        self.ftrest_zout_data = np.zeros(1)    # Feedback Test | feedback z data
+        self.ftrest_vout_data = np.zeros(1)    # Feedback Test | preamp voltage data
 
 
         # adc | pushButton
@@ -186,17 +201,35 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.osci_plot = self.view_Osci.addPlot()
         self.osci_plot.setDownsampling(mode='peak')
         self.osci_plot.setClipToView(True)
-        self.osci_plot.addLegend()
         self.osci_continuous_curve = self.osci_plot.plot(pen='y', name='Continuous')
         self.osci_nsample_curve = self.osci_plot.plot(pen='w', name='N sample')
 
-        #
-        # # echo
-        # self.pushButton_Query_Echo.clicked.connect(self.echo_query_slot)
-        # self.pushButton_Start_Echo.clicked.connect(self.echo_start_slot)
-        #
-        # # feedback test
-        # self.pushButton_Start_FTest.clicked.connect(self.ftest_start_slot)
+
+        # Echo | pushButton
+        self.pushButton_Start_Echo.clicked.connect(self.echo_start_emit)
+        self.pushButton_Query_Echo.clicked.connect(self.echo_query_emit)
+
+        # Echo | lineEdit
+        self.lineEdit_1_Echo.setValidator(QIntValidator())
+
+        # Feedback Test | comboBox
+        self.comboBox_OutCh_FTest.currentIndexChanged.connect(self.ftest_get_ch)
+
+        # Feedback Test | radioButton
+        self.radioButton_ON_Fdbk.toggled.connect(ft.partial(self.digital_changed_emit, 2))
+        self.radioButton_ON_Retr.toggled.connect(ft.partial(self.digital_changed_emit, 3))
+
+        # Feedback Test | pushButton
+        self.pushButton_Start_FTest.clicked.connect(self.ftest_start_emit)
+        self.ftest_stop_signal.connect(self.ftest_stop_slot)
+
+        # Feedback Test | graphicsView
+        self.ftest_plot = self.view_FTest.addPlot()
+        self.ftest_plot.setDownsampling(mode='peak')
+        self.ftest_plot.setClipToView(True)
+        self.ftest_plot.addLegend()
+        self.ftest_output_curve = self.ftest_plot.plot(pen='w', name='Output')
+        self.ftest_input_curve = self.ftest_plot.plot(pen='y', name='Input')
 
     def init_etest(self, succeed, dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit):
         # Set up view in case of successfully finding DSP
@@ -204,6 +237,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.init_io(dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit)
         self.init_rtest(adcrange, dacrange)
         self.init_swave(dacrange)
+        self.init_osci()
+        self.init_ftest(lastdigital)
         '''
         self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
         self.dacrange = [10] * 16       # All DAC channels' current range
@@ -282,15 +317,22 @@ class myEtest(QWidget, Ui_ElectronicTest):
 
     # init Oscilloscope tab
     def init_osci(self):
-        pass
+        self.radioButton_NSample_Osci.setChecked(True)
+        self.comboBox_InCh_Osci.setCurrentIndex(0)
+        self.spinBox_AvTimes_Osci.setValue(0)
+        self.spinBox_Samples_Osci.setValue(0)
+        self.spinBox_Delay_Osci.setValue(0)
 
     # init Echo tab
     def init_echo(self):
         pass
 
     # init Feedback Test tab
-    def init_ftest(self):
-        pass
+    def init_ftest(self, lastdigital):
+        self.radioButton_ON_Fdbk.setChecked(lastdigital[2])
+        self.radioButton_OFF_Fdbk.setChecked(not lastdigital[2])
+        self.radioButton_ON_Retr.setChecked(lastdigital[3])
+        self.radioButton_OFF_Retr.setChecked(not lastdigital[3])
 
 
     # I/O | load dac(index = 0) and 20 bit dac(index = 1) output from dsp
@@ -358,7 +400,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
             ch = self.swave_get_ch()
             self.ch_changed_signal.emit(index, ch)
 
-    # I/O | when digital changed by user, send signal
+    # I/O | Feedback Test
+    # when digital changed by user, send signal
     def digital_changed_emit(self, ch, status):
         self.digital_changed_signal.emit(ch, status)
 
@@ -531,10 +574,10 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 self.rtest_input_curve.clear()          # clear old plot
                 self.rtest_ramp_signal.emit(index, inch, outch, init, final, step_size)
             else:                                       # emit stop signal
-                # self.enable_serial(False)
+                self.enable_serial(False)
                 self.stop_signal.emit()                 # flip dsp.stop to True
 
-    # Square Wave | get output channel
+    # Square Wave | start(stop) button slot
     def swave_start_emit(self):
         ch = self.swave_get_ch()
         delay = self.spinBox_Delay_SWave.value()
@@ -577,7 +620,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         elif self.radioButton_Contin_Osci.isChecked():
             return 1
 
-    # Oscilloscope | get mode
+    # Oscilloscope | start(stop) button slot
     def osci_start_emit(self):
         ch = self.osci_get_ch()
         mode = self.osci_get_mode()
@@ -587,7 +630,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         if self.idling:                             # emit signal
             self.ptr1 = 0                           # init osc update count
             self.osci_nsample_data = []             # init N sample data
-            self.osci_continuous_data = np.empty(300)          # init Continuous data
+            self.osci_continuous_data = np.zeros(1)          # init Continuous data
             self.osci_continuous_curve.clear()      # clear old plot
             self.osci_nsample_curve.clear()         # clear old plot
             self.osci_start_signal.emit(ch, mode, N, avg_times, delay)
@@ -607,6 +650,49 @@ class myEtest(QWidget, Ui_ElectronicTest):
             maximum = 65535
             self.spinBox_Delay_Osci.setMinimum(minimum)
             self.spinBox_Delay_Osci.setMaximum(maximum)
+
+    # Echo | start(stop) button slot
+    def echo_start_emit(self):
+        if self.idling:
+            self.echo_start_signal.emit()
+        else:
+            self.enable_serial(False)
+            self.stop_signal.emit()                 # flip dsp.stop to True
+
+    # Echo | start(stop) button slot
+    def echo_query_emit(self, input):
+        input = self.lineEdit_1_Echo.text()
+        input = int(input)
+        self.echo_query_signal.emit(input)
+
+    # Feedback Test | get output channel
+    def ftest_get_ch(self):
+        ch = self.comboBox_OutCh_FTest.currentIndex()
+        if ch <= 3:
+            return ch + 6
+        else:
+            return ch + 7
+
+    # Feedback Test | start(stop) button slot
+    def ftest_start_emit(self):
+        if self.idling:
+            ch = self.ftest_get_ch()
+            addr = ch + 16
+            delay = self.spinBox_DelayInput_FTest.value()
+            self.ptr3 = 0                           # init osc update count
+            self.ftest_zout_data = np.zeros(1)            # init N sample data
+            self.ftest_vout_data = np.zeros(1)            # init N sample data
+            self.ftest_output_curve.clear()      # clear old plot
+            self.ftest_input_curve.clear()      # clear old plot
+            self.ftest_start_signal.emit(addr, delay)
+        else:
+            self.enable_serial(False)
+            self.ftest_stop_signal.emit()  # flip ftest_stop to True
+
+    # Feedback Test | stop signal slot
+    def ftest_stop_slot(self):
+        if not self.ftest_stop:
+            self.ftest_stop = True
 
     # Enable serial
     def enable_serial(self, enable):
@@ -675,7 +761,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.pushButton_SorS_Osci.setEnabled(enable)
 
         # Echo
-        self.pushButton_Query_Echo.setEnabled(enable)
+        # self.pushButton_Query_Echo.setEnabled(enable)
         self.pushButton_Start_Echo.setEnabled(enable)
 
         # Feedback test
@@ -704,6 +790,8 @@ if __name__ == "__main__":
 
     '''
        -> signal - slot connection <-
+    # Common
+    self.etest.Etest.currentChanged.connect(self.init_tab_slot)
        
     # I/O
     self.etest.range_changed_signal.connect(self.range_changed_slot)
@@ -724,5 +812,13 @@ if __name__ == "__main__":
     self.etest.osci_start_signal.connect(self.osci_start_slot)
     self.dsp.oscc_signal.connect(self.osci_update)
     
+    # Echo
+    self.etest.echo_start_signal.connect(self.echo_start_slot)
+    self.etest.echo_query_signal.connect(self.echo_query_slot)
+    
+    # Feedback
+    self.etest.ftest_start_signal.connect(self.ftest_start_slot)
+    self.etest.ftest_data_signal.connect(self.ftest_update)
+
     '''
 

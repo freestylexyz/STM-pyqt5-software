@@ -13,13 +13,16 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
 from sequence import mySequence
 from MainMenu import myMainMenu
 import conversion as cnv
 import threading
+import numpy as np
+import math
+import time
 
 class myEtestControl(myMainMenu):
 
@@ -146,10 +149,13 @@ class myEtestControl(myMainMenu):
     # Square Wave | setup square
     def swave_start(self, ch, voltage1, voltage2, delay):
         if self.etest.idling:
+            self.etest.enable_serial(False)
             self.etest.idling = False
             self.etest.pushButton_Start_SWave.setText("Stop")   # change ramp button text
+            self.etest.pushButton_Start_SWave.setEnabled(True)   # change ramp button text
             self.dsp.square(ch + 16, voltage1, voltage2, delay) # dsp square wave function
             self.etest.idling = True
+            self.etest.enable_serial(True)
             self.etest.pushButton_Start_SWave.setText("Start")  # reset start button
 
     # Square Wave | start signal slot
@@ -180,28 +186,141 @@ class myEtestControl(myMainMenu):
     def osci_start_slot(self, ch, mode, N, avg_times, delay):
         threading.Thread(target=(lambda: self.osci_start(ch, mode, N, avg_times, delay))).start()
 
-    # Oscilloscope | update continuous mode data
+    # Oscilloscope | update continuous mode data (dsp.oscc_signal slot)
     def osci_update(self, rdata):
         ch = self.etest.osci_get_ch()
         data = cnv.bv(rdata, 'a', self.dsp.adcrange[ch])
-        self.etest.osci_continuous_data[:-1] = self.etest.osci_continuous_data[1:]
-        self.etest.osci_continuous_data[-1] = data
-        self.etest.ptr1 += 1
-        self.etest.osci_continuous_curve.setData(self.etest.osci_continuous_data)
+        self.etest.ptr1 += 1            # plot count
+        if self.etest.ptr1 <= 200:      # direct plot when number of data <= 200
+            self.etest.osci_continuous_data = np.append(self.etest.osci_continuous_data, data)
+        else:                           # rolling plot when number of data > 200
+            self.etest.osci_continuous_data[:-1] = self.etest.osci_continuous_data[1:]
+            self.etest.osci_continuous_data[-1] = data
+        self.etest.osci_continuous_curve.setData(self.etest.osci_continuous_data[1:])
         self.etest.osci_continuous_curve.setPos(self.etest.ptr1, 0)
+
+    # Echo | start setup
+    def echo_start(self):
+        if self.etest.idling:
+            self.etest.enable_serial(False)
+            self.etest.idling = False
+            self.etest.pushButton_Start_Echo.setText("Stop")
+            self.etest.pushButton_Start_Echo.setEnabled(True)
+            self.etest.pushButton_Query_Echo.setEnabled(True)
+            self.dsp.echoLoop()
+            self.etest.idling = True
+            self.etest.enable_serial(True)
+            self.etest.pushButton_Query_Echo.setEnabled(False)
+            self.etest.pushButton_Start_Echo.setText("Start")
+
+    # Echo | start signal slot
+    def echo_start_slot(self):
+        threading.Thread(target=(lambda: self.echo_start())).start()
+
+    # Echo | query signal slot
+    def echo_query_slot(self, input):
+        output = str(self.dsp.echo(input))
+        self.etest.lineEdit_2_Echo.setText(output)
+
+    # Feedback Test | test loop
+    def ftest_loop(self, addr, delay):
+        if self.dsp.ok():
+            self.dsp.idling = False
+            self.etest.ftest_stop = False   # Set stop flag to false
+            while True:
+                if self.etest.ftest_stop:  # Wait until external source change the stop flag
+                    break
+                Zout = self.dsp.adc(6 * 4 + 0xC0)
+                Zout_val = cnv.bv(Zout, 'a', self.dsp.adcrange[6])
+                A = self.etest.spinBox_AInput_FTest.value()
+                Z0 = self.etest.spinBox_Z0Input_FTest.value()
+                # convert I set point unit from nA to V, and to bits
+                Ispt_val = self.etest.spinBox_IsptInput_FTest.value()
+                Isetpoint = cnv.vb(-10.0 * math.log(Ispt_val, 10), 'd', self.dsp.dacrange[5])
+                # calculate output voltage
+                Vout_val = math.exp(A * (Zout_val - Z0))
+                # Vout_val = math.log(Ispt_val)/A + Z0
+                Vout = cnv.vb(Vout_val, 'd', self.dsp.dacrange[addr-16])
+                self.dsp.dac_W(addr, Vout)
+                self.dsp.dac_W(5+16, Isetpoint)
+                self.etest.ftest_data_signal.emit(addr-16, [Zout, Vout])
+                # !!!output feedback and retract
+                time.sleep(delay/1000)  # The reed relay will take some time
+            if self.etest.ftest_stop:
+                self.dsp.idling = True
+
+    # Feedback Test | start setup
+    def ftest_start(self, addr, delay):
+        if self.etest.idling:
+            self.etest.enable_serial(False)
+            self.etest.idling = False
+            self.etest.pushButton_Start_FTest.setText("Stop")
+            self.etest.pushButton_Start_FTest.setEnabled(True)
+            # self.etest.spinBox_IsptInput_FTest.setEnabled(True)
+            # self.etest.radioButton_ON_Fdbk.setEnabled(True)
+            # self.etest.radioButton_OFF_Fdbk.setEnabled(True)
+            # self.etest.radioButton_ON_Retr.setEnabled(True)
+            # self.etest.radioButton_OFF_Retr.setEnabled(True)
+            # self defined loop made up of dsp functions, including stop flag
+            self.ftest_loop(addr, delay)
+            self.etest.idling = True
+            self.etest.enable_serial(True)
+            self.etest.pushButton_Start_FTest.setText("Start")
+
+    # Feedback Test | start signal slot
+    def ftest_start_slot(self, addr, delay):
+        threading.Thread(target=(lambda: self.ftest_start(addr, delay))).start()
+
+    # Feedback Test | update data
+    def ftest_update(self, ch, rdata):
+        zout = cnv.bv(rdata[0], 'a', self.dsp.adcrange[6])
+        vout = cnv.bv(rdata[1], 'd', self.dsp.dacrange[ch])
+        np.append(self.etest.ftest_zout_data, zout)
+        np.append(self.etest.ftest_vout_data, vout)
+
+        self.etest.ptr3 += 1            # plot count
+        if self.etest.ptr3 <= 200:      # direct plot when number of data <= 200
+            self.etest.ftest_zout_data = np.append(self.etest.ftest_zout_data, zout)
+            self.etest.ftest_vout_data = np.append(self.etest.ftest_vout_data, vout)
+        else:                           # rolling plot when number of data > 200
+            self.etest.ftest_zout_data[:-1] = self.etest.ftest_zout_data[1:]
+            self.etest.ftest_zout_data[-1] = zout
+            self.etest.ftest_vout_data[:-1] = self.etest.ftest_vout_data[1:]
+            self.etest.ftest_vout_data[-1] = vout
+        self.etest.ftest_input_curve.setData(self.etest.ftest_zout_data[1:])
+        self.etest.ftest_input_curve.setPos(self.etest.ptr3, 0)
+        self.etest.ftest_output_curve.setData(self.etest.ftest_vout_data[1:])
+        self.etest.ftest_output_curve.setPos(self.etest.ptr3, 0)
+
+        # if self.etest.ptr3 <= 10:
+        #     print(rdata)
+        #     # print([zout, vout, iset])
 
 
     # init current tab
     def init_tab_slot(self, index):
-        if index == 0:
-            self.etest.init_io(self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)
-        elif index == 1:
-            self.etest.init_rtest(self.dsp.adcrange, self.dsp.dacrange)
-        elif index == 2:
-            self.etest.init_swave(self.dsp.dacrange)
-        elif index == 3:
-            self.etest.init_osci()
-        elif index == 4:
-            self.etest.init_echo()
-        elif index == 5:
-            self.etest.init_ftest()
+        if self.etest.idling:                                       # no serial process ongoing
+            self.etest.mode = index                                 # save current tab index
+            if index == 0:
+                self.etest.init_io(self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)
+            elif index == 1:
+                self.etest.init_rtest(self.dsp.adcrange, self.dsp.dacrange)
+            elif index == 2:
+                self.etest.init_swave(self.dsp.dacrange)
+            elif index == 3:
+                self.etest.init_osci()
+            elif index == 4:
+                self.etest.init_echo()
+            elif index == 5:
+                self.etest.init_ftest(self.dsp.lastdigital)
+                self.dsp.lastgain[2] = 0    # init Z1 gain to 0.1
+                self.dsp.lastgain[3] = 0    # init Z2 gain to 10
+                self.dsp.adcrange[6] = 0    # init Zout range to +/-10.24V
+                ch = self.etest.ftest_get_ch()
+                self.dsp.dacrange[ch] = 10  # init dac output range to +/-10V
+                self.dsp.dacrange[5] = 10   # init I set range to +/-10V
+        else:                                                       # serial process ongoing
+            if index != self.etest.mode:
+                self.etest.Etest.setCurrentIndex(self.etest.mode)   # return to former tab
+                QMessageBox.warning(None, "Etest", "Process ongoing!", QMessageBox.Ok)
+
