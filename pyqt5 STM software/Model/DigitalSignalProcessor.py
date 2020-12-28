@@ -642,7 +642,6 @@ class myDSP(QObject):
                     else:
                         rdata = int.from_bytes(self.ser.read(2) ,"big") # Read returned data
                         self.oscc_signal.emit(rdata)   # Send out data through signal
-                        # print(hex(rdata))
                 self.checkStopSeq() # Check stop sequence
             self.idling = True
 
@@ -664,7 +663,6 @@ class myDSP(QObject):
             self.ser.write(int(delay & 0xffff).to_bytes(2, byteorder="big"))    # Send delay us
             for i in range(n):
                 rdata = rdata + [int.from_bytes(self.ser.read(2) ,"big")]       # Obtain the read data
-                print(hex(rdata[i]))
             self.idling = True
         return rdata
     
