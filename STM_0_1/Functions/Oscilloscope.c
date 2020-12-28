@@ -19,9 +19,11 @@ void OSC_C(Uint16 command, Uint16 average, Uint16 delay)
     adc_command(command);               // Start a conversion of specific channel
     while(true)
     {
+        sum = 0;
         for(i = 0; i < average; i++){sum += adc_command(command);}  // Measure n times of selected channel
-        rdata = sum / average;                                      // Return averaged conversion result of corresponding channel
+        rdata = (Uint16)(sum / average);                            // Return averaged conversion result of corresponding channel
         serialOut(split(rdata, 2));                                 // Output data through serial
+        DELAY_US(delay);                                            // Delay
         if(serialCheck() == Stop){break;}                           //Check stop
     }
 }
@@ -55,8 +57,9 @@ void OSC_N(Uint16 command, Uint16 n, Uint16 average, Uint16 delay)
     adc_command(command);               // Start a conversion of specific channel
     for(i = 0; i < n; i++)
     {
+        sum = 0;
         for(j = 0; j < average; j++){sum += adc_command(command);}  // Measure n times of selected channel
-        ldata[i] = sum / average;                                   // Return averaged conversion result of corresponding channel
+        ldata[i] = (Uint16)(sum / average);                         // Return averaged conversion result of corresponding channel
         DELAY_US(delay);                                            // Delay
     }
 }
@@ -95,11 +98,12 @@ Uint16 OCS_U(Uint16 command, Uint16 average, Uint16 delay, Uint16 limit, Uint16 
     for(i = 1; i < 4096; i++)               // Start from second data
     {
         DELAY_US(delay);                        // Delay
+        sum = 0;
         for(j = 0; j < average; j++){sum += adc_command(command);}  // Measure n times of selected channel
         rdata = sum / average;                                      // Return averaged conversion result of corresponding channel
         ldata[i] = rdata;                                           // Store data
         change = initial - rdata;                                   // Calculate change
-        if(change > 0x80000000){change = change - 0x80000000;}       // Absolute change
+        if(change > 0x80000000){change = change - 0x80000000;}      // Absolute change
         else{change = 0x80000000 - change;}
         if(change > limit)                                          // Determine change
         {

@@ -8,7 +8,6 @@ Created on Sun Dec 20 13:52:32 2020
 import conversion as cnv
 import numpy as np
 import math
-import pickle
 
 class mySequence():
     def __init__(self, command_list = [], data_list = []):

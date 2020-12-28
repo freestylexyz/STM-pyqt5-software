@@ -28,13 +28,11 @@ class myEtestControl(myMainMenu):
         if index == 0:                                              # adc range changed
             ch = self.etest.adc_ch.currentIndex()                   # get channel from view
             self.dsp.adc_W((ch+5) << 1, ran)                        # output to dsp
-            # self.dsp.adc_W(ch*4+0xC0, ran)                        # !!! this causes error
         else:                                                       # dac range changed
             ch = self.etest.dac_ch.currentIndex()                   # get channel from view
             self.dsp.dac_range(ch, ran)                             # output to dsp
-            # !!! Function dsp.dac_range() requires channel, not addr?
-            self.etest.set_dac_spinBox_range(ran)                   # update spinBox range from dsp
-            self.etest.dac_range[0] = ran                              # update range variable
+            self.etest.set_dac_spinBox_range(ran)                           # update spinBox range from dsp
+            self.etest.dac_range[0] = ran                                   # update range variable
             self.etest.load_dac_output(0, self.dsp.current_last(ch+16))     # update dac output view from dsp
 
     # I/O & Ramp Text & Square Wave | channel changed slot
@@ -146,17 +144,17 @@ class myEtestControl(myMainMenu):
         threading.Thread(target=(lambda: self.rtest_ramp(index, inch, outch, init, final, step_size))).start()
 
     # Square Wave | setup square
-    def swave_start(self, ch, voltage1, voltage2):
+    def swave_start(self, ch, voltage1, voltage2, delay):
         if self.etest.idling:
             self.etest.idling = False
             self.etest.pushButton_Start_SWave.setText("Stop")   # change ramp button text
-            self.dsp.square(ch + 16, voltage1, voltage2)        # dsp square wave function
+            self.dsp.square(ch + 16, voltage1, voltage2, delay) # dsp square wave function
             self.etest.idling = True
             self.etest.pushButton_Start_SWave.setText("Start")  # reset start button
 
     # Square Wave | start signal slot
-    def swave_start_slot(self, ch, voltage1, voltage2):
-        threading.Thread(target=(lambda: self.swave_start(ch, voltage1, voltage2))).start()
+    def swave_start_slot(self, ch, voltage1, voltage2, delay):
+        threading.Thread(target=(lambda: self.swave_start(ch, voltage1, voltage2, delay))).start()
 
     # Oscilloscope | set up osc
     def osci_start(self, ch, mode, N, avg_times, delay):
@@ -165,6 +163,8 @@ class myEtestControl(myMainMenu):
             self.etest.idling = False
             if mode == 0:   # N sample
                 rdata = self.dsp.osc_N(ch*4+0xC0, N, avg_times, delay)
+                # for i in rdata:
+                #     print(hex(i))
                 data = [cnv.bv(i, 'a', self.dsp.adcrange[ch]) for i in rdata]
                 self.etest.osci_nsample_data = data
                 self.etest.osci_nsample_curve.setData(self.etest.osci_nsample_data)

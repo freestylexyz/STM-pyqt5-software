@@ -23,7 +23,10 @@ import conversion as cnv
 import functools as ft
 
 class myEtest(QWidget, Ui_ElectronicTest):
+    # Common signal
     close_signal = pyqtSignal()
+    stop_signal = pyqtSignal()
+    
     # I/O signals
     range_changed_signal = pyqtSignal(int, int)
     ch_changed_signal = pyqtSignal(int, int)
@@ -32,11 +35,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
     adc_input_signal = pyqtSignal()
     dac_output_signal = pyqtSignal(int, int)
     bit20_output_signal = pyqtSignal(int, int)
+    
     # Ramp Test signals
     rtest_ramp_signal = pyqtSignal(int, int, int, int, int, int)
-    stop_signal = pyqtSignal()
+    
     # Square Wave signals
-    swave_start_signal = pyqtSignal(int, int, int)
+    swave_start_signal = pyqtSignal(int, int, int, int)
+    
     # Oscilloscope signals
     osci_start_signal = pyqtSignal(int, int, int, int, int)
 
@@ -248,7 +253,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # init Ramp Test tab
     def init_rtest(self, adcrange, dacrange):
         # load range from dsp
-        # !!! rtest_get_inch() and rtest_get_outch() can NOT be merged into one function
         outch = self.rtest_get_outch()
         if outch != 16:
             outran = dacrange[outch]
@@ -541,7 +545,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
             voltage1 = cnv.vb(self.spinBox_V1_SWave.value(), 'd', self.dac_range[2])
             voltage2 = cnv.vb(self.spinBox_V2_SWave.value(), 'd', self.dac_range[2])
         if self.idling:                 # emit signal
-            self.swave_start_signal.emit(ch, voltage1, voltage2)
+            self.swave_start_signal.emit(ch, voltage1, voltage2, delay)
         else:                           # emit stop signal
             self.enable_serial(False)
             self.stop_signal.emit()     # flip dsp.stop to True
@@ -687,7 +691,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
             self.close_signal.emit()
             event.accept()
         else:
-            # !!! pop window, ongoing
             QMessageBox.warning(None, "Etest", "Process ongoing!", QMessageBox.Ok)
             event.ignore()
 
