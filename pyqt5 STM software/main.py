@@ -92,6 +92,13 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Oscilloscope
         self.etest.osci_start_signal.connect(self.osci_start_slot)
         self.dsp.oscc_signal.connect(self.osci_update)
+        # Echo
+        self.etest.echo_start_signal.connect(self.echo_start_slot)
+        self.etest.echo_query_signal.connect(self.echo_query_slot)
+        # Feedback Test
+        self.etest.ftest_start_signal.connect(self.ftest_start_slot)
+        self.etest.ftest_data_signal.connect(self.ftest_update)
+
 
         # Connect scan signal
         self.scan.close_signal.connect(self.close_scan)
