@@ -1763,6 +1763,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="2" column="4" rowspan="2">
@@ -1878,91 +1881,16 @@
           <property name="verticalSpacing">
            <number>12</number>
           </property>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>Input</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_18">
-            <property name="text">
-             <string>Delay (us)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="spinBox_AInput_FTest">
-            <property name="decimals">
-             <number>6</number>
-            </property>
-            <property name="stepType">
-             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_19">
-            <property name="text">
-             <string>Output</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QComboBox" name="comboBox_InCh_FTest">
-            <item>
-             <property name="text">
-              <string>0 (AIN0)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>1 (AIN1)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>2 (AIN2)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>3 (AIN3)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>4 (AIN4)</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_21">
-            <property name="text">
-             <string>I setpoint</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_17">
-            <property name="text">
-             <string>Z0</string>
-            </property>
-           </widget>
-          </item>
           <item row="5" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_IsptInput_FTest">
             <property name="decimals">
              <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
             </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
@@ -1991,10 +1919,85 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>Delay (ms)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Z0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QLabel" name="label_Formula_FTest">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;I = exp[A(z-z&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; vertical-align:sub;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;)]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::RichText</enum>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QGroupBox" name="groupBox_Retract_FTest">
+            <property name="title">
+             <string>Retract</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_28">
+             <property name="topMargin">
+              <number>9</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radioButton_ON_Retr">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>ON</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_OFF_Retr">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>OFF</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Output</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="1">
            <widget class="QDoubleSpinBox" name="spinBox_Z0Input_FTest">
             <property name="decimals">
              <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
             </property>
             <property name="stepType">
              <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
@@ -2030,6 +2033,36 @@
             </item>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>I setpoint (nA)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="spinBox_AInput_FTest">
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+            </property>
+           </widget>
+          </item>
           <item row="6" column="0">
            <widget class="QGroupBox" name="groupBox_Feedback_FTest">
             <property name="title">
@@ -2062,42 +2095,19 @@
             </layout>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="QGroupBox" name="groupBox_Retract_FTest">
-            <property name="title">
-             <string>Retract</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_28">
-             <property name="topMargin">
-              <number>9</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="radioButton_ON_Retr">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>ON</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton_OFF_Retr">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>OFF</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="spinBox_DelayInput_FTest">
+           <widget class="QDoubleSpinBox" name="spinBox_DelayInput_FTest">
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
             <property name="maximum">
-             <number>65535</number>
+             <double>1000.000000000000000</double>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
             </property>
            </widget>
           </item>
@@ -2105,7 +2115,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QGraphicsView" name="graphicsView">
+        <widget class="GraphicsLayoutWidget" name="view_FTest">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
