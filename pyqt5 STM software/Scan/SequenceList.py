@@ -45,7 +45,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
         # Button signal connection
         self.pushButton_Load_SeqList.clicked.connect(self.load)
         self.pushButton_Build_SeqList.clicked.connect(self.build_new)
-        self.pushButton_Edit_SeqList.clicked.connect(self.edit_exit)
+        self.pushButton_Edit_SeqList.clicked.connect(self.edit_exist)
         self.pushButton_Remove_SeqList.clicked.connect(self.remove)
         self.pushButton_Select_SeqList.clicked.connect(self.select)
 
@@ -88,7 +88,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
         self.seqED.show()
     
     # Open sequence editor and start current sequence
-    def edit_exit(self):
+    def edit_exist(self):
         row = self.listWidget_SeqList.currentRow()
         seq = self.seqlist[row]
         self.seqED.show()

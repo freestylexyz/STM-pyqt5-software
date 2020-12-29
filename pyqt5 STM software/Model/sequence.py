@@ -22,9 +22,10 @@ class mySequence():
             if (i >= 0xc0) and (i <= 0xdc):
                 self.read_num += 1
         
+        
         # Flag initialization
-        self.validation_required = False        # Initialize validation required to false
-        self.validated = False                  # Initialize validated to false
+        self.validation_required = (self.seq_num !=0)   # Initialize validation required to false
+        self.validated = False                          # Initialize validated to false
                 
         # Raw code
         self.command = []
