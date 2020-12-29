@@ -97,7 +97,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.etest.echo_query_signal.connect(self.echo_query_slot)
         # Feedback Test
         self.etest.ftest_start_signal.connect(self.ftest_start_slot)
-        self.etest.ftest_data_signal.connect(self.ftest_update)
 
 
         # Connect scan signal
