@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>950</width>
-    <height>516</height>
+    <width>1139</width>
+    <height>592</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>985</width>
+    <height>400</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Scan</string>
@@ -473,25 +485,119 @@
     <widget class="QWidget" name="widget" native="true">
      <property name="minimumSize">
       <size>
-       <width>420</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="6">
-       <widget class="QGraphicsView" name="graphicsView_Scan">
+      <property name="spacing">
+       <number>9</number>
+      </property>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_20">
+        <property name="text">
+         <string>Pallet</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QRadioButton" name="radioButton_Gray_Scan">
+        <property name="text">
+         <string>Gray</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="6">
+       <widget class="GraphicsLayoutWidget" name="graphicsView_ColorBar_Scan">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>1</horstretch>
-          <verstretch>1</verstretch>
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>440</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>440</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QRadioButton" name="radioButton_Reverse_Scan">
+        <property name="text">
+         <string>Reverse</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0" colspan="6">
-       <widget class="QGraphicsView" name="graphicsView_ColorBar_Scan">
+       <widget class="GraphicsView" name="graphicsView_Scan">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>440</width>
+          <height>440</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>440</width>
+          <height>440</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="GraphicsLayoutWidget" name="graphicsView_Histogram_Scan">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>124</width>
+          <height>440</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>124</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QCheckBox" name="checkBox_PlaneFit_Scan">
+        <property name="text">
+         <string>Plane fit</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QRadioButton" name="radioButton_Color_Scan">
+        <property name="text">
+         <string>Color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="7">
+       <widget class="QLabel" name="label_Pos_Scan">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -499,7 +605,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>0</height>
+          <height>30</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -508,40 +614,19 @@
           <height>30</height>
          </size>
         </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QCheckBox" name="checkBox_PlaneFit_Scan">
-        <property name="text">
-         <string>Plane fit</string>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
         </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_20">
-        <property name="text">
-         <string>Pallet</string>
+        <property name="locale">
+         <locale language="English" country="UnitedStates"/>
         </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QRadioButton" name="radioButton_Gray_Scan">
         <property name="text">
-         <string>Gray</string>
+         <string/>
         </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QRadioButton" name="radioButton_Color_Scan">
-        <property name="text">
-         <string>Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QRadioButton" name="radioButton_Reverse_Scan">
-        <property name="text">
-         <string>Reverse</string>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -830,7 +915,7 @@
        <widget class="QPushButton" name="pushButton_Detail_ViewControl">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>94</width>
           <height>26</height>
          </size>
         </property>
@@ -844,6 +929,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicsLayoutWidget</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">pyqtgraph</header>
+  </customwidget>
+  <customwidget>
+   <class>GraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
