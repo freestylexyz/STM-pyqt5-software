@@ -53,8 +53,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
 
     # Feedback Test
     ftest_stop_signal = pyqtSignal()
-    ftest_start_signal = pyqtSignal(int, int)
-    ftest_data_signal = pyqtSignal(int, list)
+    ftest_start_signal = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -88,8 +87,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.ptr3 = 0                          # Feedback Test | plot update count
         self.osci_nsample_data = []            # Oscilloscope | N sample data
         self.osci_continuous_data = np.zeros(1)         # Oscilloscope | Continuous data
-        self.ftrest_zout_data = np.zeros(1)    # Feedback Test | feedback z data
-        self.ftrest_vout_data = np.zeros(1)    # Feedback Test | preamp voltage data
+        self.ftest_zout_data = np.zeros(1)    # Feedback Test | feedback z data
+        self.ftest_vout_data = np.zeros(1)    # Feedback Test | preamp voltage data
 
 
         # adc | pushButton
@@ -215,10 +214,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
         # Feedback Test | comboBox
         self.comboBox_OutCh_FTest.currentIndexChanged.connect(self.ftest_get_ch)
 
-        # Feedback Test | radioButton
-        self.radioButton_ON_Fdbk.toggled.connect(ft.partial(self.digital_changed_emit, 2))
-        self.radioButton_ON_Retr.toggled.connect(ft.partial(self.digital_changed_emit, 3))
-
         # Feedback Test | pushButton
         self.pushButton_Start_FTest.clicked.connect(self.ftest_start_emit)
         self.ftest_stop_signal.connect(self.ftest_stop_slot)
@@ -228,8 +223,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.ftest_plot.setDownsampling(mode='peak')
         self.ftest_plot.setClipToView(True)
         self.ftest_plot.addLegend()
-        self.ftest_output_curve = self.ftest_plot.plot(pen='w', name='Output')
-        self.ftest_input_curve = self.ftest_plot.plot(pen='y', name='Input')
+        self.ftest_output_curve = self.ftest_plot.plot(pen='w', name='Preamp voltage/ Current(nA)')
+        self.ftest_input_curve = self.ftest_plot.plot(pen='y', name='feedback Z')
 
     def init_etest(self, succeed, dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit):
         # Set up view in case of successfully finding DSP
@@ -676,15 +671,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # Feedback Test | start(stop) button slot
     def ftest_start_emit(self):
         if self.idling:
-            ch = self.ftest_get_ch()
-            addr = ch + 16
-            delay = self.spinBox_DelayInput_FTest.value()
+            outch = self.ftest_get_ch()
             self.ptr3 = 0                           # init osc update count
             self.ftest_zout_data = np.zeros(1)            # init N sample data
             self.ftest_vout_data = np.zeros(1)            # init N sample data
             self.ftest_output_curve.clear()      # clear old plot
             self.ftest_input_curve.clear()      # clear old plot
-            self.ftest_start_signal.emit(addr, delay)
+            self.ftest_start_signal.emit(outch)
         else:
             self.enable_serial(False)
             self.ftest_stop_signal.emit()  # flip ftest_stop to True
@@ -818,7 +811,7 @@ if __name__ == "__main__":
     
     # Feedback
     self.etest.ftest_start_signal.connect(self.ftest_start_slot)
-    self.etest.ftest_data_signal.connect(self.ftest_update)
+    
 
     '''
 

@@ -219,83 +219,106 @@ class myEtestControl(myMainMenu):
 
     # Echo | query signal slot
     def echo_query_slot(self, input):
-        output = str(self.dsp.echo(input))
-        self.etest.lineEdit_2_Echo.setText(output)
+        if input == 255:
+            QMessageBox.warning(None, "Echo", "Can not send STOP command!", QMessageBox.Ok)
+        else:
+            output = str(self.dsp.echo(input))
+            self.etest.lineEdit_2_Echo.setText(output)
 
     # Feedback Test | test loop
-    def ftest_loop(self, addr, delay):
+    def ftest_loop(self, outch):
         if self.dsp.ok():
             self.dsp.idling = False
-            self.etest.ftest_stop = False   # Set stop flag to false
+            self.etest.ftest_stop = False                                   # set stop flag to false
+
+            # init range and gain
+            self.dsp.gain(2, 0)                                             # init Z1 gain to 0.1
+            self.dsp.gain(3, 0)                                             # init Z2 gain to 10
+            self.dsp.adc_W((6 + 5) << 1, 0)                                 # init Zout range to +/-10.24V
+            self.dsp.dac_range(outch, 10)                                   # init dac output range to +/-10V
+            self.dsp.dac_range(5, 10)                                       # init I set range to +/-10V
+
+            # start loop
             while True:
                 if self.etest.ftest_stop:  # Wait until external source change the stop flag
                     break
-                Zout = self.dsp.adc(6 * 4 + 0xC0)
-                Zout_val = cnv.bv(Zout, 'a', self.dsp.adcrange[6])
-                A = self.etest.spinBox_AInput_FTest.value()
-                Z0 = self.etest.spinBox_Z0Input_FTest.value()
-                # convert I set point unit from nA to V, and to bits
-                Ispt_val = self.etest.spinBox_IsptInput_FTest.value()
+                self.etest.ptr3 += 1                                        # plot count +1
+
+                # Input | Zout (feedback Z)
+                Zout = self.dsp.adc(6 * 4 + 0xC0)                          # load Z out from dsp
+                Zout_val = cnv.bv(Zout, 'a', self.dsp.adcrange[6])         # convert bits to value
+
+                # Plot | Zout (feedback Z)
+                if self.etest.ptr3 <= 200:                                 # cumulative plot for first 200 points
+                    self.etest.ftest_zout_data = np.append(self.etest.ftest_zout_data, Zout_val)
+                    self.etest.ftest_input_curve.setData(self.etest.ftest_zout_data[1:])
+                else:                                                      # rolling plot after 200 point
+                    self.etest.ftest_zout_data[:-1] = self.etest.ftest_zout_data[1:]
+                    self.etest.ftest_zout_data[-1] = Zout_val
+                    self.etest.ftest_input_curve.setData(self.etest.ftest_zout_data)
+                self.etest.ftest_input_curve.setPos(self.etest.ptr3, 0)
+
+                # Output | Vout (output voltage)
+                A = self.etest.spinBox_AInput_FTest.value()                # require A value
+                Z0 = self.etest.spinBox_Z0Input_FTest.value()              # require Z0 value
+                Vout_val = math.exp(A * (Zout_val - Z0))                   # calculate output voltage
+                if Vout_val > 9.999694:                                    # if calculated value is too large
+                    Vout_val = 9.999694                                    # set output voltage to maximum
+                elif Vout_val < -10.0:                                     # if calculated value is too small
+                    Vout_val = -10.0                                       # set output voltage to minimum
+                Vout = cnv.vb(Vout_val, 'd', self.dsp.dacrange[outch])     # convert value to bits
+                self.dsp.dac_W(outch + 16, Vout)                           # send to dsp out channel
+
+                # Plot | Vout (output voltage)
+                if self.etest.ptr3 <= 200:
+                    self.etest.ftest_vout_data = np.append(self.etest.ftest_vout_data, Vout_val)
+                    self.etest.ftest_output_curve.setData(self.etest.ftest_vout_data[1:])
+                else:
+                    self.etest.ftest_vout_data[:-1] = self.etest.ftest_vout_data[1:]
+                    self.etest.ftest_vout_data[-1] = Vout_val
+                    self.etest.ftest_output_curve.setData(self.etest.ftest_vout_data)
+                self.etest.ftest_output_curve.setPos(self.etest.ptr3, 0)
+
+                # Output | Isetpoint (I set point)
+                Ispt_val = self.etest.spinBox_IsptInput_FTest.value()      # require I set point value
                 Isetpoint = cnv.vb(-10.0 * math.log(Ispt_val, 10), 'd', self.dsp.dacrange[5])
-                # calculate output voltage
-                Vout_val = math.exp(A * (Zout_val - Z0))
-                # Vout_val = math.log(Ispt_val)/A + Z0
-                Vout = cnv.vb(Vout_val, 'd', self.dsp.dacrange[addr-16])
-                self.dsp.dac_W(addr, Vout)
-                self.dsp.dac_W(5+16, Isetpoint)
-                self.etest.ftest_data_signal.emit(addr-16, [Zout, Vout])
-                # !!!output feedback and retract
-                time.sleep(delay/1000)  # The reed relay will take some time
-            if self.etest.ftest_stop:
+                self.dsp.dac_W(5+16, Isetpoint)                            # send to dsp
+
+                # Output | Feedback and Retract
+                feedback_on = self.etest.radioButton_ON_Fdbk.isChecked()    # require feedback status
+                self.dsp.digital_o(2, feedback_on)                          # send to dsp
+                retract_on = self.etest.radioButton_ON_Retr.isChecked()     # require retract status
+                self.dsp.digital_o(3, retract_on)                           # send to dsp
+
+                # Delay | from view
+                delay = self.etest.spinBox_DelayInput_FTest.value()         # require delay value(ms)
+                time.sleep(delay/1000)                                      # take some time(s)
+
+            if self.etest.ftest_stop:   # check if stop flag is flipped
                 self.dsp.idling = True
 
     # Feedback Test | start setup
-    def ftest_start(self, addr, delay):
+    def ftest_start(self, outch):
         if self.etest.idling:
             self.etest.enable_serial(False)
             self.etest.idling = False
             self.etest.pushButton_Start_FTest.setText("Stop")
             self.etest.pushButton_Start_FTest.setEnabled(True)
-            # self.etest.spinBox_IsptInput_FTest.setEnabled(True)
-            # self.etest.radioButton_ON_Fdbk.setEnabled(True)
-            # self.etest.radioButton_OFF_Fdbk.setEnabled(True)
-            # self.etest.radioButton_ON_Retr.setEnabled(True)
-            # self.etest.radioButton_OFF_Retr.setEnabled(True)
+            # allow I set point, Feedback and Retract input
+            self.etest.spinBox_IsptInput_FTest.setEnabled(True)
+            self.etest.radioButton_ON_Fdbk.setEnabled(True)
+            self.etest.radioButton_OFF_Fdbk.setEnabled(True)
+            self.etest.radioButton_ON_Retr.setEnabled(True)
+            self.etest.radioButton_OFF_Retr.setEnabled(True)
             # self defined loop made up of dsp functions, including stop flag
-            self.ftest_loop(addr, delay)
+            self.ftest_loop(outch)
             self.etest.idling = True
             self.etest.enable_serial(True)
             self.etest.pushButton_Start_FTest.setText("Start")
 
     # Feedback Test | start signal slot
-    def ftest_start_slot(self, addr, delay):
-        threading.Thread(target=(lambda: self.ftest_start(addr, delay))).start()
-
-    # Feedback Test | update data
-    def ftest_update(self, ch, rdata):
-        zout = cnv.bv(rdata[0], 'a', self.dsp.adcrange[6])
-        vout = cnv.bv(rdata[1], 'd', self.dsp.dacrange[ch])
-        np.append(self.etest.ftest_zout_data, zout)
-        np.append(self.etest.ftest_vout_data, vout)
-
-        self.etest.ptr3 += 1            # plot count
-        if self.etest.ptr3 <= 200:      # direct plot when number of data <= 200
-            self.etest.ftest_zout_data = np.append(self.etest.ftest_zout_data, zout)
-            self.etest.ftest_vout_data = np.append(self.etest.ftest_vout_data, vout)
-        else:                           # rolling plot when number of data > 200
-            self.etest.ftest_zout_data[:-1] = self.etest.ftest_zout_data[1:]
-            self.etest.ftest_zout_data[-1] = zout
-            self.etest.ftest_vout_data[:-1] = self.etest.ftest_vout_data[1:]
-            self.etest.ftest_vout_data[-1] = vout
-        self.etest.ftest_input_curve.setData(self.etest.ftest_zout_data[1:])
-        self.etest.ftest_input_curve.setPos(self.etest.ptr3, 0)
-        self.etest.ftest_output_curve.setData(self.etest.ftest_vout_data[1:])
-        self.etest.ftest_output_curve.setPos(self.etest.ptr3, 0)
-
-        # if self.etest.ptr3 <= 10:
-        #     print(rdata)
-        #     # print([zout, vout, iset])
-
+    def ftest_start_slot(self, outch):
+        threading.Thread(target=(lambda: self.ftest_start(outch))).start()
 
     # init current tab
     def init_tab_slot(self, index):
@@ -313,12 +336,7 @@ class myEtestControl(myMainMenu):
                 self.etest.init_echo()
             elif index == 5:
                 self.etest.init_ftest(self.dsp.lastdigital)
-                self.dsp.lastgain[2] = 0    # init Z1 gain to 0.1
-                self.dsp.lastgain[3] = 0    # init Z2 gain to 10
-                self.dsp.adcrange[6] = 0    # init Zout range to +/-10.24V
-                ch = self.etest.ftest_get_ch()
-                self.dsp.dacrange[ch] = 10  # init dac output range to +/-10V
-                self.dsp.dacrange[5] = 10   # init I set range to +/-10V
+
         else:                                                       # serial process ongoing
             if index != self.etest.mode:
                 self.etest.Etest.setCurrentIndex(self.etest.mode)   # return to former tab
