@@ -13,7 +13,7 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QWidget, QComboBox, QCheckBox, QLabel, QSpinBox, QDoubleSpinBox, QApplication, QFileDialog
 from PyQt5.QtCore import pyqtSignal, Qt
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph
@@ -70,53 +70,141 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.path = ''
         self.seq = mySequence([], [])
         
-    def change_command(self, seq_num, index):
-        setup_dict = {0: self.setup_wait, 1: self.setup_match, 2: self.setup_dout, 3: self.setup_shift, \
-                      4: self.setup_aout, 5: self.setup_ramp, 6: self.setup_read, 7: self.setup_sramp}
-        setup_dict[index](seq_num)
-
+    def change_command(self, seq_num):
+        self.setup_channel(seq_num)
+        self.setup_option1(seq_num)
+        self.setup_option2(seq_num)
+        self.setup_data_unit(seq_num)
+        
+    def change_channel(self, seq_num):
+        self.setup_option1(seq_num)
+        self.setup_option2(seq_num)
+        self.setup_data_unit(seq_num)
     
-    def setup_wait(self, seq_num):
-        print('Wait')
-    
-    def setup_match(self, seq_num):
-        print('Match')
-    
-    def setup_dout(self, seq_num):
-        # Channel widget
-        channel = QComboBox()
-        channel.addItem('DitherB')
-        channel.addItem('DitherZ')
-        channel.addItem('Feedback')
+    def original(self, seq_num):
+        enable = not self.option1_widget_list[seq_num].isChecked()
+        self.data_widget_list[seq_num].setEnabled(enable)
+        
+    def setup_channel(self, seq_num):
+        command_index = self.command_combo_list[seq_num].currentIndex()
+        if command_index <= 1:
+            channel = QLabel()
+            channel.setText('NA')
+        elif command_index == 2:
+            channel = QComboBox()
+            channel.addItem('DitherB')
+            channel.addItem('DitherZ')
+            channel.addItem('Feedback')
+        elif command_index == 6:
+            channel = QComboBox()
+            channel.addItem('PREAMP')
+            channel.addItem('ZOUT')
+            channel.addItem('AIN0')
+            channel.addItem('AIN1')
+            channel.addItem('AIN2')
+            channel.addItem('AIN3')
+            channel.addItem('AIN4')
+            channel.addItem('AIN5')
+        else:
+            channel = QComboBox()
+            channel.addItem('Z offset fine')
+            channel.addItem('Z offset')
+            channel.addItem('Iset')
+            channel.addItem('DAC6')
+            channel.addItem('DAC7')
+            channel.addItem('DAC8')
+            channel.addItem('DAC9')
+            channel.addItem('DAC11')
+            channel.addItem('Bias')
+            channel.currentIndexChanged.connect(lambda: self.change_channel(seq_num))
         self.channel_widget_list[seq_num] = channel
         self.table_Content_SeqEditor.removeCellWidget(seq_num, 1)
         self.table_Content_SeqEditor.setCellWidget(seq_num, 1, self.channel_widget_list[seq_num])
+    
+    def setup_option1(self, seq_num):
+        command_index = self.command_combo_list[seq_num].currentIndex()
+        if command_index == 1:
+            option1 = QComboBox()
+            option1.addItem('SLOW')
+            option1.addItem('FAST')
+        elif (command_index == 3) or (command_index == 7):
+            option1 = QComboBox()
+            option1.addItem('DOWN')
+            option1.addItem('UP')
+        elif (command_index == 4) or (command_index == 5):
+            option1 = QCheckBox('Origin')
+            option1.stateChanged.connect(lambda: self.original(seq_num))
+        else:
+            option1 = QLabel()
+            option1.setText('NA')
+        self.option1_widget_list[seq_num] = option1
+        self.table_Content_SeqEditor.removeCellWidget(seq_num, 2)
+        self.table_Content_SeqEditor.setCellWidget(seq_num, 2, self.option1_widget_list[seq_num])
+    
+    def setup_option2(self, seq_num):
+        command_index = self.command_combo_list[seq_num].currentIndex()
+        if command_index == 5:
+            option2 = QSpinBox()
+            option2.setMaximum(2 ** 12 -1)
+            option2.setMinimum(0)
+        elif command_index == 7:
+            option2 = QSpinBox()
+            option2.setMaximum(2 ** 11 -1)
+            option2.setMinimum(0)
+        else:
+            option2 = QLabel()
+            option2.setText('NA')
+        self.option2_widget_list[seq_num] = option2
+        self.table_Content_SeqEditor.removeCellWidget(seq_num, 3)
+        self.table_Content_SeqEditor.setCellWidget(seq_num, 3, self.option2_widget_list[seq_num])
         
-        # Data widget
-        data = QComboBox()
-        data.addItem('OFF')
-        data.addItem('ON')
+    def setup_data_unit(self, seq_num):
+        command_index = self.command_combo_list[seq_num].currentIndex()
+        unit = QLabel()
+        if command_index == 0:
+            data = QSpinBox()
+            data.setMaximum(2 ** 31 -1)
+            data.setMinimum(0)
+            unit.setText('us')
+        elif command_index == 1:
+            data = QLabel()
+            data.setText('NA')
+            unit.setText('NA')
+        elif command_index == 2:
+            data = QComboBox()
+            data.addItem('OFF')
+            data.addItem('ON')
+            unit.setText('NA')
+        elif command_index == 6:
+            data = QSpinBox()
+            data.setMaximum(2 ** 16 -1)
+            data.setMinimum(0)
+            unit.setText('times')
+        else:
+            channel_index = self.channel_widget_list[seq_num].currentIndex()
+            if channel_index <= 1:
+                data = QSpinBox()
+                data.setMaximum(2 ** 16 -1)
+                data.setMinimum(0)
+                unit.setText('bits')
+            elif channel_index == 2:
+                data = QDoubleSpinBox()
+                data.setMaximum(0.01)
+                data.setMinimum(100.0)
+                unit.setText('nA')
+            else:
+                data = QDoubleSpinBox()
+                data.setMaximum(-10.0)
+                data.setMinimum(10.0)
+                unit.setText('Volts')
+
         self.data_widget_list[seq_num] = data
-        self.table_Content_SeqEditor.removeCellWidget(seq_num, 5)
-        self.table_Content_SeqEditor.setCellWidget(seq_num, 5, self.data_widget_list[seq_num])
-        unit = QTableWidgetItem('bool')
+        self.table_Content_SeqEditor.removeCellWidget(seq_num, 4)
+        self.table_Content_SeqEditor.setCellWidget(seq_num, 4, self.data_widget_list[seq_num])
+
         self.unit_widget_list[seq_num] = unit
-        print('Dout')
-    
-    def setup_shift(self, seq_num):
-        print('Shift')
-        
-    def setup_aout(self, seq_num):
-        print('Aout')
-
-    def setup_ramp(self, seq_num):
-        print('Ramp')
-
-    def setup_read(self, seq_num):
-        print('Read')
-    
-    def setup_sramp(self, seq_num):
-        print('ShiftRamp')
+        self.table_Content_SeqEditor.removeCellWidget(seq_num, 5)
+        self.table_Content_SeqEditor.setCellWidget(seq_num, 5, self.unit_widget_list[seq_num])
 
     def add_step(self):
         self.table_Content_SeqEditor.insertRow(self.seq.seq_num)
@@ -131,42 +219,21 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         command.addItem('Ramp')
         command.addItem('Read')
         command.addItem('ShiftRamp')
+        
         command.currentIndexChanged.connect(ft.partial(self.change_command, self.seq.seq_num))
+        
         # command.setStyleSheet("QComboBox{margin:3px};")
         self.command_combo_list += [command]
         self.table_Content_SeqEditor.setCellWidget(self.seq.seq_num, 0, self.command_combo_list[self.seq.seq_num])
-        
-        # Channel widget
-        channel = QLabel()
-        channel.setText('NA')
-        self.channel_widget_list += [channel]
-        self.table_Content_SeqEditor.setCellWidget(self.seq.seq_num, 1, self.channel_widget_list[self.seq.seq_num])
-        
-        # Option1 widget
-        option1 = QLabel()
-        option1.setText('NA')
-        self.option1_widget_list += [option1]
-        self.table_Content_SeqEditor.setCellWidget(self.seq.seq_num, 2, self.option1_widget_list[self.seq.seq_num])
-        
-        # Option2 widget
-        option2 = QLabel()
-        option2.setText('NA')
-        self.option2_widget_list += [option2]
-        self.table_Content_SeqEditor.setCellWidget(self.seq.seq_num, 3, self.option2_widget_list[self.seq.seq_num])
-        
-        # Data widget
-        data = QSpinBox()
-        data.setMaximum(2 ** 31 - 1)
-        data.setMinimum(0)
-        self.data_widget_list += [data]
-        self.table_Content_SeqEditor.setCellWidget(self.seq.seq_num, 4, self.data_widget_list[self.seq.seq_num])
-        
-        # Unit widget
-        unit = QLabel()
-        unit.setText('us')
-        self.unit_widget_list += [unit]
-        self.table_Content_SeqEditor.setCellWidget(self.seq.seq_num, 5, self.unit_widget_list[self.seq.seq_num])
-        
+
+        # Expand all widget list space
+        self.channel_widget_list += [' ']
+        self.option1_widget_list += [' ']
+        self.option2_widget_list += [' ']
+        self.data_widget_list += [' ']
+        self.unit_widget_list += [' ']
+
+        self.change_command(self.seq.seq_num)
         self.seq.seq_num += 1
         self.seq.command += ['Wait']
         self.seq.channel += [' ']
