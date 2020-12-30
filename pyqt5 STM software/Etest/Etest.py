@@ -85,10 +85,10 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.ptr2 = 0                          # Ramp Test | ramp plot update count
         self.ptr1 = 0                          # Oscilloscope | plot update count
         self.ptr3 = 0                          # Feedback Test | plot update count
-        self.osci_nsample_data = []            # Oscilloscope | N sample data
+        self.osci_nsample_data = []                     # Oscilloscope | N sample data
         self.osci_continuous_data = np.zeros(1)         # Oscilloscope | Continuous data
-        self.ftest_zout_data = np.zeros(1)    # Feedback Test | feedback z data
-        self.ftest_vout_data = np.zeros(1)    # Feedback Test | preamp voltage data
+        self.ftest_zout_data = np.zeros(1)     # Feedback Test | feedback z data
+        self.ftest_vout_data = np.zeros(1)     # Feedback Test | preamp voltage data
 
 
         # adc | pushButton
@@ -361,7 +361,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 self.dac_b20.setChecked(True)
             elif ran == 14:
                 self.dac_b5.setChecked(True)
-            self.set_dac_spinBox_range(ran)   # update spinBox range
+            self.set_dac_spinBox_range(ran)      # update spinBox range
             self.dac_range[0] = ran              # update range variable
 
     # I/O | set dac spinBox range
@@ -591,11 +591,11 @@ class myEtest(QWidget, Ui_ElectronicTest):
     # Square Wave | get output channel
     def swave_get_ch(self):
         ch = self.comboBox_Ch_SWave.currentIndex()
-        if ch == 13:     # 20 bit DAC
+        if ch == 13:        # 20 bit DAC
             return ch+3
-        elif ch <= 3:    # 16 bit DAC 0~3
+        elif ch <= 3:       # 16 bit DAC 0~3
             return ch
-        elif ch <= 10:   # 16 bit DAC 5~11
+        elif ch <= 10:      # 16 bit DAC 5~11
             return ch+1
         else:               # 16 bit DAC 13~15
             return ch+2
@@ -625,7 +625,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         if self.idling:                             # emit signal
             self.ptr1 = 0                           # init osc update count
             self.osci_nsample_data = []             # init N sample data
-            self.osci_continuous_data = np.zeros(1)          # init Continuous data
+            self.osci_continuous_data = np.zeros(1) # init Continuous data
             self.osci_continuous_curve.clear()      # clear old plot
             self.osci_nsample_curve.clear()         # clear old plot
             self.osci_start_signal.emit(ch, mode, N, avg_times, delay)
@@ -673,14 +673,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
         if self.idling:
             outch = self.ftest_get_ch()
             self.ptr3 = 0                           # init osc update count
-            self.ftest_zout_data = np.zeros(1)            # init N sample data
-            self.ftest_vout_data = np.zeros(1)            # init N sample data
-            self.ftest_output_curve.clear()      # clear old plot
-            self.ftest_input_curve.clear()      # clear old plot
+            self.ftest_zout_data = np.zeros(1)      # init N sample data
+            self.ftest_vout_data = np.zeros(1)      # init N sample data
+            self.ftest_output_curve.clear()         # clear old plot
+            self.ftest_input_curve.clear()          # clear old plot
             self.ftest_start_signal.emit(outch)
         else:
             self.enable_serial(False)
-            self.ftest_stop_signal.emit()  # flip ftest_stop to True
+            self.ftest_stop_signal.emit()           # flip ftest_stop to True
 
     # Feedback Test | stop signal slot
     def ftest_stop_slot(self):
