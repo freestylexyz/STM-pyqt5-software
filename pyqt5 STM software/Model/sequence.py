@@ -10,9 +10,10 @@ import numpy as np
 import math
 
 class mySequence():
-    def __init__(self, command_list = [], data_list = []):
+    def __init__(self, command_list = [], data_list = [], mode = True):
         # Basic property
         self.name = 'New Sequence'              # Intialize sequence name
+        self.path = ''                          # Initalize file path to empty
         self.command_list = command_list        # Initialize command list
         self.data_list = data_list              # Intialize data list
         self.seq_num = len(self.command_list)   # Figure out sequence number
@@ -50,11 +51,11 @@ class mySequence():
                         'Aout': self.ab, 'Ramp': self.ab, 'Read': self.bb, 'ShiftRamp': self.ab}
         
         # Sequence status
-        self.mode = True                        # True for read sequence, False for deposition sequence
+        self.mode = mode                        # True for read sequence, False for deposition sequence
                                                 # Default read sequence
         self.bias_dac = False                   # Default 16 bitDAC for bias
         self.range = [10, 10, 14] + ([10] * 9) + [14, 9] + ([10] * 3)  # Default DAC range
-        self.pream_gain = 9                     # Default preamp gain
+        self.preamp_gain = 9                     # Default preamp gain
         self.dac = [0x8000] * 16 +  [0x828f5]   # Default DAC last output
         self.dac[13] = 0x828f                   # Default 16bit bias last output
         self.feedback = True                    # Default feedback on
@@ -67,7 +68,7 @@ class mySequence():
     # If all system status same as previous sequence status, keep validated flag unchanged
     # Otherwise validated flag set to False
     #
-    def configure(self, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac, feedback, ditherB, ditherZ):
+    def configure(self, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac):        
         # Update bias DAC selection
         if self.bias_dac == bias_dac:
             self.validated = self.validated and True
@@ -80,11 +81,11 @@ class mySequence():
                 self.channelDict.update({'Bias' : 13})
                 
         # Update pre-amp gain
-        if self.pream_gain == preamp_gain:
+        if self.preamp_gain == preamp_gain:
             self.validated = self.validated and True
         else:
             self.validated = False
-            self.pream_gain = preamp_gain
+            self.preamp_gain = preamp_gain
         
         # Update all DAC range
         if self.range == dacrange:
@@ -99,27 +100,6 @@ class mySequence():
         else:
             self.validated = False
             self.dac = lastdac + [last20bitdac]
-        
-        # Update feedback
-        if self.feedback == feedback:
-            self.validated = self.validated and True
-        else:
-            self.feedback = feedback
-            self.validated = False
-            
-        # Update Bias dither
-        if self.ditherB == ditherB:
-            self.validated = self.validated and True
-        else:
-            self.ditherB = ditherB
-            self.validated = False
-        
-        # Update Z dither
-        if self.ditherZ == ditherZ:
-            self.validated = self.validated and True
-        else:
-            self.ditherZ = ditherZ
-            self.validated = False
         
 
     #
@@ -139,12 +119,15 @@ class mySequence():
     #
     # Validate raw code
     #
-    def validation(self):
+    def validation(self, feedback, mode):
+        error = 0
         if self.validation_required:
             if self.mode:       # Validate read sequence
                 self.validated = True
             else:               # Validate deposition sequence
                 self.validated = True
+                
+        return error
     
     #
     # Simulate image, return image data
@@ -207,11 +190,11 @@ class mySequence():
                 b = int(dstr)                       # Convert data string to bits value
             elif ch == 5:           
                 # Determin mulitplier based on gain
-                if self.pream_gain == 8:
+                if self.preamp_gain == 8:
                     multiplier = 10.0
-                elif self.pream_gain == 9:
+                elif self.preamp_gain == 9:
                     multiplier = 1.0
-                elif self.pream_gain == 10:
+                elif self.preamp_gain == 10:
                     multiplier = 0.1
                 
                 i = float(dstr)                     # Convert data string to current value
