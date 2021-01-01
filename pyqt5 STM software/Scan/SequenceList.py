@@ -102,6 +102,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
             if fname != '':
                 with open(fname, 'rb') as input:
                     seqq = self.config_seq(pickle.load(input))
+                    seqq.path = fname
             else:
                 flag = False        # Not able to load
         else:
