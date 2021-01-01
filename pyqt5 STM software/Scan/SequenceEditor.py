@@ -30,7 +30,8 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         super().__init__()
         self.idling = True
         self.setupUi(self)
-        self.load_seq(mySequence(), True, -1)   # Load an empty sequence
+        self.seq = mySequence()
+        self.load_seq(self.seq, True, -1)   # Load an empty sequence
         self.init_UI()
         
     # UI initialization
