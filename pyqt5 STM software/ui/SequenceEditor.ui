@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>SequenceEditor</class>
  <widget class="QWidget" name="SequenceEditor">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
-    <height>430</height>
+    <width>1069</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,7 +129,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Insert Below</string>
+         <string>Insert Above</string>
         </property>
        </widget>
       </item>
@@ -262,40 +265,7 @@
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>60</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_Name_SeqEditor"/>
-      </item>
-      <item row="0" column="3">
-       <widget class="QCheckBox" name="checkBox_FeedbackON__SeqEditor">
-        <property name="text">
-         <string>Moving Feedback ON</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="4">
+      <item row="1" column="0" colspan="6">
        <widget class="QTableWidget" name="table_Content_SeqEditor">
         <property name="columnCount">
          <number>7</number>
@@ -358,6 +328,71 @@
           <string/>
          </property>
         </column>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Maximum</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>60</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="checkBox_DitherB__SeqEditor">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>DitherB</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdit_Name_SeqEditor"/>
+      </item>
+      <item row="0" column="5">
+       <widget class="QCheckBox" name="checkBox_FeedbackON__SeqEditor">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Feedback</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="checkBox_DitherZ__SeqEditor">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>DitherZ</string>
+        </property>
        </widget>
       </item>
      </layout>
