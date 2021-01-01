@@ -24,4 +24,48 @@ import conversion as cnv
 import threading
 
 class myScanControl(myMainMenu):
-    pass
+
+
+    # send setup
+    def send(self, index, xin, yin, xoffset, yoffset):
+        '''def rampDiag(self, channels, channell, targets, targetl, step, delay, limit, checkstop):'''
+        if self.scan.idling:
+            self.scan.idling = False
+            step = self.scan.send_options.spinBox_StepSize_SendOptions.value()
+            delay = self.scan.send_options.spinBox_MoveDelay_SendOptions.value()
+            if self.scan.send_options.groupBox_Crash_SendOptions.isEnabled():
+                limit = self.scan.send_options.spinBox_Limit_Crash.value()
+            else:
+                limit = 0       #!!! limit init value
+            if index == 0:  # zero
+                self.pushButton_Zero_XY.setText("Stop")
+                self.pushButton_Send_XY.setEnabled(False)
+                self.dsp.rampDiag(0+16, 15+16, 0, 0, step, delay, limit, True)
+            else:           # send
+                self.pushButton_Send_XY.setText("Stop")
+                self.pushButton_Zero_XY.setEnabled(False)
+                self.dsp.rampDiag(0+16, 15+16, xin, yin, step, delay, limit, True)
+                self.dsp.rampDiag(1+16, 14+16, xoffset, yoffset, step, delay, limit, True)
+            self.scan.idling = True
+            self.pushButton_Zero_XY.setText("Zero")
+            self.pushButton_Send_XY.setText("Send")
+            self.pushButton_Zero_XY.setEnabled(True)
+            self.pushButton_Send_XY.setEnabled(True)
+
+    # send signal slot
+    def send_slot(self, index, xin, yin, xoffset, yoffset):
+        threading.Thread(target=(lambda: self.send(index, xin, yin, xoffset, yoffset))).start()
+
+    # dsp rampDiag_signal slot
+    def xy_indication_slot(self, channels, channell, currents, currentl):
+        '''self.rampDiag_signal.emit(channels, channell, currents, currentl)'''
+        if channels == 0+16 and channell == 15+16:      # X/Y in
+            self.scan.spinBox_XinIndication_XY.setValue(currents-32768)
+            self.scan.spinBox_YinIndication_XY.setValue(currentl-32768)
+            self.scan.current_xy[0] = currents - 32768
+            self.scan.current_xy[1] = currentl - 32768
+        elif channels == 1+16 and channell == 14+16:    # X/Y offset
+            self.scan.spinBox_XoffsetIndication_XY.setValue(currents-32768)
+            self.scan.spinBox_YoffsetIndication_XY.setValue(currentl-32768)
+            self.scan.current_xy[2] = currents - 32768
+            self.scan.current_xy[3] = currentl - 32768
