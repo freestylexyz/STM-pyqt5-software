@@ -921,6 +921,18 @@
           </item>
           <item row="1" column="1">
            <widget class="QLabel" name="label_OutRan_RTest">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -936,6 +948,18 @@
            <widget class="QDoubleSpinBox" name="spinBox_FinVal_RTest">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="decimals">
              <number>6</number>
@@ -984,6 +1008,18 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
+            </property>
             <item>
              <property name="text">
               <string>0 (AIN0)</string>
@@ -1025,6 +1061,18 @@
            <widget class="QDoubleSpinBox" name="spinBox_InitVal_RTest">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="decimals">
              <number>6</number>
@@ -1094,6 +1142,18 @@
            <widget class="QComboBox" name="comboBox_OutCh_RTest">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
             </property>
             <item>
              <property name="text">
@@ -1195,6 +1255,18 @@
           </item>
           <item row="3" column="1">
            <widget class="QLabel" name="label_InRan_RTest">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -1210,6 +1282,18 @@
            <widget class="QDoubleSpinBox" name="spinBox_StepSize_RTest">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>64</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="decimals">
              <number>6</number>
@@ -1232,7 +1316,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>470</width>
+           <width>484</width>
            <height>380</height>
           </size>
          </property>
@@ -2124,7 +2208,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>380</width>
+           <width>484</width>
            <height>380</height>
           </size>
          </property>
