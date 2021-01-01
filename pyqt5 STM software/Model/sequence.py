@@ -25,7 +25,7 @@ class mySequence():
         
         
         # Flag initialization
-        self.validation_required = (self.seq_num !=0)   # Initialize validation required to false
+        self.validation_required = (self.seq_num ==0)   # Initialize validation required to false
         self.validated = False                          # Initialize validated to false
                 
         # Raw code
@@ -116,7 +116,7 @@ class mySequence():
         self.seq_num = len(self.command)
         self.validation_required = True
 
-    #
+    # !!! Not finished
     # Validate raw code
     #
     def validation(self, feedback, mode):
@@ -127,16 +127,18 @@ class mySequence():
             else:               # Validate deposition sequence
                 self.validated = True
                 
+        if error == 0:
+            self.build()
         return error
     
-    #
+    # !!! Not finished
     # Simulate image, return image data
     #
     def simulation_i(self):
         image = np.zeros((128, 128))
         return image
     
-    #
+    # !!! Not finished
     # Simulate spectroscopy, return spctroscopy data
     #
     def simulation_s(self):
@@ -183,7 +185,7 @@ class mySequence():
                 
     # Data comipling function for analog output related
     def ab(self, dstr, ch):
-        if dstr == 'Origin':                    # If back to orgin
+        if dstr == 'Origin':                        # If back to orgin
             b = self.dac[ch]
         else:
             if (ch == 2) or (ch == 3):
