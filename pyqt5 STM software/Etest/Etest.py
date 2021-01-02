@@ -89,6 +89,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.osci_continuous_data = np.zeros(1)         # Oscilloscope | Continuous data
         self.ftest_zout_data = np.zeros(1)     # Feedback Test | feedback z data
         self.ftest_vout_data = np.zeros(1)     # Feedback Test | preamp voltage data
+        self.ftest_parm = [0.1] * 3            # Feedback Test | parameters A, Z0, Delay
 
 
         # adc | pushButton
@@ -225,6 +226,11 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.ftest_plot.addLegend()
         self.ftest_output_curve = self.ftest_plot.plot(pen='w', name='Preamp voltage/ Current(nA)')
         self.ftest_input_curve = self.ftest_plot.plot(pen='y', name='feedback Z')
+
+        # Feedback Test | spinBox
+        self.spinBox_AInput_FTest.editingFinished.connect(self.get_ftest_parm)
+        self.spinBox_Z0Input_FTest.editingFinished.connect(self.get_ftest_parm)
+        self.spinBox_DelayInput_FTest.editingFinished.connect(self.get_ftest_parm)
 
     def init_etest(self, succeed, dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit):
         # Set up view in case of successfully finding DSP
@@ -668,6 +674,12 @@ class myEtest(QWidget, Ui_ElectronicTest):
         else:
             return ch + 7
 
+    # Feedback Test | get feedback A, Z0, delay
+    def get_ftest_parm(self):
+        self.ftest_parm[0] = self.spinBox_AInput_FTest.value()
+        self.ftest_parm[1] = self.spinBox_Z0Input_FTest.value()
+        self.ftest_parm[2] = self.spinBox_DelayInput_FTest.value()
+
     # Feedback Test | start(stop) button slot
     def ftest_start_emit(self):
         if self.idling:
@@ -687,8 +699,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
         if not self.ftest_stop:
             self.ftest_stop = True
 
+
     # Enable serial
     def enable_serial(self, enable):
+        # tabs
+        for tab in range(6):
+            if tab != self.mode:
+                self.Etest.setTabEnabled(tab, enable)
+
         # I/O
         # DAC
         self.dac_out.setEnabled(enable)
@@ -746,12 +764,27 @@ class myEtest(QWidget, Ui_ElectronicTest):
         # Ramp test
         self.pushButton_Ramp_RTest.setEnabled(enable)
         self.pushButton_RRead_RTest.setEnabled(enable)
+        self.comboBox_InCh_RTest.setEnabled(enable)
+        self.comboBox_OutCh_RTest.setEnabled(enable)
+        self.spinBox_InitVal_RTest.setEnabled(enable)
+        self.spinBox_FinVal_RTest.setEnabled(enable)
+        self.spinBox_StepSize_RTest.setEnabled(enable)
 
         # Square wave
         self.pushButton_Start_SWave.setEnabled(enable)
+        self.comboBox_Ch_SWave.setEnabled(enable)
+        self.spinBox_Delay_SWave.setEnabled(enable)
+        self.spinBox_V1_SWave.setEnabled(enable)
+        self.spinBox_V2_SWave.setEnabled(enable)
 
         # Oscilloscope
         self.pushButton_SorS_Osci.setEnabled(enable)
+        self.comboBox_InCh_Osci.setEnabled(enable)
+        self.radioButton_Contin_Osci.setEnabled(enable)
+        self.radioButton_NSample_Osci.setEnabled(enable)
+        self.spinBox_AvTimes_Osci.setEnabled(enable)
+        self.spinBox_Samples_Osci.setEnabled(enable)
+        self.spinBox_Delay_Osci.setEnabled(enable)
 
         # Echo
         # self.pushButton_Query_Echo.setEnabled(enable)
@@ -763,6 +796,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.radioButton_OFF_Fdbk.setEnabled(enable)
         self.radioButton_ON_Retr.setEnabled(enable)
         self.radioButton_OFF_Retr.setEnabled(enable)
+        self.comboBox_OutCh_FTest.setEnabled(enable)
 
     # Emit close signal
     def closeEvent(self, event):
@@ -785,6 +819,7 @@ if __name__ == "__main__":
        -> signal - slot connection <-
     # Common
     self.etest.Etest.currentChanged.connect(self.init_tab_slot)
+    self.etest.Etest.tabBarClicked.connect(self.init_tab_slot)
        
     # I/O
     self.etest.range_changed_signal.connect(self.range_changed_slot)

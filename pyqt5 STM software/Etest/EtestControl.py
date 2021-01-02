@@ -219,8 +219,10 @@ class myEtestControl(myMainMenu):
 
     # Echo | query signal slot
     def echo_query_slot(self, input):
-        if input == 255:
+        if input == 256:
             QMessageBox.warning(None, "Echo", "Can not send STOP command!", QMessageBox.Ok)
+        elif input > 256:
+            QMessageBox.warning(None, "Echo", "Can not send integer bigger than 256!", QMessageBox.Ok)
         else:
             output = str(self.dsp.echo(input))
             self.etest.lineEdit_2_Echo.setText(output)
@@ -247,8 +249,8 @@ class myEtestControl(myMainMenu):
                 Zout_val = cnv.bv(Zout, 'a', self.dsp.adcrange[6])         # convert bits to value
 
                 # Output | Vout (output voltage)
-                A = self.etest.spinBox_AInput_FTest.value()                # require A value
-                Z0 = self.etest.spinBox_Z0Input_FTest.value()              # require Z0 value
+                A = self.etest.ftest_parm[0]                               # require A value
+                Z0 = self.etest.ftest_parm[1]                              # require Z0 value
                 Vout_val = math.exp(A * (Zout_val - Z0))                   # calculate output voltage
                 if Vout_val > 9.999694:                                    # if calculated value is too large
                     Vout_val = 9.999694                                    # set output voltage to maximum
@@ -290,14 +292,17 @@ class myEtestControl(myMainMenu):
                 self.dsp.digital_o(3, retract_on)                          # send to dsp
 
                 # Delay | from view
-                delay = self.etest.spinBox_DelayInput_FTest.value()        # require delay value(ms)
+                delay = self.etest.ftest_parm[2]                           # require delay value(ms)
+                if delay < 0.1:
+                    delay = 0.1
                 time.sleep(delay/1000)                                     # take some time(s)
 
             if self.etest.ftest_stop:
-                self.etest.ftest_output_curve.clear()                      # clear old plot
-                self.etest.ftest_input_curve.clear()                       # clear old plot
-                self.etest.ftest_output_curve.setPos(0, 0)                 # reset plot origin
-                self.etest.ftest_input_curve.setPos(0, 0)                  # reset plot origin
+                # self.etest.ftest_output_curve.clear()                      # clear old plot
+                # self.etest.ftest_input_curve.clear()                       # clear old plot
+                # self.etest.ftest_output_curve.setPos(0, 0)                 # reset plot origin
+                # self.etest.ftest_input_curve.setPos(0, 0)                  # reset plot origin
+                pass
             self.etest.ftest_stop = True                                   # flip stop flag
 
     # Feedback Test | start setup
@@ -339,9 +344,11 @@ class myEtestControl(myMainMenu):
                 self.etest.init_echo()
             elif index == 5:
                 self.etest.init_ftest(self.dsp.lastdigital)
-
         else:                                                       # serial process ongoing
-            if index != self.etest.mode:
-                self.etest.Etest.setCurrentIndex(self.etest.mode)   # return to former tab
-                QMessageBox.warning(None, "Etest", "Process ongoing!", QMessageBox.Ok)
+            for tab in range(6):
+                if tab != self.etest.mode:
+                    self.etest.Etest.setTabEnabled(tab, False)
+            # if index != self.etest.mode:
+            #     self.etest.Etest.setCurrentIndex(self.etest.mode)   # return to former tab
+            #     QMessageBox.warning(None, "Etest", "Process ongoing!", QMessageBox.Ok)
 
