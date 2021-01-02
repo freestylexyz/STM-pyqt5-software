@@ -3,6 +3,14 @@
     <file>../data/STMlogo_blackhole.png</file>
     <file>../data/STMlogo_NiCp2.png</file>
   </qresource>
+  <qresource prefix="toolbar">
+    <file>../data/move.png</file>
+    <file>../data/tip_follow.png</file>
+    <file>../data/detail_view.png</file>
+    <file>../data/full_view.png</file>
+    <file>../data/zoom_in.png</file>
+    <file>../data/zoom_out.png</file>
+  </qresource>
   <qresource prefix="menuIcon">
     <file>../data/helpiconblack.png</file>
     <file>../data/ramptesticonblack.png</file>
@@ -12,6 +20,7 @@
     <file>../data/tipappriconblack.png</file>
   </qresource>
   <qresource prefix="indication">
+    <file>../data/CodeCogsEqn.png</file>
     <file>../data/scanner piezo.png</file>
     <file>../data/square.png</file>
   </qresource>
