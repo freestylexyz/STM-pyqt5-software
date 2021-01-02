@@ -20,16 +20,23 @@ from Setting import mySetting
 from TipApproach import myTipApproach
 from Etest import myEtest
 from MainMenu import myMainMenu
+from SequenceList import mySequenceList
 import conversion as cnv
 import threading
 
 class myScanControl(myMainMenu):
 
+    # open sequence list window
+    def open_seq_list(self):
+        self.seq_list = mySequenceList()
+        # self.seq_list.init_seqlist(seq_list, selected_name, mode, bias_dac, preamp_gain, self.dsp.dacrange, self.dsp.lastdac, last20bitdac)
+        self.seq_list.show()
 
     # send setup
     def send(self, index, xin, yin, xoffset, yoffset):
         '''def rampDiag(self, channels, channell, targets, targetl, step, delay, limit, checkstop):'''
         if self.scan.idling:
+            self.scan.enable_serial(False)
             self.scan.idling = False
             step = self.scan.send_options.spinBox_StepSize_SendOptions.value()
             delay = self.scan.send_options.spinBox_MoveDelay_SendOptions.value()
@@ -39,18 +46,17 @@ class myScanControl(myMainMenu):
                 limit = 0       #!!! limit init value
             if index == 0:  # zero
                 self.pushButton_Zero_XY.setText("Stop")
-                self.pushButton_Send_XY.setEnabled(False)
+                self.pushButton_Zero_XY.setEnabled(True)
                 self.dsp.rampDiag(0+16, 15+16, 0, 0, step, delay, limit, True)
             else:           # send
                 self.pushButton_Send_XY.setText("Stop")
-                self.pushButton_Zero_XY.setEnabled(False)
+                self.pushButton_Send_XY.setEnabled(True)
                 self.dsp.rampDiag(0+16, 15+16, xin, yin, step, delay, limit, True)
                 self.dsp.rampDiag(1+16, 14+16, xoffset, yoffset, step, delay, limit, True)
             self.scan.idling = True
+            self.scan.enable_serial(True)
             self.pushButton_Zero_XY.setText("Zero")
             self.pushButton_Send_XY.setText("Send")
-            self.pushButton_Zero_XY.setEnabled(True)
-            self.pushButton_Send_XY.setEnabled(True)
 
     # send signal slot
     def send_slot(self, index, xin, yin, xoffset, yoffset):

@@ -26,7 +26,7 @@ from Hop import myHop
 from Manipulation import myManipulation
 from ScanOptions import myScanOptions
 from SendOptions import mySendOptions
-from SequenceEditor import mySequenceEditor
+
 import pyqtgraph as pg
 import numpy as np
 from symbols import mySymbols
@@ -49,7 +49,7 @@ class myScan(QWidget, Ui_Scan):
         self.manipulation = myManipulation()
         self.scan_options = myScanOptions()
         self.send_options = mySendOptions()
-        self.seq_editor = mySequenceEditor()
+
         #
         self.mode = 0       # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
                             # Track(3), Hop(4), Manipulation(5)
@@ -76,7 +76,6 @@ class myScan(QWidget, Ui_Scan):
         # PushButton | open windows
         self.pushButton_ScanOptions_Scan.clicked.connect(self.open_scan_options)
         self.pushButton_SendOptions_Scan.clicked.connect(self.open_send_options)
-        self.pushButton_SeqEditor_ScanControl.clicked.connect(self.open_seq_editor)
 
         # radioButton | X/Y gain
         self.XY_gain_group = QButtonGroup()
@@ -107,6 +106,7 @@ class myScan(QWidget, Ui_Scan):
         self.scrollBar_Xoffset_XY.valueChanged.connect(ft.partial(self.scroll2spin, 2))
         self.scrollBar_Yoffset_XY.valueChanged.connect(ft.partial(self.scroll2spin, 3))
 
+
         # spinBox | Scan size and Step Size
         self.spinBox_ScanSize_ScanControl.editingFinished.connect(lambda: self.spin2scroll(4))
         self.spinBox_StepSize_ScanControl.editingFinished.connect(lambda: self.spin2scroll(5))
@@ -118,7 +118,10 @@ class myScan(QWidget, Ui_Scan):
         # self.spinBox_StepSize_ScanControl.valueChanged.connect(ft.partial(self.change_range, 5))
 
 
-    def init_scan(self, lastgain):
+    def init_scan(self, succeed, lastgain):
+        # Set up view in case of successfully finding DSP
+        self.enable_serial(succeed)
+
         self.spc.init_spc()
         self.depostion.init_deposition()
         self.track.init_track()
@@ -126,7 +129,7 @@ class myScan(QWidget, Ui_Scan):
         self.manipulation.init_manipulation()
         self.send_options.init_sendoptions()
         self.scan_options.init_scanoptions()
-        # self.seq_editor.init_seq_editor()
+        # self.seq_editor.init_seq_list()
 
         self.load_xy_gain(lastgain)
 
@@ -352,9 +355,9 @@ class myScan(QWidget, Ui_Scan):
         self.send_options.show()
 
     # open Sequence Editor window
-    def open_seq_editor(self):
+    def open_seq_list(self):
         # !!! init sequence editor
-        self.seq_editor.show()
+        self.seq_list.show()
 
     # Emit close signal
     def closeEvent(self, event):
@@ -367,7 +370,13 @@ class myScan(QWidget, Ui_Scan):
             event.ignore()
         
     def enable_serial(self, enable):
-        pass
+        self.pushButton_Zero_XY.setEnabled(enable)
+        self.pushButton_Send_XY.setEnabled(enable)
+        self.pushButton_Start_Scan.setEnabled(enable)
+        self.radioButton_Gain0_1_XY.setEnabled(enable)
+        self.radioButton_Gain1_XY.setEnabled(enable)
+        self.radioButton_Gain10_XY.setEnabled(enable)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -382,5 +391,6 @@ self.scan.gain_changed_signal.connect(self.dsp.gain)
 self.scan.send_signal.connect(self.send_slot)
 self.scan.stop_signal.connect(self.stop_slot)
 self.dsp.rampDiag_signal.connect(self.xy_indication_slot)
+self.scan.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
 
 '''
