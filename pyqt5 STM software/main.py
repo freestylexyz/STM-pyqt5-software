@@ -74,7 +74,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.tipappr.approach_signal.connect(self.tip_appr_slot)
         
         # Connect electronic test signal
-        self.etest.Etest.currentChanged.connect(self.init_tab_slot)
+        # self.etest.Etest.currentChanged.connect(self.init_tab_slot)
+        self.etest.Etest.tabBarClicked.connect(self.init_tab_slot)
         self.etest.close_signal.connect(self.closeWindow)
         # I/O
         self.etest.range_changed_signal.connect(self.range_changed_slot)
@@ -101,6 +102,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
         # Connect scan signal
         self.scan.close_signal.connect(self.close_scan)
+        self.scan.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
 
         # Do some real stuff
         self.load_config()              # Load DSP settings
@@ -228,7 +230,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.init_bias()
             self.init_current()
             self.init_Zcontroller()
-            self.scan.init_scan()
+            self.scan.init_scan(self.dsp.succeed, self.dsp.lastgain)
             self.scan.show()
     
     # Open spectroscopy window
