@@ -49,7 +49,7 @@ class myScan(QWidget, Ui_Scan):
         self.manipulation = myManipulation()
         self.scan_options = myScanOptions()
         self.send_options = mySendOptions()
-        # self.seq_editor = mySequenceEditor()
+        self.seq_editor = mySequenceEditor()
         #
         self.mode = 0       # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
                             # Track(3), Hop(4), Manipulation(5)
@@ -76,7 +76,7 @@ class myScan(QWidget, Ui_Scan):
         # PushButton | open windows
         self.pushButton_ScanOptions_Scan.clicked.connect(self.open_scan_options)
         self.pushButton_SendOptions_Scan.clicked.connect(self.open_send_options)
-        # self.pushButton_SeqEditor_ScanControl.clicked.connect(self.open_seq_editor)
+        self.pushButton_SeqEditor_ScanControl.clicked.connect(self.open_seq_editor)
 
         # radioButton | X/Y gain
         self.XY_gain_group = QButtonGroup()
@@ -162,24 +162,24 @@ class myScan(QWidget, Ui_Scan):
                 xoffset = self.spinBox_XoffsetIndication_XY.value() + 32768
                 yoffset = self.spinBox_YoffsetIndication_XY.value() + 32768
                 # !!! for test
-                self.spinBox_XinIndication_XY.setValue(xin - 32768)
-                self.spinBox_YinIndication_XY.setValue(yin - 32768)
+                self.spinBox_XinIndication_XY.setValue(xin)
+                self.spinBox_YinIndication_XY.setValue(yin)
             else:           # send button clicked
-                xin = self.scrollBar_Xin_XY.value()
-                yin = self.scrollBar_Yin_XY.value()
-                xoffset = self.scrollBar_Xoffset_XY.value()
-                yoffset = self.scrollBar_Yoffset_XY.value()
+                xin = self.spinBox_XinInput_XY.value()
+                yin = self.spinBox_YinInput_XY.value()
+                xoffset = self.spinBox_XoffsetInput_XY.value()
+                yoffset = self.spinBox_YoffsetInput_XY.value()
                 # !!! for test
-                self.spinBox_XinIndication_XY.setValue(xin - 32768)
-                self.spinBox_YinIndication_XY.setValue(yin - 32768)
-                self.spinBox_XoffsetIndication_XY.setValue(xoffset - 32768)
-                self.spinBox_YoffsetIndication_XY.setValue(yoffset - 32768)
-                self.current_xy[2] = xoffset - 32768
-                self.current_xy[3] = xoffset - 32768
+                self.spinBox_XinIndication_XY.setValue(xin)
+                self.spinBox_YinIndication_XY.setValue(yin)
+                self.spinBox_XoffsetIndication_XY.setValue(xoffset)
+                self.spinBox_YoffsetIndication_XY.setValue(yoffset)
+                self.current_xy[2] = xoffset
+                self.current_xy[3] = xoffset
             # !!! for test
-            self.current_xy[0] = xin - 32768
-            self.current_xy[1] = yin - 32768
-            self.send_signal.emit(index, xin, yin, xoffset, yoffset)
+            self.current_xy[0] = xin
+            self.current_xy[1] = yin
+            self.send_signal.emit(index, xin+32768, yin+32768, xoffset+32768, yoffset+32768)
         else:
             self.stop_signal.emit()
 
