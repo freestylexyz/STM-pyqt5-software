@@ -188,7 +188,7 @@
        </widget>
       </item>
       <item row="1" column="0" colspan="3">
-       <widget class="ImageView" name="graphicsView_Scan">
+       <widget class="GraphicsLayoutWidget" name="graphicsView_Scan">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>1</horstretch>
@@ -981,6 +981,9 @@
              <height>0</height>
             </size>
            </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
            <property name="maximum">
             <number>65535</number>
            </property>
@@ -996,6 +999,9 @@
              <width>200</width>
              <height>0</height>
             </size>
+           </property>
+           <property name="minimum">
+            <number>1</number>
            </property>
            <property name="maximum">
             <number>65535</number>
@@ -1025,6 +1031,9 @@
              <height>28</height>
             </size>
            </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
            <property name="maximum">
             <number>65535</number>
            </property>
@@ -1049,6 +1058,9 @@
              <width>16777215</width>
              <height>28</height>
             </size>
+           </property>
+           <property name="minimum">
+            <number>1</number>
            </property>
            <property name="maximum">
             <number>65535</number>
@@ -1133,11 +1145,6 @@
  <customwidgets>
   <customwidget>
    <class>GraphicsLayoutWidget</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">pyqtgraph</header>
-  </customwidget>
-  <customwidget>
-   <class>ImageView</class>
    <extends>QGraphicsView</extends>
    <header location="global">pyqtgraph</header>
   </customwidget>
