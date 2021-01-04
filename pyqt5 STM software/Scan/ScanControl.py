@@ -20,7 +20,7 @@ from Setting import mySetting
 from TipApproach import myTipApproach
 from Etest import myEtest
 from MainMenu import myMainMenu
-from SequenceList import mySequenceList
+
 import conversion as cnv
 import threading
 
@@ -28,9 +28,8 @@ class myScanControl(myMainMenu):
 
     # open sequence list window
     def open_seq_list(self):
-        self.seq_list = mySequenceList()
         # self.seq_list.init_seqlist(seq_list, selected_name, mode, bias_dac, preamp_gain, self.dsp.dacrange, self.dsp.lastdac, last20bitdac)
-        self.seq_list.show()
+        self.scan.seq_list.show()
 
     # send setup
     def send(self, index, xin, yin, xoffset, yoffset):

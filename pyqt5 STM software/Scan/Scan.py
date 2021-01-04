@@ -30,7 +30,9 @@ from images import myImages
 import pyqtgraph as pg
 import numpy as np
 from symbols import mySymbols
+from SequenceList import mySequenceList
 import functools as ft
+import cv2 as cv
 
 class myScan(QWidget, Ui_Scan):
     close_signal = pyqtSignal()
@@ -49,6 +51,7 @@ class myScan(QWidget, Ui_Scan):
         self.manipulation = myManipulation()
         self.scan_options = myScanOptions()
         self.send_options = mySendOptions()
+        self.seq_list = mySequenceList()
 
         #
         self.mode = 0       # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
@@ -153,11 +156,11 @@ class myScan(QWidget, Ui_Scan):
         self.roi.setZValue(10)
 
         # get pseudo image
-        image = QPixmap("../data/scan_example.png").toImage()
-        channels_count = 4
-        s = image.bits().asstring(image.width() * image.height() * channels_count)
-        self.arr = np.frombuffer(s, dtype = np.uint8).reshape((image.width(), image.height(), channels_count))
-
+        # image = QPixmap("../data/scan_example.png").toImage()
+        # channels_count = 4
+        # s = image.bits().asstring(image.width() * image.height() * channels_count)
+        # self.arr = np.frombuffer(s, dtype = np.uint8).reshape((image.width(), image.height(), channels_count))
+        self.arr = cv.imread("../data/scan_example.png")
         # imageItem setup
         self.image = pg.ImageItem()
         self.view_box.addItem(self.image)
@@ -421,11 +424,6 @@ class myScan(QWidget, Ui_Scan):
     def open_send_options(self):
         # !!! init send options
         self.send_options.show()
-
-    # open Sequence Editor window
-    def open_seq_list(self):
-        # !!! init sequence editor
-        self.seq_list.show()
 
     # Emit close signal
     def closeEvent(self, event):
