@@ -23,12 +23,49 @@ from MainMenu import myMainMenu
 
 import conversion as cnv
 import threading
+import copy
 
 class myScanControl(myMainMenu):
+    # Scan initial operation
+    def init_scan(self):
+        pass
+    
+    # Exit scan operation
+    def exit_scan(self):
+        pass
+    
+    # Sequence list close signal
+    def close_seq_list(self, index):
+        list_dict = {0: self.scan.scan_seq_list, 1: self.scan.dep_seq_list, 2: self.scan.spc_seq_list}
+        select_dict = {0: self.scan.scan_seq_selected, 1: self.scan.dep_seq_selected, 2: self.scan.spc_seq_selected}
+        label_dict = {0: self.scan.label_Seq_ScanControl.setText, 1: self.scan.dep.label_Seq_Deposition.setText, \
+                     2: self.scan.spc.adv.label_Seq_AdvOption.setText}
+        if self.scan.seq_list.selected < 0:
+            name = ''
+        else:
+            name = self.scan.seq_list.seqlist[self.scan.seq_list.selected].name
+        
+        select_dict[index] = self.scan.seq_list.seqlist
+        label_dict[index](name)
+        list_dict[index] = []
+        
+        for seq in self.scan.seq_list.seqlist:
+            list_dict[index] += copy.deepcopy(seq)
+        
+    # Open sequence list window
+    def open_seq_list(self, index, selected_name):
+        if index == 0:
+            seq_list = self.scan.scan_seq_list
+            mode = True
+        elif index == 1:
+            seq_list = self.scan.dep_seq_list
+            mode = False
+        elif index == 2:
+            seq_list = self.scan.spc_seq_list
+            mode = True
 
-    # open sequence list window
-    def open_seq_list(self):
-        # self.seq_list.init_seqlist(seq_list, selected_name, mode, bias_dac, preamp_gain, self.dsp.dacrange, self.dsp.lastdac, last20bitdac)
+        self.scan.seq_list.init_seqlist(index, seq_list, selected_name, mode, self.bias_dac, self.preamp_gain, self.dsp.dacrange, \
+                                   self.dsp.lastdac, self.dsp.last20bit)
         self.scan.seq_list.show()
 
     # send setup
@@ -74,3 +111,26 @@ class myScanControl(myMainMenu):
             self.scan.spinBox_YoffsetIndication_XY.setValue(currentl-32768)
             self.scan.current_xy[2] = currents - 32768
             self.scan.current_xy[3] = currentl - 32768
+
+    # Depostion slot
+    def deposition(self, read_before, read, index):
+        pass
+
+    # Scan related stop slot
+    def scan_stop(self):
+        self.scan.stop = True
+        self.dsp.stop = True
+    
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

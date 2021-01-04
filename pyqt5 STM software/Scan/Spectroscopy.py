@@ -16,6 +16,8 @@ sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget
 from PyQt5.QtCore import pyqtSignal , Qt
 from Spectroscopy_ui import Ui_Spectroscopy
+from AdvanceOption import myAdvanceOption
+from BetweenPasses import myBetweenPasses
 
 
 class mySpc(QWidget, Ui_Spectroscopy):
@@ -23,7 +25,9 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     def __init__(self):
         super().__init__()
-        # self.setupUi(self)
+        self.setupUi(self)
+        self.adv = myAdvanceOption()
+        self.bp = myBetweenPasses()
 
     def init_UI(self):
         pass

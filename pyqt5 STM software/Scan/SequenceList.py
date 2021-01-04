@@ -24,7 +24,7 @@ import copy
 
 
 class mySequenceList(QWidget, Ui_SequenceList):
-    close_signal = pyqtSignal()             # Close signal
+    close_signal = pyqtSignal(int)             # Close signal
 
     def __init__(self, mode = True):
         super().__init__()
@@ -33,6 +33,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
         self.init_UI(mode)
 
     def init_UI(self, mode):
+        self.index = 0
         self.seqED = mySequenceEditor()         # Instantiate sequence editor window
         
         self.seqlist = []                       # Default empty sequence list
@@ -63,7 +64,8 @@ class mySequenceList(QWidget, Ui_SequenceList):
         return seq
 
     # Seqence list window initialization
-    def init_seqlist(self, seq_list, selected_name, mode, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac):
+    def init_seqlist(self, index, seq_list, selected_name, mode, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac):
+        self.index = index
         self.seqlist = []                   # Empty sequence list
         self.namelist = []                  # Empty name list
         self.listWidget_SeqList.clear()     # Clear all item
@@ -176,7 +178,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
 
     # Emit close signal
     def closeEvent(self, event):
-        self.close_signal.emit()
+        self.close_signal.emit(self.index)
         event.accept()
 
 

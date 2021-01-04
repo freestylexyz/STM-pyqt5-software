@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Dec  2 15:18:34 2020
-
 @author: yaoji
 """
 
@@ -33,39 +32,53 @@ from symbols import mySymbols
 from SequenceList import mySequenceList
 import functools as ft
 import cv2 as cv
+from DataStruct import ScanData
+from DigitalSignalProcessor import myDSP
 
 class myScan(QWidget, Ui_Scan):
     close_signal = pyqtSignal()
+    seq_list_signal = pyqtSignal(str)
+    stop_signal = pyqtSignal()
     gain_changed_signal = pyqtSignal(int, int)
     send_signal = pyqtSignal(int, int, int, int, int)
-    stop_signal = pyqtSignal
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.init_UI()
         self.spc = mySpc()
-        self.depostion = myDeposition()
+        self.dep = myDeposition()
         self.track = myTrack()
-        self.hop = myHop()
-        self.manipulation = myManipulation()
+        # self.hop = myHop()
+        # self.manip = myManipulation()
         self.scan_options = myScanOptions()
         self.send_options = mySendOptions()
         self.seq_list = mySequenceList()
 
-        #
+        # Variables
+        # Flags
         self.mode = 0       # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
-                            # Track(3), Hop(4), Manipulation(5)
+        self.stop = True
         self.idling = True
-
+        self.saved = True
+        # XY and image variables
         self.last_xy = [0]*4     # Xin(0), Yin(1), X offset(2), Y offset(3)
         self.current_xy = [0]*4  # Xin(0), Yin(1), X offset(2), Y offset(3)
         self.scan_size = [1]*2   # Scan size(0), Step size(1)
         self.imagine_gain = 100  # X/Y gain imaginary value
-        # !!! Bias Control variable
-        self.bias_dac = 0        # Bias DAC selection
-        self.bias_range = 10     # Bias range
-
+        # Bias variables
+        self.bias_dac = False       # Bias DAC selection
+        self.bias_ran = 9           # Bias range
+        # Data
+        self.data = ScanData()
+        # Sequence lists and selected sequence
+        self.scan_seq_list = []
+        self.dep_seq_list = []
+        self.spc_seq_list = []
+        self.scan_seq_selected = -1
+        self.dep_seq_selected = -1
+        self.spc_seq_selected = -1
+        self.init_UI()
+        
     def init_UI(self):
         # init ui position and size
         screen = QDesktopWidget().screenGeometry()
@@ -78,7 +91,7 @@ class myScan(QWidget, Ui_Scan):
         # self.close_signal.clicked(self.depostion.close_signal)
         # self.close_signal.clicked(self.track.close_signal)
         # self.close_signal.clicked(self.hop.close_signal)
-        # self.close_signal.clicked(self.manipulation.close_signal)
+        # self.close_signal.clicked(self.manip.close_signal)
 
         # PushButton | open windows
         self.pushButton_ScanOptions_Scan.clicked.connect(self.open_scan_options)
@@ -198,22 +211,34 @@ class myScan(QWidget, Ui_Scan):
 
 
         # !!! only for check range
-        self.enable_serial((True))
+        # self.enable_serial((True))
 
-    def init_scan(self, succeed, lastgain, lastdac):
+    def init_scan(self, dsp, bias_dac, preamp_gain):
+        succeed = dsp.succeed
+        XYgain = dsp.lastgain
+        bias_ran = dsp.dacrange[13]
+        
         # Set up view in case of successfully finding DSP
-        self.enable_serial(succeed)
-
+        self.pushButton_Start_Scan.setEnabled(succeed)
+        self.radioButton_Gain10_XY.setEnabled(succeed)
+        self.radioButton_Gain0_1_XY.setEnabled(succeed)
+        self.pushButton_Send_XY.setEnabled(succeed)
+        self.pushButton_Zero_XY.setEnabled(succeed)
+        self.pushButton_Start_Scan.setEnabled(succeed)
+        self.pushButton_SaveAll_Scan.setEnabled(not self.data.data)
+        self.pushButton_Info_Scan.setEnabled(not self.data.data)
+        
+         
+        self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
+        
         # self.spc.init_spc()
-        # self.depostion.init_deposition()
         # self.track.init_track()
         # self.hop.init_hop()
-        # self.manipulation.init_manipulation()
+        # self.manip.init_manipulation()
         # self.send_options.init_sendoptions()
         # self.scan_options.init_scanoptions()
-        # self.seq_editor.init_seq_list()
 
-        self.load_xy_gain(lastgain)
+        self.load_xy_gain(XYgain)
 
     # load X/Y gain status from dsp
     def load_xy_gain(self, lastgain):
@@ -452,11 +477,14 @@ class myScan(QWidget, Ui_Scan):
     # Emit close signal
     def closeEvent(self, event):
         if self.mode == 0:
-            # !!! pop window to double check
-            self.close_signal.emit()
-            event.accept()
+            msg = QMessageBox.information(None, "Scan", "Really want to exit scan?", QMessageBox.Yes | QMessageBox.No)
+            if msg == QMessageBox.Yes:
+                self.close_signal.emit()
+                event.accept()
+            else:
+                event.ignore()
         else:
-            # !!! pop message close other windows
+            QMessageBox.warning(None, "Scan", "Process ongoing!!", QMessageBox.Ok)
             event.ignore()
 
     # zoom in button slot
@@ -465,19 +493,38 @@ class myScan(QWidget, Ui_Scan):
             self.view_box.setMouseMode(self.view_box.RectMode)
         else:
             self.view_box.setMouseMode(self.view_box.PanMode)
-        
+            
+    # Bias range change slot
+    def bias_ran_change(self, ran):
+        self.dep.bias_ran_change(ran)
+        self.spc.bias_ran_change(ran)
+    
     def enable_serial(self, enable):
+        self.XY_offset.setEnabled(enable)
+        self.XY_in.setEnabled(enable)
+        self.options.setEnabled(enable)
+        self.ScanControl.setEnabled(enable)
         self.pushButton_Zero_XY.setEnabled(enable)
         self.pushButton_Send_XY.setEnabled(enable)
         self.pushButton_Start_Scan.setEnabled(enable)
         self.radioButton_Gain0_1_XY.setEnabled(enable)
         self.radioButton_Gain1_XY.setEnabled(enable)
         self.radioButton_Gain10_XY.setEnabled(enable)
+        self.pushButton_Start_Scan.setEnabled(enable)
+        self.pushButton_SaveAll_Scan.setEnabled(enable and (not self.data.data))
+        self.pushButton_Info_Scan.setEnabled(enable and (not self.data.data))
+        self.pushButton_Load_Scan.setEnabled(enable)
+
+        
+        self.dep.enable_serial(enable)
+        # !!! need other modules's enable serial function
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = myScan()
+    # print(window.data.seq_name)
+    window.init_scan(myDSP(), False, 9)
     window.show()
     sys.exit(app.exec_())
 
@@ -489,7 +536,6 @@ self.scan.send_signal.connect(self.send_slot)
 self.scan.stop_signal.connect(self.stop_slot)
 self.dsp.rampDiag_signal.connect(self.xy_indication_slot)
 self.scan.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
-
 '''
 # print("--------------------------")
 # print("imagine_gain:", self.imagine_gain)

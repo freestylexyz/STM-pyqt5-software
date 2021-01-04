@@ -25,7 +25,7 @@ import pickle
 
 class myDeposition(QWidget, Ui_Deposition):
     close_signal = pyqtSignal()
-    seq_list_signal = pyqtSignal()
+    seq_list_signal = pyqtSignal(str)
     do_it_signal = pyqtSignal(list, list, int)
     stop_signal = pyqtSignal()
     
@@ -42,7 +42,6 @@ class myDeposition(QWidget, Ui_Deposition):
         self.bias_ran = 9
         self.saved = True
 
-        self.seq = mySequence([], [], False)
         self.poke_seq = mySequence([0x42, 0x63, 0x8d], [0x00000000, 0x80000000, 0x00008000] , False)    # Initial poke sequence
         
         # Connect signal
@@ -55,27 +54,36 @@ class myDeposition(QWidget, Ui_Deposition):
         self.spinBox_Bias_PokeTip.valueChanged.connect(ft.partial(self.bias_cnv, True))
         self.scrollBar_Bias_PokeTip.valueChanged.connect(ft.partial(self.bias_cnv, False))
         
-        self.pushButton_SeqEditor_Deposition.clicked.connect(self.seq_list_signal)
+        self.pushButton_SeqEditor_Deposition.clicked.connect(self.seq_list_slot)
         self.pushButton_DoIt_Deposition.clicked.connect(self.do_it)
         self.pushButton_Save_Deposition.clicked.connect(self.save)
 
-    
+    # Open sequence list signal
+    def seq_list_slot(self):
+        self.seq_list_signal.emit(self.label_Seq_Deposition.text())
+        
     # Called with int_scan
-    def init_deposition(self, succeed, bias_dac, bias_ran, seq):
-        self.enable(succeed)
+    def init_deposition(self, succeed, bias_dac, bias_ran, seq_list, selected):
+        # Enable serial buttons
+        self.pushButton_DoIt_Deposition.setEnabled(succeed)
+        self.pushButton_Save_Deposition.setEnabled(not self.data.data)
+        self.pushButton_Info_Deposition.setEnabled(not self.data.data)
+        
         self.bias_dac = bias_dac
         self.bias_ran = bias_ran
         if bias_dac:
             self.scrollBar_Bias_PokeTip.setMaximum(0xfffff)
+            self.scrollBar_Bias_PokeTip.setValue(0x80000)
             self.spinBox_Bias_PokeTip.setMaximum(5.0)
             self.spinBox_Bias_PokeTip.setMinimum(-5.0)
+            self.spinBox_Bias_PokeTip.setValue(0.0)
         else:
             self.scrollBar_Bias_PokeTip.setMaximum(0xffff)
+            self.scrollBar_Bias_PokeTip.setValue(0x8000)
             self.bias_ran_change(bias_ran)
-        
-        self.seq = seq
-        
-        self.label_Seq_Deposition.setText(self.eq.name)
+            
+        seq_name = '' if selected < 0 else seq_list[selected].name
+        self.label_Seq_Deposition.setText(seq_name)
         
     # Read mode slot
     def read_mode(self, mode, state):
@@ -96,8 +104,8 @@ class myDeposition(QWidget, Ui_Deposition):
         self.groupBox_Read_Deposition.setEnabled(enable)
         self.groupBox_ReadPulse_Deposition.setEnabled(enable)
         self.pushButton_DoIt_Deposition.setEnabled(enable)
-        self.pushButton_Save_Deposition.setEnabled(enable and self.saved)
         self.pushButton_Save_Deposition.setEnabled(enable and (not self.data.data))
+        self.pushButton_Info_Deposition.setEnabled(enable and (not self.data.data))
         mode = not self.groupBox_Poke_Deposition.isChecked()
         self.groupBox_Poke_Deposition.setEnabled(enable and mode)
     
@@ -171,11 +179,11 @@ class myDeposition(QWidget, Ui_Deposition):
             else:
                 index = 1
                 
-            if self.saved == True:
+            if self.saved:
                 flag = True
             else:
-                msg = QMessageBox.information(None, "Depostion", "Data is unsaved. Do you want to continue?", QMessageBox.Ok | QMessageBox.Cancel)
-                if msg == QMessageBox.Ok:
+                msg = QMessageBox.information(None, "Depostion", "Data is unsaved. Do you want to continue?", QMessageBox.Yes | QMessageBox.No)
+                if msg == QMessageBox.Yes:
                     flag = True
                 else:
                     flag = False
@@ -187,6 +195,7 @@ class myDeposition(QWidget, Ui_Deposition):
     # Bias range change slot
     def bias_ran_change(self, ran):
         self.bias_ran = ran
+        val = self.spinBox_Bias_PokeTip.value()
         if not self.bias_dac:
             if ran == 9:
                 Max = 5.0
@@ -199,7 +208,6 @@ class myDeposition(QWidget, Ui_Deposition):
                 Min = -2.5
             self.spinBox_Bias_PokeTip.setMaximum(Max)
             self.spinBox_Bias_PokeTip.setMinimum(Min)
-            val = self.spinBox_Bias_PokeTip.value()
             self.bias_cnv(True, val)
 
     # Save data slot

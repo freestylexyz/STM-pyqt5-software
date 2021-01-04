@@ -23,6 +23,7 @@ from TipApproachControl import myTipApproachControl
 from ScanControl import myScanControl
 import conversion as cnv
 from logger import Logger
+import functools as ft
 
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
@@ -74,7 +75,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.tipappr.approach_signal.connect(self.tip_appr_slot)
         
         # Connect electronic test signal
-        # self.etest.Etest.currentChanged.connect(self.init_tab_slot)
         self.etest.Etest.tabBarClicked.connect(self.init_tab_slot)
         self.etest.close_signal.connect(self.closeWindow)
         # I/O
@@ -101,8 +101,21 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
 
         # Connect scan signal
+        # Scan
         self.scan.close_signal.connect(self.close_scan)
-        self.scan.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
+        self.scan.seq_list_signal.connect(ft.partial(self.open_seq_list, 0))
+        self.scan.seq_list.close_signal.connect(self.close_seq_list)
+        self.scan.stop_signal.connect(self.scan_stop)
+        
+        # Deposition
+        self.scan.dep.close_signal.connect(self.close_scan)
+        self.scan.dep.seq_list_signal.connect(ft.partial(self.open_seq_list, 1))
+        self.scan.dep.do_it_signal.connect(self.deposition)
+        self.scan.dep.stop_signal.connect(self.scan_stop)
+        
+        # Spectroscopy
+        self.scan.spc.close_signal.connect(self.close_scan)
+        # self.scan.spc.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
 
         # Do some real stuff
         self.load_config()              # Load DSP settings
@@ -227,10 +240,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.mode = 3
             self.enable_menubar(False)
             self.menuScan.setEnabled(True)
+            self.init_scan()
             self.init_bias()
             self.init_current()
             self.init_Zcontroller()
-            self.scan.init_scan(self.dsp.succeed, self.dsp.lastgain, self.dsp.lastdac)
+            self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)
             self.scan.show()
     
     # Open spectroscopy window
@@ -238,7 +252,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 1
             self.menuScan.setEnabled(False)
-            self.scan.spc.init_spc()
+            # self.scan.spc.init_spc()
             self.scan.spc.show()
         else:
             self.msg_open_scan()
@@ -248,40 +262,41 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 2
             self.menuScan.setEnabled(False)
-            self.scan.deposition.init_spc()
-            self.scan.deposition.show()
+            self.scan.dep.show()
         else:
             self.msg_open_scan()
     
     # Open track window
     def open_track(self):
-        if self.mode == 3 and self.scan.mode == 0:
-            self.scan.mode = 3
-            self.menuScan.setEnabled(False)
-            self.scan.track.init_spc()
+        if self.mode == 3:
+            # self.scan.mode = 3
+            # self.menuScan.setEnabled(False)
+            self.scan.track.init_track()
             self.scan.track.show()
         else:
             self.msg_open_scan()
     
     # Open hop window
     def open_hop(self):
-        if self.mode == 3 and self.scan.mode == 0:
-            self.scan.mode = 4
-            self.menuScan.setEnabled(False)
-            self.scan.hop.init_spc()
-            self.scan.hop.show()
-        else:
-            self.msg_open_scan()
+        pass
+        # if self.mode == 3 and self.scan.mode == 0:
+        #     self.scan.mode = 3
+        #     self.menuScan.setEnabled(False)
+        #     self.scan.hop.init_hop()
+        #     self.scan.hop.show()
+        # else:
+        #     self.msg_open_scan()
     
     # Open manipulation window
     def open_manipulation(self):
-        if self.mode == 3:
-            self.scan.mode = 5
-            self.menuScan.setEnabled(False)
-            self.scan.manipulation.init_spc()
-            self.scan.manipulation.show()
-        else:
-            self.msg_open_scan()
+        pass
+        # if self.mode == 3:
+        #     self.scan.mode = 4
+        #     self.menuScan.setEnabled(False)
+        #     self.scan.manip.init_manipulation()
+        #     self.scan.manip.show()
+        # else:
+        #     self.msg_open_scan()
             
     # Close serial window  
     def closeWindow(self):
@@ -291,7 +306,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     # Close function for scan mode
     def close_scan(self):
         if self.scan.mode == 0:
-            # !!! Do some close sequence
+            self.exit_scan()
             self.closeWindow()
         else:
             self.scan.mode = 0
