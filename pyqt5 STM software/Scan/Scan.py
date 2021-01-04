@@ -15,7 +15,7 @@ sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPen
 from PyQt5.QtCore import pyqtSignal , Qt, QRectF
 from PyQt5 import QtCore
 from Scan_ui import Ui_Scan
@@ -124,36 +124,66 @@ class myScan(QWidget, Ui_Scan):
         self.scrollBar_ScanSize_ScanControl.valueChanged.connect(ft.partial(self.change_range, 4))
         self.scrollBar_StepSize_ScanControl.valueChanged.connect(ft.partial(self.change_range, 5))
 
+        # radioButton | view control
+        self.pallet_group = QButtonGroup()
+        self.pallet_group.addButton(self.radioButton_Color_Scan, 0)
+        self.pallet_group.addButton(self.radioButton_Gray_Scan, 1)
+        self.pallet_group.addButton(self.radioButton_Reverse_Scan, 2)
+        self.pallet_group.buttonToggled[int, bool].connect(self.pallet_changed)
+
+        # pushButton | tool bar
+        self.tool_bar_group = QButtonGroup()
+        self.tool_bar_group.addButton(self.pushButton_ZoomIn_ViewControl)
+        self.tool_bar_group.addButton(self.pushButton_ZoomOut_ViewControl)
+        self.tool_bar_group.addButton(self.pushButton_Move_ViewControl)
+        self.pushButton_ZoomIn_ViewControl.clicked.connect(self.zoom_to_box)
+
         # graphicsView | Scan main view
 
-        # viewBox setup
-        self.view_box = self.graphicsView_Scan.addViewBox()
-        self.view_box.setLimits(xMin=-1000, xMax=2000, yMin=-1000, yMax=2000, minXRange=10, maxXRange=2400, minYRange=10, maxYRange=2400)
+        # viewBox | setup
+        self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False)
+        self.view_box.setRange(QRectF(-3276800,-3276800,6553600,6553600),padding=0)
+        self.view_box.setLimits(xMin=-3276800, xMax=3276800, yMin=-3276800, yMax=3276800, \
+                                minXRange=10, maxXRange=6553600, minYRange=10, maxYRange=6553600)
         self.view_box.setAspectLocked(True)
 
-        # full range green box
-        self.full_range = pg.GraphItem()
-        self.view_box.addItem(self.full_range)
-        self.full_range.setZValue(-1)
-        pos = np.array([[0, 0], [1024, 0], [1024, 1024], [0, 1024]])
-        adj = np.array([[0, 1], [1, 2], [2, 3], [3, 0]])
-        lines = np.array([
-            (90, 250, 50, 255, 1),
-            (90, 250, 50, 255, 1),
-            (90, 250, 50, 255, 1),
-            (90, 250, 50, 255, 1),
-        ], dtype=[('red', np.ubyte), ('green', np.ubyte), ('blue', np.ubyte), ('alpha', np.ubyte), ('width', float)])
-        self.full_range.setData(pos=pos, adj=adj, pen=lines, size=1, pxMode=True)
+        # ROI | define pens
+        blue_pen = pg.mkPen((70, 200, 255, 255), width=1)
+        green_pen = pg.mkPen((150, 220, 0, 255), width=1)
+        baby_blue_pen = pg.mkPen((130, 220, 255, 255), width=1, dash=[2,4,2,4])
+        baby_green_pen = pg.mkPen((210, 255, 120, 255), width=1, dash=[2,2,2,2])
 
-        # custom ROI for selecting an image region
-        self.roi = pg.ROI([200, 200], [40, 40])
-        self.roi.addRotateHandle([0.5, 1], [0.5, 0.5])
-        self.roi.addScaleHandle([1, 1], [0.5, 0.5])
-        self.roi.addScaleHandle([0, 0], [0.5, 0.5])
-        self.roi.addScaleHandle([0, 1], [0.5, 0.5])
-        self.roi.addScaleHandle([1, 0], [0.5, 0.5])
-        self.view_box.addItem(self.roi)
-        self.roi.setZValue(10)
+        # ROI | scan area
+        self.scan_area = pg.RectROI([2000, 2000], [2000000, 2000000], pen=blue_pen, centered=True, \
+                              maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
+        self.scan_area.aspectLocked = True
+        self.scan_area.setZValue(10)
+        self.view_box.addItem(self.scan_area)
+
+        # ROI | target area
+        self.target_area = pg.RectROI([2000, 2000], [2000000, 2000000], pen=baby_blue_pen, centered=True, \
+                              maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
+        self.target_area.setZValue(10)
+        self.target_area.aspectLocked = True
+        self.view_box.addItem(self.target_area)
+        self.target_area.removeHandle(0)
+
+        # ROI | tip position
+        cross_pos = [int(self.scan_area.pos()[0] + self.scan_area.size()[0]/2), \
+                     int(self.scan_area.pos()[1] + self.scan_area.size()[0]/2)]
+        cross_size = [int(self.scan_area.size()[0]/20), int(self.scan_area.size()[1]/20)]
+        self.tip_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=baby_green_pen, \
+                                            resizable=False, rotatable=False)
+        self.tip_position.setZValue(10)
+        self.view_box.addItem(self.tip_position)
+        self.tip_position.removeHandle(0)
+
+        # ROI | target position
+        self.target_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=green_pen, \
+                                            resizable=False, rotatable=False)
+        self.target_position.setZValue(10)
+        self.view_box.addItem(self.target_position)
+        self.target_position.removeHandle(0)
 
         # get pseudo image
         # image = QPixmap("../data/scan_example.png").toImage()
@@ -166,12 +196,6 @@ class myScan(QWidget, Ui_Scan):
         self.view_box.addItem(self.image)
         self.image.setImage(self.arr)
 
-        # radioButton | view control
-        self.pallet_group = QButtonGroup()
-        self.pallet_group.addButton(self.radioButton_Color_Scan, 0)
-        self.pallet_group.addButton(self.radioButton_Gray_Scan, 1)
-        self.pallet_group.addButton(self.radioButton_Reverse_Scan, 2)
-        self.pallet_group.buttonToggled[int, bool].connect(self.pallet_changed)
 
         # !!! only for check range
         self.enable_serial((True))
@@ -434,6 +458,13 @@ class myScan(QWidget, Ui_Scan):
         else:
             # !!! pop message close other windows
             event.ignore()
+
+    # zoom in button slot
+    def zoom_to_box(self):
+        if self.pushButton_ZoomIn_ViewControl.isChecked():
+            self.view_box.setMouseMode(self.view_box.RectMode)
+        else:
+            self.view_box.setMouseMode(self.view_box.PanMode)
         
     def enable_serial(self, enable):
         self.pushButton_Zero_XY.setEnabled(enable)
