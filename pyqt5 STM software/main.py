@@ -230,7 +230,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.init_bias()
             self.init_current()
             self.init_Zcontroller()
-            self.scan.init_scan(self.dsp.succeed, self.dsp.lastgain)
+            self.scan.init_scan(self.dsp.succeed, self.dsp.lastgain, self.dsp.lastdac)
             self.scan.show()
     
     # Open spectroscopy window
