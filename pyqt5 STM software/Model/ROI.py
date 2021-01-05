@@ -22,6 +22,7 @@ from .. import functions as fn
 from .GraphicsObject import GraphicsObject
 from .UIGraphicsItem import UIGraphicsItem
 from .. import getConfigOption
+from PyQt5.QtCore import Qt
 
 __all__ = [
     'ROI', 
@@ -709,7 +710,7 @@ class ROI(GraphicsObject):
                     hover=True
             if self.contextMenuEnabled():
                 ev.acceptClicks(QtCore.Qt.RightButton)
-                
+
         if hover:
             self.setMouseHover(True)
             ev.acceptClicks(QtCore.Qt.LeftButton)  ## If the ROI is hilighted, we should accept all clicks to avoid confusion.
@@ -769,6 +770,10 @@ class ROI(GraphicsObject):
         
     def mouseDragEvent(self, ev):
         self.mouseDragHandler.mouseDragEvent(ev)
+        # if ev.button() & (QtCore.Qt.LeftButton):
+        #     self.setCursor(Qt.SizeAllCursor)         # Dan 1/5/2021
+        #     # if ev.isFinish():                      # Dan 1/5/2021
+        #     #     self.setCursor(Qt.OpenHandCursor)  # Dan 1/5/2021
 
     def mouseClickEvent(self, ev):
         if ev.button() == QtCore.Qt.RightButton and self.isMoving:
