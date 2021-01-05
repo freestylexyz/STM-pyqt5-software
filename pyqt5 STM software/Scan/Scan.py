@@ -144,21 +144,30 @@ class myScan(QWidget, Ui_Scan):
         self.pallet_group.addButton(self.radioButton_Reverse_Scan, 2)
         self.pallet_group.buttonToggled[int, bool].connect(self.pallet_changed)
 
+        # checkBox | View Control
+        self.checkBox_Illuminated_Scan.stateChanged.connect(ft.partial(self.image_process,0))
+        self.checkBox_PlaneFit_Scan.stateChanged.connect(ft.partial(self.image_process, 1))
+
         # pushButton | tool bar
         self.tool_bar_group = QButtonGroup()
-        self.tool_bar_group.addButton(self.pushButton_ZoomIn_ViewControl)
-        self.tool_bar_group.addButton(self.pushButton_ZoomOut_ViewControl)
-        self.tool_bar_group.addButton(self.pushButton_Move_ViewControl)
-        self.pushButton_ZoomIn_ViewControl.clicked.connect(self.zoom_to_box)
+        self.tool_bar_group.addButton(self.pushButton_Move_ViewControl, 0)
+        self.tool_bar_group.addButton(self.pushButton_ZoomIn_ViewControl, 1)
+        self.tool_bar_group.setExclusive(False)
+        self.tool_bar_group.buttonToggled[int, bool].connect(self.view_mode_selected)
+        self.pushButton_Full_ViewControl.clicked.connect(self.full_view)
+        self.pushButton_Detail_ViewControl.clicked.connect(self.detail_view)
+
+
 
         # graphicsView | Scan main view
 
         # viewBox | setup
-        self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False)
-        self.view_box.setRange(QRectF(-3276800,-3276800,6553600,6553600),padding=0)
+        self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False, enableMouse=False)
+        self.view_box.setRange(QRectF(-3276800, -3276800, 6553600, 6553600), padding=0)
         self.view_box.setLimits(xMin=-3276800, xMax=3276800, yMin=-3276800, yMax=3276800, \
                                 minXRange=10, maxXRange=6553600, minYRange=10, maxYRange=6553600)
         self.view_box.setAspectLocked(True)
+        self.view_box.setCursor(Qt.CrossCursor)
 
         # ROI | define pens
         blue_pen = pg.mkPen((70, 200, 255, 255), width=1)
@@ -168,14 +177,18 @@ class myScan(QWidget, Ui_Scan):
 
         # ROI | scan area
         self.scan_area = pg.RectROI([2000, 2000], [2000000, 2000000], pen=blue_pen, centered=True, \
-                              maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
+                                    movable=False, resizable=False, rotatable=False, \
+                                    maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
+        # self.scan_area.sigHoverEvent.connect(self.mouseDragEvent)
         self.scan_area.aspectLocked = True
         self.scan_area.setZValue(10)
         self.view_box.addItem(self.scan_area)
+        self.scan_area.removeHandle(0)
 
         # ROI | target area
         self.target_area = pg.RectROI([2000, 2000], [2000000, 2000000], pen=baby_blue_pen, centered=True, \
-                              maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
+                                      movable=False, resizable=False, rotatable=False, \
+                                      maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         self.target_area.setZValue(10)
         self.target_area.aspectLocked = True
         self.view_box.addItem(self.target_area)
@@ -185,25 +198,22 @@ class myScan(QWidget, Ui_Scan):
         cross_pos = [int(self.scan_area.pos()[0] + self.scan_area.size()[0]/2), \
                      int(self.scan_area.pos()[1] + self.scan_area.size()[0]/2)]
         cross_size = [int(self.scan_area.size()[0]/20), int(self.scan_area.size()[1]/20)]
-        self.tip_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=baby_green_pen, \
+        self.tip_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=green_pen, movable=False,\
                                             resizable=False, rotatable=False)
         self.tip_position.setZValue(10)
         self.view_box.addItem(self.tip_position)
         self.tip_position.removeHandle(0)
 
         # ROI | target position
-        self.target_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=green_pen, \
+        self.target_point = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=baby_green_pen, movable=False,\
                                             resizable=False, rotatable=False)
-        self.target_position.setZValue(10)
-        self.view_box.addItem(self.target_position)
-        self.target_position.removeHandle(0)
+        self.target_point.setZValue(10)
+        self.view_box.addItem(self.target_point)
+        self.target_point.removeHandle(0)
 
         # get pseudo image
-        # image = QPixmap("../data/scan_example.png").toImage()
-        # channels_count = 4
-        # s = image.bits().asstring(image.width() * image.height() * channels_count)
-        # self.arr = np.frombuffer(s, dtype = np.uint8).reshape((image.width(), image.height(), channels_count))
-        self.arr = cv.imread("../data/scan_example.png")
+
+        self.arr = cv.imread("..\data\scan_example_gray.jpg")
         # imageItem setup
         self.image = pg.ImageItem()
         self.view_box.addItem(self.image)
@@ -451,30 +461,135 @@ class myScan(QWidget, Ui_Scan):
             self.spinBox_ScanSize_ScanControl.setMaximum(int(scan_size/self.scan_size[1]))
             self.scrollBar_ScanSize_ScanControl.setMaximum(int(scan_size/self.scan_size[1]))
 
-    # change image pallet
+    # pallet radioButton slot | Gray, Color and Reverse
     def pallet_changed(self, index, status):
         self.myimg = myImages()
         if status:
             if index == 0:  # color
-                self.color_img = self.myimg.gey2color("../data/scan_example.png")
+                self.color_img = self.myimg.gray2color("../data/scan_example.png")
                 self.image.setImage(self.color_img)
             elif index == 1:    # gray
-                self.grey_img = self.myimg.color2gray(self.arr)
-                self.image.setImage(self.grey_img)
+                self.gray_img = self.myimg.color2gray(self.arr)
+                self.image.setImage(self.gray_img)
             else:       # reverse
-                pass
+                # self.reverse_gray_img = self.myimg.gray2reverse("../data/scan_example_gray.jpg")
+                # self.reverse_color_img = self.myimg.color2reverse("../data/scan_example.png")
+                self.reverse_gray_img = cv.imread('..\data\scan_example_reverse.png')
+                self.image.setImage(self.reverse_gray_img)
 
-    # open Scan Options window
+    # pallet checkBox slot | Illuminated and Plane fit
+    def image_process(self, index, status):
+        self.myimg = myImages()
+        if status:
+            if index == 0:
+                # self.illuminated_img = self.myimg.illuminated("..\data\scan_example_gray.jpg")
+                self.illuminated_img = cv.imread('..\data\scan_example_illuminated.png')
+                self.image.setImage(self.illuminated_img)
+
+            elif index == 1:
+                # self.planefit_img = self.myimg.plane_fit("../data/scan_example.png")
+                self.planefit_img = cv.imread('..\data\scan_example_planefit.png')
+                self.image.setImage(self.planefit_img)
+        else:
+            self.gray_img = cv.imread("../data/scan_example_gray.jpg")
+            self.image.setImage(self.gray_img)
+
+    # tool bar button slot | Move mode and Zoom mode
+    def view_mode_selected(self, index, status):
+        '''
+        Mouse interaction mode must be one of [Default mode, Move mode, Zoom mode].
+        Only one mode is allowed at any given time.
+        User can lick another button to change mode, or clicked again to cancel current selection.
+        No button checked means that current mode is Default mode.
+
+        **Mode details**.
+        ============= ============================================================
+        Default mode   left click to decide target area center position;
+                       right click to decide target point position
+        Move mode      left drag to pan the view (always inside canvas);
+                       wheel to scale by mouse position
+        Zoom mode      left drag to zoom to the box;
+                       wheel to scale by center of canvas
+        ============= ============================================================
+        '''
+        # print("Button:", index, "\tstatus:", status)
+        if status:          # button checked
+            self.view_box.setMouseEnabled(x=True, y=True)
+            self.target_area.hide()
+            self.target_point.hide()
+            if index == 0:  # move mode button checked
+                if self.pushButton_ZoomIn_ViewControl.isChecked():
+                    self.pushButton_ZoomIn_ViewControl.setChecked(False)
+                else:
+                    self.pushButton_Move_ViewControl.setDown(True)
+                self.view_box.setCursor(Qt.OpenHandCursor)
+                self.scan_area.translatable = True
+                self.scan_area.resizable = True
+                self.tip_position.translatable = True
+                self.tip_position.resizable = True
+                self.view_box.setMouseMode(self.view_box.PanMode)
+            else:           # zoom mode button checked
+                if self.pushButton_Move_ViewControl.isChecked():
+                    self.pushButton_Move_ViewControl.setChecked(False)
+                else:
+                    self.pushButton_ZoomIn_ViewControl.setDown(True)
+                self.view_box.setCursor(Qt.PointingHandCursor)
+                self.scan_area.translatable = False
+                self.tip_position.translatable = False
+                self.view_box.setMouseMode(self.view_box.RectMode)
+        else:               # button unchecked
+            self.pushButton_Move_ViewControl.setDown(False)
+            self.pushButton_ZoomIn_ViewControl.setDown(False)
+            self.view_box.setCursor(Qt.CrossCursor)
+            if self.tool_bar_group.checkedId() == -1:
+                self.scan_area.translatable = False
+                self.tip_position.translatable = False
+                self.target_area.translatable = False
+                self.target_point.translatable = False
+                self.view_box.setMouseEnabled(x=False, y=False)
+                self.target_area.setPos(self.scan_area.pos())
+                self.target_area.setSize(self.scan_area.size())
+                self.target_point.setPos(self.tip_position.pos())
+                self.target_area.show()
+                self.target_point.show()
+
+    #
+    # def mouseDragEvent(self, ev):
+    #     self.scan_area.mouseDragHandler.mouseDragEvent(ev)
+    #     if ev.button() & QtCore.Qt.LeftButton:
+    #         if self.pushButton_Move_ViewControl.isChecked() and self.scan_area.mouseHovering == True:
+    #             self.setCursor(Qt.closedHandCursor)
+
+    # tool bar button slot | Full view
+    def full_view(self):
+        '''Zoom out to full canvas'''
+        self.view_box.setRange(QRectF(-3276800,-3276800,6553600,6553600), padding=0)
+
+    # tool bar button slot | Detail view
+    def detail_view(self):
+        '''Zoom in to scan area'''
+        self.view_box.setRange(QRectF(self.scan_area.pos()[0], self.scan_area.pos()[1], \
+                                      self.scan_area.size()[0], self.scan_area.size()[1]), padding=0)
+            
+    # Bias range change slot
+    def bias_ran_change(self, ran):
+        self.dep.bias_ran_change(ran)
+        self.spc.bias_ran_change(ran)
+
+        # open Scan Options window
+
     def open_scan_options(self):
         # !!! init scan options
         self.scan_options.show()
 
-    # open Send Options window
+        # open Send Options window
+
     def open_send_options(self):
         # !!! init send options
         self.send_options.show()
 
-    # Emit close signal
+        # Emit close signal
+
     def closeEvent(self, event):
         if self.mode == 0:
             msg = QMessageBox.information(None, "Scan", "Really want to exit scan?", QMessageBox.Yes | QMessageBox.No)
@@ -486,18 +601,6 @@ class myScan(QWidget, Ui_Scan):
         else:
             QMessageBox.warning(None, "Scan", "Process ongoing!!", QMessageBox.Ok)
             event.ignore()
-
-    # zoom in button slot
-    def zoom_to_box(self):
-        if self.pushButton_ZoomIn_ViewControl.isChecked():
-            self.view_box.setMouseMode(self.view_box.RectMode)
-        else:
-            self.view_box.setMouseMode(self.view_box.PanMode)
-            
-    # Bias range change slot
-    def bias_ran_change(self, ran):
-        self.dep.bias_ran_change(ran)
-        self.spc.bias_ran_change(ran)
     
     def enable_serial(self, enable):
         self.XY_offset.setEnabled(enable)
@@ -515,7 +618,6 @@ class myScan(QWidget, Ui_Scan):
         self.pushButton_Info_Scan.setEnabled(enable and (not self.data.data))
         self.pushButton_Load_Scan.setEnabled(enable)
 
-        
         self.dep.enable_serial(enable)
         # !!! need other modules's enable serial function
 
