@@ -98,17 +98,42 @@
          <property name="verticalSpacing">
           <number>3</number>
          </property>
-         <item row="0" column="4">
-          <widget class="QPushButton" name="pushButton_ZoomOut_ViewControl">
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="pushButton_ZoomIn_ViewControl">
            <property name="text">
             <string/>
            </property>
            <property name="icon">
             <iconset resource="logo.qrc">
-             <normaloff>:/toolbar/data/zoom_out.png</normaloff>:/toolbar/data/zoom_out.png</iconset>
+             <normaloff>:/toolbar/data/zoom.png</normaloff>:/toolbar/data/zoom.png</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
+           </property>
+           <property name="autoRepeat">
+            <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -116,20 +141,6 @@
           </widget>
          </item>
          <item row="0" column="5">
-          <widget class="QPushButton" name="pushButton_Full_ViewControl">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="logo.qrc">
-             <normaloff>:/toolbar/data/full_view.png</normaloff>:/toolbar/data/full_view.png</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="6">
           <widget class="QPushButton" name="pushButton_Detail_ViewControl">
            <property name="text">
             <string/>
@@ -155,25 +166,11 @@
            <property name="checkable">
             <bool>true</bool>
            </property>
-           <property name="default">
+           <property name="autoRepeat">
             <bool>false</bool>
            </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QPushButton" name="pushButton_ZoomIn_ViewControl">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="logo.qrc">
-             <normaloff>:/toolbar/data/zoom_in.png</normaloff>:/toolbar/data/zoom_in.png</iconset>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
+           <property name="autoExclusive">
+            <bool>false</bool>
            </property>
            <property name="autoDefault">
             <bool>false</bool>
@@ -186,18 +183,19 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="0" column="4">
+          <widget class="QPushButton" name="pushButton_Full_ViewControl">
+           <property name="text">
+            <string/>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
+           <property name="icon">
+            <iconset resource="logo.qrc">
+             <normaloff>:/toolbar/data/full_view.png</normaloff>:/toolbar/data/full_view.png</iconset>
            </property>
-          </spacer>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
