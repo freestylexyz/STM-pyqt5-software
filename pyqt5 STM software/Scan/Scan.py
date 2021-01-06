@@ -34,6 +34,7 @@ import functools as ft
 import cv2 as cv
 from DataStruct import ScanData
 from DigitalSignalProcessor import myDSP
+import scipy.io
 
 class myScan(QWidget, Ui_Scan):
     close_signal = pyqtSignal()
@@ -68,7 +69,7 @@ class myScan(QWidget, Ui_Scan):
         self.bias_ran = 9           # Bias range
         
         # XY and image variables
-        self.last_xy = [0]*4     # Xin(0), Yin(1), X offset(2), Y offset(3)
+        self.last_xy = [0]*4     # Xin(0), Yin(1), X offset(2), Y offset(3) --> values sent last time
         self.current_xy = [0]*4  # Xin(0), Yin(1), X offset(2), Y offset(3)
         self.scan_size = [1]*2   # Scan size(0), Step size(1)
         self.imagine_gain = 10   # X/Y gain imaginary value
@@ -154,25 +155,20 @@ class myScan(QWidget, Ui_Scan):
         self.checkBox_PlaneFit_Scan.stateChanged.connect(ft.partial(self.image_process, 1))
 
         # pushButton | tool bar
-        self.tool_bar_group = QButtonGroup()
-        self.tool_bar_group.addButton(self.pushButton_Move_ViewControl, 0)
-        self.tool_bar_group.addButton(self.pushButton_ZoomIn_ViewControl, 1)
-        self.tool_bar_group.setExclusive(False)
-        self.tool_bar_group.buttonToggled[int, bool].connect(self.view_mode_selected)
         self.pushButton_Full_ViewControl.clicked.connect(self.full_view)
         self.pushButton_Detail_ViewControl.clicked.connect(self.detail_view)
-
 
 
         # graphicsView | Scan main view
 
         # viewBox | setup
-        self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False, enableMouse=False)
+        self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False, enableMouse=True)
         self.view_box.setRange(QRectF(-3276800, -3276800, 6553600, 6553600), padding=0)
         self.view_box.setLimits(xMin=-3276800, xMax=3276800, yMin=-3276800, yMax=3276800, \
                                 minXRange=10, maxXRange=6553600, minYRange=10, maxYRange=6553600)
         self.view_box.setAspectLocked(True)
         self.view_box.setCursor(Qt.CrossCursor)
+        self.view_box.setMouseMode(self.view_box.PanMode)
 
         # ROI | define pens
         blue_pen = pg.mkPen((70, 200, 255, 255), width=1)
@@ -198,6 +194,7 @@ class myScan(QWidget, Ui_Scan):
         self.target_area.aspectLocked = True
         self.view_box.addItem(self.target_area)
         self.target_area.removeHandle(0)
+        self.target_area.hide()
 
         # ROI | tip position
         cross_pos = [int(self.scan_area.pos()[0] + self.scan_area.size()[0]/2), \
@@ -215,11 +212,17 @@ class myScan(QWidget, Ui_Scan):
         self.target_point.setZValue(10)
         self.view_box.addItem(self.target_point)
         self.target_point.removeHandle(0)
+        self.target_point.hide()
+
+        self.ruler = pg.RulerROI()
+        self.view_box.addItem(self.ruler)
+
 
         # get pseudo image
 
         self.arr = cv.imread("..\data\scan_example_gray.jpg")
         # imageItem setup
+
         self.image = pg.ImageItem()
         self.view_box.addItem(self.image)
         self.image.setImage(self.arr)
@@ -498,72 +501,6 @@ class myScan(QWidget, Ui_Scan):
         else:
             self.gray_img = cv.imread("../data/scan_example_gray.jpg")
             self.image.setImage(self.gray_img)
-
-    # tool bar button slot | Move mode and Zoom mode
-    def view_mode_selected(self, index, status):
-        '''
-        Mouse interaction mode must be one of [Default mode, Move mode, Zoom mode].
-        Only one mode is allowed at any given time.
-        User can lick another button to change mode, or clicked again to cancel current selection.
-        No button checked means that current mode is Default mode.
-
-        **Mode details**.
-        ============= ============================================================
-        Default mode   left click to decide target area center position;
-                       right click to decide target point position
-        Move mode      left drag to pan the view (always inside canvas);
-                       wheel to scale by mouse position
-        Zoom mode      left drag to zoom to the box;
-                       wheel to scale by center of canvas
-        ============= ============================================================
-        '''
-        # print("Button:", index, "\tstatus:", status)
-        if status:          # button checked
-            self.view_box.setMouseEnabled(x=True, y=True)
-            self.target_area.hide()
-            self.target_point.hide()
-            if index == 0:  # move mode button checked
-                if self.pushButton_ZoomIn_ViewControl.isChecked():
-                    self.pushButton_ZoomIn_ViewControl.setChecked(False)
-                else:
-                    self.pushButton_Move_ViewControl.setDown(True)
-                self.view_box.setCursor(Qt.OpenHandCursor)
-                self.scan_area.translatable = True
-                self.scan_area.resizable = True
-                self.tip_position.translatable = True
-                self.tip_position.resizable = True
-                self.view_box.setMouseMode(self.view_box.PanMode)
-            else:           # zoom mode button checked
-                if self.pushButton_Move_ViewControl.isChecked():
-                    self.pushButton_Move_ViewControl.setChecked(False)
-                else:
-                    self.pushButton_ZoomIn_ViewControl.setDown(True)
-                self.view_box.setCursor(Qt.PointingHandCursor)
-                self.scan_area.translatable = False
-                self.tip_position.translatable = False
-                self.view_box.setMouseMode(self.view_box.RectMode)
-        else:               # button unchecked
-            self.pushButton_Move_ViewControl.setDown(False)
-            self.pushButton_ZoomIn_ViewControl.setDown(False)
-            self.view_box.setCursor(Qt.CrossCursor)
-            if self.tool_bar_group.checkedId() == -1:
-                self.scan_area.translatable = False
-                self.tip_position.translatable = False
-                self.target_area.translatable = False
-                self.target_point.translatable = False
-                self.view_box.setMouseEnabled(x=False, y=False)
-                self.target_area.setPos(self.scan_area.pos())
-                self.target_area.setSize(self.scan_area.size())
-                self.target_point.setPos(self.tip_position.pos())
-                self.target_area.show()
-                self.target_point.show()
-
-    #
-    # def mouseDragEvent(self, ev):
-    #     self.scan_area.mouseDragHandler.mouseDragEvent(ev)
-    #     if ev.button() & QtCore.Qt.LeftButton:
-    #         if self.pushButton_Move_ViewControl.isChecked() and self.scan_area.mouseHovering == True:
-    #             self.setCursor(Qt.closedHandCursor)
 
     # tool bar button slot | Full view
     def full_view(self):
