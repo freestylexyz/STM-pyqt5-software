@@ -112,35 +112,6 @@
           </spacer>
          </item>
          <item row="0" column="3">
-          <widget class="QPushButton" name="pushButton_ZoomIn_ViewControl">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="logo.qrc">
-             <normaloff>:/toolbar/data/zoom.png</normaloff>:/toolbar/data/zoom.png</iconset>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoRepeat">
-            <bool>false</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>false</bool>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-           <property name="default">
-            <bool>false</bool>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
           <widget class="QPushButton" name="pushButton_Detail_ViewControl">
            <property name="text">
             <string/>
@@ -154,36 +125,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="pushButton_Move_ViewControl">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="logo.qrc">
-             <normaloff>:/toolbar/data/move.png</normaloff>:/toolbar/data/move.png</iconset>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoRepeat">
-            <bool>false</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>false</bool>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-           <property name="default">
-            <bool>false</bool>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
+         <item row="0" column="2">
           <widget class="QPushButton" name="pushButton_Full_ViewControl">
            <property name="text">
             <string/>
