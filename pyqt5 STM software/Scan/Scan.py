@@ -45,6 +45,11 @@ class myScan(QWidget, Ui_Scan):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_property()
+        self.init_UI()
+        
+    def init_property(self):
+        # Modeules
         self.spc = mySpc()
         self.dep = myDeposition()
         self.track = myTrack()
@@ -54,22 +59,23 @@ class myScan(QWidget, Ui_Scan):
         self.send_options = mySendOptions()
         self.seq_list = mySequenceList()
 
-        # Variables
         # Flags
         self.mode = 0       # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
         self.stop = True
         self.idling = True
         self.saved = True
+        self.bias_dac = False       # Bias DAC selection
+        self.bias_ran = 9           # Bias range
+        
         # XY and image variables
         self.last_xy = [0]*4     # Xin(0), Yin(1), X offset(2), Y offset(3)
         self.current_xy = [0]*4  # Xin(0), Yin(1), X offset(2), Y offset(3)
         self.scan_size = [1]*2   # Scan size(0), Step size(1)
-        self.imagine_gain = 100  # X/Y gain imaginary value
-        # Bias variables
-        self.bias_dac = False       # Bias DAC selection
-        self.bias_ran = 9           # Bias range
+        self.imagine_gain = 10   # X/Y gain imaginary value
+        
         # Data
         self.data = ScanData()
+        
         # Sequence lists and selected sequence
         self.scan_seq_list = []
         self.dep_seq_list = []
@@ -77,7 +83,6 @@ class myScan(QWidget, Ui_Scan):
         self.scan_seq_selected = -1
         self.dep_seq_selected = -1
         self.spc_seq_selected = -1
-        self.init_UI()
         
     def init_UI(self):
         # init ui position and size

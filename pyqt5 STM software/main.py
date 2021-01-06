@@ -101,11 +101,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
 
         # Connect scan signal
+        self.bias_range_signal.connect(self.scan.bias_ran_change)
         # Scan
         self.scan.close_signal.connect(self.close_scan)
         self.scan.seq_list_signal.connect(ft.partial(self.open_seq_list, 0))
-        self.scan.seq_list.close_signal.connect(self.close_seq_list)
         self.scan.stop_signal.connect(self.scan_stop)
+        
+        # Sequence
+        self.scan.seq_list.close_signal.connect(self.close_seq_list)
         
         # Deposition
         self.scan.dep.close_signal.connect(self.close_scan)
@@ -115,7 +118,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         
         # Spectroscopy
         self.scan.spc.close_signal.connect(self.close_scan)
-        # self.scan.spc.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
+        self.scan.spc.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
 
         # Do some real stuff
         self.load_config()              # Load DSP settings
@@ -240,7 +243,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.mode = 3
             self.enable_menubar(False)
             self.menuScan.setEnabled(True)
-            self.init_scan()
+            self.enter_scan()
             self.init_bias()
             self.init_current()
             self.init_Zcontroller()
@@ -271,7 +274,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 3:
             # self.scan.mode = 3
             # self.menuScan.setEnabled(False)
-            self.scan.track.init_track()
+            # self.scan.track.init_track()
             self.scan.track.show()
         else:
             self.msg_open_scan()
@@ -307,6 +310,9 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def close_scan(self):
         if self.scan.mode == 0:
             self.exit_scan()
+            self.init_bias()
+            self.init_current()
+            self.init_Zcontroller()
             self.closeWindow()
         else:
             self.scan.mode = 0

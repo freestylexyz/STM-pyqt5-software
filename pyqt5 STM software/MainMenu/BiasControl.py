@@ -9,12 +9,14 @@ import sys
 sys.path.append("./ui/")
 from MainMenu import myMainMenu
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import pyqtSignal
 import conversion as cnv
 import threading
 import time
 
 # myBiasControl - This class handles bias dock control
 class myBiasControl(myMainMenu):
+    bias_range_signal = pyqtSignal(int)
     # Init bias dock
     def init_bias_dock(self):
         self.init_bias()        # Initial bias dock view
@@ -235,8 +237,9 @@ class myBiasControl(myMainMenu):
             feedback_store = self.dsp.lastdigital[2]            # Store current feedback status
             self.dsp.digital_o(2, False)                        # Feedback off
             time.sleep(0.5)                                     # The reed relay will take some time
-            self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, True)    # Ramp bias to 0
+            self.dsp.rampTo(0x1d, 0x8000, 10, 200, 0, True)     # Ramp bias to 0
             self.dsp.dac_range(13, ran)                         # Change range
+            self.bias_range_signal.emit(ran)                    # Emit bias range signal
             self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, True)  # Restore to original bias voltage
             self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status  
             self.bias_spinbox_range()                           # Set spin boxes range

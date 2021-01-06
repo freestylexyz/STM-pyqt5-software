@@ -22,6 +22,7 @@ from BetweenPasses import myBetweenPasses
 
 class mySpc(QWidget, Ui_Spectroscopy):
     close_signal = pyqtSignal()
+    seq_list_signal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -43,6 +44,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
     def enable_serial(self, enable):
         pass
 
+    def bias_ran_change(self, ran):
+        pass
 
 
 if __name__ == "__main__":

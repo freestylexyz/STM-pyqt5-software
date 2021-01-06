@@ -27,7 +27,7 @@ import copy
 
 class myScanControl(myMainMenu):
     # Scan initial operation
-    def init_scan(self):
+    def enter_scan(self):
         pass
     
     # Exit scan operation
