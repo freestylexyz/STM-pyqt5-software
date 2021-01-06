@@ -115,7 +115,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     # Enable all serial related component in bias dock
     def enable_bias_serial(self, enable):
         self.groupBox_Bias_Bias.setEnabled(enable)
-        self.groupBox_Bias_DAC.setEnabled(enable and (self.mode != 3))
+        self.groupBox_DAC_Bias.setEnabled(enable and (self.mode != 3))
         self.groupBox_Dither_Bias.setEnabled(enable)
         self.groupBox_Range_Bias.setEnabled(enable)
         self.pushButton_Rampto1_BiasRamp.setEnabled(enable)
