@@ -56,11 +56,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def init_STM(self):
         # Connect DSP singal
         self.dsp.succeed_signal.connect(self.dsp_succeed_slot)
-        # self.dsp.oscc_signal.connect()
+        self.dsp.oscc_signal.connect(self.osci_update)
         self.dsp.rampMeasure_signal.connect(self.dsp_rampMeasure_slot)
         self.dsp.giantStep_signal.connect(self.giantStep_update)
         self.dsp.rampTo_signal.connect(self.dsp_rampTo_slot)
-        # self.dsp.rampDiag_signal.connect()
+        self.dsp.track_signal.connect(self.scan.track_update)
+        self.dsp.rampDiag_signal.connect(self.scan.send_update)
+        self.dsp.scan_signal.connect(self.scan.scan_update)
+        
         
         # Connect setting signal
         self.setting.initDSP_signal.connect(self.setting_init_slot)
@@ -92,7 +95,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.etest.swave_start_signal.connect(self.swave_start_slot)
         # Oscilloscope
         self.etest.osci_start_signal.connect(self.osci_start_slot)
-        self.dsp.oscc_signal.connect(self.osci_update)
         # Echo
         self.etest.echo_start_signal.connect(self.echo_start_slot)
         self.etest.echo_query_signal.connect(self.echo_query_slot)
@@ -105,7 +107,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Scan
         self.scan.close_signal.connect(self.close_scan)
         self.scan.seq_list_signal.connect(ft.partial(self.open_seq_list, 0))
+        self.scan.send_signal.connect(self.send_thread)
+        self.scan.scan_signal.connect(self.scan_thread)
         self.scan.stop_signal.connect(self.scan_stop)
+        self.scan.gain_changed_signal.connect(self.dsp.gain)
         
         # Sequence
         self.scan.seq_list.close_signal.connect(self.close_seq_list)
@@ -113,12 +118,18 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Deposition
         self.scan.dep.close_signal.connect(self.close_scan)
         self.scan.dep.seq_list_signal.connect(ft.partial(self.open_seq_list, 1))
-        self.scan.dep.do_it_signal.connect(self.deposition)
+        self.scan.dep.do_it_signal.connect(self.deposition_thread)
         self.scan.dep.stop_signal.connect(self.scan_stop)
         
+        # Track
+        self.scan.track.track_signal.connect(self.track_thread)
+        self.scan.track.stop_signal.connect(self.scan_stop)
+
         # Spectroscopy
         self.scan.spc.close_signal.connect(self.close_scan)
         self.scan.spc.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
+        self.scan.spc.spectroscopy_signal.connect(self.spectroscopy_thread)
+        self.scan.spc.stop_signal.connect(self.scan_stop)
 
         # Do some real stuff
         self.load_config()              # Load DSP settings
@@ -178,14 +189,21 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             elif channel == 0x13:
                 self.z_offset_update()                      # Update Z controller if ramping Z offset
         else:
-            # !!! Etest update ramp
-            self.ramp_update(channel, current)
-            pass
+            self.ramp_update(channel, current)              # Update etest ramp if in etest mode
 
     # DSP ramp measure update signal:
     def dsp_rampMeasure_slot(self, rdata):
         if self.mode == 1:
-            self.ramp_read_update(rdata)           # Update etest if in etest mode
+            self.ramp_read_update(rdata)            # Update etest ramp read if in etest mode
+        elif self.mode == 3:
+            self.scan.spc.update_spc(rdata)         # Update spectroscopy is in scan mode
+            
+    # DSP OSC_C update signal
+    def dsp_oscc_slot(self, rdata):
+        if self.mode == 1:
+            self.osci_update(rdata)                 # Update etest continuous oscilloscope if in etest mode
+        elif self.mode == 3:
+            self.scan.dep.update_C(rdata)           # Update deposition if in scan mode
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):

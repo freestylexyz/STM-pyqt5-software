@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>402</width>
-    <height>237</height>
+    <width>401</width>
+    <height>270</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,9 @@
           <height>20</height>
          </size>
         </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
        </widget>
       </item>
       <item row="6" column="3">
@@ -49,6 +52,9 @@
           <width>70</width>
           <height>20</height>
          </size>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
         </property>
        </widget>
       </item>
@@ -86,6 +92,9 @@
         <property name="checkable">
          <bool>true</bool>
         </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
         <layout class="QGridLayout" name="gridLayout">
          <property name="leftMargin">
           <number>6</number>
@@ -99,25 +108,16 @@
          <property name="bottomMargin">
           <number>6</number>
          </property>
-         <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="spinBox_X_PlaneFit">
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_6">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="minimumSize">
-            <size>
-             <width>60</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="stepType">
-            <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+           <property name="text">
+            <string>Y</string>
            </property>
           </widget>
          </item>
@@ -138,21 +138,20 @@
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
            </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>-65535.999000000003434</double>
+           </property>
+           <property name="maximum">
+            <double>65535.999000000003434</double>
+           </property>
            <property name="stepType">
             <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
            </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_6">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Y</string>
+           <property name="value">
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -166,6 +165,44 @@
            </property>
            <property name="text">
             <string>X</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="spinBox_X_PlaneFit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>-65535.999000000003434</double>
+           </property>
+           <property name="maximum">
+            <double>65535.999000000003434</double>
+           </property>
+           <property name="stepType">
+            <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QPushButton" name="pushButton_PlaneFit">
+           <property name="text">
+            <string>Use image fit</string>
            </property>
           </widget>
          </item>
@@ -202,6 +239,15 @@
           <height>20</height>
          </size>
         </property>
+        <property name="minimum">
+         <number>32</number>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
+        <property name="value">
+         <number>512</number>
+        </property>
        </widget>
       </item>
       <item row="6" column="0">
@@ -228,6 +274,9 @@
         <property name="text">
          <string>Max</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="5" column="1">
@@ -244,14 +293,17 @@
           <height>20</height>
          </size>
         </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
         <item>
          <property name="text">
-          <string>Pre-amp</string>
+          <string>Zout</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Zout</string>
+          <string>Pre-amp</string>
          </property>
         </item>
        </widget>
@@ -269,6 +321,15 @@
           <width>70</width>
           <height>20</height>
          </size>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>512</number>
+        </property>
+        <property name="value">
+         <number>16</number>
         </property>
        </widget>
       </item>
@@ -328,6 +389,12 @@
           <height>20</height>
          </size>
         </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
        </widget>
       </item>
       <item row="3" column="2" colspan="2">
@@ -337,6 +404,15 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimum">
+         <number>32</number>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
+        <property name="value">
+         <number>512</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -350,6 +426,15 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>512</number>
+        </property>
+        <property name="value">
+         <number>16</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

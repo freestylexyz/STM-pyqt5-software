@@ -70,7 +70,7 @@ void track()
         y = y + ((sy - 1) * step);
         rampTo_S(Xin, x, 1, 10);                            // Send x to best position
         rampTo_S(Yin, y, 1, 10);                            // Send y to best position
-        sdata = ((sx & 0x3) << 6) || ((sy & 0x3) << 6);     // Patch data of best position shift, use the 4 MSB to distinguish with finish command
+        sdata = ((sx & 0x03) << 6) || ((sy & 0x03) << 4);   // Patch data of best position shift, use the 4 MSB to distinguish with finish command
         serialOut(split(sdata, 1));                         // Send out the shift of best position
         DELAY_US(stay_delay);                               // Stay at best station for some time
         if(serialCheck() == Stop){break;}                   //Check stop
@@ -89,7 +89,7 @@ void updatePos(bool track_min, Uint16 in_ch, Uint16 average, Uint32 tiltx, Uint3
     tys = ((tilty & 0x80000000) == 0x80000000);                         // Figure out tilt y sign
     xs = ((dx & 0x02) == 0x02);                                         // Figure out shift x sign
     ys = ((dy & 0x02) == 0x02);                                         // Figure out shift y sign
-    rdata = ((Uint32)adc_CNV_N(in_ch, average)) << 16;                  // Read data
+    rdata = ((Uint32)adc_CNV_N(in_ch, average)) * ((Uint32)0x7FFF);     // Read data
     if(txs ^ xs){rdata = rdata - ((dx & 0x1) * (tiltx & 0x7FFFFFFF));}  // Correct x based on plane fit
     else{rdata = rdata + ((dx & 0x1) * (tiltx & 0x7FFFFFFF));}
     if(tys ^ ys){rdata = rdata - ((dy & 0x1) * (tilty & 0x7FFFFFFF));}  // Correct y based on plane fit

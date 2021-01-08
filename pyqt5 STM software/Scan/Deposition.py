@@ -41,6 +41,10 @@ class myDeposition(QWidget, Ui_Deposition):
         self.bias_dac = True
         self.bias_ran = 9
         self.saved = True
+        self.limit = 65536
+        self.stop_num = 0
+        self.rdata = []
+        self.count = 0
 
         self.poke_seq = mySequence([0x42, 0x63, 0x8d], [0x00000000, 0x80000000, 0x00008000] , False)    # Initial poke sequence
         
@@ -127,6 +131,7 @@ class myDeposition(QWidget, Ui_Deposition):
     # Do it slot
     def do_it(self):
         if self.idling:
+            self.idling = False
             # Read before and after
             if self.groupBox_Read_Deposition.isChecked():
                 read_before_ch = (self.comboBox_Ch_Read.currentIndex() + 6) * 4 + 0xc0
@@ -146,7 +151,14 @@ class myDeposition(QWidget, Ui_Deposition):
             read_num = self.spinBox_Num_ReadNSample.value()
             
             read_change = cnv.vb((self.spinBox_Change_ReadUntil.value() - 10.24), 'a')
+            
             read_stop_num = self.spinBox_StopNum_ReadUntil.value()
+            
+            self.limit = read_change
+            self.stop_num = read_stop_num
+            self.rdata = []
+            self.count = 0
+            
             
             if not (self.groupBox_ReadNSample_Deposition.isChecked() or self.groupBox_ReadUntil_Deposition.isChecked()):
                 read_mode = 0
@@ -175,9 +187,9 @@ class myDeposition(QWidget, Ui_Deposition):
                     poke_data[1] = 0x80000000 - deltaZ
             
                 self.poke_seq = mySequence(poke_command, poke_data, False)
-                index = 0
+                index = False
             else:
-                index = 1
+                index = True
                 
             if self.saved:
                 flag = True
@@ -190,6 +202,7 @@ class myDeposition(QWidget, Ui_Deposition):
             if flag:
                 self.do_it_signal.emit(read_before, read, index)
         else:
+            self.pushButton_DoIt_Deposition.setEnabled(False)
             self.stop_signal.emit()
                 
     # Bias range change slot
@@ -221,12 +234,35 @@ class myDeposition(QWidget, Ui_Deposition):
                 self.saved = True
                 self.setWindowTitle('Deposition')
     
+    # Pop out message
+    def message(self, text):
+        QMessageBox.warning(None, "Depostion", text, QMessageBox.Ok)
+    
+    # !!! Not finished
+    # Update N samples data
+    def update_N(self, index):
+        pass
+    
+    # !!! Not finished
+    # Update continuous data
+    def update_C(self, rdata):
+        self.rdata += [rdata]
+        if abs(rdata - self.rdata[0])> self.limit:
+            self.count += 1
+            if self.count >= self.stop_num:
+                self.stop_signal.emit()
+                
+    # Call information window
+    def info(self):
+        pass
+    
     # Emit close signal
     def closeEvent(self, event):
         if self.idling:
             self.close_signal.emit()
             event.accept()
         else:
+            self.message('Process ongoing')
             event.ignore()
         
 

@@ -538,7 +538,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         if not self.saved:
             QMessageBox.information(None, "Sequence compiler", "Save first", QMessageBox.Ok)
         else:
-            error = self.seq.validation(self.seq.feedback, self.seq.mode)
+            error = self.seq.validation(self.seq.ditherB, self.seq.ditherZ, self.seq.feedback, self.seq.mode)
             self.save_seq(False)
             # QMessageBox.information(None, "Sequence compiler", "Save first", QMessageBox.Ok)
 

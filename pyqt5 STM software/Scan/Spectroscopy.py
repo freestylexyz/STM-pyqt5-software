@@ -22,18 +22,27 @@ from BetweenPasses import myBetweenPasses
 
 class mySpc(QWidget, Ui_Spectroscopy):
     close_signal = pyqtSignal()
+    spectroscopy_signal = pyqtSignal()
     seq_list_signal = pyqtSignal(str)
+    stop_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.adv = myAdvanceOption()
-        self.bp = myBetweenPasses()
+        self.init_UI()
+
 
     def init_UI(self):
-        pass
+        self.adv = myAdvanceOption()
+        self.bp = myBetweenPasses()
+        
+        self.idling = True
     
     def init_spc(self):
+        pass
+    
+    # Update spectroscopy data
+    def update_spc(self, rdata):
         pass
     
     # Emit close signal

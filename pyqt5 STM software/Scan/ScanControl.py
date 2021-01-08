@@ -26,10 +26,11 @@ import threading
 import copy
 
 class myScanControl(myMainMenu):
+    # !!!
     # Scan initial operation
     def enter_scan(self):
         pass
-    
+    # !!!
     # Exit scan operation
     def exit_scan(self):
         pass
@@ -67,9 +68,9 @@ class myScanControl(myMainMenu):
         self.scan.seq_list.init_seqlist(index, seq_list, selected_name, mode, self.bias_dac, self.preamp_gain, self.dsp.dacrange, \
                                    self.dsp.lastdac, self.dsp.last20bit)
         self.scan.seq_list.show()
-
+    # !!!
     # send setup
-    def send(self, index, xin, yin, xoffset, yoffset):
+    def send_excu(self, index, xin, yin, xoffset, yoffset):
         '''def rampDiag(self, channels, channell, targets, targetl, step, delay, limit, checkstop):'''
         if self.scan.idling:
             self.scan.enable_serial(False)
@@ -93,11 +94,29 @@ class myScanControl(myMainMenu):
             self.scan.enable_serial(True)
             self.pushButton_Zero_XY.setText("Zero")
             self.pushButton_Send_XY.setText("Send")
-
+    # !!!
     # send signal slot
-    def send_slot(self, index, xin, yin, xoffset, yoffset):
-        threading.Thread(target=(lambda: self.send(index, xin, yin, xoffset, yoffset))).start()
+    def send_thread(self, index, xin, yin, xoffset, yoffset):
+        threading.Thread(target=(lambda: self.send_excu(index, xin, yin, xoffset, yoffset))).start()
+        
+    # !!!
+    # Scan execution
+    def scan_excu(self):
+        if self.scan.idling:
+            self.scan.idling = False
+            self.scan.enable_serial(False)
+            # self.scan.track.pushButton_Start_Track.setText('Stop')
+            # self.scan.track.pushButton_Start_Track.setEnable(False)
+            # self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
+            self.scan.enable_serial(True)
+            self.scan.idling = True
 
+    # !!!
+    # Scan signal slot
+    def scan_thread(self):
+        threading.Thread(target=(lambda: self.scan_excu())).start()
+
+    # !!!
     # dsp rampDiag_signal slot
     def xy_indication_slot(self, channels, channell, currents, currentl):
         '''self.rampDiag_signal.emit(channels, channell, currents, currentl)'''
@@ -113,8 +132,87 @@ class myScanControl(myMainMenu):
             self.scan.current_xy[3] = currentl - 32768
 
     # Depostion slot
-    def deposition(self, read_before, read, index):
-        pass
+    def deposition_thread(self, read_before, read, index):
+        if index:
+            if self.scan.dep_seq_selected < 0:
+                self.scan.dep.message('No sequence selected')
+                flag = False
+            else:
+                seq =  self.scan.dep_seq_list[self.scan.dep_seq_selected]
+                seq.configure(self.bias_dac, self.preamp_gain, self.dsp.dacrange, self.dsp.lastdac, self.dsp.last20bit)
+                seq.validation(self.seq.ditherB, self.seq.ditherZ, self.seq.feedback, self.seq.mode)
+                seq.build()
+                flag = seq.validated
+                if not seq.validated:
+                    self.scan.dep.message('Sequence not validated')
+        else:
+            seq = self.scan.dep.poke_seq
+            flag = True
+        if flag:
+            threading.Thread(target = (lambda: self.deposition_excu(read_before, read, seq))).start()
+
+    # Depostion execution
+    def deposition_excu(self, read_before, read, seq):
+        if self.scan.idling:
+            self.scan.idling = False
+            self.scan.dep.idling = False
+            self.scan.enable_serial(False)
+            if read_before:
+                rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
+                self.scan.dep.update_N(rdata, 0)
+            
+            rdata = self.dsp.depostion(read[0], read[1], read[2], read[3], read[4], read[5], read[6], read[7], seq)
+            if read[1] == 1:
+                self.scan.dep.pushButton_DoIt_Deposition.setText('Stop')
+                self.scan.dep.pushButton_DoIt_Deposition.setEnabled(True)
+            if (read[1] == 2) and (read[1] == 3):
+                self.scan.dep.update_N(rdata, 1)
+
+            if read_before:
+                rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
+                self.scan.dep.update_N(rdata, 2)
+            
+            self.scan.dep.pushButton_DoIt_Deposition.setText('Do it')
+            self.scan.enable_serial(True)
+            self.scan.stop = True
+            self.scan.idling = True
+            self.scan.dep.idling = True
+            
+    # Track slot
+    def track_thread(self, track):
+        threading.Thread(target = (lambda: self.track_excu(track))).start()
+        
+    # Track execution
+    def track_excu(self, track):
+        if self.scan.idling:
+            self.scan.idling = False
+            self.scan.track.idling = False
+            self.scan.enable_serial(False)
+            self.scan.track.pushButton_Start_Track.setText('Stop')
+            self.scan.track.pushButton_Start_Track.setEnable(False)
+            self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
+            self.scan.enable_serial(True)
+            self.scan.idling = True
+            self.scan.track.idling = True
+            
+    # !!!
+    # Spectroscopy slot
+    def spectroscopy_thread(self):
+        threading.Thread(target = (lambda: self.spectroscopy_excu())).start()
+        
+    # !!!
+    # Spectroscopy execution
+    def spectroscopy_excu(self):
+        if self.scan.idling:
+            self.scan.idling = False
+            self.scan.spc.idling = False
+            self.scan.enable_serial(False)
+            # self.scan.track.pushButton_Start_Track.setText('Stop')
+            # self.scan.track.pushButton_Start_Track.setEnable(False)
+            # self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
+            self.scan.enable_serial(True)
+            self.scan.idling = True
+            self.scan.spc.idling = True
 
     # Scan related stop slot
     def scan_stop(self):

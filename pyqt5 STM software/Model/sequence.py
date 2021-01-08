@@ -119,7 +119,7 @@ class mySequence():
     # !!! Not finished
     # Validate raw code
     #
-    def validation(self, feedback, mode):
+    def validation(self, ditherB, ditherZ, feedback, mode):
         error = 0
         if self.validation_required:
             if self.mode:       # Validate read sequence

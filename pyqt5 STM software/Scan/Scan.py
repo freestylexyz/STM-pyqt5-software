@@ -42,6 +42,7 @@ class myScan(QWidget, Ui_Scan):
     stop_signal = pyqtSignal()
     gain_changed_signal = pyqtSignal(int, int)
     send_signal = pyqtSignal(int, int, int, int, int)
+    scan_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -73,6 +74,7 @@ class myScan(QWidget, Ui_Scan):
         self.current_xy = [0]*4  # Xin(0), Yin(1), X offset(2), Y offset(3)
         self.scan_size = [1]*2   # Scan size(0), Step size(1)
         self.imagine_gain = 10   # X/Y gain imaginary value
+        self.tilt = [0.0] * 2    # Tilt X, Tilt Y
         
         # Data
         self.data = ScanData()
@@ -92,6 +94,9 @@ class myScan(QWidget, Ui_Scan):
         size = self.frameGeometry()
         self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
         self.setFixedSize(self.width(), self.height())
+        
+        # Track signal
+        self.track.pushButton_PlaneFit.clicked.connect(self.track_update_fit)
 
         # self.close_signal.clicked(self.spc.close_signal)
         # self.close_signal.clicked(self.depostion.close_signal)
@@ -214,8 +219,8 @@ class myScan(QWidget, Ui_Scan):
         self.target_point.removeHandle(0)
         self.target_point.hide()
 
-        self.ruler = pg.RulerROI()
-        self.view_box.addItem(self.ruler)
+        # self.ruler = pg.RulerROI()
+        # self.view_box.addItem(self.ruler)
 
 
         # get pseudo image
@@ -248,9 +253,10 @@ class myScan(QWidget, Ui_Scan):
         
          
         self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
+        self.track.init_track(succeed)
         
-        # self.spc.init_spc()
-        # self.track.init_track()
+        # !!! Other module init
+        # self.spc.init_spc(succeed)
         # self.hop.init_hop()
         # self.manip.init_manipulation()
         # self.send_options.init_sendoptions()
@@ -513,29 +519,49 @@ class myScan(QWidget, Ui_Scan):
         self.view_box.setRange(QRectF(self.scan_area.pos()[0], self.scan_area.pos()[1], \
                                       self.scan_area.size()[0], self.scan_area.size()[1]), padding=0)
             
+
+    
     # Bias range change slot
     def bias_ran_change(self, ran):
         self.dep.bias_ran_change(ran)
         self.spc.bias_ran_change(ran)
 
-        # open Scan Options window
+    # !!!
+    # Update ramp diagnal
+    def send_update(self, channels, channell, currents, currentl):
+        pass
+    
+    # !!!
+    # Update scan
+    def scan_update(self, rdata):
+        pass
 
+    # Update plane fit paramenters in track window
+    def track_update_fit(self):
+        self.track.spinBox_X_PlaneFit.setValue(self.tilt[0])
+        self.track.spinBox_Y_PlaneFit.setValue(self.tilt[1])
+
+    # !!! Track update function
+    def track_update(self, x, y):
+        # If out of track size
+        self.stop_signal.emit()
+
+    # Open Scan Options window
     def open_scan_options(self):
         # !!! init scan options
         self.scan_options.show()
-
-        # open Send Options window
-
+        
+    # Open Send Options window
     def open_send_options(self):
         # !!! init send options
         self.send_options.show()
 
-        # Emit close signal
-
+    # Emit close signal
     def closeEvent(self, event):
-        if self.mode == 0:
+        if (self.mode == 0) and (self.idling):
             msg = QMessageBox.information(None, "Scan", "Really want to exit scan?", QMessageBox.Yes | QMessageBox.No)
             if msg == QMessageBox.Yes:
+                self.track.close()
                 self.close_signal.emit()
                 event.accept()
             else:
@@ -561,6 +587,8 @@ class myScan(QWidget, Ui_Scan):
         self.pushButton_Load_Scan.setEnabled(enable)
 
         self.dep.enable_serial(enable)
+        self.track.enable_serial(enable)
+        self.spc.enable_serial(enable)
         # !!! need other modules's enable serial function
 
 

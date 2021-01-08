@@ -11,6 +11,7 @@ import conversion as cnv
 from sequence import mySequence
 import math
 
+
 # class myDSP():
 class myDSP(QObject):
     
@@ -24,6 +25,7 @@ class myDSP(QObject):
     rampTo_signal = pyqtSignal(int, int)                # Ramp to signal
     rampDiag_signal = pyqtSignal(int, int, int, int)    # Ramp diagonal signal
     scan_signal = pyqtSignal(list)                      # Ramp scan data emit signal
+    track_signal = pyqtSignal(int, int)                 # Track signal
     
     #
     # Initial class and all flags and status variable
@@ -846,7 +848,7 @@ class myDSP(QObject):
                 self.lastdac[channels - 16] = rdatas & 0xffff
                 rdatal = int.from_bytes(self.ser.read(2) ,"big")                # Last output data
                 self.lastdac[channell - 16] = rdatal & 0xffff
-                
+                self.rampDiag_signal.emit(channels, channell, rdatas & 0xffff, rdatal & 0xffff)
             self.idling = True            
             
     #
@@ -1076,8 +1078,8 @@ class myDSP(QObject):
             average = average & 0xffff
             track_min_flag = 0x01 if track_min else 0x00
             
-            tiltx_data = int(tiltx * 0x7fff) & 0x7fffffff
-            tilty_data = int(tilty * 0x7fff) & 0x7fffffff
+            tiltx_data = (int(tiltx * 0x7fff) & 0x7fffffff) + ((tiltx > 0) * 0x80000000)
+            tilty_data = (int(tilty * 0x7fff) & 0x7fffffff) + ((tilty > 0) * 0x80000000)
             
             self.idling = False
             self.ser.write(int(0x93).to_bytes(1, byteorder="big"))              # 0x93 for track function
@@ -1100,8 +1102,11 @@ class myDSP(QObject):
                         self.stop = False
                     dx = (data & 0xc0) >> 6 - 2
                     dy = ((data & 0x30) >> 4) - 2
-                    self.update_last(0x10, self.current_last(0x10) + (dx * step))
-                    self.update_last(0x1f, self.current_last(0x1f) + (dy * step))
+                    x = self.current_last(0x10) + (dx * step)
+                    y = self.current_last(0x1f) + (dy * step)
+                    self.update_last(0x10, x)
+                    self.update_last(0x1f, y)
+                    self.track_signal.emit(x, y)
                     data = int.from_bytes(self.ser.read(1), "big")
                 
             
