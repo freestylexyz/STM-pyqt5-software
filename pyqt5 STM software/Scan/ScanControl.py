@@ -68,19 +68,19 @@ class myScanControl(myMainMenu):
         self.scan.seq_list.init_seqlist(index, seq_list, selected_name, mode, self.bias_dac, self.preamp_gain, self.dsp.dacrange, \
                                    self.dsp.lastdac, self.dsp.last20bit)
         self.scan.seq_list.show()
-    # !!!
-    # send setup
+
+    # Send execution
     def send_excu(self, index, xin, yin, xoffset, yoffset):
         '''def rampDiag(self, channels, channell, targets, targetl, step, delay, limit, checkstop):'''
         if self.scan.idling:
-            self.scan.enable_serial(False)
+            self.scan.enable_mode_serial(False)
             self.scan.idling = False
             step = self.scan.send_options.spinBox_StepSize_SendOptions.value()
             delay = self.scan.send_options.spinBox_MoveDelay_SendOptions.value()
             if self.scan.send_options.groupBox_Crash_SendOptions.isEnabled():
-                limit = self.scan.send_options.spinBox_Limit_Crash.value()
+                limit = cnv.vb(self.scan.send_options.spinBox_Limit_Crash.value(), 'a') - cnv.vb(0.0, 'a')
             else:
-                limit = 0       #!!! limit init value
+                limit = 0
             if index == 0:  # zero
                 self.pushButton_Zero_XY.setText("Stop")
                 self.pushButton_Zero_XY.setEnabled(True)
@@ -91,11 +91,11 @@ class myScanControl(myMainMenu):
                 self.dsp.rampDiag(0+16, 15+16, xin, yin, step, delay, limit, True)
                 self.dsp.rampDiag(1+16, 14+16, xoffset, yoffset, step, delay, limit, True)
             self.scan.idling = True
-            self.scan.enable_serial(True)
+            self.scan.enable_mode_serial(True)
             self.pushButton_Zero_XY.setText("Zero")
             self.pushButton_Send_XY.setText("Send")
-    # !!!
-    # send signal slot
+
+    # Send signal slot
     def send_thread(self, index, xin, yin, xoffset, yoffset):
         threading.Thread(target=(lambda: self.send_excu(index, xin, yin, xoffset, yoffset))).start()
         
@@ -104,11 +104,11 @@ class myScanControl(myMainMenu):
     def scan_excu(self):
         if self.scan.idling:
             self.scan.idling = False
-            self.scan.enable_serial(False)
+            self.scan.enable_mode_serial(False)
             # self.scan.track.pushButton_Start_Track.setText('Stop')
             # self.scan.track.pushButton_Start_Track.setEnable(False)
             # self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
-            self.scan.enable_serial(True)
+            self.scan.enable_mode_serial(True)
             self.scan.idling = True
 
     # !!!
@@ -156,7 +156,7 @@ class myScanControl(myMainMenu):
         if self.scan.idling:
             self.scan.idling = False
             self.scan.dep.idling = False
-            self.scan.enable_serial(False)
+            self.scan.enable_mode_serial(False)
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
                 self.scan.dep.update_N(rdata, 0)
@@ -173,7 +173,7 @@ class myScanControl(myMainMenu):
                 self.scan.dep.update_N(rdata, 2)
             
             self.scan.dep.pushButton_DoIt_Deposition.setText('Do it')
-            self.scan.enable_serial(True)
+            self.scan.enable_mode_serial(True)
             self.scan.stop = True
             self.scan.idling = True
             self.scan.dep.idling = True
@@ -187,11 +187,11 @@ class myScanControl(myMainMenu):
         if self.scan.idling:
             self.scan.idling = False
             self.scan.track.idling = False
-            self.scan.enable_serial(False)
+            self.scan.enable_mode_serial(False)
             self.scan.track.pushButton_Start_Track.setText('Stop')
             self.scan.track.pushButton_Start_Track.setEnable(False)
             self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
-            self.scan.enable_serial(True)
+            self.scan.enable_mode_serial(True)
             self.scan.idling = True
             self.scan.track.idling = True
             
@@ -206,11 +206,11 @@ class myScanControl(myMainMenu):
         if self.scan.idling:
             self.scan.idling = False
             self.scan.spc.idling = False
-            self.scan.enable_serial(False)
+            self.scan.enable_mode_serial(False)
             # self.scan.track.pushButton_Start_Track.setText('Stop')
             # self.scan.track.pushButton_Start_Track.setEnable(False)
             # self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
-            self.scan.enable_serial(True)
+            self.scan.enable_mode_serial(True)
             self.scan.idling = True
             self.scan.spc.idling = True
 
