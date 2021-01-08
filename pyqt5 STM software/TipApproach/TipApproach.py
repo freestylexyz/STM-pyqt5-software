@@ -104,7 +104,11 @@ class myTipApproach(QWidget, Ui_TipApproach):
         
     # Re-init tip approach view
     def init_tipAppr(self, succeed, lastdigital):
-        self.enable_serial(succeed)                                     # Enable serial related button based on DSP initial succeed
+        # Enable serial related buttons
+        self.groupBox_Trans_TipAppr.setEnabled(succeed)
+        self.pushButton_Up_Steps.setEnabled(succeed)
+        self.pushButton_Down_Steps.setEnabled(succeed)
+        self.pushButton_TipAppr_Steps.setEnabled(succeed)
         
         # Set push buttons enable based on dsp translation status
         self.groupBox_Trans_TipAppr.setChecked(lastdigital[5])
@@ -232,9 +236,9 @@ class myTipApproach(QWidget, Ui_TipApproach):
     
     # Enable serial
     def enable_serial(self, enable):
-        self.pushButton_Up_Steps.setEnabled(enable)
-        self.pushButton_Down_Steps.setEnabled(enable)
-        self.pushButton_TipAppr_Steps.setEnabled(enable)
+        self.groupBox_WaveForm_TipAppr.setEnabled(enable)
+        self.groupBox_ApprPar_TipAppr.setEnabled(enable)
+        self.groupBox_Steps_TipAppr.setEnabled(enable)
         self.groupBox_Trans_TipAppr.setEnabled(enable)
         self.pushButton_Stop.setEnabled(False)
 
