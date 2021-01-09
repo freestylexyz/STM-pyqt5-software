@@ -127,7 +127,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
         # Spectroscopy
         self.scan.spc.close_signal.connect(self.close_scan)
-        self.scan.spc.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
+        self.scan.spc.adv.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
         self.scan.spc.spectroscopy_signal.connect(self.spectroscopy_thread)
         self.scan.spc.stop_signal.connect(self.scan_stop)
 

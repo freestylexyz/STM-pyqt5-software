@@ -25,6 +25,7 @@ from Hop import myHop
 from Manipulation import myManipulation
 from ScanOptions import myScanOptions
 from SendOptions import mySendOptions
+from PointEditor import myPointEditor
 from images import myImages
 import pyqtgraph as pg
 import numpy as np
@@ -59,10 +60,11 @@ class myScan(QWidget, Ui_Scan):
         # self.manip = myManipulation()
         self.scan_options = myScanOptions()
         self.send_options = mySendOptions()
+        self.point_editor = myPointEditor()
         self.seq_list = mySequenceList()
 
         # Flags
-        self.mode = 0       # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
+        self.mode = 0               # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
         self.stop = True
         self.idling = True
         self.saved = True
@@ -87,6 +89,12 @@ class myScan(QWidget, Ui_Scan):
         self.dep_seq_selected = -1
         self.spc_seq_selected = -1
         
+        # Point list
+        self.correction_point = [0, 0]      # Point used for spectroscopy correction [X position, Y position]
+        self.point_list = [[0, 0]]          # Point list for mapping [[X position, Y position]]
+        self.reference_point = [0, 0]       # Reference point [X position, Y position]
+        self.pattern = [0, 0, 1]            # Pattern for matching [X position, Y position, Size]
+        
     def init_UI(self):
         # init ui position and size
         screen = QDesktopWidget().screenGeometry()
@@ -97,16 +105,16 @@ class myScan(QWidget, Ui_Scan):
         
         # Track signal
         self.track.pushButton_PlaneFit.clicked.connect(self.track_update_fit)
-
-        # self.close_signal.clicked(self.spc.close_signal)
-        # self.close_signal.clicked(self.depostion.close_signal)
-        # self.close_signal.clicked(self.track.close_signal)
-        # self.close_signal.clicked(self.hop.close_signal)
-        # self.close_signal.clicked(self.manip.close_signal)
+        
+        # Spectroscopy signal
+        self.spc.pushButton_EditPoints.clicked.connect(self.edit_points)
+        self.spc.corr.pushButton_Pattern_XYDrift.clicked.connect(self.select_pattern)
+        self.spc.corr.checkBox_Tracking_XYDrift.stateChanged.connect(self.open_track)
+        self.spc.corr.pushButton_SelectPoint.clicked.connect(self.select_point)
 
         # PushButton | open windows
-        self.pushButton_ScanOptions_Scan.clicked.connect(self.open_scan_options)
-        self.pushButton_SendOptions_Scan.clicked.connect(self.open_send_options)
+        self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)
+        self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)
 
         # radioButton | X/Y gain
         self.XY_gain_group = QButtonGroup()
@@ -546,15 +554,27 @@ class myScan(QWidget, Ui_Scan):
         # If out of track size
         self.stop_signal.emit()
 
-    # Open Scan Options window
-    def open_scan_options(self):
-        # !!! init scan options
-        self.scan_options.show()
-        
-    # Open Send Options window
-    def open_send_options(self):
-        # !!! init send options
-        self.send_options.show()
+    # !!!
+    # Edit points mode
+    def edit_points(self):
+        pass
+    # !!!
+    # Select points mode
+    def select_points(self):
+        pass
+    # !!!
+    # Select pattern mode
+    def select_pattern(self):
+        pass
+
+    # Spctroscopy open track
+    def open_track(self, state):
+        if state == 0:
+            self.track.closable = True
+            self.track.close()
+        elif state == 2:
+            self.track.closable = False
+            self.track.show()
 
     # Emit close signal
     def closeEvent(self, event):

@@ -30,6 +30,7 @@ class myTrack(QWidget, Ui_Track):
     def init_UI(self):
         self.tilt = [0.0, 0.0]          # Tilt x, tilt y
         self.idling = True
+        self.closable = True
         
         self.spinBox_TrackSize_Track.valueChanged.connect(self.scrollBar_TrackSize_Track.setValue)
         self.scrollBar_TrackSize_Track.valueChanged.connect(self.spinBox_TrackSize_Track.setValue)
@@ -72,7 +73,7 @@ class myTrack(QWidget, Ui_Track):
     
     # Emit close signal
     def closeEvent(self, event):
-        if self.idling:
+        if self.idling and  self.closable:
             event.accept()
         else:
             self.message('Track on going')

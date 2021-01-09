@@ -17,14 +17,15 @@ from PyQt5.QtWidgets import QApplication , QWidget
 from PyQt5.QtCore import pyqtSignal , Qt
 from Spectroscopy_ui import Ui_Spectroscopy
 from AdvanceOption import myAdvanceOption
-from BetweenPasses import myBetweenPasses
+from Correction import myCorrection
 
 
 class mySpc(QWidget, Ui_Spectroscopy):
+    # Control signal
     close_signal = pyqtSignal()
     spectroscopy_signal = pyqtSignal()
-    seq_list_signal = pyqtSignal(str)
     stop_signal = pyqtSignal()
+
 
     def __init__(self):
         super().__init__()
@@ -34,12 +35,17 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     def init_UI(self):
         self.adv = myAdvanceOption()
-        self.bp = myBetweenPasses()
+        self.corr = myCorrection()
+        
+        self.bias_dac = False
+        self.bias_ran = 9
         
         self.idling = True
     
-    def init_spc(self):
-        pass
+    def init_spc(self, succeed, bias_dac, bias_ran):
+        self.pushButton_Scan.seEnabled(succeed)
+        self.bias_dac = bias_dac
+        self.bias_ran = bias_ran
     
     # Update spectroscopy data
     def update_spc(self, rdata):

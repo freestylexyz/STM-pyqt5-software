@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-@Date     : 2020/12/24 17:30:19
+@Date     : 2020/12/24 17:41:01
 @Author   : milier00
-@FileName : AdvanceOption.py
+@FileName : SendOptions.py
 """
 import sys
 
@@ -17,14 +17,14 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, 
 from PyQt5.QtCore import pyqtSignal, Qt
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph
-from AdvanceOption_ui import Ui_AdvanceOption
+from PointEditor_ui import Ui_PointEditor
 import numpy as np
 import conversion as cnv
 import functools as ft
 
-class myAdvanceOption(QWidget, Ui_AdvanceOption):
+
+class myPointEditor(QWidget, Ui_PointEditor):
     close_signal = pyqtSignal()
-    seq_list_signal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -35,7 +35,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
     def init_UI(self):
         pass
 
-    def init_advoption(self):
+    def init_sendoptions(self):
         pass
 
     # Emit close signal
@@ -51,6 +51,6 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = myAdvanceOption()
+    window = myPointEditor()
     window.show()
     sys.exit(app.exec_())

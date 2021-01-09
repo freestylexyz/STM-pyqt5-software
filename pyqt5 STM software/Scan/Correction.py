@@ -17,13 +17,13 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, 
 from PyQt5.QtCore import pyqtSignal, Qt
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph
-from BetweenPasses_ui import Ui_BetweenPasses
+from Correction_ui import Ui_Correction
 import numpy as np
 import conversion as cnv
 import functools as ft
 
 
-class myBetweenPasses(QWidget, Ui_BetweenPasses):
+class myCorrection(QWidget, Ui_Correction):
     close_signal = pyqtSignal()
 
     def __init__(self):
@@ -51,6 +51,6 @@ class myBetweenPasses(QWidget, Ui_BetweenPasses):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = myBetweenPasses()
+    window = myCorrection()
     window.show()
     sys.exit(app.exec_())

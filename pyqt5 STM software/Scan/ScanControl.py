@@ -20,7 +20,6 @@ from Setting import mySetting
 from TipApproach import myTipApproach
 from Etest import myEtest
 from MainMenu import myMainMenu
-
 import conversion as cnv
 import threading
 import copy
