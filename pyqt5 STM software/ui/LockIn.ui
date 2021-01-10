@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LockIn</class>
+ <widget class="QWidget" name="LockIn">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>662</width>
+    <height>143</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Lock in parameters</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="3">
+    <widget class="QDoubleSpinBox" name="spinBox_Phase1">
+     <property name="maximum">
+      <double>360.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QDoubleSpinBox" name="spinBox_OSC_Freq">
+     <property name="maximum">
+      <double>1000000000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QLabel" name="label_103">
+     <property name="text">
+      <string>Time constant 2 (ms)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QDoubleSpinBox" name="spinBox_Sen1">
+     <property name="maximum">
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QLabel" name="label_90">
+     <property name="text">
+      <string>Modulation type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QDoubleSpinBox" name="spinBox_Sen2">
+     <property name="maximum">
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QDoubleSpinBox" name="spinBox_OSC_RMS">
+     <property name="maximum">
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QDoubleSpinBox" name="spinBox_Offset2">
+     <property name="minimum">
+      <double>-300.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>300.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDoubleSpinBox" name="spinBox_LockIn_Freq">
+     <property name="maximum">
+      <double>10000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QDoubleSpinBox" name="spinBox_Offset1">
+     <property name="minimum">
+      <double>-300.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>300.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_108">
+     <property name="text">
+      <string>Lock-in frequency (Hz)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="label_100">
+     <property name="text">
+      <string>Offset 2 (%)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="5">
+    <widget class="QDoubleSpinBox" name="spinBox_Phase2">
+     <property name="maximum">
+      <double>360.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_101">
+     <property name="text">
+      <string>OSC amplitude (mVrms)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_99">
+     <property name="text">
+      <string>Sensivity 2 (mV)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QLabel" name="label_95">
+     <property name="text">
+      <string>Time constant 1 (ms)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QLabel" name="label_105">
+     <property name="text">
+      <string>Phase 2</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLabel" name="label_98">
+     <property name="text">
+      <string>Offset 1 (%)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="label_97">
+     <property name="text">
+      <string>OSC frequency (kHz)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="label_107">
+     <property name="text">
+      <string>Phase 1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="5">
+    <widget class="QSpinBox" name="spinBox_TC2">
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="5">
+    <widget class="QSpinBox" name="spinBox_TC1">
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_104">
+     <property name="text">
+      <string>Sensivity 1 (mV)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5">
+    <widget class="QLineEdit" name="lineEdit_Type">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
