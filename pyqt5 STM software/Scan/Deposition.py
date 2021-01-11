@@ -16,10 +16,12 @@ sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget, QMessageBox, QFileDialog
 from PyQt5.QtCore import pyqtSignal
 from Deposition_ui import Ui_Deposition
+from DepositionInfo import myDepositionInfo
 from sequence import mySequence
+from DataStruct import DepData
+
 import functools as ft
 import conversion as cnv
-from DataStruct import DepData
 import pickle
 
 
@@ -37,6 +39,7 @@ class myDeposition(QWidget, Ui_Deposition):
 
     def init_UI(self):
         self.data = DepData()
+        self.info = myDepositionInfo()
         self.idling = True
         self.bias_dac = True
         self.bias_ran = 9
@@ -61,6 +64,8 @@ class myDeposition(QWidget, Ui_Deposition):
         self.pushButton_SeqEditor_Deposition.clicked.connect(self.seq_list_slot)
         self.pushButton_DoIt_Deposition.clicked.connect(self.do_it)
         self.pushButton_Save_Deposition.clicked.connect(self.save)
+        
+        self.pushButton_Info_Deposition.clicked.connect(self.open_Info)
 
     # Open sequence list signal
     def seq_list_slot(self):
@@ -222,6 +227,13 @@ class myDeposition(QWidget, Ui_Deposition):
             self.spinBox_Bias_PokeTip.setMaximum(Max)
             self.spinBox_Bias_PokeTip.setMinimum(Min)
             self.bias_cnv(True, val)
+
+
+    # !!!
+    # Open Inforamtion window
+    def open_Info(self):
+        # self.info.init_info()
+        self.info.show()
 
     # Save data slot
     # !!! need to know how to figure out file name automatically

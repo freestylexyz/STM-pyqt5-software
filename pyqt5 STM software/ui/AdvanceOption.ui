@@ -28,6 +28,24 @@
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="6" column="0">
     <widget class="QGroupBox" name="groupBox_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>205</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>205</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Measure</string>
      </property>
@@ -181,6 +199,24 @@
    </item>
    <item row="7" column="0">
     <widget class="QGroupBox" name="groupBox_AutoSave_AdvOption">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>205</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>205</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Auto Save</string>
      </property>
@@ -207,6 +243,24 @@
    </item>
    <item row="6" column="2">
     <widget class="QGroupBox" name="groupBox_3">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>235</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>235</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Scan Direction</string>
      </property>
@@ -247,6 +301,24 @@
    </item>
    <item row="1" column="0" rowspan="2">
     <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>205</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>205</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Delay</string>
      </property>
@@ -364,6 +436,24 @@
    </item>
    <item row="7" column="2">
     <widget class="QGroupBox" name="groupBox_Seq_AdvOption">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>235</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>235</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Sequence</string>
      </property>
@@ -428,7 +518,25 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QGroupBox" name="groupBox_6">
+    <widget class="QGroupBox" name="groupBox_Rescan">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>205</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>205</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Re-scan</string>
      </property>
@@ -447,7 +555,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="QSpinBox" name="spinBox_Pass_Rescan">
         <property name="minimum">
          <number>1</number>
         </property>
@@ -464,7 +572,7 @@
        </widget>
       </item>
       <item row="1" column="0" colspan="3">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_SelectPattern_Rescan">
         <property name="text">
          <string>Select pattern</string>
         </property>
@@ -475,6 +583,24 @@
    </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox_5">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>205</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>205</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Feedback</string>
      </property>
@@ -501,6 +627,24 @@
    </item>
    <item row="0" column="2" rowspan="2">
     <widget class="QGroupBox" name="groupBox_4">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>235</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>235</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Dither</string>
      </property>
@@ -569,7 +713,25 @@
     </widget>
    </item>
    <item row="2" column="2" rowspan="2">
-    <widget class="QGroupBox" name="groupBox_ZDrift_BetPasses">
+    <widget class="QGroupBox" name="groupBox_Correction">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>235</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>235</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Correction</string>
      </property>
@@ -583,10 +745,22 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_12">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>95</width>
+          <height>16777215</height>
+         </size>
         </property>
         <property name="text">
          <string>Do correction every</string>
@@ -594,7 +768,7 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QCheckBox" name="checkBox_Tracking_XYDrift">
+       <widget class="QCheckBox" name="checkBox_Tracking_Correction">
         <property name="minimumSize">
          <size>
           <width>65</width>
@@ -610,7 +784,7 @@
        </widget>
       </item>
       <item row="1" column="0" colspan="4">
-       <widget class="QGroupBox" name="groupBox_7">
+       <widget class="QGroupBox" name="groupBox_ZDrift_Correction">
         <property name="title">
          <string> Z correction</string>
         </property>
@@ -633,7 +807,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox_Delay1_ZDrift">
+          <widget class="QSpinBox" name="spinBox_Delay_ZDrift">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>

@@ -370,7 +370,7 @@ class Ui_Deposition(object):
         self.gridLayout_6.addWidget(self.comboBox_Ch_Pulse, 0, 1, 1, 1)
         self.gridLayout_10.addWidget(self.groupBox_ReadPulse_Deposition, 1, 1, 5, 2)
         self.pushButton_Info_Deposition = QtWidgets.QPushButton(self.widget_4)
-        self.pushButton_Info_Deposition.setEnabled(False)
+        self.pushButton_Info_Deposition.setEnabled(True)
         self.pushButton_Info_Deposition.setObjectName("pushButton_Info_Deposition")
         self.gridLayout_10.addWidget(self.pushButton_Info_Deposition, 5, 0, 1, 1)
         self.pushButton_Save_Deposition = QtWidgets.QPushButton(self.widget_4)

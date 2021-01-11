@@ -300,24 +300,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     # Open hop window
     def open_hop(self):
         pass
-        # if self.mode == 3 and self.scan.mode == 0:
-        #     self.scan.mode = 3
-        #     self.menuScan.setEnabled(False)
-        #     self.scan.hop.init_hop()
-        #     self.scan.hop.show()
-        # else:
-        #     self.msg_open_scan()
     
     # Open manipulation window
     def open_manipulation(self):
         pass
-        # if self.mode == 3:
-        #     self.scan.mode = 4
-        #     self.menuScan.setEnabled(False)
-        #     self.scan.manip.init_manipulation()
-        #     self.scan.manip.show()
-        # else:
-        #     self.msg_open_scan()
             
     # Close serial window  
     def closeWindow(self):

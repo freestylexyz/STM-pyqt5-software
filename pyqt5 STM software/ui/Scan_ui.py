@@ -491,9 +491,9 @@ class Ui_Scan(object):
         self.checkBox = QtWidgets.QCheckBox(self.ScanControl)
         self.checkBox.setObjectName("checkBox")
         self.gridLayout_7.addWidget(self.checkBox, 3, 0, 1, 2)
-        self.pushButton = QtWidgets.QPushButton(self.ScanControl)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout_7.addWidget(self.pushButton, 3, 3, 1, 2)
+        self.pushButton_LockIn_ScanControl = QtWidgets.QPushButton(self.ScanControl)
+        self.pushButton_LockIn_ScanControl.setObjectName("pushButton_LockIn_ScanControl")
+        self.gridLayout_7.addWidget(self.pushButton_LockIn_ScanControl, 3, 3, 1, 2)
         self.gridLayout_12.addWidget(self.ScanControl, 2, 1, 1, 1)
         self.gridLayout_10.addWidget(self.operation, 0, 1, 2, 1)
 
@@ -530,7 +530,7 @@ class Ui_Scan(object):
         self.pushButton_SeqList_ScanControl.setText(_translate("Scan", "Sequence List"))
         self.label_14.setText(_translate("Scan", "Scan size"))
         self.checkBox.setText(_translate("Scan", "Record lock-in"))
-        self.pushButton.setText(_translate("Scan", "Lock-in paramenters"))
+        self.pushButton_LockIn_ScanControl.setText(_translate("Scan", "Lock-in paramenters"))
 from pyqtgraph import GraphicsLayoutWidget
 import logo_rc
 
