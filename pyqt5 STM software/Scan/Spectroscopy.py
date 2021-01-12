@@ -117,9 +117,9 @@ class mySpc(QWidget, Ui_Spectroscopy):
     def bias_ran_change(self, bias_ran):
         self.bias_ran = bias_ran
         ch = self.comboBox_RampCh_General
-        self.setup_spin(ch)
-        self.setup_scroll(ch)
         if ch == 0:
+            self.setup_spin(0)
+            self.setup_scroll(0)
             self.min_cnv(False, 0)
             self.max_cnv(False, 0xfffff)
             self.step_cnv(False, 1)

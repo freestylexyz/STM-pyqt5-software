@@ -24,8 +24,8 @@ from DigitalSignalProcessor import myDSP
 class myScan(myScan_):
     close_signal = pyqtSignal()
     seq_list_signal = pyqtSignal(str)
-    stop_signal = pyqtSignal()
     gain_changed_signal = pyqtSignal(int, int)
+    stop_signal = pyqtSignal()
     send_signal = pyqtSignal(int, int, int, int, int)
     scan_signal = pyqtSignal()
 
@@ -56,47 +56,13 @@ class myScan(myScan_):
         self.pushButton_Send_XY.clicked.connect(lambda: self.send_emit(1))
         self.pushButton_Zero_XY.clicked.connect(lambda: self.send_emit(0))
 
-    def init_scan(self, dsp, bias_dac, preamp_gain):
-        succeed = dsp.succeed
-        XYgain = dsp.lastgain
-        bias_ran = dsp.dacrange[13]
-        
-        # Set up view in case of successfully finding DSP
-        self.pushButton_Start_Scan.setEnabled(succeed)
-        self.radioButton_Gain10_XY.setEnabled(succeed)
-        self.radioButton_Gain0_1_XY.setEnabled(succeed)
-        self.pushButton_Send_XY.setEnabled(succeed)
-        self.pushButton_Zero_XY.setEnabled(succeed)
-        self.pushButton_Start_Scan.setEnabled(succeed)
-        self.pushButton_SaveAll_Scan.setEnabled(not self.data.data)
-        self.pushButton_Info_Scan.setEnabled(not self.data.data)
-        
-         
-        self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
-        self.track.init_track(succeed)
-        
-        # !!! Other module init
-        # self.spc.init_spc(succeed)
 
-        self.load_xy_gain(XYgain)
-
-    # load X/Y gain status from dsp
-    def load_xy_gain(self, lastgain):
-        if lastgain[0] == 0:
-            self.radioButton_Gain10_XY.setChecked(True)
-        elif lastgain[0] == 1:
-            self.radioButton_Gain1_XY.setChecked(True)
-        elif lastgain[0] == 3:
-            self.radioButton_Gain0_1_XY.setChecked(True)
-        self.imagine_gain = (lastgain[0] == 0) * 100 + (lastgain[0] == 1) * 10 + (lastgain[0] == 3) * 1
 
     # if X/Y gain is changed by user, emit signal
     def gain_changed_emit(self, gain, status):
         if status:
             self.gain_changed_signal.emit(0, gain)
             self.gain_changed_signal.emit(1, gain)
-        self.imagine_gain = (gain == 0) * 100 + (gain == 1) * 10 + (gain == 3) * 1
-        self.change_xyin_range(6, gain)
 
     # emit send signal
     def send_emit(self, index):
@@ -163,7 +129,7 @@ class myScan(myScan_):
         self.stop_signal.emit()
 
     # !!!
-    # Open scan information windwo
+    # Open scan information windwow
     def open_info(self):
         # self.info.init_info()
         self.info.show()
@@ -201,6 +167,8 @@ class myScan(myScan_):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = myScan()
-    window.init_scan(myDSP(), False, 9)
+    dsp = myDSP()
+    dsp.succeed = True
+    window.init_scan(dsp, False, 9)
     window.show()
     sys.exit(app.exec_())
