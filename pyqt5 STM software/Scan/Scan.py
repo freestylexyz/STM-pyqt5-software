@@ -21,13 +21,15 @@ from PyQt5 import QtCore
 from Scan_ import myScan_
 from DigitalSignalProcessor import myDSP
 
+import conversion as cnv
+
 class myScan(myScan_):
     close_signal = pyqtSignal()
     seq_list_signal = pyqtSignal(str)
     gain_changed_signal = pyqtSignal(int, int)
     stop_signal = pyqtSignal()
-    send_signal = pyqtSignal(int, int, int, int, int)
-    scan_signal = pyqtSignal()
+    send_signal = pyqtSignal(int, int, int, int, int, int)
+    scan_signal = pyqtSignal(int, int, int, int, int, int, int)
 
     def __init__(self):
         super().__init__()
@@ -55,6 +57,9 @@ class myScan(myScan_):
         # pushButton | send and zero
         self.pushButton_Send_XY.clicked.connect(lambda: self.send_emit(1))
         self.pushButton_Zero_XY.clicked.connect(lambda: self.send_emit(0))
+        
+        # pushButton | scan
+        self.pushButton_Start_Scan.clicked.connect(self.scan_emit)
 
 
 
@@ -64,44 +69,54 @@ class myScan(myScan_):
             self.gain_changed_signal.emit(0, gain)
             self.gain_changed_signal.emit(1, gain)
 
-    # emit send signal
+    # Emit send signal
     def send_emit(self, index):
-        self.last_xy[0] = self.spinBox_XinIndication_XY.value()
-        self.last_xy[1] = self.spinBox_YinIndication_XY.value()
-        self.last_xy[2] = self.spinBox_XoffsetIndication_XY.value()
-        self.last_xy[3] = self.spinBox_YoffsetIndication_XY.value()
         if self.idling:
-            if index == 0:  # zero button clicked
-                xin = 0
-                yin = 0
-                self.spinBox_XinInput_XY.setValue(0)
-                self.spinBox_YinInput_XY.setValue(0)
-                self.scrollBar_Xin_XY.setValue(32768)
-                self.scrollBar_Yin_XY.setValue(32768)
-                xoffset = self.spinBox_XoffsetIndication_XY.value() + 32768
-                yoffset = self.spinBox_YoffsetIndication_XY.value() + 32768
-                # !!! for test
-                self.current_xy[0] = xin
-                self.current_xy[1] = yin
-                self.spinBox_XinIndication_XY.setValue(xin)
-                self.spinBox_YinIndication_XY.setValue(yin)
-            else:           # send button clicked
-                xin = self.spinBox_XinInput_XY.value()
-                yin = self.spinBox_YinInput_XY.value()
-                xoffset = self.spinBox_XoffsetInput_XY.value()
-                yoffset = self.spinBox_YoffsetInput_XY.value()
-                # !!! for test
-                self.current_xy[0] = xin
-                self.current_xy[1] = yin
-                self.current_xy[2] = xoffset
-                self.current_xy[3] = yoffset
-                self.spinBox_XinIndication_XY.setValue(xin)
-                self.spinBox_YinIndication_XY.setValue(yin)
-                self.spinBox_XoffsetIndication_XY.setValue(xoffset)
-                self.spinBox_YoffsetIndication_XY.setValue(yoffset)
-            self.send_signal.emit(index, xin+32768, yin+32768, xoffset+32768, yoffset+32768)
+            if not index:
+                self.scrollBar_Xin_XY.setValue(0)
+                self.scrollBar_Yin_XY.setValue(0)
+            xoff = self.scrollBar_Xoffset_XY.value() + 0x8000
+            yoff = self.scrollBar_Yoffset_XY.value() + 0x8000
+            xin = self.scrollBar_Xin_XY.value() + 0x8000
+            yin = self.scrollBar_Yin_XY.value() + 0x8000
+            self.send_signal.emit(index, xin, yin, xoff, yoff, self.imagine_gain)
         else:
+            self.pushButton_Zero_XY.setEnabled(False)
+            self.pushButton_Send_XY.setEnabled(False)
             self.stop_signal.emit()
+            
+    # Emit scan signal
+    def scan_emit(self):
+        # Sequence
+        if self.scan_seq_selected < 0:
+            flag = False
+            QMessageBox.warning(None, "Scan", "No sequence selected!", QMessageBox.Ok)
+        else:
+            seq = self.scan_seq_list[self.scan_seq_selected]
+            seq.validation(seq.ditherB, seq.ditherZ, seq.feedback, True)
+            flag = seq.validated or (not seq.validation_required)
+            if flag:
+                QMessageBox.warning(None, "Scan", "Selected sequence is not valid!", QMessageBox.Ok)
+            seq.build()
+
+        if self.idling and flag:
+            xoff = self.scrollBar_Xoffset_XY.value() + 0x8000
+            yoff = self.scrollBar_Yoffset_XY.value() + 0x8000
+            xin = self.scrollBar_Xin_XY.value() + 0x8000
+            yin = self.scrollBar_Yin_XY.value() + 0x8000
+            step_size = self.scrollBar_StepSize_ScanControl.value()
+            step_num = self.scrollBar_ScanSize_ScanControl.value()
+            self.scan_signal.emit(xin, yin, xoff, yoff, self.imagine_gain, step_num, step_size)
+        elif not self.idling:
+            self.pushButton_Start_Scan.setEnabled(False)
+            self.stop_signal.emit()
+        
+        # Scan basic
+        # option_list = self.scan_options.configure_scan(seq.feedback)
+        
+        # def scan(self, channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
+        #      limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x):
+        #     pass
 
     # Bias range change slot
     def bias_ran_change(self, ran):

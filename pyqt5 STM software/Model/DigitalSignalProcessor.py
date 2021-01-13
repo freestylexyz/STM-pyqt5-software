@@ -14,10 +14,7 @@ import math
 
 # class myDSP():
 class myDSP(QObject):
-    
-    
     # Define signals
-    
     succeed_signal = pyqtSignal(bool)                   # Serial port open signal
     oscc_signal = pyqtSignal(int)                       # Continuous oscilloscope data emit signal
     rampMeasure_signal = pyqtSignal(list)               # Ramp measure data emit signal
@@ -802,7 +799,7 @@ class myDSP(QObject):
             currentl = self.lastdac[channell - 16]
             ranges = targets - currents
             rangel = targetl - currentl
-            stepnum = int(math.sqrt((ranges ** 2) + (rangel ** 2))) & 0xffff
+            stepnum = int(math.sqrt((ranges ** 2) + (rangel ** 2)) / step) & 0xffff
             steps = ranges / stepnum
             stepl = rangel / stepnum
             delay = delay & 0xffff
@@ -949,6 +946,9 @@ class myDSP(QObject):
     def tipProtect(self, bits, unprotect):
         if self.ok():
             bits = bits & 0xffff
+            iset = cnv.bv(self.lastdac[5], 'd', 10)
+            target = cnv.vb(10.0 ** (-iset / 10.0), 'd', 10)
+            target = target & 0xffff
             if unprotect:
                 unprotect_data = 0x01
             else:
@@ -956,6 +956,7 @@ class myDSP(QObject):
             self.idling = False
             self.ser.write(int(0x90).to_bytes(1, byteorder="big"))              # 0x90 for tip protect function
             self.ser.write(int(bits).to_bytes(2, byteorder="big"))              # Send retract bits data
+            self.ser.write(int(target).to_bytes(2, byteorder="big"))            # Send target data for matching current
             self.ser.write(int(unprotect_data).to_bytes(1, byteorder="big"))    # Send unprotect flag
             self.idling = True
                 
@@ -963,7 +964,7 @@ class myDSP(QObject):
     # scan - This function perform scan
     #
     def scan(self, channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
-             limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x, dir_y):
+             limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x):
         if self.ok():
             channel_x = channel_x & 0xff
             channel_y = channel_y & 0xff
@@ -975,11 +976,13 @@ class myDSP(QObject):
             line_delay = line_delay & 0xffff
             limit = limit & 0xffff
             tip_protect_data = tip_protect_data & 0xffff
+            iset = cnv.bv(self.lastdac[5], 'd', 10)
+            target = cnv.vb(10.0 ** (-iset / 10.0), 'd', 10)
+            target = target & 0xffff
             
             tip_protect_flag = 0x08 if tip_protection else 0x00
             dir_x_flag = 0x10 if tip_protection else 0x00
-            dir_y_flag = 0x20 if tip_protection else 0x00           
-            flag = tip_protect_flag | dir_x_flag | dir_y_flag | (scan_protect_flag & 0x03)
+            flag = tip_protect_flag | dir_x_flag | (scan_protect_flag & 0x03)
             
             self.idling = False
             self.ser.write(int(0x91).to_bytes(1, byteorder="big"))              # 0x91 for scan function
@@ -993,6 +996,7 @@ class myDSP(QObject):
             self.ser.write(int(line_delay).to_bytes(2, byteorder="big"))        # Send line delay
             self.ser.write(int(limit).to_bytes(2, byteorder="big"))             # Send limit for scan protection
             self.ser.write(int(tip_protect_data).to_bytes(2, byteorder="big"))  # Send tip protection data
+            self.ser.write(int(target).to_bytes(2, byteorder="big"))            # Send target data for matching current
             self.serialSeq(seq)                                                 # Send sequence command and data
             
             # If receive start command

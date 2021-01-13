@@ -13,7 +13,8 @@
 //
 // Global variables declaration
 //
-extern Uint16 stored_iset;
+extern Uint16 stored_zofff;
+extern bool stored_feedback;
 extern bool tip_protect_status;
 
 //
@@ -21,7 +22,7 @@ extern bool tip_protect_status;
 //
 bool protectRamp(bool, Uint16, bool*);
 bool protectScan(char, Uint16, Uint32*, Uint32*, Uint32*, bool*);
-void protectTip(bool, Uint16, bool);
+void protectTip(bool, Uint16, bool, Uint16);
 void protectTip_DSP();
 
 #endif /* HEADERS_PROTECTION_H_ */

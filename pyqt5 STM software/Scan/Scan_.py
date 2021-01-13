@@ -205,6 +205,8 @@ class myScan_(QWidget, Ui_Scan):
         if flag:
             value = spin.value()
         value = min(ul, value)
+        if (not index) and (value % 2):
+            value -= 1
         spin.setValue(value)
         scroll.setValue(value)
         self.scan_size[index] = value * gain
@@ -238,6 +240,8 @@ class myScan_(QWidget, Ui_Scan):
         area_ul = int(2 * min(3276700 - self.current_xy[2], 3276700 - self.current_xy[3], 3276800 + self.current_xy[2], 3276800 + self.current_xy[3]))
         size_ul = min(65535, int(area_ul / self.scan_size[0] / self.imagine_gain))
         num_ul = min(1024, int(area_ul / self.scan_size[1]))
+        if (num_ul % 2):
+            num_ul -= 1
         self.spinBox_StepSize_ScanControl.setMaximum(size_ul)
         self.spinBox_ScanSize_ScanControl.setMaximum(num_ul)
 
@@ -255,7 +259,7 @@ class myScan_(QWidget, Ui_Scan):
             self.scrollBar_Yin_XY.setValue(0)
             self.scrollBar_Xin_XY.setValue(0)            
             self.scrollBar_StepSize_ScanControl.setValue(1)
-            self.scrollBar_ScanSize_ScanControl.setValue(1)
+            self.scrollBar_ScanSize_ScanControl.setValue(2)
 
     # Enable serial
     def enable_serial(self, enable):

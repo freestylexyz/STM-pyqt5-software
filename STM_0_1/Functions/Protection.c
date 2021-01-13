@@ -7,8 +7,8 @@
 
 #include "Protection.h"
 
-Uint16 stored_iset;                 // Store I set value for later undo tip protection
-Uint16 stored_zoffc;                // Store Z offset coarse for later undo tip protection
+Uint16 stored_zofff;                // Store Z offset fine for later undo tip protection
+bool stored_feedback;               // Store feedback for later undo tip protection
 bool tip_protect_status = false;    // Tip protection status
 
 //
@@ -80,40 +80,40 @@ bool protectScan(char flag, Uint16 limit, Uint32* lastmax, Uint32* lastmin, Uint
 //
 // protectTip - This function protect sharp tip during scan, requires knowing the scan area
 //
-void protectTip(bool enabled, Uint16 data, bool unprotect)
+void protectTip(bool enabled, Uint16 data, bool unprotect, Uint16 target)
 {
     // Do tip protection if enabled
     if(enabled && (unprotect == tip_protect_status))
     {
         if(unprotect)
         {
-            if(lastdigital[2] == 0)
+            if(stored_feedback)
             {
-                rampTo_S(Zoffc, stored_zoffc, 5, 5);    // Ramp Z offset coarse back to original condition
-                DELAY_US(2000);                         // Delay 2ms to let feedback respond
+                iAutoT(target, 500);                    // Match current
+                digitalO(2, 1);                         // Turn feedback on
+                DELAY_US(2000);                         // Delay 2ms to let feedback relay respond
+                rampTo_S(Zofff, stored_zofff, 500, 5);  // Ramp Z offset fine back to original condition
+                DELAY_US(10000);                        // Delay 10ms to let feedback loop respond
             }
             else
             {
-                rampTo_S(Iset, stored_iset, 10, 1);     // Ramp I set back to original condition
-                DELAY_US(10000);                        // Delay 10ms to let feedback respond
+                rampTo_S(Zofff, stored_zofff, 500, 5);  // Ramp Z offset fine back to original condition
+                DELAY_US(600);                          // Delay 600 us to let preamp respond
             }
-            tip_protect_status = false;         // Toggle tip protection flag
+            tip_protect_status = false;                 // Toggle tip protection flag
         }
         else
         {
-            stored_iset = current_output(Iset);     // Store current I set output
-            stored_zoffc = current_output(Zoffc);   // Store current Z offset fine output
-            if(lastdigital[2] == 0)
+            stored_zofff = current_output(Zofff);   // Store current Z offset fine output
+            stored_feedback = lastdigital[2];       // Store feedback
+            if(stored_feedback)
             {
-                rampStep(Zoffc, data, 5, 5, false); // Shift ramp Z offset coarse
-                DELAY_US(2000);                     // Delay 2ms to let feedback respond
+                digitalO(2, 0);                     // Turn feedback off
+                DELAY_US(2000);                     // Delay 2ms to let feedback relay respond
             }
-            else
-            {
-                rampTo_S(Iset, data, 10, 1);    // Ramp I set to a safer condition
-                DELAY_US(10000);                // Delay 10ms to let feedback respond
-            }
-            tip_protect_status = true;         // Toggle tip protection flag
+            rampStep(Zofff, data, 500, 5, false);   // Shift ramp Z offset fine
+            DELAY_US(600);                          // Delay 600us to let preamp respond
+            tip_protect_status = true;              // Toggle tip protection flag
         }
     }
 }
@@ -124,12 +124,13 @@ void protectTip(bool enabled, Uint16 data, bool unprotect)
 void protectTip_DSP()
 {
     bool unprotect;
-    Uint16 data;
+    Uint16 data, target;
     data = combine(serialIn(2));                // Acquire retract bits data
+    target = combine(serialIn(2));              // Acquire match current target
     unprotect = (combine(serialIn(1)) == 0);    // Acquire unprotect flag
 
     // Execute protect tip
-    protectTip(true, data, unprotect);
+    protectTip(true, data, unprotect, target);
 }
 
 

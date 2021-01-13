@@ -24,30 +24,24 @@ import functools as ft
 
 
 class mySendOptions(QWidget, Ui_SendOptions):
-    close_signal = pyqtSignal()
-
     def __init__(self):
         super().__init__()
-        self.idling = True
         self.setupUi(self)
-        self.init_UI()
-
-    def init_UI(self):
-        pass
 
     def init_sendoptions(self):
         pass
-
-    # Emit close signal
-    def closeEvent(self, event):
-        if self.idling:
-            self.close_signal.emit()
-            event.accept()
+    
+    def configure_send(self):
+        delay = self.spinBox_MoveDelay_SendOptions.value()
+        step = self.spinBox_StepSize_SendOptions.value()
+        if self.groupBox_Crash_SendOptions.isChecked():
+            limit = cnv.vb(self.spinBox_Limit_Crash.value(), 'a') - cnv.vb(0.0, 'a')
         else:
-            event.ignore()
+            limit = 0
+            
+        return delay, step, limit
+    
 
-    def enable_serial(self, enable):
-        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
