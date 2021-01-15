@@ -76,15 +76,18 @@ class myScanControl(myMainMenu):
         if self.scan.idling:
             self.scan.enable_mode_serial(False)
             self.scan.idling = False
+            self.scan.stop = False
             delay, step, limit = self.scan.send_options.configure_send()
-            if index:   # Send
+            if index and (not self.scan.stop):          # Send
                 self.pushButton_Send_XY.setText("Stop")
                 self.pushButton_Send_XY.setEnabled(True)
                 self.dsp.rampDiag(1+16, 14+16, xoff, yoff, step, delay, limit, True)
-            else:       # Zero
+            elif not (index or self.scan.stop):         # Zero
                 self.pushButton_Zero_XY.setText("Stop")
                 self.pushButton_Zero_XY.setEnabled(True)
-            self.dsp.rampDiag(0+16, 15+16, xin, yin, int(step * 100 / xygain), delay, limit, True)
+            if not self.scan.stop:
+                self.dsp.rampDiag(0+16, 15+16, xin, yin, int(step * 100 / xygain), delay, limit, True)
+            self.scan.stop = True
             self.scan.idling = True
             self.scan.enable_mode_serial(True)
             self.pushButton_Zero_XY.setText("Zero")
@@ -117,6 +120,7 @@ class myScanControl(myMainMenu):
             self.dsp.rampDiag(1+16, 14+16, xoff, yoff, step_off, delay, 0, True)       # Send XY offset
             self.dsp.rampDiag(0+16, 15+16, xin, yin, step_in, delay, 0, True)          # Send XY in
             
+            self.scan.setWindowTitle('Scan')
             ditherB_s = self.dsp.lastdigital[0]                 # Store bias dither
             ditherZ_s = self.dsp.lastdigital[1]                 # store Z dither
             feedback_s = self.dsp.lastdigital[2]                # Store feedback
@@ -156,6 +160,7 @@ class myScanControl(myMainMenu):
             self.scan.pushButton_Start_Scan.setText('Start')
             self.scan.enable_mode_serial(True)
             self.scan.idling = True
+            self.scan.saved = False
 
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
@@ -204,11 +209,13 @@ class myScanControl(myMainMenu):
                 self.scan.dep.update_N(rdata, 0)
             
             rdata = self.dsp.depostion(read[0], read[1], read[2], read[3], read[4], read[5], read[6], read[7], seq)
+            self.scan.dep.setWindowTitle('Deposition')
+            self.scan.dep.saved = (read[1] == 0)
             if read[1] == 1:
                 self.scan.dep.pushButton_DoIt_Deposition.setText('Stop')
                 self.scan.dep.pushButton_DoIt_Deposition.setEnabled(True)
                 self.dep.data.data = np.array(self.dep.rdata)
-            if (read[1] == 2) and (read[1] == 3):
+            if (read[1] == 2) or (read[1] == 3):
                 self.scan.dep.update_N(rdata, 1)
                 self.dep.data.data = np.array(rdata)
             if read_before:

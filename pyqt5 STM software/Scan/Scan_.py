@@ -39,6 +39,7 @@ import numpy as np
 import functools as ft
 import cv2 as cv
 import scipy.io
+from datetime import datetime
 
 class myScan_(QWidget, Ui_Scan):
     def __init__(self):
@@ -61,8 +62,10 @@ class myScan_(QWidget, Ui_Scan):
         
         # Data
         self.data = ScanData()
+        self.today = datetime.now().strftime("%m%d%y")
         self.dlg = QFileDialog()
         self.file_idex = [0, 0]
+        self.dlg.setNameFilter('STM Files (*.stm)')
 
         # Flags
         self.mode = 0               # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)

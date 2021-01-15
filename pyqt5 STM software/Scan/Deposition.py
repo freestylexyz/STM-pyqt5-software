@@ -143,8 +143,13 @@ class myDeposition(QWidget, Ui_Deposition):
     
     # Do it slot
     def do_it(self):
-        if self.idling:
-            self.idling = False
+        if self.saved:
+            flag = True
+        elif self.idling:
+            msg = QMessageBox.question(None, "Deposition", "Data not saved, do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            flag = (msg == QMessageBox.Yes)
+            
+        if self.idling and flag:
             # Read before and after
             if self.groupBox_Read_Deposition.isChecked():
                 read_before_ch = (self.comboBox_Ch_Read.currentIndex() + 6) * 4 + 0xc0
@@ -214,7 +219,7 @@ class myDeposition(QWidget, Ui_Deposition):
                     flag = False
             if flag:
                 self.do_it_signal.emit(read_before, read, index)
-        else:
+        elif not self.idling:
             self.pushButton_DoIt_Deposition.setEnabled(False)
             self.stop_signal.emit()
                 
@@ -255,13 +260,15 @@ class myDeposition(QWidget, Ui_Deposition):
         self.dlg.selectFile(name)
         if self.dlg.exec_():
             fname = self.dlg.selectedFiles()[0]
-            self.dlg.setDirectory(self.dlg.directory())
+            directory = self.dlg.directory()
+            self.dlg.setDirectory(directory)
+
         if fname != '':                         # Savable
             with open(fname, 'wb') as output:
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
                 self.data.path = fname                                          # Save path
                 self.saved = True
-                self.setWindowTitle('Deposition')
+                self.setWindowTitle('Deposition-' + fname.replace(directory.path() + '/', ''))
                 self.file_idex[1] += 1
                 if self.file_idex[1] > 35:
                     self.file_idex[0] += 1

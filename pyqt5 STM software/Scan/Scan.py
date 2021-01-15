@@ -13,7 +13,7 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog
 from PyQt5.QtGui import QPixmap, QPen
 from PyQt5.QtCore import pyqtSignal , Qt, QRectF
 from PyQt5 import QtCore
@@ -22,6 +22,7 @@ from Scan_ import myScan_
 from DigitalSignalProcessor import myDSP
 
 import conversion as cnv
+import pickle
 
 class myScan(myScan_):
     close_signal = pyqtSignal()
@@ -50,6 +51,10 @@ class myScan(myScan_):
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)
         self.pushButton_Info_Scan.clicked.connect(self.open_info)
+        
+        # PushButton | file
+        self.pushButton_SaveAll_Scan.clicked.connect(self.save)
+        self.pushButton_Load_Scan.clicked.connect(self.load)
 
         # radioButton | X/Y gain
         self.XY_gain_group.buttonToggled[int, bool].connect(self.gain_changed_emit)
@@ -60,7 +65,6 @@ class myScan(myScan_):
         
         # pushButton | scan
         self.pushButton_Start_Scan.clicked.connect(self.scan_emit)
-
 
 
     # if X/Y gain is changed by user, emit signal
@@ -87,7 +91,13 @@ class myScan(myScan_):
             
     # Emit scan signal
     def scan_emit(self):
-        if self.idling:
+        flag = False
+        if self.saved:
+            flag = True
+        elif self.idling:
+            msg = QMessageBox.question(None, "Scan", "Imaged not saved, do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            flag = (msg == QMessageBox.Yes)
+        if self.idling and flag:
             xoff = self.scrollBar_Xoffset_XY.value() + 0x8000
             yoff = self.scrollBar_Yoffset_XY.value() + 0x8000
             xin = self.scrollBar_Xin_XY.value() + 0x8000
@@ -152,6 +162,65 @@ class myScan(myScan_):
     def edit_points(self):
         pass
     
+    # Save
+    def save(self):
+        self.dlg.setFileMode(QFileDialog.AnyFile)
+        self.dlg.setAcceptMode(QFileDialog.AcceptSave)
+        if self.data.time.strftime("%m%d%y") != self.today:
+            self.today = self.data.time.strftime("%m%d%y")
+            self.file_idex = [0, 0]
+        fname = ''
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
+        name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
+        name = self.dlg.directory().path() + '/' + name + '.stm'
+        self.dlg.selectFile(name)
+        if self.dlg.exec_():
+            fname = self.dlg.selectedFiles()[0]
+            directory = self.dlg.directory()
+            self.dlg.setDirectory(directory)
+
+        if fname != '':                         # Savable
+            with open(fname, 'wb') as output:
+                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
+                self.data.path = fname                                          # Save path
+                self.saved = True
+                self.setWindowTitle('Scan-' + fname.replace(directory.path() + '/', ''))
+                self.file_idex[1] += 1
+                if self.file_idex[1] > 35:
+                    self.file_idex[0] += 1
+                    self.file_idex[1] = 0
+    
+    # Load
+    def load(self):
+        flag = False
+        if self.saved:
+            flag = True
+        elif self.idling:
+            msg = QMessageBox.question(None, "Scan", "Imaged not saved, do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            flag = (msg == QMessageBox.Yes)
+        if flag:
+            fname = ''
+            self.dlg.setFileMode(QFileDialog.ExistingFile)
+            self.dlg.setAcceptMode(QFileDialog.AcceptOpen)
+            if self.dlg.exec_():
+                fname = self.dlg.selectedFiles()[0]
+                directory = self.dlg.directory()
+
+            if fname != '':                         # Savable
+                with open(fname, 'rb') as input:
+                    self.data = pickle.load(input)
+                    self.data.path = fname
+                    self.saved = True
+                    self.setWindowTitle('Scan-' + fname.replace(directory.path() + '/', ''))
+                    
+                    # Set up view
+                    self.scrollBar_Xin_XY.setvalue(self.data.lastdac[0] - 0x8000)
+                    self.scrollBar_Yin_XY.setvalue(self.data.lastdac[15] - 0x8000)
+                    self.scrollBar_Xoffset_XY.setvalue(self.data.lastdac[1] - 0x8000)
+                    self.scrollBar_Yoffset_XY.setvalue(self.data.lastdac[14] - 0x8000)
+                    self.scrollBar_ScanSize_ScanControl.setvalue(self.data.step_num)
+                    self.scrollBar_StepSize_ScanControl.setvalue(self.data.step_size)
+    
     # Pop out message
     def message(self, text):
         QMessageBox.warning(None, "Scan", text, QMessageBox.Ok)
@@ -172,7 +241,7 @@ class myScan(myScan_):
     # Emit close signal
     def closeEvent(self, event):
         if (self.mode == 0) and (self.idling):
-            msg = QMessageBox.information(None, "Scan", "Really want to exit scan?", QMessageBox.Yes | QMessageBox.No)
+            msg = QMessageBox.question(None, "Scan", "Really want to exit scan?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if msg == QMessageBox.Yes:
                 self.track.close()
                 self.close_signal.emit()

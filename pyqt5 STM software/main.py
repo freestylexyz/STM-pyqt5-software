@@ -273,7 +273,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 1
             self.menuScan.setEnabled(False)
-            # self.scan.spc.init_spc()
+            if self.scan.spc.adv.checkBox_Tracking_Correction.isChecked():
+                self.scan.opentrack(2)
             self.scan.spc.show()
         else:
             self.msg_open_scan()
@@ -320,6 +321,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.closeWindow()
         else:
             self.scan.mode = 0
+            self.scan.opentrack(0)
             self.menuScan.setEnabled(True)
     
     # Show all dock windows    

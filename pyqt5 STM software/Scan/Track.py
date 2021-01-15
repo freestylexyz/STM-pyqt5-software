@@ -52,7 +52,6 @@ class myTrack(QWidget, Ui_Track):
     # Track emit function
     def track(self):
         if self.idling:
-            self.idling = False
             self.track_size = int(self.scrollBar_TrackSize_Track.value() / 2)
             step = self.scrollBar_StepSize_Track.value()
             in_ch = (self.comboBox_ReadCh_Track.currentIndex() + 6) * 4 + 0xc0

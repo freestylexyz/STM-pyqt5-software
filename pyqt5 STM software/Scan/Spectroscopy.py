@@ -13,7 +13,7 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication , QWidget
+from PyQt5.QtWidgets import QApplication , QWidget, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSignal , Qt
 from Spectroscopy_ui import Ui_Spectroscopy
 from AdvanceOption import myAdvanceOption
@@ -105,9 +105,17 @@ class mySpc(QWidget, Ui_Spectroscopy):
     
     # Emit close signal
     def closeEvent(self, event):
-        self.close_signal.emit()
-        event.accept()
-        
+        if self.idling:
+            self.close_signal.emit()
+            event.accept()
+        else:
+            self.message('Process ongoing')
+            event.ignore()
+    
+    # Pop out message
+    def message(self, text):
+        QMessageBox.warning(None, "Spectroscopy", text, QMessageBox.Ok)
+    
     # Enable serial
     def enable_serial(self, enable):
         self.General.setEnabled(enable)
