@@ -23,6 +23,7 @@ from DataStruct import DepData
 import functools as ft
 import conversion as cnv
 import pickle
+from datetime import datetime
 
 
 class myDeposition(QWidget, Ui_Deposition):
@@ -39,6 +40,9 @@ class myDeposition(QWidget, Ui_Deposition):
 
     def init_UI(self):
         self.data = DepData()
+        self.dlg = QFileDialog()
+        self.today = datetime.now().strftime("%m%d%y")
+        self.file_idex = [0, 0]
         self.info = myDepositionInfo()
         self.idling = True
         self.bias_dac = True
@@ -50,6 +54,10 @@ class myDeposition(QWidget, Ui_Deposition):
         self.count = 0
 
         self.poke_seq = mySequence([0x42, 0x63, 0x8d], [0x00000000, 0x80000000, 0x00008000] , False)    # Initial poke sequence
+        
+        self.dlg.setNameFilter('DEP Files (*.dep)')
+        self.dlg.setFileMode(QFileDialog.AnyFile)
+        self.dlg.setAcceptMode(QFileDialog.AcceptSave)
         
         # Connect signal
         self.groupBox_ReadNSample_Deposition.toggled.connect(ft.partial(self.read_mode, True))
@@ -236,15 +244,28 @@ class myDeposition(QWidget, Ui_Deposition):
         self.info.show()
 
     # Save data slot
-    # !!! need to know how to figure out file name automatically
     def save(self):
-        fname = QFileDialog.getSaveFileName(self, 'Save file', '', 'DEP Files (*.dep)')[0]  # Save file and get file name
+        if self.data.time.strftime("%m%d%y") != self.today:
+            self.today = self.data.time.strftime("%m%d%y")
+            self.file_idex = [0, 0]
+        fname = ''
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
+        name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
+        name = self.dlg.directory().path() + '/' + name + '.dep'
+        self.dlg.selectFile(name)
+        if self.dlg.exec_():
+            fname = self.dlg.selectedFiles()[0]
+            self.dlg.setDirectory(self.dlg.directory())
         if fname != '':                         # Savable
             with open(fname, 'wb') as output:
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
                 self.data.path = fname                                          # Save path
                 self.saved = True
                 self.setWindowTitle('Deposition')
+                self.file_idex[1] += 1
+                if self.file_idex[1] > 35:
+                    self.file_idex[0] += 1
+                    self.file_idex[1] = 0
     
     # Pop out message
     def message(self, text):
@@ -252,8 +273,13 @@ class myDeposition(QWidget, Ui_Deposition):
     
     # !!! Not finished
     # Update N samples data
-    def update_N(self, index):
-        pass
+    def update_N(self, rdata, index):
+        if index == 0:          # Update read before
+            pass
+        elif index == 1:        # Update N smaple measurement
+            pass
+        elif index == 2:        # Update read after
+            pass
     
     # !!! Not finished
     # Update continuous data

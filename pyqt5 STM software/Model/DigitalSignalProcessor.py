@@ -713,6 +713,7 @@ class myDSP(QObject):
                 rdata = int.from_bytes(self.ser.read(3) ,"big")                 # Returned data for last output
                 # Use returned data to update last output gloabl variable
                 self.update_last(channel, rdata)
+                self.rampTo_signal.emit(channel, rdata)
                     
             self.idling = True
 
@@ -842,9 +843,9 @@ class myDSP(QObject):
                 
                 # Update last dac based on return data
                 rdatas = int.from_bytes(self.ser.read(2) ,"big")                # Last output data
-                self.lastdac[channels - 16] = rdatas & 0xffff
+                self.update_last(channels, rdatas)
                 rdatal = int.from_bytes(self.ser.read(2) ,"big")                # Last output data
-                self.lastdac[channell - 16] = rdatal & 0xffff
+                self.update_last(channell, rdatal)
                 self.rampDiag_signal.emit(channels, channell, rdatas & 0xffff, rdatal & 0xffff)
             self.idling = True            
             
@@ -1112,7 +1113,11 @@ class myDSP(QObject):
                     self.update_last(0x1f, y)
                     self.track_signal.emit(x, y)
                     data = int.from_bytes(self.ser.read(1), "big")
-                
+            x = int.from_bytes(self.ser.read(2), "big")
+            y = int.from_bytes(self.ser.read(2), "big")
+            self.update_last(0x10, x)     # Update Xin
+            self.update_last(0x1f, y)     # Update Yin
+            return x, y
             
             
             

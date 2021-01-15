@@ -87,19 +87,7 @@ class myScan(myScan_):
             
     # Emit scan signal
     def scan_emit(self):
-        # Sequence
-        if self.scan_seq_selected < 0:
-            flag = False
-            QMessageBox.warning(None, "Scan", "No sequence selected!", QMessageBox.Ok)
-        else:
-            seq = self.scan_seq_list[self.scan_seq_selected]
-            seq.validation(seq.ditherB, seq.ditherZ, seq.feedback, True)
-            flag = seq.validated or (not seq.validation_required)
-            if flag:
-                QMessageBox.warning(None, "Scan", "Selected sequence is not valid!", QMessageBox.Ok)
-            seq.build()
-
-        if self.idling and flag:
+        if self.idling:
             xoff = self.scrollBar_Xoffset_XY.value() + 0x8000
             yoff = self.scrollBar_Yoffset_XY.value() + 0x8000
             xin = self.scrollBar_Xin_XY.value() + 0x8000
@@ -110,38 +98,43 @@ class myScan(myScan_):
         elif not self.idling:
             self.pushButton_Start_Scan.setEnabled(False)
             self.stop_signal.emit()
-        
-        # Scan basic
-        # option_list = self.scan_options.configure_scan(seq.feedback)
-        
-        # def scan(self, channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
-        #      limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x):
-        #     pass
 
     # Bias range change slot
     def bias_ran_change(self, ran):
         self.dep.bias_ran_change(ran)
         self.spc.bias_ran_change(ran)
 
-    # !!!
     # Update ramp diagnal
     def send_update(self, channels, channell, currents, currentl):
-        pass
-    
-    # !!!
+        func_dict = {0x10: self.label_Xin_XY, 0x1f: self.label_Yin_XY, 0x11: self.label_Xoffset_XY, 0x1e: self.label_Yoffset_XY}
+        var_dict = {0x10: 0, 0x1f: 1, 0x11: 2, 0x1e: 3}
+        gain_dict = {0x10: self.imagine_gain, 0x1f: self.imagine_gain, 0x11: 100, 0x1e: 100}
+        
+        func_dict[channels].setText(str(currents - 0x8000))
+        func_dict[channell].setText(str(currentl - 0x8000))
+        self.last_xy[var_dict[channels]] = (currents - 0x8000) * gain_dict[channels]
+        self.last_xy[var_dict[channell]] = (currentl - 0x8000) * gain_dict[channell]
+        # !!! update graphic view
+            
     # Update scan
     def scan_update(self, rdata):
-        pass
-    # !!!
+        self.data.updata_data(rdata)
+        # !!! Update graphic view
+        
     # Update plane fit paramenters in track window
     def track_update_fit(self):
         self.track.spinBox_X_PlaneFit.setValue(self.tilt[0])
         self.track.spinBox_Y_PlaneFit.setValue(self.tilt[1])
 
-    # !!! Track update function
+    # Track update function
     def track_update(self, x, y):
+        self.send_update(0x10, 0x1f, x, y)
         # If out of track size
-        self.stop_signal.emit()
+        stop_flag = False or (abs(self.track.x - x) > self.track.track_size)
+        stop_flag = stop_flag or (abs(self.track.y - y) > self.track.track_size)
+        if stop_flag and (not self.stop):
+            self.track.pushButton_Start_Track.setEnable(False)
+            self.stop_signal.emit()
 
     # !!!
     # Open scan information windwow
@@ -153,16 +146,27 @@ class myScan(myScan_):
     # Select pattern mode
     def select_pattern(self):
         pass
+    
+    # !!!
+    # Edit points mode
+    def edit_points(self):
+        pass
+    
+    # Pop out message
+    def message(self, text):
+        QMessageBox.warning(None, "Scan", text, QMessageBox.Ok)
 
     # Spctroscopy open track
     def open_track(self, state):
         if state == 0:
             self.track.closable = True
-            self.track.pushButton_Start_Track.setEnabled(False)
+            self.track.comboBox_ReadCh_Track.setEnabled(True)
+            self.track.pushButton_Start_Track.setEnabled(self.pushButton_Start_Scan.isEnabled())    # Reset enable based on succeed
             self.track.close()
         elif state == 2:
             self.track.closable = False
-            self.track.pushButton_Start_Track.setEnabled(self.pushButton_Start_Scan.isEnabled())    # Reset enable based on succeed
+            self.track.pushButton_Start_Track.setEnabled(False)
+            self.track.comboBox_ReadCh_Track.setEnabled(False)
             self.track.show()
 
     # Emit close signal

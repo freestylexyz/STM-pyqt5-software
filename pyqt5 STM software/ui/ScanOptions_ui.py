@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ScanOptions(object):
     def setupUi(self, ScanOptions):
         ScanOptions.setObjectName("ScanOptions")
-        ScanOptions.resize(715, 355)
+        ScanOptions.resize(812, 355)
         self.gridLayout_8 = QtWidgets.QGridLayout(ScanOptions)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.groupBox_Scan_ScanOptions = QtWidgets.QGroupBox(ScanOptions)
@@ -405,7 +405,7 @@ class Ui_ScanOptions(object):
         self.label_12.setText(_translate("ScanOptions", "Feedback on default"))
         self.label_7.setText(_translate("ScanOptions", "Move Delay (us)"))
         self.radioButton_Fixed_Delay.setText(_translate("ScanOptions", "Fixed"))
-        self.groupBox_Feedback_ScanOptions.setTitle(_translate("ScanOptions", "Feedback off before and on after"))
+        self.groupBox_Feedback_ScanOptions.setTitle(_translate("ScanOptions", "Pre-scan"))
         self.checkBox_MatchCurr_Feedback.setText(_translate("ScanOptions", "Match current"))
         self.label_15.setText(_translate("ScanOptions", "Advance Z fine"))
         self.label_16.setText(_translate("ScanOptions", "bits"))

@@ -20,9 +20,11 @@ from Setting import mySetting
 from TipApproach import myTipApproach
 from Etest import myEtest
 from MainMenu import myMainMenu
+from DataStruct import ScanData, DepData, SpcData, STMData
 import conversion as cnv
 import threading
 import copy
+import numpy as np
 
 class myScanControl(myMainMenu):
     # !!!
@@ -93,9 +95,7 @@ class myScanControl(myMainMenu):
         threading.Thread(target=(lambda: self.send_excu(index, xin, yin, xoff, yoff, step_in, step_off, delay, limit))).start()
         
     # Scan execution
-    def scan_excu(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
-        seq = self.scan_seq_list[self.scan_seq_selected]
-        
+    def scan_excu(self, xin, yin, xoff, yoff, xygain, step_num, step_size, seq):
         delay, step_off, _ = self.scan.send_options.configure_send()
         channel_x, channel_y, dir_x = self.scan.scan_options.configure_scan()
         move_delay, measure_delay, line_delay = self.scan.scan_options.configure_delay(seq.feedback)
@@ -108,13 +108,14 @@ class myScanControl(myMainMenu):
         x_pos = y_pos if dir_x else (0x8000 + int(step_num * step_size / 2))
         
         if self.scan.idling:
+            self.scan.data = ScanData()
+            self.scan.data.load_status(self.dsp, self.preamp_gain, self.bias_dac, seq)
+            self.scan.data.load(step_num, step_size, channel_x, channel_y, dir_x, move_delay, measure_delay, line_delay, \
+             scan_protect_flag, limit, tip_protection, tip_protect_data, match_curr, advance_bit)
             self.scan.idling = False
-            self.scan.enable_mode_serial(False)
-            self.scan.pushButton_Start_Scan.setText('Stop')
-            self.scan.pushButton_Start_Scan.setEnable(True)
-            
-            self.dsp.rampDiag(1+16, 14+16, xoff, yoff, step_off, delay, 0, False)       # Send XY offset
-            self.dsp.rampDiag(0+16, 15+16, xin, yin, step_in, delay, 0, False)          # Send XY in
+            self.scan.enable_mode_serial(False)            
+            self.dsp.rampDiag(1+16, 14+16, xoff, yoff, step_off, delay, 0, True)       # Send XY offset
+            self.dsp.rampDiag(0+16, 15+16, xin, yin, step_in, delay, 0, True)          # Send XY in
             
             ditherB_s = self.dsp.lastdigital[0]                 # Store bias dither
             ditherZ_s = self.dsp.lastdigital[1]                 # store Z dither
@@ -133,6 +134,8 @@ class myScanControl(myMainMenu):
             
             self.dsp.rampDiag(channel_x, channel_y, x_pos, y_pos, step_in, delay, 0, False)         # Send XY in
             
+            self.scan.pushButton_Start_Scan.setText('Stop')
+            self.scan.pushButton_Start_Scan.setEnable(True)
             # Start scan
             self.dsp.scan(channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
              limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x)
@@ -150,51 +153,49 @@ class myScanControl(myMainMenu):
             self.dsp.digital_o(2, feedback_s)                       # Restore feedback
             self.dsp.rampTo(0x12, zofff_s_0, 100, 10, 0, False)     # Restore Z offset fine
 
+            self.scan.pushButton_Start_Scan.setText('Start')
             self.scan.enable_mode_serial(True)
             self.scan.idling = True
 
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
-        threading.Thread(target=(lambda: self.scan_excu(xin, yin, xoff, yoff, xygain, step_num, step_size))).start()
+        # Sequence
+        if self.scan_seq_selected < 0:
+            flag = False
+            self.scan.message('No sequence selected')
+        else:
+            seq = self.scan_seq_list[self.scan_seq_selected]
+            seq.configure(self.bias_dac, self.preamp_gain, self.dsp.dacrange, self.dsp.lastdac, self.dsp.last20bit)
+            seq.validation(seq.ditherB, seq.ditherZ, seq.feedback, True)
+            flag = seq.validated or (not seq.validation_required)
+            if not flag:
+                self.scan.message('Selected sequence is not valid')
+            seq.build()
 
-    # !!!
-    # dsp rampDiag_signal slot
-    def xy_indication_slot(self, channels, channell, currents, currentl):
-        '''self.rampDiag_signal.emit(channels, channell, currents, currentl)'''
-        if channels == 0+16 and channell == 15+16:      # X/Y in
-            self.scan.spinBox_XinIndication_XY.setValue(currents-32768)
-            self.scan.spinBox_YinIndication_XY.setValue(currentl-32768)
-            self.scan.current_xy[0] = currents - 32768
-            self.scan.current_xy[1] = currentl - 32768
-        elif channels == 1+16 and channell == 14+16:    # X/Y offset
-            self.scan.spinBox_XoffsetIndication_XY.setValue(currents-32768)
-            self.scan.spinBox_YoffsetIndication_XY.setValue(currentl-32768)
-            self.scan.current_xy[2] = currents - 32768
-            self.scan.current_xy[3] = currentl - 32768
+        threading.Thread(target=(lambda: self.scan_excu(xin, yin, xoff, yoff, xygain, step_num, step_size, seq))).start()
 
     # Depostion slot
     def deposition_thread(self, read_before, read, index):
-        if index:
-            if self.scan.dep_seq_selected < 0:
-                self.scan.dep.message('No sequence selected')
-                flag = False
-            else:
-                seq =  self.scan.dep_seq_list[self.scan.dep_seq_selected]
-                seq.configure(self.bias_dac, self.preamp_gain, self.dsp.dacrange, self.dsp.lastdac, self.dsp.last20bit)
-                seq.validation(self.seq.ditherB, self.seq.ditherZ, self.seq.feedback, self.seq.mode)
-                seq.build()
-                flag = seq.validated
-                if not seq.validated:
-                    self.scan.dep.message('Sequence not validated')
+        if (self.scan.dep_seq_selected < 0) and index:
+            self.scan.dep.message('No sequence selected')
+            flag = False
         else:
-            seq = self.scan.dep.poke_seq
-            flag = True
+            seq =  self.scan.dep_seq_list[self.scan.dep_seq_selected] if index else self.scan.dep.poke_seq
+            seq.configure(self.bias_dac, self.preamp_gain, self.dsp.dacrange, self.dsp.lastdac, self.dsp.last20bit)
+            seq.validation(self.seq.ditherB, self.seq.ditherZ, self.seq.feedback, False)
+            seq.build()
+            flag = seq.validated or (not seq.validation_required)
+            if not flag:
+                self.scan.dep.message('Selected sequence is not valid')
         if flag:
             threading.Thread(target = (lambda: self.deposition_excu(read_before, read, seq))).start()
 
     # Depostion execution
     def deposition_excu(self, read_before, read, seq):
         if self.scan.idling:
+            self.scan.dep.data = DepData()
+            self.scan.dep.data.load_status(self.dsp, self.preamp_gain, self.bias_dac, seq)
+            self.scan.dep.data.load(read)
             self.scan.idling = False
             self.scan.dep.idling = False
             self.scan.enable_mode_serial(False)
@@ -206,9 +207,10 @@ class myScanControl(myMainMenu):
             if read[1] == 1:
                 self.scan.dep.pushButton_DoIt_Deposition.setText('Stop')
                 self.scan.dep.pushButton_DoIt_Deposition.setEnabled(True)
+                self.dep.data.data = np.array(self.dep.rdata)
             if (read[1] == 2) and (read[1] == 3):
                 self.scan.dep.update_N(rdata, 1)
-
+                self.dep.data.data = np.array(rdata)
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
                 self.scan.dep.update_N(rdata, 2)
@@ -228,13 +230,19 @@ class myScanControl(myMainMenu):
         if self.scan.idling:
             self.scan.idling = False
             self.scan.track.idling = False
+            self.scan.stop = False
             self.scan.enable_mode_serial(False)
+            self.scan.track.x = self.dsp.lastdac[0]
+            self.scan.track.y = self.dsp.lastdac[15]
             self.scan.track.pushButton_Start_Track.setText('Stop')
             self.scan.track.pushButton_Start_Track.setEnable(True)
-            self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
+            x, y = self.dsp.track(track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
+            self.scan.track.pushButton_Start_Track.setText('Start')
             self.scan.enable_mode_serial(True)
+            self.scan.stop = True
             self.scan.idling = True
             self.scan.track.idling = True
+            self.scan.send_update(0x10, 0x1f, x, y)
             
     # !!!
     # Spectroscopy slot

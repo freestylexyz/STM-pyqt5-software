@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>715</width>
+    <width>812</width>
     <height>355</height>
    </rect>
   </property>
@@ -523,7 +523,7 @@
    <item row="4" column="2">
     <widget class="QGroupBox" name="groupBox_Feedback_ScanOptions">
      <property name="title">
-      <string>Feedback off before and on after</string>
+      <string>Pre-scan</string>
      </property>
      <property name="checkable">
       <bool>true</bool>

@@ -40,6 +40,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.info = mySpectroscopyInfo()
         
         self.data = SpcData()
+        self.dlg = QFileDialog()
+        self.file_idex = [0, 0]
         
         self.bias_dac = False
         self.bias_ran = 9

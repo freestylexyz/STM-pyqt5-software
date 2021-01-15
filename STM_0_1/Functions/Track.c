@@ -75,7 +75,9 @@ void track()
         DELAY_US(stay_delay);                               // Stay at best station for some time
         if(serialCheck() == Stop){break;}                   //Check stop
     }
-    serialOut(split(Finish, 1));    // Send out Finish command
+    serialOut(split(Finish, 1));                // Send out Finish command
+    serialOut(split(current_output(Xin), 2));   // Send out Xin position
+    serialOut(split(current_output(Yin), 2));   // Send out Yin position
 }
 
 //

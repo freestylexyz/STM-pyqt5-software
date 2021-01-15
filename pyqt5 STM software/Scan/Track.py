@@ -29,6 +29,9 @@ class myTrack(QWidget, Ui_Track):
 
     def init_UI(self):
         self.tilt = [0.0, 0.0]          # Tilt x, tilt y
+        self.track_size = 65535
+        self.x = 0
+        self.y = 0
         self.idling = True
         self.closable = True
         
@@ -49,7 +52,8 @@ class myTrack(QWidget, Ui_Track):
     # Track emit function
     def track(self):
         if self.idling:
-            self.track_size = self.scrollBar_TrackSize_Track.value()
+            self.idling = False
+            self.track_size = int(self.scrollBar_TrackSize_Track.value() / 2)
             step = self.scrollBar_StepSize_Track.value()
             in_ch = (self.comboBox_ReadCh_Track.currentIndex() + 6) * 4 + 0xc0
             average = self.spinBox_Avg_Track.value()

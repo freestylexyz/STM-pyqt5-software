@@ -13,7 +13,7 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog
 from PyQt5.QtGui import QPixmap, QPen
 from PyQt5.QtCore import pyqtSignal , Qt, QRectF
 from PyQt5 import QtCore
@@ -61,6 +61,8 @@ class myScan_(QWidget, Ui_Scan):
         
         # Data
         self.data = ScanData()
+        self.dlg = QFileDialog()
+        self.file_idex = [0, 0]
 
         # Flags
         self.mode = 0               # Scan mode: Scan(0), Spectroscopy(1), Deposition(2)
@@ -173,7 +175,7 @@ class myScan_(QWidget, Ui_Scan):
         # Set XY offset range
         self.xy_offset_range(xy)
         
-        # Set graphic !!!
+        # !!! Set graphic
         
     # XY offset conversion
     def xy_off_cnv(self, flag, xy, value):
@@ -192,7 +194,7 @@ class myScan_(QWidget, Ui_Scan):
         self.xy_in_range(xy)
         self.scan_size_range()
         
-        # Set graphic !!!
+        # !!! Set graphic
         
     # Scan size converstion
     def scan_size_cnv(self, flag, index, value):
@@ -215,7 +217,7 @@ class myScan_(QWidget, Ui_Scan):
         self.xy_in_range(1)
         self.scan_size_range()
         
-        # Set graphic !!!
+        # !!! Set graphic
     
         
     # Set XY in spin boxes range
@@ -260,6 +262,9 @@ class myScan_(QWidget, Ui_Scan):
             self.scrollBar_Xin_XY.setValue(0)            
             self.scrollBar_StepSize_ScanControl.setValue(1)
             self.scrollBar_ScanSize_ScanControl.setValue(2)
+            
+            self.last_xy[0] = int(self.label_Xin_XY.text()) * self.imagine_gain
+            self.last_xy[1] = int(self.label_Yin_XY.text()) * self.imagine_gain
 
     # Enable serial
     def enable_serial(self, enable):
@@ -274,6 +279,7 @@ class myScan_(QWidget, Ui_Scan):
         self.pushButton_Zero_XY.setEnabled(enable)
         self.pushButton_Send_XY.setEnabled(enable)
         self.pushButton_Start_Scan.setEnabled(enable)
+        # !!! need to enable and disable mouse event
         
         # self.pushButton_SaveAll_Scan.setEnabled(enable and (not self.data.data))
         # self.pushButton_Info_Scan.setEnabled(enable and (not self.data.data))
@@ -281,13 +287,7 @@ class myScan_(QWidget, Ui_Scan):
 
         self.dep.enable_serial(enable)
         self.track.enable_serial(enable)
-        self.spc.enable_serial(enable)
-        
-    # !!!
-    # Edit points mode
-    def edit_points(self):
-        pass
-
+        self.spc.enable_serial(enable)    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
