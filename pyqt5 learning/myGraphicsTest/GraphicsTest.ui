@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>664</width>
-    <height>568</height>
+    <width>676</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -229,33 +229,6 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="5" column="1">
-          <widget class="QLabel" name="label_y_Rescan">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QSpinBox" name="spinBox_y_Rescan"/>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLabel" name="label_x_Rescan">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QPushButton" name="pushButton_Send_Rescan">
-           <property name="text">
-            <string>Send</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox_x_Rescan"/>
-         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_15">
            <property name="sizePolicy">
@@ -265,7 +238,17 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>x</string>
+            <string>x1</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QSpinBox" name="spinBox_x3_Rescan">
+           <property name="minimum">
+            <number>-3276800</number>
+           </property>
+           <property name="maximum">
+            <number>3276800</number>
            </property>
           </widget>
          </item>
@@ -278,7 +261,41 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>y</string>
+            <string>size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>y1</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="spinBox_x1_Rescan">
+           <property name="minimum">
+            <number>-3276800</number>
+           </property>
+           <property name="maximum">
+            <number>3276800</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="spinBox_y1_Rescan">
+           <property name="minimum">
+            <number>-3276800</number>
+           </property>
+           <property name="maximum">
+            <number>3276800</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBox_Resize_Rescan">
+           <property name="text">
+            <string>Resizable</string>
            </property>
           </widget>
          </item>
