@@ -17,7 +17,7 @@ import functools as ft
 import numpy as np
 import scipy.io as io
 import cv2 as cv
-import matlab.engine
+# import matlab.engine
 from image import myImages
 from skimage import exposure, img_as_float
 import copy

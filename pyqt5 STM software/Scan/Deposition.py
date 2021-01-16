@@ -265,8 +265,8 @@ class myDeposition(QWidget, Ui_Deposition):
 
         if fname != '':                         # Savable
             with open(fname, 'wb') as output:
-                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
                 self.data.path = fname                                          # Save path
+                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
                 self.saved = True
                 self.setWindowTitle('Deposition-' + fname.replace(directory.path() + '/', ''))
                 self.file_idex[1] += 1

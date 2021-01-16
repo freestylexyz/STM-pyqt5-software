@@ -22,6 +22,8 @@ from DataStruct import SpcData
 
 import conversion as cnv
 import functools as ft
+import pickle
+from datetime import datetime
 
 
 class mySpc(QWidget, Ui_Spectroscopy):
@@ -40,8 +42,14 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.info = mySpectroscopyInfo()
         
         self.data = SpcData()
-        self.dlg = QFileDialog()
+        self.data_ = SpcData()
         self.file_idex = [0, 0]
+        self.dlg = QFileDialog()
+        self.today = datetime.now().strftime("%m%d%y")
+        self.dlg.setNameFilter('SPC Files (*.stm)')
+        self.dlg.setFileMode(QFileDialog.AnyFile)
+        self.dlg.setAcceptMode(QFileDialog.AcceptSave)
+        self.autosave_filename = ''
         
         self.bias_dac = False
         self.bias_ran = 9
@@ -91,12 +99,14 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.label_Channel_Graph.setText(str(self.scrollBar_Channel_Graph.value()))
     # !!!
     # Update spectroscopy data
-    def update_spc(self, rdata):
+    def update_spc_(self, rdata):
         pass
+    
     # !!!
-    # Save data
-    def save(self):
+    # Update spectroscopy data
+    def update_spc(self):
         pass
+
     # !!!
     # Open spectroscopy information window
     def open_info(self):
@@ -281,6 +291,74 @@ class mySpc(QWidget, Ui_Spectroscopy):
         else:
             self.spinBox_Bias_Delta.setValue(cnv.bv(value, bias_flag, self.bias_ran))
             
+    def configure_spc(self, dsp):
+        start = self.scrollBar_Min_General.value()
+        final = self.scrollBar_Max_General.value()
+        step = self.scrollBar_StepSize_General.value()
+        data_num = int((final - start) / step)
+        pass_num = self.spinBox_Pass_General.value()
+        delta_flag = self.groupBox_Delta_General.isChecked()
+        if self.comboBox_RampCh_General.currentIndex():
+            ramp_ch = 0x12
+            delta_ch = 0x20 if self.bias_dac else 0x1d
+            b = dsp.lasdac[13] if self.bias_dac else dsp.last20bit
+            delta_data = (self.scrollBar_Bias_Delta.value() - b) if delta_flag else 0
+        else:
+            ramp_ch = 0x20 if self.bias_dac else 0x1d
+            delta_ch = 0x12
+            delta_data = self.scrollBar_Z_Delta.value() if delta_flag else 0
+
+        return start, step, data_num, pass_num, ramp_ch, delta_ch, delta_data
+    
+    # Save data slot
+    def save(self):
+        if self.data.time.strftime("%m%d%y") != self.today:
+            self.today = self.data.time.strftime("%m%d%y")
+            self.file_idex = [0, 0]
+        fname = ''
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
+        name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
+        name = self.dlg.directory().path() + '/' + name + '.spc'
+        self.dlg.selectFile(name)
+        if self.dlg.exec_():
+            fname = self.dlg.selectedFiles()[0]
+            directory = self.dlg.directory()
+            self.dlg.setDirectory(directory)
+
+        if fname != '':                         # Savable
+            with open(fname, 'wb') as output:
+                self.data.path = fname                                          # Save path
+                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
+                self.saved = True
+                self.setWindowTitle('Spectroscopy-' + fname.replace(directory.path() + '/', ''))
+                self.file_idex[1] += 1
+                if self.file_idex[1] > 35:
+                    self.file_idex[0] += 1
+                    self.file_idex[1] = 0
+                    
+    # Auto save pop window
+    def atuo_save_window(self):
+        if self.data.time.strftime("%m%d%y") != self.today:
+            self.today = self.data.time.strftime("%m%d%y")
+            self.file_idex = [0, 0]
+        fname = ''
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
+        name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
+        name = self.dlg.directory().path() + '/' + name + '.spc'
+        self.dlg.selectFile(name)
+        if self.dlg.exec_():
+            fname = self.dlg.selectedFiles()[0]
+            directory = self.dlg.directory()
+            self.dlg.setDirectory(directory)
+            self.autosave_filename = fname.replace(directory.path() + '/', '').replace('.spc', '')
+            
+    # Auto save every pass
+    def auto_save_every(self, pass_num):
+         fname = self.dlg.directory().path() + '/' + self.autosave_filename + '_pass' + str(pass_num) + '.spc'
+         with open(fname, 'wb') as output:
+             self.data_.path = fname                                          # Save path
+             pickle.dump(self.data_, output, pickle.HIGHEST_PROTOCOL)         # Save data
+             
 
 
         
