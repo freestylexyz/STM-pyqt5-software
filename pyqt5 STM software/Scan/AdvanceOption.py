@@ -42,38 +42,34 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
     def configure_delay(self):
         move_delay = self.spinBox_MoveDelay_Dealy.value()
         measure_delay = self.spinBox_MeasureDelay_Dealy.value()
-        wait_delay = self.spinBox_Wait_Delay.value() * 1000
-        return move_delay, measure_delay, wait_delay
-    
-    def configure_rescan(self):
-        if self.groupBox_Rescan.isChecked():
-            return self.spinBox_Pass_Rescan.value()
-        else:
-            return 0xffffffff
+        return move_delay, measure_delay
         
     def configure_measure(self):
-        command_list = []
+        command_list = [0]
+        data_list = [self.spinBox_Wait_Delay.value() * 1000]
         if self.radioButton_I_Measure.isChecked:
             command_list += [0xdc]          # 0xc0 + 4 * 7
+            data_list += [self.spinBox_Avg_I.value()]
         if self.radioButton_Z_Measure.isChecked:
             command_list += [0xd8]          # 0xc0 + 4 * 6
+            data_list += [self.spinBox_Avg_Z.value()]
         if self.checkBox_Ch2_Measure.isChecked:
             command_list += [0xc8]          # 0xc0 + 4 * 2
+            data_list += [self.spinBox_Avg_CH2.value()]
         if self.checkBox_Ch3_Measure.isChecked:
             command_list += [0xcc]          # 0xc0 + 4 * 3
-            
-        data_list = len(command_list) * [self.spinBox_Avg_Measure.value()]
+            data_list += [self.spinBox_Avg_CH3.value()]
         
         return command_list, data_list
     
     def configure_correction(self, feedback):
-        pass_num = self.spinBox_DoZCorrection_ZDrift.value()
+        corr_pass_num = self.spinBox_DoZCorrection_ZDrift.value()
         z_flag = self.groupBox_ZDrift_Correction.isChecked() and (not feedback)
         match_flag = self.checkBox_MatchCurr_ZDrift.isChecked() and z_flag
         feedback_delay = self.spinBox_Delay_ZDrift.value() if z_flag else 0
         track_flag = self.checkBox_Tracking_Correction.isChecked
         
-        return pass_num, z_flag, match_flag, feedback_delay, track_flag
+        return corr_pass_num, z_flag, match_flag, feedback_delay, track_flag
         
     def configure_scan(self):
         forward = True
@@ -87,10 +83,10 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
             average = True
         return forward, backward, average
     
-    def configure_autosave(self):
-        autosave = self.groupBox_AutoSave_AdvOption.isChecked()
-        every = self.checkBox_SaveEveryPasses_Autosave.isChecked() and autosave
-        return autosave, every
+    def configure_rescan(self):
+        return self.spinBox_Pass_Rescan.value() if self.groupBox_Rescan.isChecked() else 0xffffffff
+    
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

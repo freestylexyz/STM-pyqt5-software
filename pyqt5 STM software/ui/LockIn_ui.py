@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_LockIn(object):
     def setupUi(self, LockIn):
         LockIn.setObjectName("LockIn")
-        LockIn.resize(662, 143)
+        LockIn.resize(769, 143)
         self.gridLayout = QtWidgets.QGridLayout(LockIn)
         self.gridLayout.setObjectName("gridLayout")
         self.spinBox_Phase1 = QtWidgets.QDoubleSpinBox(LockIn)
@@ -125,6 +125,7 @@ class Ui_LockIn(object):
         self.label_97.setText(_translate("LockIn", "OSC frequency (kHz)"))
         self.label_107.setText(_translate("LockIn", "Phase 1"))
         self.label_104.setText(_translate("LockIn", "Sensivity 1 (mV)"))
+        self.lineEdit_Type.setText(_translate("LockIn", "Sine"))
 
 
 if __name__ == "__main__":

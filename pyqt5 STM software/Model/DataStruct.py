@@ -39,6 +39,20 @@ class STMData():
         self.lastdigital = dsp.lastdigital
         self.lastgain = dsp.lastgain
         self.offset = dsp.offset
+    
+    def load_lockin(self, params, osc_type):
+        self.ocs_type = osc_type
+        self.osc_rms = self.params[0]
+        self.osc_freq = self.params[1]
+        self.lockin_freq = self.params[2]
+        self.phase1 = self.params[3]
+        self.phase2 = self.params[4]
+        self.sen1 = self.params[5]
+        self.sen2 = self.params[6]
+        self.offset1 = self.params[7]
+        self.offset2 = self.params[8]
+        self.tc1 = self.params[9]
+        self.tc2 = self.params[10]
 
 class DepData(STMData):
     def __init__(self):
@@ -104,3 +118,72 @@ class ScanData(STMData):
 class SpcData(STMData):
     def __init__(self):
         super().__init__()
+        # self.fdata = np.array([])
+        # self.bdata = np.array([])
+        self.num_pt = 0
+        self.data_pt = 0
+        self.dir_flag = True
+        
+        self.start, self.step, self.data_num, self.pass_num = 0, 1, 1, 1
+        self.ramp_ch, self.delta_data = 0, 0
+        self.move_dealy, self.read_dealy = 0, 0
+        self.scan_dir = 2
+        
+        self.spec_num = 6
+
+        self.corr_pass_num = 1
+        self.feedback_delay = 0
+        self.z_flag, self.match_flag, self.track_flag = False, False, False
+        
+        self.rescan = 0xffffffff
+        self.pattern = [0, 0, 1]
+        self.point_list = [[0, 0]]
+        
+        self.prescan = ScanData()
+        
+    def load(self, start, step, data_num, pass_num, ramp_ch, delta_data, move_delay, measure_delay,\
+             forward, backward, average, corr_pass_num, z_flag, match_flag, feedback_delay, track_flag,\
+                 rescan, pre_scan, point_list, pattern):
+        self.start, self.step, self.data_num, self.pass_num = start, step, data_num, pass_num
+        self.ramp_ch, self.delta_data = ramp_ch, delta_data
+        self.move_dealy, self.read_dealy = move_delay, measure_delay
+        
+        self.data_pt = 0
+        if forward and (not backward):
+            self.scan_dir = 0
+        elif backward and (not forward):
+            self.scan_dir = 1
+            self.data_pt = self.data_num - 1
+        # data_ ignore average, always save both passes
+        elif backward and forward and (not average):
+            self.scan_dir = 2
+        else:
+            self.scan_dir = 3
+        self.spec_num = self.seq.read_num * (1 + (self.scan_dir == 2))
+        
+        self.corr_pass_num = corr_pass_num
+        self.feedback_delay = feedback_delay
+        self.z_flag, self.match_flag, self.track_flag = z_flag, match_flag, track_flag
+        
+        self.rescan, self.pre_scan, self.point_list, self.pattern = rescan, pre_scan, point_list, pattern
+        
+        self.data = np.zeros((len(self.point_list), self.spec_num, self.data_num))
+        self.num_pt = 0
+
+        
+    # def update_data_(self, rdata):
+    #     # axis 0 is point index
+    #     # axis 1 is data num
+    #     # axis 2 is read channel
+    #     se
+    #     if (self.data_pt >= self.data_num) or (self.data_pt <= -1):
+    #         self.point = 0 if self.dir_x else (self.step_num - 1)
+    #         self.line += 1
+    #     if self.channel_x == 0x1f:
+    #         self.data[:, self.line, self.point] = np.array(rdata)
+    #     else:
+    #         self.data[:, self.point, self.line] = np.array(rdata)
+            
+    #     self.point = self.point + 1 if self.dir_x else self.point - 1
+
+        

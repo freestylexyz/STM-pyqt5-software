@@ -64,7 +64,7 @@ class myScan_(QWidget, Ui_Scan):
         self.data = ScanData()
         self.today = datetime.now().strftime("%m%d%y")
         self.dlg = QFileDialog()
-        self.file_idex = [0, 0]
+        self.file_idex = 0
         self.dlg.setNameFilter('STM Files (*.stm)')
 
         # Flags

@@ -42,7 +42,7 @@ class myDeposition(QWidget, Ui_Deposition):
         self.data = DepData()
         self.dlg = QFileDialog()
         self.today = datetime.now().strftime("%m%d%y")
-        self.file_idex = [0, 0]
+        self.file_idex = 0
         self.info = myDepositionInfo()
         self.idling = True
         self.bias_dac = True
@@ -252,27 +252,26 @@ class myDeposition(QWidget, Ui_Deposition):
     def save(self):
         if self.data.time.strftime("%m%d%y") != self.today:
             self.today = self.data.time.strftime("%m%d%y")
-            self.file_idex = [0, 0]
-        fname = ''
+            self.file_idex = 0
         name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
         name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
-        name = self.dlg.directory().path() + '/' + name + '.dep'
-        self.dlg.selectFile(name)
+        self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.dep')
         if self.dlg.exec_():
             fname = self.dlg.selectedFiles()[0]
             directory = self.dlg.directory()
             self.dlg.setDirectory(directory)
-
-        if fname != '':                         # Savable
+            save_name = fname.replace(directory.path() + '/', '').replace('.dep', '')
+            if save_name != name:
+                try:
+                    self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
+                except:
+                    self.file_idex -= 1
             with open(fname, 'wb') as output:
                 self.data.path = fname                                          # Save path
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
                 self.saved = True
-                self.setWindowTitle('Deposition-' + fname.replace(directory.path() + '/', ''))
-                self.file_idex[1] += 1
-                if self.file_idex[1] > 35:
-                    self.file_idex[0] += 1
-                    self.file_idex[1] = 0
+                self.setWindowTitle('Deposition-' + save_name)
+                self.file_idex += 1
     
     # Pop out message
     def message(self, text):

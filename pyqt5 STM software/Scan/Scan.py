@@ -166,29 +166,29 @@ class myScan(myScan_):
     def save(self):
         self.dlg.setFileMode(QFileDialog.AnyFile)
         self.dlg.setAcceptMode(QFileDialog.AcceptSave)
+        
         if self.data.time.strftime("%m%d%y") != self.today:
             self.today = self.data.time.strftime("%m%d%y")
-            self.file_idex = [0, 0]
-        fname = ''
+            self.file_idex = 0
         name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
         name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
-        name = self.dlg.directory().path() + '/' + name + '.stm'
-        self.dlg.selectFile(name)
+        self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.stm')
         if self.dlg.exec_():
             fname = self.dlg.selectedFiles()[0]
             directory = self.dlg.directory()
             self.dlg.setDirectory(directory)
-
-        if fname != '':                         # Savable
+            save_name = fname.replace(directory.path() + '/', '').replace('.stm', '')
+            if save_name != name:
+                try:
+                    self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
+                except:
+                    self.file_idex -= 1
             with open(fname, 'wb') as output:
                 self.data.path = fname                                          # Save path
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
                 self.saved = True
-                self.setWindowTitle('Scan-' + fname.replace(directory.path() + '/', ''))
-                self.file_idex[1] += 1
-                if self.file_idex[1] > 35:
-                    self.file_idex[0] += 1
-                    self.file_idex[1] = 0
+                self.setWindowTitle('Scan-' + save_name)
+                self.file_idex += 1
     
     # Load
     def load(self):
