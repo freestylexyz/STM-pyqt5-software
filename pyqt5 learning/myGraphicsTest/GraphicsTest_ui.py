@@ -199,4 +199,5 @@ class Ui_GraphicsDemo(object):
         self.label_16.setText(_translate("GraphicsDemo", "size"))
         self.label_5.setText(_translate("GraphicsDemo", "y1"))
         self.checkBox_Resize_Rescan.setText(_translate("GraphicsDemo", "Resizable"))
+
 from pyqtgraph import GraphicsLayoutWidget

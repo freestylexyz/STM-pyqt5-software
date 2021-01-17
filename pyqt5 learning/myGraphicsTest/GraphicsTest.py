@@ -59,7 +59,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.view_box.setAspectLocked(True)
         self.view_box.setCursor(Qt.CrossCursor)
         self.view_box.setMouseMode(self.view_box.PanMode)
-        # self.view_box.contextMenu = []
+        self.view_box.sigMoveROI.connect(self.default_update)
 
         # ROI | define pens
         blue_pen = pg.mkPen((70, 200, 255, 255), width=1)
@@ -76,7 +76,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.serial_pen = [serial_pen_0, serial_pen_1, serial_pen_2, serial_pen_3, serial_pen_4, serial_pen_5]
 
         # ROI | scan area
-        self.scan_area = pg.RectROI([0, 0], [300000, 300000], pen=blue_pen, centered=True, \
+        self.scan_area = CrossCenterROI([0, 0], [300000, 300000], pen=blue_pen, centered=True, \
                                     movable=False, resizable=False, rotatable=False, \
                                     maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         # self.scan_area.sigHoverEvent.connect(self.mouseDragEvent)
@@ -84,16 +84,18 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.scan_area.setZValue(10)
         self.view_box.addItem(self.scan_area)
         self.scan_area.removeHandle(0)
+        self.scan_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5],'pen':blue_pen}, index=3)
 
         # ROI | target area
-        self.target_area = pg.RectROI([0, 0], [300000, 300000], pen=baby_blue_pen, centered=True, \
-                                      movable=False, resizable=False, rotatable=False, \
+        self.target_area = CrossCenterROI([0, 0], [300000, 300000], pen=baby_blue_pen, centered=True, \
+                                      movable=True, resizable=False, rotatable=False, \
                                       maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         self.target_area.setZValue(10)
         self.target_area.aspectLocked = True
         self.view_box.addItem(self.target_area)
         self.target_area.removeHandle(0)
         self.target_area.hide()
+        self.target_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5],'pen':baby_blue_pen}, index=3)
 
         # ROI | tip position
         cross_pos = [int(self.scan_area.pos()[0] + self.scan_area.size()[0] / 2), \
@@ -103,16 +105,16 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
                                             resizable=False, rotatable=False)
         self.tip_position.setZValue(10)
         self.view_box.addItem(self.tip_position)
-
         self.tip_position.removeHandle(0)
+        self.tip_position.hide()
 
         # ROI | target position
-        self.target_Rescan = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=baby_green_pen, movable=False, \
+        self.target_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=baby_green_pen, movable=True, \
                                             resizable=False, rotatable=False)
-        self.target_Rescan.setZValue(10)
-        self.view_box.addItem(self.target_Rescan)
-        self.target_Rescan.removeHandle(0)
-        self.target_Rescan.hide()
+        self.target_position.setZValue(10)
+        self.view_box.addItem(self.target_position)
+        self.target_position.removeHandle(0)
+        self.target_position.hide()
 
         # ROI | rescan area
         self.rescan_area = CrossCenterROI([0, 0], [300000, 300000], pen=purple_pen, centered=True, \
@@ -128,10 +130,16 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.rescan_area.getHandles()[1].hide()
         self.rescan_area.sigRegionChanged.connect(lambda: self.rescan_update(1))
 
+        # self.crosshandle.update()
+
         # ROI | point
         self.point_0 = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0])
         self.view_box.addItem(self.point_0)
+        self.point_0.getHandles()[0].pen.setWidth(2)
+        purple_brush = pg.mkBrush('deaaff')
+        self.point_0.getHandles()[0].pen.setBrush(purple_brush)
         self.point_0.hide()
+
 
     def change_mode(self, index, status):
         if status:
@@ -163,7 +171,6 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
             self.init_rescan_mode(False)
             self.init_default_mode(False)
             self.init_point_mode(False)
-
 
     def init_default_mode(self, status):
         if status:
@@ -219,8 +226,36 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         x = self.spinBox_x_Rescan.value()
         y = self.spinBox_y_Rescan.value()
 
-    def default_update(self):
-        pass
+    def default_update(self, index, pos):
+        if index == 0:
+            self.target_area.show()
+            pos0 = self.target_area.pos()
+            print("----------------------------------------")
+            print("pos:",pos0)
+            pos1 = self.view_box.mapToView(pos)
+            print("mapToView:",pos1)
+            pos2 = self.view_box.mapFromView(pos)
+            print("mapFromView:", pos2)
+            pos3 = self.view_box.mapSceneToView(pos)
+            print("mapSceneToView:", pos3)
+            pos4 = self.view_box.mapViewToScene(pos)
+            print("mapViewToScene:", pos4)
+            pos5 = self.view_box.mapViewToDevice(pos)
+            print("mapViewToDevice:", pos5)
+            pos6 = self.view_box.mapDeviceToView(pos)
+            print("mapDeviceToView:", pos6)
+
+            self.target_area.movePoint(self.target_area.getHandles()[0], [300000, 300000])
+
+            self.target_area.update()
+        elif index == 1:
+            self.target_position.show()
+            pos = self.view_box.mapDeviceToView(pos)
+            pos = self.view_box.mapViewToScene(pos)
+            print(pos)
+            self.target_position.setPos(pos)
+            self.target_position.update()
+
 
     def point_update(self):
         pass
