@@ -49,6 +49,9 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.spinBox_y1_Rescan.editingFinished.connect(lambda: self.rescan_update(0))
         self.spinBox_x3_Rescan.editingFinished.connect(lambda: self.rescan_update(0))
 
+        self.spinBox_x1_Default.editingFinished.connect(lambda: self.default_update(2))
+        self.spinBox_y1_Default.editingFinished.connect(lambda: self.default_update(2))
+
         # graphicsView | Scan main view
 
         # viewBox | setup
@@ -66,25 +69,27 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         green_pen = pg.mkPen((150, 220, 0, 255), width=1)
         purple_pen = pg.mkPen('deaaff', width=1)
         baby_blue_pen = pg.mkPen((130, 220, 255, 255), width=1, dash=[2, 4, 2, 4])
-        baby_green_pen = pg.mkPen((210, 255, 120, 255), width=1, dash=[2, 2, 2, 2])
+        baby_green_pen = pg.mkPen((210, 255, 120, 100), width=1, dash=[2, 2, 2, 2])
+        baby_yellow_pen = pg.mkPen((255, 255, 0, 200), width=1, dash=[2, 2, 2, 2])
         serial_pen_0 = pg.mkPen('bee9e8', width=1, dash=[2, 2, 2, 2])
         serial_pen_1 = pg.mkPen('70d6ff', width=1)
         serial_pen_2 = pg.mkPen('ff70a6', width=1)
         serial_pen_3 = pg.mkPen('ff9770', width=1)
         serial_pen_4 = pg.mkPen('ffd670', width=1)
         serial_pen_5 = pg.mkPen('e9ff70', width=1)
+        hover_pen = pg.mkPen((255, 255, 0, 100), width=1, dash=[2, 4, 2, 4])
         self.serial_pen = [serial_pen_0, serial_pen_1, serial_pen_2, serial_pen_3, serial_pen_4, serial_pen_5]
 
         # ROI | scan area
         self.scan_area = CrossCenterROI([0, 0], [300000, 300000], pen=blue_pen, centered=True, \
                                     movable=False, resizable=False, rotatable=False, \
                                     maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
-        # self.scan_area.sigHoverEvent.connect(self.mouseDragEvent)
         self.scan_area.aspectLocked = True
         self.scan_area.setZValue(10)
         self.view_box.addItem(self.scan_area)
         self.scan_area.removeHandle(0)
         self.scan_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5],'pen':blue_pen}, index=3)
+        self.scan_area.sigRegionChanged.connect(lambda: self.default_update(1))
 
         # ROI | target area
         self.target_area = CrossCenterROI([0, 0], [300000, 300000], pen=baby_blue_pen, centered=True, \
@@ -94,27 +99,40 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.target_area.aspectLocked = True
         self.view_box.addItem(self.target_area)
         self.target_area.removeHandle(0)
-        self.target_area.hide()
+        # self.target_area.hide()
         self.target_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5],'pen':baby_blue_pen}, index=3)
+        self.target_area.sigRegionChanged.connect(lambda: self.default_update(0))
 
         # ROI | tip position
-        cross_pos = [int(self.scan_area.pos()[0] + self.scan_area.size()[0] / 2), \
-                     int(self.scan_area.pos()[1] + self.scan_area.size()[0] / 2)]
+        cross_pos = [self.scan_area.pos()[0] + self.scan_area.getHandles()[0].pos()[0], \
+                     self.scan_area.pos()[1] + self.scan_area.getHandles()[0].pos()[1]]
         cross_size = [int(self.scan_area.size()[0] / 20), int(self.scan_area.size()[1] / 20)]
-        self.tip_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=green_pen, movable=False, \
-                                            resizable=False, rotatable=False)
-        self.tip_position.setZValue(10)
+        # self.tip_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=green_pen, movable=False, \
+        #                                     resizable=False, rotatable=False)
+        # self.tip_position.setZValue(10)
+        # self.view_box.addItem(self.tip_position)
+        # self.tip_position.removeHandle(0)
+        # self.tip_position.hide()
+        self.tip_position = CrossCenterROI2(cross_pos, cross_size, pen=(255, 255, 255, 0), movable=False)
         self.view_box.addItem(self.tip_position)
         self.tip_position.removeHandle(0)
-        self.tip_position.hide()
+        self.tip_position.addCustomHandle2_(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
+        self.tip_position.sigRegionChanged.connect(lambda: self.default_update(3))
+        self.tip_position.movePoint(self.tip_position.getHandles()[0], cross_pos)
+
 
         # ROI | target position
-        self.target_position = pg.CrosshairROI(pos=cross_pos, size=cross_size, pen=baby_green_pen, movable=True, \
-                                            resizable=False, rotatable=False)
-        self.target_position.setZValue(10)
+        # self.target_position = pg.CrosshairROI(pos=cross_pos, size=[1,1], pen=baby_green_pen, movable=True, \
+        #                                     resizable=False, rotatable=False)
+        # self.target_position.setZValue(10)
+        # self.view_box.addItem(self.target_position)
+        # self.target_position.removeHandle(0)
+        # self.target_position.hide()
+        self.target_position = CrossCenterROI2([200000,200000], cross_size, pen=(255, 255, 255, 0))
         self.view_box.addItem(self.target_position)
         self.target_position.removeHandle(0)
-        self.target_position.hide()
+        self.target_position.addCustomHandle2(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
+        self.target_position.movePoint(self.target_position.getHandles()[0], cross_pos)
 
         # ROI | rescan area
         self.rescan_area = CrossCenterROI([0, 0], [300000, 300000], pen=purple_pen, centered=True, \
@@ -130,16 +148,100 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.rescan_area.getHandles()[1].hide()
         self.rescan_area.sigRegionChanged.connect(lambda: self.rescan_update(1))
 
-        # self.crosshandle.update()
+        # ROI | connect target area and scan area
+        self.connect_area = LineSegmentROI(pos=[0, 0], positions=[0, 300000], pen=baby_blue_pen, movable=False)
+        self.view_box.addItem(self.connect_area)
+        # self.connect_area.replaceHandle(self.connect_area.getHandles()[0], self.scan_area.getHandles()[0])
+        # self.scan_area.getHandles()[0].connectROI(self.connect_area)
+        
+        x = self.scan_area.getHandles()[0].pos()[0] + self.scan_area.pos()[0]
+        y = self.scan_area.getHandles()[0].pos()[1] + self.scan_area.pos()[1]
+        self.connect_area.movePoint(self.connect_area.getHandles()[0], [x, y])
+        self.connect_area.getHandles()[0].hide()
+        self.scan_area.sigRegionChanged.connect(self.connect_scan_area)
+        
+        x = self.target_area.getHandles()[0].pos()[0] + self.target_area.pos()[0]
+        y = self.target_area.getHandles()[0].pos()[1] + self.target_area.pos()[1]
+        self.connect_area.movePoint(self.connect_area.getHandles()[1], [x, y])
+        self.connect_area.getHandles()[1].hide()
+        self.target_area.sigRegionChanged.connect(self.connect_target_area)
+
+        # ROI | connect target position and scan position
+        self.connect_position = LineSegmentROI(pos=[0, 0], positions=[0, 300000], pen=baby_blue_pen, movable=False)
+        self.view_box.addItem(self.connect_position)
+        self.connect_position.setZValue(8)
+
+        x = self.tip_position.getHandles()[0].pos()[0] + self.tip_position.pos()[0]
+        y = self.tip_position.getHandles()[0].pos()[1] + self.tip_position.pos()[1]
+        self.connect_position.movePoint(self.connect_position.getHandles()[0], [x, y])
+        self.connect_position.getHandles()[0].hide()
+        self.tip_position.sigRegionChanged.connect(self.connect_tip_position)
+
+        x = self.target_position.getHandles()[0].pos()[0] + self.target_position.pos()[0]
+        y = self.target_position.getHandles()[0].pos()[1] + self.target_position.pos()[1]
+        self.connect_position.movePoint(self.connect_position.getHandles()[1], [x, y])
+        self.connect_position.getHandles()[1].hide()
+        self.target_position.sigRegionChanged.connect(self.connect_target_position)
 
         # ROI | point
-        self.point_0 = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0])
+        self.point_0 = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0],movable=True)
         self.view_box.addItem(self.point_0)
         self.point_0.getHandles()[0].pen.setWidth(2)
         purple_brush = pg.mkBrush('deaaff')
         self.point_0.getHandles()[0].pen.setBrush(purple_brush)
         self.point_0.hide()
 
+        # ROI | point selection
+        pos = [self.point_0.pos()[0],self.point_0.pos()[1]]
+        self.select_point = pg.RectROI([-100000,-100000], [200000,200000], pen=baby_green_pen, hoverPen=baby_yellow_pen, handlePen=baby_yellow_pen)
+        self.view_box.addItem(self.select_point)
+        self.select_point.addScaleHandle([0, 0], [1, 1], index=1)
+        self.point_0.setParentItem(self.select_point)
+        # self.point_0.sigRegionChanged.connect(self.update_select_point)
+        self.select_point.hide()
+
+
+    def connect_scan_area(self):
+        x = self.scan_area.getHandles()[0].pos()[0] + self.scan_area.pos()[0]
+        y = self.scan_area.getHandles()[0].pos()[1] + self.scan_area.pos()[1]
+        self.connect_area.movePoint(self.connect_area.getHandles()[0], [x, y])
+        self.connect_area.getHandles()[0].hide()
+
+    def connect_target_area(self):
+        x = self.target_area.getHandles()[0].pos()[0] + self.target_area.pos()[0]
+        y = self.target_area.getHandles()[0].pos()[1] + self.target_area.pos()[1]
+        self.connect_area.movePoint(self.connect_area.getHandles()[1], [x, y])
+        self.connect_area.getHandles()[1].hide()
+        
+    def connect_tip_position(self):
+        x = self.tip_position.getHandles()[0].pos()[0] + self.tip_position.pos()[0]
+        y = self.tip_position.getHandles()[0].pos()[1] + self.tip_position.pos()[1]
+        self.connect_position.movePoint(self.connect_position.getHandles()[0], [x, y])
+        self.connect_position.getHandles()[0].hide()
+        
+    def connect_target_position(self):
+        x = self.target_position.getHandles()[0].pos()[0] + self.target_position.pos()[0]
+        y = self.target_position.getHandles()[0].pos()[1] + self.target_position.pos()[1]
+        self.connect_position.movePoint(self.connect_position.getHandles()[1], [x, y])
+        self.connect_position.getHandles()[1].hide()
+
+    def update_select_point(self):
+        pos_x = []
+        pos_y = []
+        for handle in self.point_0.getHandles():
+            pos_x += [handle.pos()[0]+self.point_0.pos()[0]]
+            pos_y += [handle.pos()[1]+self.point_0.pos()[1]]
+        max_x = max(pos_x)
+        min_x = min(pos_x)
+        max_y = max(pos_y)
+        min_y = min(pos_y)
+        margin_x = int(abs(max_x-min_x)*0.15)
+        margin_y = int(abs(max_y - min_y) * 0.15)
+        size_x = max_x - min_x + 2 * margin_x
+        size_y = max_x - min_y + 2 * margin_y
+
+        self.select_point.setPos(min_x-margin_x, min_y-margin_y)
+        self.select_point.setSize(size_x, size_y)
 
     def change_mode(self, index, status):
         if status:
@@ -151,6 +253,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
                 self.init_default_mode(True)
                 self.init_point_mode(False)
                 self.init_rescan_mode(False)
+                self.view_box.setMouseEnabled(x=True, y=True)
             elif index == 1:
                 self.mode = 1
                 self.Point.setChecked(True)
@@ -159,6 +262,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
                 self.init_point_mode(True)
                 self.init_default_mode(False)
                 self.init_rescan_mode(False)
+                self.view_box.setMouseEnabled(x=False,y=False)
             elif index == 2:
                 self.mode = 2
                 self.Rescan.setChecked(True)
@@ -167,6 +271,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
                 self.init_rescan_mode(True)
                 self.init_default_mode(False)
                 self.init_point_mode(False)
+                self.view_box.setMouseEnabled(x=False, y=False)
         else:
             self.init_rescan_mode(False)
             self.init_default_mode(False)
@@ -176,19 +281,25 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         if status:
             self.scan_area.show()
             self.target_area.show()
+            self.connect_area.show()
             self.tip_position.show()
-            self.target_Rescan.show()
+            self.target_position.show()
+            self.connect_position.show()
         else:
             self.scan_area.hide()
             self.target_area.hide()
+            self.connect_area.hide()
             self.tip_position.hide()
-            self.target_Rescan.hide()
+            self.target_position.hide()
+            self.connect_position.hide()
 
     def init_point_mode(self, status):
         if status:
             self.point_0.show()
+            self.select_point.show()
         else:
             self.point_0.hide()
+            self.select_point.hide()
 
     def enable_resize(self, status):
         if status:
@@ -213,10 +324,17 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
             self.enable_resize(self.checkBox_Resize_Rescan.isChecked())
 
     def default_send(self):
-        x1 = self.spinBox_x1_Default.value()
-        x2 = self.spinBox_x2_Default.value()
-        y1 = self.spinBox_y1_Default.value()
-        y2 = self.spinBox_y2_Default.value()
+
+        self.target_area.translatable = False
+
+        x2 = self.target_area.getHandles()[0].pos()[0] + self.target_area.pos()[0]
+        y2 = self.target_area.getHandles()[0].pos()[1] + self.target_area.pos()[1]
+        x1 = self.scan_area.getHandles()[0].pos()[0] + self.scan_area.pos()[0]
+        y1 = self.scan_area.getHandles()[0].pos()[1] + self.scan_area.pos()[1]
+
+        self.scan_area.movePoint(self.scan_area.getHandles()[0], [x2, y2])
+
+        self.target_area.translatable = True
 
     def point_send(self):
         x = self.spinBox_x_Point.value()
@@ -226,35 +344,22 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         x = self.spinBox_x_Rescan.value()
         y = self.spinBox_y_Rescan.value()
 
-    def default_update(self, index, pos):
-        if index == 0:
-            self.target_area.show()
-            pos0 = self.target_area.pos()
-            print("----------------------------------------")
-            print("pos:",pos0)
-            pos1 = self.view_box.mapToView(pos)
-            print("mapToView:",pos1)
-            pos2 = self.view_box.mapFromView(pos)
-            print("mapFromView:", pos2)
-            pos3 = self.view_box.mapSceneToView(pos)
-            print("mapSceneToView:", pos3)
-            pos4 = self.view_box.mapViewToScene(pos)
-            print("mapViewToScene:", pos4)
-            pos5 = self.view_box.mapViewToDevice(pos)
-            print("mapViewToDevice:", pos5)
-            pos6 = self.view_box.mapDeviceToView(pos)
-            print("mapDeviceToView:", pos6)
+    def default_update(self, index):
 
-            self.target_area.movePoint(self.target_area.getHandles()[0], [300000, 300000])
-
-            self.target_area.update()
-        elif index == 1:
-            self.target_position.show()
-            pos = self.view_box.mapDeviceToView(pos)
-            pos = self.view_box.mapViewToScene(pos)
-            print(pos)
-            self.target_position.setPos(pos)
-            self.target_position.update()
+        if index == 0:      # target area moved
+            x1 = int(self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])
+            y1 = int(self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])
+            self.spinBox_x1_Default.setValue(x1)
+            self.spinBox_y1_Default.setValue(y1)
+        elif index == 1:    # scan area moved
+            x2 = int(self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0])
+            y2 = int(self.scan_area.getHandles()[0].pos()[1]+self.scan_area.pos()[1])
+            self.spinBox_x2_Default.setValue(x2)
+            self.spinBox_y2_Default.setValue(y2)
+        elif index == 2:    # target area inputted
+            x1 = self.spinBox_x1_Default.value()
+            y1 = self.spinBox_y1_Default.value()
+            self.target_area.movePoint(self.target_area.getHandles()[0], [x1,y1])
 
 
     def point_update(self):
