@@ -22,7 +22,7 @@ from .. import functions as fn
 from .GraphicsObject import GraphicsObject
 from .UIGraphicsItem import UIGraphicsItem
 from .. import getConfigOption
-from PyQt5.QtCore import Qt
+import pyqtgraph
 
 __all__ = [
     'ROI', 
@@ -87,6 +87,12 @@ class ROI(GraphicsObject):
                      is generally not necessary to specify the parent.
     pen              (QPen or argument to pg.mkPen) The pen to use when drawing
                      the shape of the ROI.
+    hoverPen         (QPen or argument to mkPen) The pen to use while the
+                     mouse is hovering over the ROI shape.
+    handlePen        (QPen or argument to mkPen) The pen to use when drawing
+                     the ROI handles.
+    handleHoverPen   (QPen or argument to mkPen) The pen to use while the mouse
+                     is hovering over an ROI handle.
     movable          (bool) If True, the ROI can be moved by dragging anywhere 
                      inside the ROI. Default is True.
     rotatable        (bool) If True, the ROI can be rotated by mouse drag + ALT
@@ -129,10 +135,11 @@ class ROI(GraphicsObject):
     sigClicked = QtCore.Signal(object, object)
     sigRemoveRequested = QtCore.Signal(object)
     
-    def __init__(self, pos, size=Point(1, 1), angle=0.0, invertible=False, maxBounds=None, 
-                 snapSize=1.0, scaleSnap=False, translateSnap=False, rotateSnap=False, 
-                 parent=None, pen=None, movable=True, rotatable=True, resizable=True, 
-                 removable=False):
+    def __init__(self, pos, size=Point(1, 1), angle=0.0, invertible=False,
+                 maxBounds=None, snapSize=1.0, scaleSnap=False,
+                 translateSnap=False, rotateSnap=False, parent=None, pen=None,
+                 hoverPen=None, handlePen=None, handleHoverPen=None,
+                 movable=True, rotatable=True, resizable=True, removable=False):
         GraphicsObject.__init__(self, parent)
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
         pos = Point(pos)
@@ -146,11 +153,20 @@ class ROI(GraphicsObject):
         
         self.freeHandleMoved = False ## keep track of whether free handles have moved since last change signal was emitted.
         self.mouseHovering = False
+
         if pen is None:
             pen = (255, 255, 255)
         self.setPen(pen)
-        
-        self.handlePen = QtGui.QPen(QtGui.QColor(150, 255, 255))
+        if hoverPen is None:
+            hoverPen = (255, 255, 0)
+        self.hoverPen = fn.mkPen(hoverPen)
+        if handlePen is None:
+            handlePen = (150, 255, 255)
+        self.handlePen = fn.mkPen(handlePen)
+        if handleHoverPen is None:
+            handleHoverPen = (255, 255, 0)
+        self.handleHoverPen = handleHoverPen
+
         self.handles = []
         self.state = {'pos': Point(0,0), 'size': Point(1,1), 'angle': 0}  ## angle is in degrees for ease of Qt integration
         self.lastState = None
@@ -590,14 +606,15 @@ class ROI(GraphicsObject):
     def addHandle(self, info, index=None):
         ## If a Handle was not supplied, create it now
         if 'item' not in info or info['item'] is None:
-            h = Handle(self.handleSize, typ=info['type'], pen=self.handlePen, parent=self)
-            h.setPos(info['pos'] * self.state['size'])
+            h = Handle(self.handleSize, typ=info['type'], pen=self.handlePen,
+                       hoverPen=self.handleHoverPen, parent=self)
             info['item'] = h
         else:
             h = info['item']
             if info['pos'] is None:
                 info['pos'] = h.pos()
-            
+        h.setPos(info['pos'] * self.state['size'])
+
         ## connect the handle to this ROI
         #iid = len(self.handles)
         h.connectROI(self)
@@ -710,7 +727,7 @@ class ROI(GraphicsObject):
                     hover=True
             if self.contextMenuEnabled():
                 ev.acceptClicks(QtCore.Qt.RightButton)
-
+                
         if hover:
             self.setMouseHover(True)
             ev.acceptClicks(QtCore.Qt.LeftButton)  ## If the ROI is hilighted, we should accept all clicks to avoid confusion.
@@ -736,7 +753,7 @@ class ROI(GraphicsObject):
     def _makePen(self):
         # Generate the pen color for this ROI based on its current state.
         if self.mouseHovering:
-            return fn.mkPen(255, 255, 0)
+            return self.hoverPen
         else:
             return self.pen
 
@@ -770,10 +787,6 @@ class ROI(GraphicsObject):
         
     def mouseDragEvent(self, ev):
         self.mouseDragHandler.mouseDragEvent(ev)
-        # if ev.button() & (QtCore.Qt.LeftButton):
-        #     self.setCursor(Qt.SizeAllCursor)         # Dan 1/5/2021
-        #     # if ev.isFinish():                      # Dan 1/5/2021
-        #     #     self.setCursor(Qt.OpenHandCursor)  # Dan 1/5/2021
 
     def mouseClickEvent(self, ev):
         if ev.button() == QtCore.Qt.RightButton and self.isMoving:
@@ -1150,7 +1163,14 @@ class ROI(GraphicsObject):
         # this is a hidden argument for internal use
         fromBR = kwds.pop('fromBoundingRect', False)
         
-        shape, vectors, origin = self.getAffineSliceParams(data, img, axes, fromBoundingRect=fromBR)
+        # Automaticaly compute missing parameters
+        _shape, _vectors, _origin = self.getAffineSliceParams(data, img, axes, fromBoundingRect=fromBR)
+        
+        # Replace them with user defined parameters if defined
+        shape = kwds.pop('shape', _shape)
+        vectors = kwds.pop('vectors', _vectors)
+        origin = kwds.pop('origin', _origin)
+        
         if not returnMappedCoords:
             rgn = fn.affineSlice(data, shape=shape, vectors=vectors, origin=origin, axes=axes, **kwds)
             return rgn
@@ -1278,11 +1298,13 @@ class Handle(UIGraphicsItem):
     sigClicked = QtCore.Signal(object, object)   # self, event
     sigRemoveRequested = QtCore.Signal(object)   # self
     
-    def __init__(self, radius, typ=None, pen=(200, 200, 220), parent=None, deletable=False):
+    def __init__(self, radius, typ=None, pen=(200, 200, 220),
+                 hoverPen=(255, 255, 0), parent=None, deletable=False):
         self.rois = []
         self.radius = radius
         self.typ = typ
         self.pen = fn.mkPen(pen)
+        self.hoverPen = fn.mkPen(hoverPen)
         self.currentPen = self.pen
         self.pen.setWidth(0)
         self.pen.setCosmetic(True)
@@ -1312,7 +1334,7 @@ class Handle(UIGraphicsItem):
             self.setAcceptedMouseButtons(self.acceptedMouseButtons() | QtCore.Qt.RightButton)
         else:
             self.setAcceptedMouseButtons(self.acceptedMouseButtons() & ~QtCore.Qt.RightButton)
-            
+
     def removeClicked(self):
         self.sigRemoveRequested.emit(self)
 
@@ -1326,7 +1348,7 @@ class Handle(UIGraphicsItem):
                     hover=True
                     
         if hover:
-            self.currentPen = fn.mkPen(255, 255,0)
+            self.currentPen = self.hoverPen
         else:
             self.currentPen = self.pen
         self.update()
@@ -1355,8 +1377,8 @@ class Handle(UIGraphicsItem):
         return self.menu
 
     def raiseContextMenu(self, ev):
-        menu = self.scene().addParentContextMenus(self, self.getMenu(), ev)
-        
+        # menu = self.scene().addParentContextMenus(self, self.getMenu(), ev)   # Dan 1/17/2021
+        menu = self.getMenu()                                                   # Dan 1/17/2021
         ## Make sure it is still ok to remove this handle
         removeAllowed = all([r.checkRemoveHandle(self) for r in self.rois])
         self.removeAction.setEnabled(removeAllowed)
@@ -1379,15 +1401,19 @@ class Handle(UIGraphicsItem):
                 for r in self.rois:
                     r.stateChangeFinished()
             self.isMoving = False
+            self.currentPen = self.pen
+            self.update()
         elif ev.isStart():
             for r in self.rois:
                 r.handleMoveStarted()
             self.isMoving = True
             self.startPos = self.scenePos()
             self.cursorOffset = self.scenePos() - ev.buttonDownScenePos()
+            self.currentPen = self.hoverPen
             
         if self.isMoving:  ## note: isMoving may become False in mid-drag due to right-click.
             pos = ev.scenePos() + self.cursorOffset
+            self.currentPen = self.hoverPen
             self.movePoint(pos, ev.modifiers(), finish=False)
 
     def movePoint(self, pos, modifiers=QtCore.Qt.KeyboardModifier(), finish=True):
@@ -1562,18 +1588,6 @@ class RectROI(ROI):
             self.addScaleHandle([1, 0.5], [center[0], 0.5])
             self.addScaleHandle([0.5, 1], [0.5, center[1]])
 
-    def paint(self, p, opt, widget):
-        # Note: don't use self.boundingRect here, because subclasses may need to redefine it.
-        r = QtCore.QRectF(0, 0, self.state['size'][0], self.state['size'][1]).normalized()
-        p.setRenderHint(QtGui.QPainter.Antialiasing)
-        p.setPen(self.currentPen)
-        p.translate(r.left(), r.top())
-        p.scale(r.width()/20, r.height()/20)
-        p.drawRect(0, 0, 20, 20)
-        p.drawLine(Point(10, 9), Point(10, 11))
-        p.drawLine(Point(9, 10), Point(11, 10))
-
-
 class LineROI(ROI):
     r"""
     Rectangular ROI subclass with scale-rotate handles on either side. This
@@ -1674,6 +1688,15 @@ class MultiRectROI(QtGui.QGraphicsObject):
         return pos
         
     def getArrayRegion(self, arr, img=None, axes=(0,1), **kwds):
+        """
+        Return the result of :meth:`~pyqtgraph.ROI.getArrayRegion` for each rect
+        in the chain concatenated into a single ndarray.
+
+        See :meth:`~pyqtgraph.ROI.getArrayRegion` for a description of the
+        arguments.
+
+        Note: ``returnMappedCoords`` is not yet supported for this ROI type.
+        """
         rgns = []
         for l in self.lines:
             rgn = l.getArrayRegion(arr, img, axes=axes, **kwds)
@@ -1787,8 +1810,13 @@ class EllipseROI(ROI):
         
     def getArrayRegion(self, arr, img=None, axes=(0, 1), **kwds):
         """
-        Return the result of ROI.getArrayRegion() masked by the elliptical shape
-        of the ROI. Regions outside the ellipse are set to 0.
+        Return the result of :meth:`~pyqtgraph.ROI.getArrayRegion` masked by the
+        elliptical shape of the ROI. Regions outside the ellipse are set to 0.
+
+        See :meth:`~pyqtgraph.ROI.getArrayRegion` for a description of the
+        arguments.
+
+        Note: ``returnMappedCoords`` is not yet supported for this ROI type.
         """
         # Note: we could use the same method as used by PolyLineROI, but this
         # implementation produces a nicer mask.
@@ -1983,7 +2011,8 @@ class PolyLineROI(ROI):
         self.setPoints(state['points'], closed=state['closed'])
         
     def addSegment(self, h1, h2, index=None):
-        seg = _PolyLineSegment(handles=(h1, h2), pen=self.pen, parent=self, movable=False)
+        seg = _PolyLineSegment(handles=(h1, h2), pen=self.pen, hoverPen=self.hoverPen,
+                               parent=self, movable=False)
         if index is None:
             self.segments.append(seg)
         else:
@@ -2037,6 +2066,9 @@ class PolyLineROI(ROI):
             handles.remove(handle)
             segments[0].replaceHandle(handle, handles[0])
             self.removeSegment(segments[1])
+        self.getHandles()[0].pen.setWidth(2)                    # Dan 1/19/2021
+        purple_brush = pyqtgraph.mkBrush('deaaff')              # Dan 1/19/2021
+        self.getHandles()[0].pen.setBrush(purple_brush)         # Dan 1/19/2021
         self.stateChanged(finish=True)
         
     def removeSegment(self, seg):
@@ -2071,8 +2103,13 @@ class PolyLineROI(ROI):
 
     def getArrayRegion(self, data, img, axes=(0,1), **kwds):
         """
-        Return the result of ROI.getArrayRegion(), masked by the shape of the 
-        ROI. Values outside the ROI shape are set to 0.
+        Return the result of :meth:`~pyqtgraph.ROI.getArrayRegion`, masked by
+        the shape of the ROI. Values outside the ROI shape are set to 0.
+
+        See :meth:`~pyqtgraph.ROI.getArrayRegion` for a description of the
+        arguments.
+
+        Note: ``returnMappedCoords`` is not yet supported for this ROI type.
         """
         br = self.boundingRect()
         if br.width() > 1000:
@@ -2097,7 +2134,6 @@ class PolyLineROI(ROI):
         ROI.setPen(self, *args, **kwds)
         for seg in self.segments:
             seg.setPen(*args, **kwds)
-
 
 
 class LineSegmentROI(ROI):
@@ -2133,6 +2169,23 @@ class LineSegmentROI(ROI):
         
     def listPoints(self):
         return [p['item'].pos() for p in self.handles]
+
+    def getState(self):
+        state = ROI.getState(self)
+        state['points'] = [Point(h.pos()) for h in self.getHandles()]
+        return state
+
+    def saveState(self):
+        state = ROI.saveState(self)
+        state['points'] = [tuple(h.pos()) for h in self.getHandles()]
+        return state
+
+    def setState(self, state):
+        ROI.setState(self, state)
+        p1 = [state['points'][0][0]+state['pos'][0], state['points'][0][1]+state['pos'][1]]
+        p2 = [state['points'][1][0]+state['pos'][0], state['points'][1][1]+state['pos'][1]]
+        self.movePoint(self.getHandles()[0], p1, finish=False)
+        self.movePoint(self.getHandles()[1], p2)
             
     def paint(self, p, *args):
         p.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -2174,7 +2227,8 @@ class LineSegmentROI(ROI):
         Since this pulls 1D data from a 2D coordinate system, the return value 
         will have ndim = data.ndim-1
         
-        See ROI.getArrayRegion() for a description of the arguments.
+        See :meth:`~pytqgraph.ROI.getArrayRegion` for a description of the
+        arguments.
         """
         imgPts = [self.mapToItem(img, h.pos()) for h in self.endpoints]
         rgns = []
@@ -2201,7 +2255,7 @@ class _PolyLineSegment(LineSegmentROI):
         
     def _makePen(self):
         if self.mouseHovering or self._parentHovering:
-            return fn.mkPen(255, 255, 0)
+            return self.hoverPen
         else:
             return self.pen
         
@@ -2256,11 +2310,8 @@ class CrosshairROI(ROI):
         p.setRenderHint(QtGui.QPainter.Antialiasing)
         p.setPen(self.currentPen)
         
-        # p.drawLine(Point(0, -radius), Point(0, radius))
-        # p.drawLine(Point(-radius, 0), Point(radius, 0))
-
-        p.drawLine(Point(-radius, -radius), Point(radius, radius))
-        p.drawLine(Point(-radius, radius), Point(radius, -radius))
+        p.drawLine(Point(0, -radius), Point(0, radius))
+        p.drawLine(Point(-radius, 0), Point(radius, 0))
         
         
 class RulerROI(LineSegmentROI):

@@ -12,7 +12,6 @@ from .. GraphicsWidget import GraphicsWidget
 from ... import debug as debug
 from ... import getConfigOption
 from ...Qt import isQObjectAlive
-from PyQt5.QtCore import Qt
 
 __all__ = ['ViewBox']
 
@@ -99,6 +98,7 @@ class ViewBox(GraphicsWidget):
     sigStateChanged = QtCore.Signal(object)
     sigTransformChanged = QtCore.Signal(object)
     sigResized = QtCore.Signal(object)
+    sigMoveROI = QtCore.Signal(int, object)     # Dan 1/17/2021
 
     ## mouse modes
     PanMode = 3
@@ -106,6 +106,7 @@ class ViewBox(GraphicsWidget):
 
     ## axes
     XAxis = 0
+
     YAxis = 1
     XYAxes = 2
 
@@ -1227,10 +1228,11 @@ class ViewBox(GraphicsWidget):
             mask = self.state['mouseEnabled'][:]
         s = 1.02 ** (ev.delta() * self.state['wheelScaleFactor']) # actual scaling factor
         s = [(None if m is False else s) for m in mask]
-        if self.state['mouseMode'] == ViewBox.RectMode:                                     # Dan 1/5/2021
-            center = Point(0.5, 0.5)                                                        # Dan 1/5/2021
-        else:                                                                               # Dan 1/5/2021
-            center = Point(fn.invertQTransform(self.childGroup.transform()).map(ev.pos()))  # Dan 1/5/2021
+        # if self.state['mouseMode'] == ViewBox.RectMode:                                     # Dan 1/5/2021
+        #     center = Point(0.5, 0.5)                                                        # Dan 1/5/2021
+        # else:                                                                               # Dan 1/5/2021
+        #     center = Point(fn.invertQTransform(self.childGroup.transform()).map(ev.pos()))  # Dan 1/5/2021
+        center = Point(fn.invertQTransform(self.childGroup.transform()).map(ev.pos()))
 
         self._resetTarget()
         self.scaleBy(s, center)
@@ -1241,6 +1243,12 @@ class ViewBox(GraphicsWidget):
         if ev.button() == QtCore.Qt.RightButton and self.menuEnabled():
             ev.accept()
             self.raiseContextMenu(ev)
+        # if ev.button() == QtCore.Qt.LeftButton:                    # Dan 1/17/2021
+        #     ev.accept()                                            # Dan 1/17/2021
+        #     self.sigMoveROI.emit(0, ev.screenPos().toPoint())      # Dan 1/17/2021
+        # elif ev.button() == QtCore.Qt.RightButton:                 # Dan 1/17/2021
+        #     ev.accept()                                            # Dan 1/17/2021
+        #     self.sigMoveROI.emit(1, ev.screenPos().toPoint())      # Dan 1/17/2021
 
     def raiseContextMenu(self, ev):
         menu = self.getMenu(ev)
@@ -1283,9 +1291,9 @@ class ViewBox(GraphicsWidget):
                 else:
                     ## update shape of scale box
                     self.updateScaleBox(ev.buttonDownPos(), ev.pos())
-            else:                                                               # Pan moode
-                if self.mouseEnabled() == [True, True]:
-                    self.setCursor(Qt.ClosedHandCursor)                         # Dan 1/5/2021
+            else:                                                                 # Pan moode
+                # if self.mouseEnabled() == [True, True]:                         # Dan 1/5/2021
+                #     self.setCursor(Qt.ClosedHandCursor)                         # Dan 1/5/2021
                 tr = dif*mask
                 tr = self.mapToView(tr) - self.mapToView(Point(0,0))
                 x = tr.x() if mask[0] == 1 else None
@@ -1295,8 +1303,8 @@ class ViewBox(GraphicsWidget):
                 if x is not None or y is not None:
                     self.translateBy(x=x, y=y)
                 self.sigRangeChangedManually.emit(self.state['mouseEnabled'])
-                if ev.isFinish() and self.mouseEnabled() == [True, True]:        # Dan 1/5/2021
-                    self.setCursor(Qt.OpenHandCursor)                            # Dan 1/5/2021
+                # if ev.isFinish() and self.mouseEnabled() == [True, True]:        # Dan 1/5/2021
+                #     self.setCursor(Qt.OpenHandCursor)                            # Dan 1/5/2021
         elif ev.button() & QtCore.Qt.RightButton:
             #print "vb.rightDrag"
             if self.state['aspectLocked'] is not False:
