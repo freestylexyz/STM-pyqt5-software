@@ -68,9 +68,12 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         blue_pen = pg.mkPen((70, 200, 255, 255), width=1)
         green_pen = pg.mkPen((150, 220, 0, 255), width=1)
         purple_pen = pg.mkPen('deaaff', width=1)
+        yellow_pen = pg.mkPen('ffe6a7',width=1)
+        pink_pen = pg.mkPen(('ffc8dd'), width=1)
         baby_blue_pen = pg.mkPen((130, 220, 255, 255), width=1, dash=[2, 4, 2, 4])
         baby_green_pen = pg.mkPen((210, 255, 120, 100), width=1, dash=[2, 2, 2, 2])
-        baby_yellow_pen = pg.mkPen((255, 255, 0, 200), width=1, dash=[2, 2, 2, 2])
+        baby_yellow_pen = pg.mkPen('ffe6a7', width=1, dash=[2, 4, 2, 4])
+        baby_pink_pen = pg.mkPen('ffc8dd', width=1, dash=[2, 4, 2, 4])
         serial_pen_0 = pg.mkPen('bee9e8', width=1, dash=[2, 2, 2, 2])
         serial_pen_1 = pg.mkPen('70d6ff', width=1)
         serial_pen_2 = pg.mkPen('ff70a6', width=1)
@@ -81,7 +84,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.serial_pen = [serial_pen_0, serial_pen_1, serial_pen_2, serial_pen_3, serial_pen_4, serial_pen_5]
 
         # ROI | scan area
-        self.scan_area = CrossCenterROI([0, 0], [300000, 300000], pen=blue_pen, centered=True, \
+        self.scan_area = CrossCenterROI([0, 0], [300000, 300000], pen=green_pen, centered=True, \
                                     movable=False, resizable=False, rotatable=False, \
                                     maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         self.scan_area.aspectLocked = True
@@ -90,9 +93,10 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.scan_area.removeHandle(0)
         self.scan_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5],'pen':blue_pen}, index=3)
         self.scan_area.sigRegionChanged.connect(lambda: self.default_update(1))
+        self.scan_area.getHandles()[0].setPen(green_pen)
 
         # ROI | target area
-        self.target_area = CrossCenterROI([0, 0], [300000, 300000], pen=baby_blue_pen, centered=True, \
+        self.target_area = CrossCenterROI([0, 0], [300000, 300000], pen=baby_blue_pen, hoverPen=blue_pen, centered=True, \
                                       movable=True, resizable=False, rotatable=False, \
                                       maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         self.target_area.setZValue(10)
@@ -116,9 +120,10 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.tip_position = CrossCenterROI2(cross_pos, cross_size, pen=(255, 255, 255, 0), movable=False)
         self.view_box.addItem(self.tip_position)
         self.tip_position.removeHandle(0)
-        self.tip_position.addCustomHandle2_(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
+        self.tip_position.addCustomHandle2(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
         self.tip_position.sigRegionChanged.connect(lambda: self.default_update(3))
         self.tip_position.movePoint(self.tip_position.getHandles()[0], cross_pos)
+        self.tip_position.getHandles()[0].setPen(green_pen)
 
 
         # ROI | target position
@@ -128,10 +133,10 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         # self.view_box.addItem(self.target_position)
         # self.target_position.removeHandle(0)
         # self.target_position.hide()
-        self.target_position = CrossCenterROI2([200000,200000], cross_size, pen=(255, 255, 255, 0))
+        self.target_position = CrossCenterROI2([200000,200000], cross_size, pen=(255,255,255,0),hoverPen=pink_pen)
         self.view_box.addItem(self.target_position)
         self.target_position.removeHandle(0)
-        self.target_position.addCustomHandle2(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
+        self.target_position.addCustomHandle2_(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
         self.target_position.movePoint(self.target_position.getHandles()[0], cross_pos)
 
         # ROI | rescan area
@@ -167,7 +172,7 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
         self.target_area.sigRegionChanged.connect(self.connect_target_area)
 
         # ROI | connect target position and scan position
-        self.connect_position = LineSegmentROI(pos=[0, 0], positions=[0, 300000], pen=baby_blue_pen, movable=False)
+        self.connect_position = LineSegmentROI(pos=[0, 0], positions=[0, 300000], pen=baby_pink_pen, movable=False)
         self.view_box.addItem(self.connect_position)
         self.connect_position.setZValue(8)
 
@@ -339,6 +344,8 @@ class myGraphicsDemo(QWidget, Ui_GraphicsDemo):
     def point_send(self):
         x = self.spinBox_x_Point.value()
         y = self.spinBox_y_Point.value()
+        print(self.point_0.handles)
+        print(self.point_0.segments)
 
     def rescan_send(self):
         x = self.spinBox_x_Rescan.value()

@@ -1480,6 +1480,15 @@ class CustomHandle(UIGraphicsItem):
         self._shape = None  ## invalidate shape, recompute later if requested.
         self.update()
 
+    def setPen(self, *args, **kwargs):
+        """
+        Set the pen to use when drawing the ROI shape.
+        For arguments, see :func:`mkPen <pyqtgraph.mkPen>`.
+        """
+        self.pen = fn.mkPen(*args, **kwargs)
+        self.currentPen = self.pen
+        self.update()
+
 class CustomHandle2(UIGraphicsItem):
     """
     Handle represents a single user-interactable point attached to an ROI. They
@@ -1679,6 +1688,15 @@ class CustomHandle2(UIGraphicsItem):
     def viewTransformChanged(self):
         GraphicsObject.viewTransformChanged(self)
         self._shape = None  ## invalidate shape, recompute later if requested.
+        self.update()
+
+    def setPen(self, *args, **kwargs):
+        """
+        Set the pen to use when drawing the ROI shape.
+        For arguments, see :func:`mkPen <pyqtgraph.mkPen>`.
+        """
+        self.pen = fn.mkPen(*args, **kwargs)
+        self.currentPen = self.pen
         self.update()
 
 class MouseDragHandler(object):
