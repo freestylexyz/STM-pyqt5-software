@@ -4,6 +4,7 @@
     <file>../data/STMlogo_NiCp2.png</file>
   </qresource>
   <qresource prefix="toolbar">
+    <file>../data/Reset.png</file>
     <file>../data/zoom.png</file>
     <file>../data/move.png</file>
     <file>../data/detail_view.png</file>

@@ -541,6 +541,19 @@
       <property name="verticalSpacing">
        <number>3</number>
       </property>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="pushButton_Track">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Track</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="3">
        <widget class="QPushButton" name="pushButton_Manipulation">
         <property name="sizePolicy">
@@ -551,6 +564,46 @@
         </property>
         <property name="text">
          <string>Manipulation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="pushButton_Detail_ViewControl">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="logo.qrc">
+          <normaloff>:/toolbar/data/detail_view.png</normaloff>:/toolbar/data/detail_view.png</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QPushButton" name="pushButton_Full_ViewControl">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="logo.qrc">
+          <normaloff>:/toolbar/data/full_view.png</normaloff>:/toolbar/data/full_view.png</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -580,63 +633,24 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="5">
-       <widget class="QPushButton" name="pushButton_Full_ViewControl">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="logo.qrc">
-          <normaloff>:/toolbar/data/full_view.png</normaloff>:/toolbar/data/full_view.png</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="6">
-       <widget class="QPushButton" name="pushButton_Detail_ViewControl">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="logo.qrc">
-          <normaloff>:/toolbar/data/detail_view.png</normaloff>:/toolbar/data/detail_view.png</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_Track">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Track</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="4">
        <widget class="QPushButton" name="pushButton_Hop">
         <property name="text">
          <string>Hop</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QPushButton" name="pushButton_Reset_ViewControl">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="logo.qrc">
+          <normaloff>:/toolbar/data/Reset.png</normaloff>:/toolbar/data/Reset.png</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
