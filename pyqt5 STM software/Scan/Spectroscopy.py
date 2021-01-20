@@ -27,10 +27,10 @@ from datetime import datetime
 
 class mySpc(QWidget, Ui_Spectroscopy):
     # Control signal
-    close_signal = pyqtSignal()         # Close window signal
+    close_signal = pyqtSignal()         # Close spectroscopy window signal
     spectroscopy_signal = pyqtSignal()  # Spectroscopy start scan signal
     stop_signal = pyqtSignal()          # Spectroscopy stop scan signal
-    seq_list_signal = pyqtSignal(str)   # Open sequence list signal
+    seq_list_signal = pyqtSignal(str)   # Open sequence list window signal
 
     def __init__(self):
         super().__init__()
@@ -57,20 +57,14 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.bias_dac = False   # Bias DAC selection
         self.bias_ran = 9       # Bias DAC range
         self.idling = True      # Idling status
-        self.saved = False      # Saved status
-        
-        # Open window
-        self.pushButton_Info.clicked.connect(self.open_info)
-        self.pushButton_Advance.clicked.connect(self.adv.show)
-        
-        # Conversion
-        # Spinboxes
+        self.saved = True       # Saved status
+
+        # Conversions
         self.spinBox_Min_General.editingFinished.connect(lambda: self.min_cnv(True, 0))
         self.spinBox_Max_General.editingFinished.connect(lambda: self.max_cnv(True, 0))
         self.spiBox_StepSize_General.editingFinished.connect(lambda: self.step_cnv(True, 0))
         self.spinBox_Bias_Delta.editingFinished.connect(lambda: self.bias_cnv(True, 0))
         self.spinBox_Delta_Z.editingFinished.connect(lambda: self.scrollBar_Z_Delta.setValue(self.spinBox_Delta_Z.value()))
-        # Scrollbars
         self.scrollBar_Min_General.valueChanged.connect(ft.partial(self.min_cnv, False))
         self.scrollBar_Max_General.valueChanged.connect(ft.partial(self.max_cnv, False))
         self.scrollBar_StepSize_General.valueChanged.connect(ft.partial(self.step_cnv, False))
@@ -81,29 +75,35 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.comboBox_RampCh_General.currentIndexChanged.connect(self.channel_change)
         
         # Buttons
-        self.pushButton_Save.clicked.connect(self.save)
-        self.pushButton_Scan.clicked.connect(self.scan_emit)
-        
-        # Sequence
-        self.adv.pushButton_SeqEditor.clicked.connect(self.open_seq_list)
+        self.pushButton_Save.clicked.connect(self.save)                     # Save data
+        self.pushButton_Scan.clicked.connect(self.scan_emit)                # Scan button
+        self.adv.pushButton_SeqEditor.clicked.connect(self.open_seq_list)   # Open sequence list
+        self.pushButton_Info.clicked.connect(self.open_info)                # Open data info window
+        self.pushButton_Advance.clicked.connect(self.adv.show)              # Open advance option window
         
         # Graph
         self.scrollBar_Channel_Graph.valueChanged.connect(lambda: self.label_Channel_Graph.setText(str(self.scrollBar_Channel_Graph.value())))
         self.scrollBar_point_Graph.valueChanged.connect(lambda: self.label_point_Graph.setText(str(self.scrollBar_point_Graph.value())))
 
     # Initial spectroscopy window
-    def init_spc(self, succeed, bias_dac, bias_ran):
+    def init_spc(self, succeed, bias_dac, bias_ran, seq_list, selected):
         # Variables
         self.bias_dac = bias_dac
         self.bias_ran = bias_ran
         
-        # Controls
+        # Enable buttons based on succeed
         self.pushButton_Scan.setEnabled(succeed)
+        
+        # Setup controls
         self.setup_spin(0)
         self.setup_scroll(0)
         self.min_cnv(False, 0)
         self.max_cnv(False, 0xfffff)
         self.step_cnv(False, 1)
+        
+        # Set selected sequence name
+        seq_name = '' if selected < 0 else seq_list[selected].name
+        self.adv.label_Seq.setText(seq_name)
         
     # Emit open sequence list signal
     def open_seq_list(self):
@@ -125,14 +125,14 @@ class mySpc(QWidget, Ui_Spectroscopy):
             self.stop_signal.emit()                 # Emit stop signal
         
     # !!!
-    # Update spectroscopy data
+    # Update spectroscopy current pass data
     def update_spc_(self, rdata):
-        pass
+        f, b = self.data.update_data(rdata)          # Update current pass data and obtain forwad data and backward data for plot
     
     # !!!
-    # Update spectroscopy data
+    # Update spectroscopy averaged data
     def update_spc(self):
-        pass
+        self.data.avg_data()                    # Average current pass data with previous passes
 
     # !!!
     # Open spectroscopy information window
@@ -363,18 +363,19 @@ class mySpc(QWidget, Ui_Spectroscopy):
         if self.data.time.strftime("%m%d%y") != self.today:
             self.today = self.data.time.strftime("%m%d%y")
             self.file_idex = 0
-        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name lise
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name list
         name = self.today + name_list[self.file_idex // 36] + name_list[self.file_idex % 36]    # Auto configure file name
         self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.spc')                  # Set default file name as auto configured
+        
         if self.dlg.exec_():        # File selected
-            directory = self.dlg.directory().path()                                                     # Get path
-            self.dlg.setDirectory(directory)                                                            # Set path for next call
+            directory = self.dlg.directory().path()                                                     # Get directory path
+            self.dlg.setDirectory(directory)                                                            # Set directory path for next call
             save_name = self.dlg.selectedFiles()[0].replace(directory + '/', '').replace('.spc', '')    # Get the real file name
             
             # If default file name is not used
             if save_name != name:
                 try:    # See if current file name is in our naming system
-                    if save_name[0:6] == self.today:
+                    if save_name[0:6] == self.today:        # Reset file index if match
                         self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
                     else:
                         self.file_idex -= 1

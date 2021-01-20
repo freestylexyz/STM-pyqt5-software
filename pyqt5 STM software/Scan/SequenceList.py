@@ -14,7 +14,7 @@ sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox, QFileDialog
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 from SequenceList_ui import Ui_SequenceList
 import functools as ft
 from SequenceEditor import mySequenceEditor
@@ -146,9 +146,12 @@ class mySequenceList(QWidget, Ui_SequenceList):
         flag = True
         if opt:     # Edit selected sequence
             row = self.listWidget_SeqList.currentRow()
-            if row >= 0:                                    # Valid row number
+            if row >= 0:            # Valid row number
                 seq = self.seqlist[row]
-            else:                                           # Invalid row number
+                flag = seq.validation_required              # Validation not required sequences are not editable
+                if not flag:
+                    QMessageBox.information(None, "Sequence compiler", "Selected sequence is not editable!", QMessageBox.Ok)
+            else:                   # Invalid row number
                 flag = False                                # Not able to open editor
                 QMessageBox.information(None, "Sequence compiler", "No sequence selected!", QMessageBox.Ok)
         else:       # Build new sequence

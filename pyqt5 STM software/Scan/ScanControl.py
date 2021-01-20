@@ -21,6 +21,7 @@ from TipApproach import myTipApproach
 from Etest import myEtest
 from MainMenu import myMainMenu
 from DataStruct import ScanData, DepData, SpcData, STMData
+from sequence import mySequence
 import conversion as cnv
 import threading
 import copy
@@ -159,6 +160,7 @@ class myScanControl(myMainMenu):
 
             self.scan.pushButton_Start_Scan.setText('Start')
             self.scan.enable_mode_serial(True)
+            
             self.scan.idling = True
             self.scan.saved = False
 
@@ -180,12 +182,13 @@ class myScanControl(myMainMenu):
         threading.Thread(target=(lambda: self.scan_excu(xin, yin, xoff, yoff, xygain, step_num, step_size, seq))).start()
 
     # Depostion slot
-    def deposition_thread(self, read_before, read, index):
-        if (self.scan.dep_seq_selected < 0) and index:
+    def deposition_thread(self, read_before, read, poke_data):
+        if (self.scan.dep_seq_selected < 0) and (not poke_data):
             self.scan.dep.message('No sequence selected')
             flag = False
         else:
-            seq =  self.scan.dep_seq_list[self.scan.dep_seq_selected] if index else self.scan.dep.poke_seq
+            poke_command = [0x42, 0x63, 0x8d]                                  # Feedback, Shift Z offset, Aout bias
+            seq =  mySequence(poke_command, poke_data, False) if poke_data else self.scan.dep_seq_list[self.scan.dep_seq_selected]
             seq.configure(self.bias_dac, self.preamp_gain, self.dsp.dacrange, self.dsp.lastdac, self.dsp.last20bit)
             seq.validation(self.seq.ditherB, self.seq.ditherZ, self.seq.feedback, False)
             seq.build()
@@ -272,8 +275,9 @@ class myScanControl(myMainMenu):
 
     # Scan related stop slot
     def scan_stop(self):
-        self.scan.stop = True
-        self.dsp.stop = True
+        if not self.scan.stop:
+            self.scan.stop = True
+            self.dsp.stop = True
     
 
         

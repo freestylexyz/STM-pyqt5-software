@@ -27,17 +27,20 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
         super().__init__()
         self.setupUi(self)
 
+    # Configure prescan for sequence
     def configure_prescan(self):
         feedback = self.radioButton_FeedbackON.isChecked()      # Default sequence, feedback 
         ditherB = self.radioButton_BiasON_AdvOption.isChecked() # Default sequence, bias dither
         ditherZ = self.radioButton_ZON_AdvOption.isChecked()    # Default sequence, Z dither
         return feedback, ditherB, ditherZ
     
+    # Configure delays
     def configure_delay(self):
         move_delay = self.spinBox_MoveDelay_Dealy.value()           # Delay waited before moving 1 step
         measure_delay = self.spinBox_MeasureDelay_Dealy.value()     # Delay watied before read sequence
         return move_delay, measure_delay
         
+    # Configure command list and data list for sequence
     def configure_measure(self):
         command_list = [0]                                      # First step is wait
         data_list = [self.spinBox_Wait_Delay.value() * 1000]    # Wait delay
@@ -56,6 +59,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
         
         return command_list, data_list
     
+    # Configure correction options
     def configure_correction(self, feedback):
         corr_pass_num = self.spinBox_DoZCorrection_ZDrift.value()
         z_flag = self.groupBox_ZDrift_Correction.isChecked() and (not feedback) # No need to do z drift correction if feedback in on
@@ -65,6 +69,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
         
         return corr_pass_num, z_flag, match_flag, feedback_delay, track_flag
         
+    # Configure scan options
     def configure_scan(self):
         forward = True      # If measuring forward pass
         backward = True     # If measuring backward pass
@@ -77,6 +82,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
             average = True
         return forward, backward, average
     
+    # Configure rescan options
     def configure_rescan(self):
         # Make rescan passes super large if not doing rescan, so that it never triggers rescan
         return self.spinBox_Pass_Rescan.value() if self.groupBox_Rescan.isChecked() else 0xffffffff

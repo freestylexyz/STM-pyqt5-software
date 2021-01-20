@@ -14,18 +14,17 @@ sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget
-from PyQt5.QtCore import pyqtSignal , Qt
 from LockIn_ui import Ui_LockIn
 
 
 
 class myLockIn(QWidget, Ui_LockIn):
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.load()
         
+    # Load lock in parameters
     def load(self):
         self.osc_type = self.lineEdit_Type.text()
         self.params = []
@@ -43,7 +42,7 @@ class myLockIn(QWidget, Ui_LockIn):
     
     # Emit close signal
     def closeEvent(self, event):
-        self.load()
+        self.load()         # Configure lockin paramters before close
         event.accept()
         
 if __name__ == "__main__":

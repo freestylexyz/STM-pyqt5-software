@@ -27,53 +27,63 @@ from datetime import datetime
 
 
 class myDeposition(QWidget, Ui_Deposition):
-    close_signal = pyqtSignal()
-    seq_list_signal = pyqtSignal(str)
-    do_it_signal = pyqtSignal(list, list, int)
-    stop_signal = pyqtSignal()
+    close_signal = pyqtSignal()                 # Close depostion window signal
+    seq_list_signal = pyqtSignal(str)           # Open sequence list window signal
+    do_it_signal = pyqtSignal(list, list, list) # Do depostion signal
+    stop_signal = pyqtSignal()                  # Stop continus reading signal
     
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.init_UI()
 
     def init_UI(self):
-        self.data = DepData()
-        self.dlg = QFileDialog()
+        self.info = myDepositionInfo()          # Depostion data information window
+        self.dlg = QFileDialog()                # File dialog window
+        self.data = DepData()                   # Spectroscopy data
+        
+        # For automatically assign file name
         self.today = datetime.now().strftime("%m%d%y")
         self.file_idex = 0
-        self.info = myDepositionInfo()
-        self.idling = True
-        self.bias_dac = True
-        self.bias_ran = 9
-        self.saved = True
-        self.limit = 65536
-        self.stop_num = 0
-        self.rdata = []
-        self.count = 0
-
-        self.poke_seq = mySequence([0x42, 0x63, 0x8d], [0x00000000, 0x80000000, 0x00008000] , False)    # Initial poke sequence
         
+        # System status
+        self.bias_dac = False   # Bias DAC selection
+        self.bias_ran = 9       # Bias DAC range
+        self.idling = True      # Idling status
+        self.saved = True       # Saved status
+        
+        # For data update
+        self.limit = 65536      # Limit for change detection
+        self.stop_num = 0       # Stop number storage
+        self.rdata = []         # Continuous data storage
+        self.count = 0          # Count after change detected
+
+        # Initial poke sequence
+        # self.poke_seq = mySequence([0x42, 0x63, 0x8d], [0x00000000, 0x80000000, 0x00008000] , False)
+        
+        # Set up file dialog window
         self.dlg.setNameFilter('DEP Files (*.dep)')
         self.dlg.setFileMode(QFileDialog.AnyFile)
         self.dlg.setAcceptMode(QFileDialog.AcceptSave)
         
         # Connect signal
+        
+        # Mode change
         self.groupBox_ReadNSample_Deposition.toggled.connect(ft.partial(self.read_mode, True))
         self.groupBox_ReadUntil_Deposition.toggled.connect(ft.partial(self.read_mode, False))
         self.groupBox_Seq_Deposition.toggled.connect(self.seq_mode)
         
+        # Conversions
         self.spinBox_DeltaZ_PokeTip.valueChanged.connect(self.scrollBar_DeltaZ_PokeTip.setValue)
         self.scrollBar_DeltaZ_PokeTip.valueChanged.connect(self.spinBox_DeltaZ_PokeTip.setValue)
         self.spinBox_Bias_PokeTip.valueChanged.connect(ft.partial(self.bias_cnv, True))
         self.scrollBar_Bias_PokeTip.valueChanged.connect(ft.partial(self.bias_cnv, False))
         
-        self.pushButton_SeqEditor_Deposition.clicked.connect(self.seq_list_slot)
-        self.pushButton_DoIt_Deposition.clicked.connect(self.do_it)
-        self.pushButton_Save_Deposition.clicked.connect(self.save)
-        
-        self.pushButton_Info_Deposition.clicked.connect(self.open_Info)
+        # Buttons
+        self.pushButton_DoIt_Deposition.clicked.connect(self.do_it)                 # Do it button
+        self.pushButton_Save_Deposition.clicked.connect(self.save)                  # Save data
+        self.pushButton_SeqEditor_Deposition.clicked.connect(self.seq_list_slot)    # Open sequence list window
+        self.pushButton_Info_Deposition.clicked.connect(self.open_Info)             # Open data info window
 
     # Open sequence list signal
     def seq_list_slot(self):
@@ -81,13 +91,16 @@ class myDeposition(QWidget, Ui_Deposition):
         
     # Called with int_scan
     def init_deposition(self, succeed, bias_dac, bias_ran, seq_list, selected):
-        # Enable serial buttons
-        self.pushButton_DoIt_Deposition.setEnabled(succeed)
-        self.pushButton_Save_Deposition.setEnabled(not self.data.data)
-        self.pushButton_Info_Deposition.setEnabled(not self.data.data)
-        
+        # Variables
         self.bias_dac = bias_dac
         self.bias_ran = bias_ran
+        
+        # Enable buttons based on succeed
+        self.pushButton_DoIt_Deposition.setEnabled(succeed)
+        # self.pushButton_Save_Deposition.setEnabled(not self.data.data)
+        # self.pushButton_Info_Deposition.setEnabled(not self.data.data)
+        
+        # Setup controls
         if bias_dac:
             self.scrollBar_Bias_PokeTip.setMaximum(0xfffff)
             self.scrollBar_Bias_PokeTip.setValue(0x80000)
@@ -99,10 +112,12 @@ class myDeposition(QWidget, Ui_Deposition):
             self.scrollBar_Bias_PokeTip.setValue(0x8000)
             self.bias_ran_change(bias_ran)
             
+        # Set selected sequence name
         seq_name = '' if selected < 0 else seq_list[selected].name
         self.label_Seq_Deposition.setText(seq_name)
         
     # Read mode slot
+    # Can not have muliple read mode on
     def read_mode(self, mode, state):
         if mode:
             if state:
@@ -121,125 +136,106 @@ class myDeposition(QWidget, Ui_Deposition):
         self.groupBox_Read_Deposition.setEnabled(enable)
         self.groupBox_ReadPulse_Deposition.setEnabled(enable)
         self.pushButton_DoIt_Deposition.setEnabled(enable)
-        self.pushButton_Save_Deposition.setEnabled(enable and (not self.data.data))
-        self.pushButton_Info_Deposition.setEnabled(enable and (not self.data.data))
+        # self.pushButton_Save_Deposition.setEnabled(enable and (not self.data.data))
+        # self.pushButton_Info_Deposition.setEnabled(enable and (not self.data.data))
         mode = not self.groupBox_Poke_Deposition.isChecked()
-        self.groupBox_Poke_Deposition.setEnabled(enable and mode)
+        self.groupBox_Poke_Deposition.setEnabled(enable and mode)   # Poke group box is also determined by if using sequence
     
     # Bias conversion slot
     def bias_cnv(self, flag, value):
-        if flag:
+        if flag:    # Spinbox to scrollbar
             if self.bias_dac:
                 out = cnv.vb(value, '20')
             else:
                 out = cnv.vb(value, 'd', self.bias_ran)
             self.scrollBar_Bias_PokeTip.setValue(out)
-        else:
+        else:       # Scrollbar to spin box
             if self.bias_dac:
                 out = cnv.bv(value, '20')
             else:
                 out = cnv.bv(value, 'd', self.bias_ran)
             self.spinBox_Bias_PokeTip.setValue(out)
+            
+    # Configure read before options
+    def configure_read_before(self):
+        # Read before and after
+        if self.groupBox_Read_Deposition.isChecked():
+            read_before_ch = (self.comboBox_Ch_Read.currentIndex() + 6) * 4 + 0xc0          # Read channel
+            read_before_avg = self.spinBox_AvgNum_Read.value()                              # Average number for each sample
+            read_before_num = self.spinBox_Num_Read.value()                                 # Number of samples
+            read_before_delay = self.spinBox_Delay_Read.value()                             # Delay between 2 neighouring samples
+            return [read_before_ch, read_before_num, read_before_avg, read_before_delay]
+        else:
+            return []
     
+    # Configure read options
+    def configure_read(self):
+        # Read pulse
+        read_ch = (self.comboBox_Ch_Pulse.currentIndex() + 6) * 4 + 0xc0            # Read channel
+        read_delay = self.spinBox_Wait_Pulse.value()                                # Delay waited before executing reading procedure
+        read_avg = self.spinBox_AvgNum_Pulse.value()                                # Average number for each sample
+        read_delay2 = self.spinBox_Delay_Pulse.value()                              # Delay between 2 neighouring samples
+        read_num = self.spinBox_Num_ReadNSample.value()                             # Number of samples
+        read_change = cnv.vb((self.spinBox_Change_ReadUntil.value() - 10.24), 'a')  # Limit for change detection
+        read_stop_num = self.spinBox_StopNum_ReadUntil.value()                      # Stop number
+        
+        # Configure read mode
+        if not (self.groupBox_ReadNSample_Deposition.isChecked() or self.groupBox_ReadUntil_Deposition.isChecked()):
+            read_mode = 0   # No read
+        elif self.groupBox_ReadNSample_Deposition.isChecked():
+            read_mode = 3   # Read N samples
+        elif self.radioButton_NSample_ReadUntil.isChecked():
+            read_mode = 2   # Read N samples until
+        elif self.radioButton_Continuous_ReadUntil.isChecked():
+            read_mode = 1   # Continuous read
+        
+        # Init continuous data storage
+        self.limit = read_change
+        self.stop_num = read_stop_num
+        self.rdata = []
+        self.count = 0
+            
+        return [read_ch, read_mode, read_delay, read_delay2, read_num, read_avg, read_change, read_stop_num]
+    
+    # configure sequence
+    def configure_sequence(self):
+        # Sequence
+        if not self.groupBox_Seq_Deposition.isChecked():
+            deltaZ = self.scrollBar_DeltaZ_PokeTip.value()
+            # Feedbak OFF, Shift Z offset, Output bias voltage
+            return [0, 0x80000000 * (deltaZ >= 0) + abs(deltaZ), self.scrollBar_Bias_PokeTip.value()]
+        else:
+            return []
+
     # Do it slot
     def do_it(self):
-        if self.saved:
-            flag = True
-        elif self.idling:
+        flag = self.saved        # If able to start flag
+        
+        # Ask if overwrite data if not saved
+        if self.idling and (not flag):
             msg = QMessageBox.question(None, "Deposition", "Data not saved, do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             flag = (msg == QMessageBox.Yes)
             
-        if self.idling and flag:
-            # Read before and after
-            if self.groupBox_Read_Deposition.isChecked():
-                read_before_ch = (self.comboBox_Ch_Read.currentIndex() + 6) * 4 + 0xc0
-                read_before_avg = self.spinBox_AvgNum_Read.value()
-                read_before_num = self.spinBox_Num_Read.value()
-                read_before_delay = self.spinBox_Delay_Read.value()
-                read_before = [read_before_ch, read_before_num, read_before_avg, read_before_delay]
-            else:
-                read_before = []
-            
-            # Read pulse
-            read_ch = (self.comboBox_Ch_Pulse.currentIndex() + 6) * 4 + 0xc0
-            read_delay = self.spinBox_Wait_Pulse.value()
-            read_avg = self.spinBox_AvgNum_Pulse.value()
-            read_delay2 = self.spinBox_Delay_Pulse.value()
-            
-            read_num = self.spinBox_Num_ReadNSample.value()
-            
-            read_change = cnv.vb((self.spinBox_Change_ReadUntil.value() - 10.24), 'a')
-            
-            read_stop_num = self.spinBox_StopNum_ReadUntil.value()
-            
-            self.limit = read_change
-            self.stop_num = read_stop_num
-            self.rdata = []
-            self.count = 0
-            
-            
-            if not (self.groupBox_ReadNSample_Deposition.isChecked() or self.groupBox_ReadUntil_Deposition.isChecked()):
-                read_mode = 0
-            elif self.groupBox_ReadNSample_Deposition.isChecked():
-                read_mode = 3
-            elif self.radioButton_NSample_ReadUntil.isChecked():
-                read_mode = 2
-            elif self.radioButton_Continuous_ReadUntil.isChecked():
-                read_mode = 1
-            
-            read = [read_ch, read_mode, read_delay, read_delay2, read_num, read_avg, read_change, read_stop_num]
-            self.data = DepData()
-            if read_mode != 0:
-                self.saved = False
-                self.data.read = read
+        read_before = self.configure_read_before()
+        read = self.configure_read()
+        poke_data = self.configure_sequence()
 
-            # Sequence
-            if not self.groupBox_Seq_Deposition.isChecked():
-                poke_command = [0x42, 0x63, 0x8d]                                  # Feedback, Shift Z offset, Aout bias
-                poke_data = [0x00000000, 0x80000000, 0x00008000]                   # OFF, Forward 0 bit, output zero voltage
-                poke_data[2] = self.scrollBar_Bias_PokeTip.value()
-                deltaZ = self.scrollBar_DeltaZ_PokeTip.value()
-                if deltaZ >= 0:
-                    poke_data[1] = 0x80000000 + deltaZ
-                else:
-                    poke_data[1] = 0x80000000 - deltaZ
-            
-                self.poke_seq = mySequence(poke_command, poke_data, False)
-                index = False
-            else:
-                index = True
-                
-            if self.saved:
-                flag = True
-            else:
-                msg = QMessageBox.information(None, "Depostion", "Data is unsaved. Do you want to continue?", QMessageBox.Yes | QMessageBox.No)
-                if msg == QMessageBox.Yes:
-                    flag = True
-                else:
-                    flag = False
-            if flag:
-                self.do_it_signal.emit(read_before, read, index)
-        elif not self.idling:
-            self.pushButton_DoIt_Deposition.setEnabled(False)
-            self.stop_signal.emit()
+        if self.idling and flag:    # Start case if idling and able to start
+            self.do_it_signal.emit(read_before, read, poke_data)    # Emit spectroscopy start signal
+        elif not self.idling:       # Stop case if not idling
+            self.pushButton_DoIt_Deposition.setEnabled(False)       # Disable stop button to avoid sending stop signal twice
+            self.stop_signal.emit()                                 # Emit stop signal
+
                 
     # Bias range change slot
     def bias_ran_change(self, ran):
         self.bias_ran = ran
         val = self.spinBox_Bias_PokeTip.value()
+        ran_dict = {9: 5.0, 10: 10.0, 15: 2.5}                                  # Voltage limit for 16bit bias DAC
         if not self.bias_dac:
-            if ran == 9:
-                Max = 5.0
-                Min = -5.0
-            elif ran == 10:
-                Max = 10.0
-                Min = -10.0
-            elif ran == 14:
-                Max = 2.5
-                Min = -2.5
-            self.spinBox_Bias_PokeTip.setMaximum(Max)
-            self.spinBox_Bias_PokeTip.setMinimum(Min)
-            self.bias_cnv(True, val)
+            self.spinBox_Bias_PokeTip.setMaximum(ran_dict[self.bias_ran])       # Set maximum
+            self.spinBox_Bias_PokeTip.setMinimum(-ran_dict[self.bias_ran])      # Set minimum
+            self.bias_cnv(True, val)                                            # Set stored value
 
 
     # !!!
@@ -250,28 +246,36 @@ class myDeposition(QWidget, Ui_Deposition):
 
     # Save data slot
     def save(self):
-        if self.data.time.strftime("%m%d%y") != self.today:
+        if self.data.time.strftime("%m%d%y") != self.today:             # New day, init file_index
             self.today = self.data.time.strftime("%m%d%y")
             self.file_idex = 0
-        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'
-        name = self.today + name_list[self.file_idex[0]] + name_list[self.file_idex[1]]
-        self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.dep')
-        if self.dlg.exec_():
-            fname = self.dlg.selectedFiles()[0]
-            directory = self.dlg.directory()
-            self.dlg.setDirectory(directory)
-            save_name = fname.replace(directory.path() + '/', '').replace('.dep', '')
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name list
+        name = self.today + name_list[self.file_idex // 36] + name_list[self.file_idex % 36]    # Auto configure file name
+        self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.dep')                  # Set default file name as auto configured
+        
+        if self.dlg.exec_():                                            # File selected
+            fname = self.dlg.selectedFiles()[0]                                                 # File path
+            directory = self.dlg.directory().path()                                             # Directory path
+            self.dlg.setDirectory(directory)                                                    # Set directory path for next call
+            save_name = fname.replace(directory + '/', '').replace('.dep', '')                  # Get the real file name
+            
+            # If default file name is not used
             if save_name != name:
-                try:
-                    self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
-                except:
+                try:    # See if current file name is in our naming system
+                    if save_name[0:6] == self.today:        # Reset file index if match
+                        self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
+                    else:
+                        self.file_idex -= 1
+                except: # Otherwise do not consume file index
                     self.file_idex -= 1
+                    
+            self.saved = True                                               # Toggle saved flag
+            self.setWindowTitle('Deposition-' + save_name)                  # Chage window title for saving status indication
+            self.file_idex += 1                                             # Consume 1 file index
             with open(fname, 'wb') as output:
-                self.data.path = fname                                          # Save path
-                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)         # Save data
-                self.saved = True
-                self.setWindowTitle('Deposition-' + save_name)
-                self.file_idex += 1
+                self.data.path = fname                                      # Save path
+                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
+
     
     # Pop out message
     def message(self, text):
@@ -281,21 +285,26 @@ class myDeposition(QWidget, Ui_Deposition):
     # Update N samples data
     def update_N(self, rdata, index):
         if index == 0:          # Update read before
+            # !!! plot
             pass
         elif index == 1:        # Update N smaple measurement
+            # !!! plot
             pass
         elif index == 2:        # Update read after
+            # !!! plot
             pass
     
     # !!! Not finished
     # Update continuous data
     def update_C(self, rdata):
-        self.rdata += [rdata]
-        if abs(rdata - self.rdata[0])> self.limit:
-            self.count += 1
-            if self.count >= self.stop_num:
+        self.rdata += [rdata]                                                   # Add read data to storage
+        if (abs(rdata - self.rdata[0]) > self.limit) or (self.count != 0):      # Change detected or change already detected
+            self.count += 1                                                     # Increment count
+            if self.count >= self.stop_num:                                     # Emit stop signal if have enough data
                 self.stop_signal.emit()
-                
+        # !!! plot
+    
+    # !!!
     # Call information window
     def info(self):
         pass

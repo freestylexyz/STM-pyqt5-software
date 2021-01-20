@@ -27,17 +27,17 @@ class mySendOptions(QWidget, Ui_SendOptions):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
-    def init_sendoptions(self):
-        pass
     
+    # Configure send options
     def configure_send(self):
-        delay = self.spinBox_MoveDelay_SendOptions.value()
-        step = self.spinBox_StepSize_SendOptions.value()
+        delay = self.spinBox_MoveDelay_SendOptions.value()  # Delay between steps
+        step = self.spinBox_StepSize_SendOptions.value()    # Step size
+        
+        # Configure limit for crash protection
         if self.groupBox_Crash_SendOptions.isChecked():
             limit = cnv.vb(self.spinBox_Limit_Crash.value(), 'a') - cnv.vb(0.0, 'a')
         else:
-            limit = 0
+            limit = 0       # No crash protection
             
         return delay, step, limit
     
