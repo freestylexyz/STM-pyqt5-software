@@ -23,6 +23,7 @@ from DigitalSignalProcessor import myDSP
 
 import conversion as cnv
 import pickle
+import pyqtgraph as pg
 
 class myScan(myScan_):
     close_signal = pyqtSignal()
@@ -66,44 +67,12 @@ class myScan(myScan_):
         # pushButton | scan
         self.pushButton_Start_Scan.clicked.connect(self.scan_emit)
 
-    # Init scan
-    def init_scan(self, dsp, bias_dac, preamp_gain):
-        succeed = dsp.succeed
-        bias_ran = dsp.dacrange[13]
-        
-        # Set up gain radio button
-        if dsp.lastgain[0] == 0:
-            self.radioButton_Gain10_XY.setChecked(True)
-            self.imagine_gain = 100
-        elif dsp.lastgain[0] == 1:
-            self.radioButton_Gain1_XY.setChecked(True)
-            self.imagine_gain = 10
-        elif dsp.lastgain[0] == 3:
-            self.radioButton_Gain0_1_XY.setChecked(True)
-            self.imagine_gain = 1
-        
-        # Set up XY control
-        self.scrollBar_Xin_XY.setValue(dsp.lastdac[0] - 32768)
-        self.scrollBar_Yin_XY.setValue(dsp.lastdac[15] - 32768)
-        self.scrollBar_Xoffset_XY.setValue(dsp.lastdac[1] - 32768)
-        self.scrollBar_Yoffset_XY.setValue(dsp.lastdac[14] - 32768)
-        
-        # Set up XY indication
-        self.send_update(0x10, 0x1f, dsp.lastdac[0] - 32768, dsp.lastdac[15] - 32768)
-        self.send_update(0x11, 0x1e, dsp.lastdac[1] - 32768, dsp.lastdac[14] - 32768)
-              
-        # Set up view in case of successfully finding DSP
-        self.enable_gain(succeed)
-        self.pushButton_Send_XY.setEnabled(succeed)
-        self.pushButton_Zero_XY.setEnabled(succeed)
-        self.pushButton_Start_Scan.setEnabled(succeed)
-        # self.pushButton_SaveAll_Scan.setEnabled(not self.data.data)
-        # self.pushButton_Info_Scan.setEnabled(not self.data.data)
-        
-        # Init sub modules
-        self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
-        self.spc.init_spc(succeed, bias_dac, bias_ran, self.spc_seq_list, self.spc_seq_selected)
-        self.track.init_track(succeed)
+        ## graphicsView | Scan main view
+
+        # imageItem | setup
+        self.img_display = pg.ImageItem()
+        self.view_box.addItem(self.img_display)
+
 
     # if X/Y gain is changed by user, emit signal
     def gain_changed_emit(self, gain, status):
@@ -164,11 +133,16 @@ class myScan(myScan_):
         self.last_xy[var_dict[channels]] = (currents - 0x8000) * gain_dict[channels]    # Update first channel variable
         self.last_xy[var_dict[channell]] = (currentl - 0x8000) * gain_dict[channell]    # Update second channel variable
         # !!! update graphic view
-            
+        self.scan_area.movePoint(self.target_area.getHandles()[0], [(currents - 0x8000)*100, (currentl - 0x8000)*100])
+
     # Update scan
     def scan_update(self, rdata):
         plot_data = self.data.updata_data(rdata)        # Update scan data and obtain data used for plot
         # !!! Update graphic view
+        self.img_display.setRect(QRectF(self.last_xy[2]*100, self.last_xy[3]*100, self.scan_size[0]*self.scan_size[1], self.scan_size[0]*self.scan_size[1]))
+        self.img_display.setImage(plot_data)
+        self.view_box.setRange(QRectF(0, 0, self.img_display.width(), self.img_display.height()), padding=0)
+
         
     # Update plane fit paramenters in track window
     def track_update_fit(self):

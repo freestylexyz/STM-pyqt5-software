@@ -122,11 +122,6 @@ class myScan_(QWidget, Ui_Scan):
         self.spinBox_Yin_XY.editingFinished.connect(lambda: self.xy_in_cnv(True, 1, 0))
         self.spinBox_Xoffset_XY.editingFinished.connect(lambda: self.xy_off_cnv(True, 0, 0))
         self.spinBox_Yoffset_XY.editingFinished.connect(lambda: self.xy_off_cnv(True, 1, 0))
-        
-        self.spinBox_Xin_XY.editingFinished.connect(lambda: self.default_update(3))
-        self.spinBox_Yin_XY.editingFinished.connect(lambda: self.default_update(3))
-        self.spinBox_Xoffset_XY.editingFinished.connect(lambda: self.default_update(2))
-        self.spinBox_Yoffset_XY.editingFinished.connect(lambda: self.default_update(2))
 
         # scrollBar | X/Y offset and X/Y in
         self.scrollBar_Xin_XY.valueChanged.connect(ft.partial(self.xy_in_cnv, False, 0))
@@ -145,6 +140,7 @@ class myScan_(QWidget, Ui_Scan):
         ## graphicsView | Scan main view
 
         # viewBox | setup
+        self.graphicsView_Scan.setContentsMargins(-10, -10, -10, -10)
         self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False, enableMouse=True)
         self.view_box.setRange(QRectF(-3276800, -3276800, 6553600, 6553600), padding=0)
         self.view_box.setLimits(xMin=-3276800, xMax=3276800, yMin=-3276800, yMax=3276800, \
@@ -253,6 +249,40 @@ class myScan_(QWidget, Ui_Scan):
         # pushButton | tool bar
         self.pushButton_Full_ViewControl.clicked.connect(self.full_view)
         self.pushButton_Detail_ViewControl.clicked.connect(self.detail_view)
+        self.pushButton_Reset_ViewControl.clicked.connect(self.reset_view)
+
+    def init_scan(self, dsp, bias_dac, preamp_gain):
+        succeed = dsp.succeed
+        bias_ran = dsp.dacrange[13]
+
+        # Set up view in case of successfully finding DSP
+        self.radioButton_Gain10_XY.setEnabled(succeed)
+        self.radioButton_Gain1_XY.setEnabled(succeed)
+        self.radioButton_Gain0_1_XY.setEnabled(succeed)
+        self.pushButton_Send_XY.setEnabled(succeed)
+        self.pushButton_Zero_XY.setEnabled(succeed)
+        self.pushButton_Start_Scan.setEnabled(succeed)
+        # self.pushButton_SaveAll_Scan.setEnabled(not self.data.data)
+        # self.pushButton_Info_Scan.setEnabled(not self.data.data)
+
+        if dsp.lastgain[0] == 0:
+            self.radioButton_Gain10_XY.setChecked(True)
+            self.imagine_gain = 100
+        elif dsp.lastgain[0] == 1:
+            self.radioButton_Gain1_XY.setChecked(True)
+            self.imagine_gain = 10
+        elif dsp.lastgain[0] == 3:
+            self.radioButton_Gain0_1_XY.setChecked(True)
+            self.imagine_gain = 1
+
+        self.scrollBar_Xin_XY.setValue(dsp.lastdac[0] - 32768)
+        self.scrollBar_Yin_XY.setValue(dsp.lastdac[15] - 32768)
+        self.scrollBar_Xoffset_XY.setValue(dsp.lastdac[1] - 32768)
+        self.scrollBar_Yoffset_XY.setValue(dsp.lastdac[14] - 32768)
+
+        self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
+        self.track.init_track(succeed)
+        # self.spc.init_spc(succeed, bias_dac, bias_ran)
 
     # XY in conversion
     def xy_in_cnv(self, flag, xy, value):
@@ -260,7 +290,7 @@ class myScan_(QWidget, Ui_Scan):
         spin = self.spinBox_Yin_XY if xy else self.spinBox_Xin_XY                           # Determin spinbox based on xy flag
         ul = min(int((3276700 - self.current_xy[xy + 2]) / self.imagine_gain), 32767)       # Available upper bound
         ll = max(int((-3276800 - self.current_xy[xy + 2]) / self.imagine_gain), -32768)     # Available lower bound
-        
+
         if flag:                             # Spinbox to scrollbar
             value = spin.value()
         value = min(ul, max(ll, value))                     # Manually limit value
@@ -268,9 +298,15 @@ class myScan_(QWidget, Ui_Scan):
         scroll.setValue(value)                              # Set scrollbar
         self.current_xy[xy] = value * self.imagine_gain     # Update variable
         self.xy_offset_range(xy)                            # Set XY offset range
-        
-        # !!! Set graphic
-        
+
+        self.current_xy[0] = self.spinBox_Yin_XY.value()    # update variable
+        self.current_xy[1] = self.scrollBar_Yin_XY.value()    # update variable
+
+        # Set graphic
+        xin = self.spinBox_Xin_XY.value() * 100
+        yin = self.spinBox_Yin_XY.value() * 100
+        self.target_position.movePoint(self.target_position.getHandles()[0], [xin, yin])
+
     # XY offset conversion
     def xy_off_cnv(self, flag, xy, value):
         scroll = self.scrollBar_Yoffset_XY if xy else self.scrollBar_Xoffset_XY
@@ -284,26 +320,32 @@ class myScan_(QWidget, Ui_Scan):
         spin.setValue(value)
         scroll.setValue(value)
         self.current_xy[xy + 2] = value * self.imagine_gain
-        
+
         self.xy_in_range(xy)            # Set XY in range
         self.scan_size_range()          # Set scan size range
-        
-        # !!! Set graphic
-        
+
+        self.current_xy[2] = self.spinBox_Xoffset_XY.value()    # update variable
+        self.current_xy[3] = self.spinBox_Yoffset_XY.value()    # update variable
+
+        # Set graphic
+        xoffset = self.spinBox_Xoffset_XY.value() * 100
+        yoffset = self.spinBox_Yoffset_XY.value() * 100
+        self.target_area.movePoint(self.target_area.getHandles()[0], [xoffset, yoffset])
+
     # Scan size converstion
     def scan_size_cnv(self, flag, index, value):
         scroll = self.scrollBar_StepSize_ScanControl if index else self.scrollBar_ScanSize_ScanControl  # Determin scrollbar based on index flag
         spin = self.spinBox_StepSize_ScanControl if index else self.spinBox_ScanSize_ScanControl        # Determin spinbox based on index flag
         ul = 65535 if index else 1024                                                                   # Hard upper bound
         gain = self.imagine_gain if index else 1                                                        # Gain
-        
+
         # Area upper bound
         area_ul = int(2 * min(3276700 - self.current_xy[2], 3276700 - self.current_xy[3], 3276800 + self.current_xy[2], 3276800 + self.current_xy[3]))
         ul = min(ul, int(area_ul / self.scan_size[1 - index] / gain))                                   # Available upper bound
         if flag:                            # Spinbox to scrollbar
             value = spin.value()
         value = min(ul, value)                      # Available lower bound
-        if (not index) and (value % 2):     # Pixel number has to be even
+        if (not index) and (value % 2):             # Pixel number has to be even
             value -= 1
         spin.setValue(value)                        # Set spinbox
         scroll.setValue(value)                      # Set scrollbar
@@ -311,8 +353,13 @@ class myScan_(QWidget, Ui_Scan):
         self.xy_offset_range(0)                     # Set X offset range
         self.xy_offset_range(1)                     # Set Y offset range
         self.scan_size_range()                      # Set the other scan size range
-        
-        # !!! Set graphic
+
+        # Set graphic
+        scan_size = self.spinBox_ScanSize_ScanControl.value()*100
+        step_size = self.spinBox_StepSize_ScanControl.value()
+        self.target_area.setSize(scan_size*step_size, center=(0.5, 0.5))
+        self.scan_area.setSize(scan_size*step_size, center=(0.5, 0.5))
+
 
     # Set XY in spin boxes range
     def xy_in_range(self, xy):
@@ -321,7 +368,7 @@ class myScan_(QWidget, Ui_Scan):
         ll = max(int((-3276800 - self.current_xy[xy + 2]) / self.imagine_gain), -32768)     # Lower bound
         spin.setMaximum(ul)                                                                 # Set maximum
         spin.setMinimum(ll)                                                                 # Set minimum
-        
+
     # Set XY offset spin boxes range
     def xy_offset_range(self, xy):
         spin = self.spinBox_Yoffset_XY if xy else self.spinBox_Xoffset_XY
@@ -330,7 +377,7 @@ class myScan_(QWidget, Ui_Scan):
         ll = max(int((-3276800 - self.current_xy[0]) / 100), int((-3276800 + (scan_area / 2)) / 100))
         spin.setMaximum(ul)
         spin.setMinimum(ll)
-        
+
     # Set scan size spin boxes range
     def scan_size_range(self):
         # Area upper bound
@@ -343,22 +390,22 @@ class myScan_(QWidget, Ui_Scan):
         self.spinBox_ScanSize_ScanControl.setMaximum(num_ul)                        # Set minimum
 
     # enable X/Y gain based on X/Y in
-    def enable_gain(self, enable):
+    def enable_gain(self):
         # Enable XY gain radio button if both XY in are 0
-        enable = enable and (self.last_xy[0] == 0) and (self.last_xy[1] == 0)
-        self.radioButton_Gain0_1_XY.setEnabled(enable)     
+        enable = (self.last_xy[0] == 0 and self.last_xy[1] == 0)
+        self.radioButton_Gain0_1_XY.setEnabled(enable)
         self.radioButton_Gain10_XY.setEnabled(enable)
         self.radioButton_Gain1_XY.setEnabled(enable)
-        
+
     # XY gain conversion
     def xy_gain_cnv(self, index, state):
         if state:
             self.imagine_gain = 100 * (index == 0) + 10 *(index == 1) + (index == 3)    # Determin imagine gain based on XY gain
             self.scrollBar_Yin_XY.setValue(0)                                           # Set Xin scroll bar
-            self.scrollBar_Xin_XY.setValue(0)                                           # Set Yin scroll bar  
+            self.scrollBar_Xin_XY.setValue(0)                                           # Set Yin scroll bar
             self.scrollBar_StepSize_ScanControl.setValue(1)                             # Set step size scroll bar
             self.scrollBar_ScanSize_ScanControl.setValue(2)                             # Set step number scroll bar
-            
+
             self.last_xy[0] = int(self.label_Xin_XY.text()) * self.imagine_gain         # Update Xin variable
             self.last_xy[1] = int(self.label_Yin_XY.text()) * self.imagine_gain         # Update Yin variable
 
@@ -402,14 +449,7 @@ class myScan_(QWidget, Ui_Scan):
             yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/100)
             self.scrollBar_Xin_XY.setValue(xin)
             self.scrollBar_Yin_XY.setValue(yin)
-        elif index == 2:    # target area inputted
-            xoffset = self.spinBox_Xoffset_XY.value()*100
-            yoffset = self.spinBox_Yoffset_XY.value()*100
-            self.target_area.movePoint(self.target_area.getHandles()[0], [xoffset, yoffset])
-        elif index == 3:    # target position inputted
-            xin = self.spinBox_Xin_XY.value()*100
-            yin = self.spinBox_Yin_XY.value()*100
-            self.target_position.movePoint(self.target_position.getHandles()[0], [xin, yin])
+
 
     # View Control | full view button slot
     def full_view(self):
@@ -421,12 +461,26 @@ class myScan_(QWidget, Ui_Scan):
         '''Zoom in to scan area'''
         self.view_box.setRange(QRectF(self.scan_area.pos()[0], self.scan_area.pos()[1], \
                                       self.scan_area.size()[0], self.scan_area.size()[1]), padding=0)
+    # View Control | reset button slot
+    def reset_view(self):
+        '''Reset target area to scan area, target position to tip position'''
+        x1 = self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0]
+        y1 = self.scan_area.getHandles()[0].pos()[1] + self.scan_area.pos()[1]
+        self.target_area.movePoint(self.target_area.getHandles()[0], [x1, y1])
+
+        x2 = self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0]
+        y2 = self.tip_position.pos()[1]+self.tip_position.getHandles()[0].pos()[1]
+        self.target_position.movePoint(self.target_position.getHandles()[0], [x2, y2])
 
     # Enable serial
     def enable_serial(self, enable):
         # XY gain enable/ disable
-        self.enable_gain(enable)                        # Enable through enable_gain
-        
+        if enable:
+            self.enable_gain()                  # Enable through enable_gain
+        else:
+            self.XY_offset.setEnabled(False)
+            self.XY.setEnabled(False)
+            self.XY_gain.setEnabled(False)
         self.options.setEnabled(enable)
         self.toolButton.setEnabled(enable)
         self.file_widget.setEnabled(enable)
@@ -435,7 +489,8 @@ class myScan_(QWidget, Ui_Scan):
         self.pushButton_Zero_XY.setEnabled(enable)
         self.pushButton_Send_XY.setEnabled(enable)
         self.pushButton_Start_Scan.setEnabled(enable)
-        # !!! need to enable and disable mouse event
+
+        self.view_box.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
         
         # self.pushButton_SaveAll_Scan.setEnabled(enable and (not self.data.data))
         # self.pushButton_Info_Scan.setEnabled(enable and (not self.data.data))
@@ -451,5 +506,6 @@ if __name__ == "__main__":
     window = myScan_()
     dsp = myDSP()
     dsp.succeed = True
+    window.init_scan(dsp, False, 9)
     window.show()
     sys.exit(app.exec_())

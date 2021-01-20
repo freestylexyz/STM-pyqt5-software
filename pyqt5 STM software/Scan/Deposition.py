@@ -13,17 +13,18 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication , QWidget, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QApplication , QWidget, QMessageBox, QFileDialog, QDesktopWidget
 from PyQt5.QtCore import pyqtSignal
 from Deposition_ui import Ui_Deposition
 from DepositionInfo import myDepositionInfo
 from sequence import mySequence
 from DataStruct import DepData
-
 import functools as ft
 import conversion as cnv
 import pickle
+import pyqtgraph as pg
 from datetime import datetime
+from customViewBox import CustomViewBox
 
 
 class myDeposition(QWidget, Ui_Deposition):
@@ -38,6 +39,13 @@ class myDeposition(QWidget, Ui_Deposition):
         self.init_UI()
 
     def init_UI(self):
+        # init ui position and size
+        # screen = QDesktopWidget().screenGeometry()
+        # self.resize(969, 632)
+        # size = self.frameGeometry()
+        # self.move(int((screen.width() - size.width()) / 2), int((screen.height() - size.height()) / 2))
+        # self.setFixedSize(self.width(), self.height())
+
         self.info = myDepositionInfo()          # Depostion data information window
         self.dlg = QFileDialog()                # File dialog window
         self.data = DepData()                   # Spectroscopy data
@@ -84,6 +92,36 @@ class myDeposition(QWidget, Ui_Deposition):
         self.pushButton_Save_Deposition.clicked.connect(self.save)                  # Save data
         self.pushButton_SeqEditor_Deposition.clicked.connect(self.seq_list_slot)    # Open sequence list window
         self.pushButton_Info_Deposition.clicked.connect(self.open_Info)             # Open data info window
+
+        # graphicsView
+        # self.graphicsView_Before_Deposition.setContentsMargins(1,1,1,1)
+        self.plot_before = self.graphicsView_Before_Deposition.addPlot(viewBox=CustomViewBox(enableMenu=False))
+        self.plot_during = self.graphicsView_During_Deposition.addPlot(viewBox=CustomViewBox(enableMenu=False))
+        self.plot_after = self.graphicsView_After_Deposition.addPlot(viewBox=CustomViewBox(enableMenu=False))
+
+        self.view_box_before = self.plot_before.getViewBox()
+        self.view_box_during = self.plot_during.getViewBox()
+        self.view_box_after = self.plot_after.getViewBox()
+
+        self.view_box_before.setMouseEnabled(x=False, y=False)
+        self.view_box_before.setMenuEnabled(False)
+        self.view_box_before.disableAutoRange()
+        self.view_box_before.register('before')
+
+        self.view_box_during.setMouseEnabled(x=True, y=True)
+        self.view_box_during.setMenuEnabled(False)
+
+        self.view_box_after.setMouseEnabled(x=False, y=False)
+        self.view_box_after.setMenuEnabled(False)
+        self.view_box_after.register('after')
+
+        self.plot_during.setClipToView(True)
+        self.view_box_before.linkView(self.view_box_before.YAxis, self.view_box_after)
+
+        self.before_curve = self.plot_before.plot()
+        self.during_curve = self.plot_during.plot()
+        self.after_curve = self.plot_after.plot()
+
 
     # Open sequence list signal
     def seq_list_slot(self):
@@ -285,14 +323,11 @@ class myDeposition(QWidget, Ui_Deposition):
     # Update N samples data
     def update_N(self, rdata, index):
         if index == 0:          # Update read before
-            # !!! plot
-            pass
+            self.before_curve.setData(rdata)   # !!! plot
         elif index == 1:        # Update N smaple measurement
-            # !!! plot
-            pass
+            self.during_curve.setData(rdata)   # !!! plot
         elif index == 2:        # Update read after
-            # !!! plot
-            pass
+            self.after_curve.setData(rdata)    # !!! plot
     
     # !!! Not finished
     # Update continuous data
@@ -302,7 +337,8 @@ class myDeposition(QWidget, Ui_Deposition):
             self.count += 1                                                     # Increment count
             if self.count >= self.stop_num:                                     # Emit stop signal if have enough data
                 self.stop_signal.emit()
-        # !!! plot
+
+        self.during_curve.setData(rdata)   # !!! plot
     
     # !!!
     # Call information window
