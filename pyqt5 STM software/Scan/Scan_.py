@@ -253,39 +253,6 @@ class myScan_(QWidget, Ui_Scan):
         # pushButton | tool bar
         self.pushButton_Full_ViewControl.clicked.connect(self.full_view)
         self.pushButton_Detail_ViewControl.clicked.connect(self.detail_view)
-        
-    def init_scan(self, dsp, bias_dac, preamp_gain):
-        succeed = dsp.succeed
-        bias_ran = dsp.dacrange[13]
-        
-        # Set up view in case of successfully finding DSP
-        self.radioButton_Gain10_XY.setEnabled(succeed)
-        self.radioButton_Gain1_XY.setEnabled(succeed)
-        self.radioButton_Gain0_1_XY.setEnabled(succeed)
-        self.pushButton_Send_XY.setEnabled(succeed)
-        self.pushButton_Zero_XY.setEnabled(succeed)
-        self.pushButton_Start_Scan.setEnabled(succeed)
-        # self.pushButton_SaveAll_Scan.setEnabled(not self.data.data)
-        # self.pushButton_Info_Scan.setEnabled(not self.data.data)
-
-        if dsp.lastgain[0] == 0:
-            self.radioButton_Gain10_XY.setChecked(True)
-            self.imagine_gain = 100
-        elif dsp.lastgain[0] == 1:
-            self.radioButton_Gain1_XY.setChecked(True)
-            self.imagine_gain = 10
-        elif dsp.lastgain[0] == 3:
-            self.radioButton_Gain0_1_XY.setChecked(True)
-            self.imagine_gain = 1
-        
-        self.scrollBar_Xin_XY.setValue(dsp.lastdac[0] - 32768)
-        self.scrollBar_Yin_XY.setValue(dsp.lastdac[15] - 32768)
-        self.scrollBar_Xoffset_XY.setValue(dsp.lastdac[1] - 32768)
-        self.scrollBar_Yoffset_XY.setValue(dsp.lastdac[14] - 32768)
-
-        self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
-        self.track.init_track(succeed)
-        self.spc.init_spc(succeed, bias_dac, bias_ran)
 
     # XY in conversion
     def xy_in_cnv(self, flag, xy, value):
@@ -376,9 +343,9 @@ class myScan_(QWidget, Ui_Scan):
         self.spinBox_ScanSize_ScanControl.setMaximum(num_ul)                        # Set minimum
 
     # enable X/Y gain based on X/Y in
-    def enable_gain(self):
+    def enable_gain(self, enable):
         # Enable XY gain radio button if both XY in are 0
-        enable = (self.last_xy[0] == 0 and self.last_xy[1] == 0)
+        enable = enable and (self.last_xy[0] == 0) and (self.last_xy[1] == 0)
         self.radioButton_Gain0_1_XY.setEnabled(enable)     
         self.radioButton_Gain10_XY.setEnabled(enable)
         self.radioButton_Gain1_XY.setEnabled(enable)
@@ -458,12 +425,8 @@ class myScan_(QWidget, Ui_Scan):
     # Enable serial
     def enable_serial(self, enable):
         # XY gain enable/ disable
-        if enable:
-            self.enable_gain()                  # Enable through enable_gain
-        else:
-            self.XY_offset.setEnabled(False)
-            self.XY.setEnabled(False)
-            self.XY_gain.setEnabled(False)
+        self.enable_gain(enable)                        # Enable through enable_gain
+        
         self.options.setEnabled(enable)
         self.toolButton.setEnabled(enable)
         self.file_widget.setEnabled(enable)
@@ -488,6 +451,5 @@ if __name__ == "__main__":
     window = myScan_()
     dsp = myDSP()
     dsp.succeed = True
-    window.init_scan(dsp, False, 9)
     window.show()
     sys.exit(app.exec_())
