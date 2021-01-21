@@ -275,7 +275,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.menuScan.setEnabled(False)
             self.scan.point_list = [[self.dsp.lasdac[0], self.dsp.lastdac[15]]]
             if self.scan.spc.adv.checkBox_Tracking_Correction.isChecked():
-                self.scan.opentrack(2)
+                self.scan.open_track(2)
             self.scan.spc.show()
         else:
             self.msg_open_scan()

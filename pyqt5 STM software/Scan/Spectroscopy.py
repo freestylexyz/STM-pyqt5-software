@@ -403,6 +403,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = mySpc()
-    window.init_spc(False, False, 9)
+    window.init_spc(True, False, 9, [], -1)
     window.show()
     sys.exit(app.exec_())
