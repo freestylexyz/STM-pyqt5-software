@@ -56,7 +56,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def init_STM(self):
         # Connect DSP singal
         self.dsp.succeed_signal.connect(self.dsp_succeed_slot)
-        self.dsp.oscc_signal.connect(self.osci_update)
+        self.dsp.oscc_signal.connect(self.dsp_oscc_slot)
         self.dsp.rampMeasure_signal.connect(self.dsp_rampMeasure_slot)
         self.dsp.giantStep_signal.connect(self.giantStep_update)
         self.dsp.rampTo_signal.connect(self.dsp_rampTo_slot)

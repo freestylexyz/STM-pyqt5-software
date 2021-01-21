@@ -19,7 +19,7 @@ from Track_ui import Ui_Track
 
 
 class myTrack(QWidget, Ui_Track):
-    track_signal = pyqtSignal(list)     # Strat track signal
+    track_signal = pyqtSignal()         # Strat track signal
     stop_signal = pyqtSignal()          # Stop track signal
 
     def __init__(self):
@@ -51,24 +51,29 @@ class myTrack(QWidget, Ui_Track):
     #     self.spinBox_TrackSize_Track.setMaximum(scan_size[0] * scan_size[1])
     #     self.spinBox_StepSize_Track.setMaximum(scan_size[1])
     
+    # Configure track options
+    def configure_track(self):
+        self.track_size = int(self.scrollBar_TrackSize_Track.value() / 2)   # Load track boundary
+            
+        step = self.scrollBar_StepSize_Track.value()                        # Scan step size
+        in_ch = (self.comboBox_ReadCh_Track.currentIndex() + 6) * 4 + 0xc0  # Read channel
+        average = self.spinBox_Avg_Track.value()                            # Average number for each step
+        delay = self.spinBox_ScanDelay_Track.value()                        # Delay between movement and measurement
+        stay_delay = self.spinBox_StayDelay_Track.value()                   # Time that tip spent on optimal location
+        track_min = self.radioButton_Min_PlaneFit.isChecked()               # If tracking minimum
+        if self.groupBox_PlaneFit_Track.isChecked():        # Use tilting parameters
+            tiltx = self.spinBox_X_PlaneFit.value()
+            tilty = self.spinBox_Y_PlaneFit.value()
+        else:                                               # Not using tilting parameters
+            tiltx = 0.0
+            tilty = 0.0
+        
+        return [in_ch, delay, stay_delay, step, average, track_min, tiltx, tilty]
+    
     # Track emit function
     def track(self):
         if self.idling:
-            self.track_size = int(self.scrollBar_TrackSize_Track.value() / 2)   # Load track boundary
-            
-            step = self.scrollBar_StepSize_Track.value()                        # Scan step size
-            in_ch = (self.comboBox_ReadCh_Track.currentIndex() + 6) * 4 + 0xc0  # Read channel
-            average = self.spinBox_Avg_Track.value()                            # Average number for each step
-            delay = self.spinBox_ScanDelay_Track.value()                        # Delay between movement and measurement
-            stay_delay = self.spinBox_StayDelay_Track.value()                   # Time that tip spent on optimal location
-            track_min = self.radioButton_Min_PlaneFit.isChecked()               # If tracking minimum
-            if self.groupBox_PlaneFit_Track.isChecked():        # Use tilting parameters
-                tiltx = self.spinBox_X_PlaneFit.value()
-                tilty = self.spinBox_Y_PlaneFit.value()
-            else:                                               # Not using tilting parameters
-                tiltx = 0.0
-                tilty = 0.0
-            self.track_signal.emit([in_ch, delay, stay_delay, step, average, track_min, tiltx, tilty])  # Emit start signal
+            self.track_signal.emit()                            # Emit start signal
         else:
             self.pushButton_Start_Track.setEnable(False)        # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                             # Send stop signal

@@ -88,10 +88,14 @@ class myScanOptions(QWidget, Ui_ScanOptions):
         return tip_protection, tip_protect_data
             
     # Configure before scan procedures
-    def configure_prescan(self, feedback):
-        on_after = self.groupBox_Feedback_ScanOptions.isChecked() and (not feedback)    # Enable on after only when feedback is off
-        match_curr = self.checkBox_MatchCurr_Feedback.isChecked() and on_after          # Enable match current only when on after is activated
-        advance_bit = self.scrollBar_Advance_Feedabck.value() if on_after else 0        # Enable advance bit only when on after is activated
+    def configure_prescan(self, seq_feedback, dsp):
+        # Determin enable flag
+        prescan = dsp.lasdigital[2] and (not seq_feedback)                              # Enable only when current feedback is on but sequence feedback is off
+        prescan = self.groupBox_Feedback_ScanOptions.isChecked() and (not prescan)      # Enable by use 
+        
+        match_curr = prescan and (not(dsp.lasdigital[0] or dsp.lasdigital[1]))          # Enable match current when both dither are off and prescan is activated
+        match_curr = self.checkBox_MatchCurr_Feedback.isChecked() and match_curr        # Enable match current by user
+        advance_bit = self.scrollBar_Advance_Feedabck.value() if prescan else 0         # Enable advance bit only when prescan is activated
         return match_curr, advance_bit
 
 if __name__ == "__main__":

@@ -1074,7 +1074,7 @@ class myDSP(QObject):
     #
     # tract - this function perform track
     #
-    def track(self, in_ch, delay, stay_delay, step, average, track_min, tiltx, tilty):
+    def track(self, loop_num, in_ch, delay, stay_delay, step, average, track_min, tiltx, tilty):
         if self.ok():
             in_ch = in_ch & 0xff
             delay = delay & 0xffff
@@ -1097,14 +1097,18 @@ class myDSP(QObject):
             self.ser.write(int(tiltx_data).to_bytes(4, byteorder="big"))        # Send tilt x data
             self.ser.write(int(tilty_data).to_bytes(4, byteorder="big"))        # Send tilt y data
             
+            loopcount = 0
+            stopped = False
             # If receive start command
             if int.from_bytes(self.ser.read(1), "big") == 0xf0:
                 self.stop = False
                 data = int.from_bytes(self.ser.read(1), "big")
                 while data != 0x0f:
-                    if self.stop:
+                    flag = self.stop or ((loopcount > loop_num) and loop_num)
+                    flag = flag and (not stopped)
+                    if flag:
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
-                        self.stop = False
+                        stopped = True
                     dx = (data & 0xc0) >> 6 - 2
                     dy = ((data & 0x30) >> 4) - 2
                     x = self.current_last(0x10) + (dx * step)
@@ -1113,6 +1117,7 @@ class myDSP(QObject):
                     self.update_last(0x1f, y)
                     self.track_signal.emit(x, y)
                     data = int.from_bytes(self.ser.read(1), "big")
+                    loopcount += 1
             x = int.from_bytes(self.ser.read(2), "big")
             y = int.from_bytes(self.ser.read(2), "big")
             self.update_last(0x10, x)     # Update Xin

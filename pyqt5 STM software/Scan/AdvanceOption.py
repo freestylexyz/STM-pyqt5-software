@@ -56,8 +56,11 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
         if self.checkBox_Ch3_Measure.isChecked:
             command_list += [0xcc]                              # ADC3: 0xc0 + 4 * 3
             data_list += [self.spinBox_Avg_CH3.value()]         # ADC3 average number
-        
-        return command_list, data_list
+            
+        if self.groupBox_Seq_AdvOption.isChecked():
+            return command_list, data_list                      # Retuen command list and data list
+        else:
+            return [], []                                       # Return empty list to indicate not using sequence
     
     # Configure correction options
     def configure_correction(self, feedback):
