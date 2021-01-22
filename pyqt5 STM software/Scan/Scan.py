@@ -26,12 +26,12 @@ import pickle
 import pyqtgraph as pg
 
 class myScan(myScan_):
-    close_signal = pyqtSignal()
-    seq_list_signal = pyqtSignal(str)
-    gain_changed_signal = pyqtSignal(int, int)
-    stop_signal = pyqtSignal()
-    send_signal = pyqtSignal(int, int, int, int, int, int)
-    scan_signal = pyqtSignal(int, int, int, int, int, int, int)
+    close_signal = pyqtSignal()                                     # Close scan window signal
+    seq_list_signal = pyqtSignal(str)                               # Open sequence list window signal
+    gain_changed_signal = pyqtSignal(int, int)                      # Change XY gian signal
+    stop_signal = pyqtSignal()                                      # Stop signal
+    send_signal = pyqtSignal(int, int, int, int, int)               # Send signal
+    scan_signal = pyqtSignal(int, int, int, int, int, int, int)     # Scan signal
 
     def __init__(self):
         super().__init__()
@@ -94,11 +94,11 @@ class myScan(myScan_):
         self.scrollBar_Yin_XY.setValue(dsp.lastdac[15] - 32768)
         self.scrollBar_Xoffset_XY.setValue(dsp.lastdac[1] - 32768)
         self.scrollBar_Yoffset_XY.setValue(dsp.lastdac[14] - 32768)
-        
+
         # Set up XY indication
-        self.send_update(0x10, 0x1f, dsp.lastdac[0] - 32768, dsp.lastdac[15] - 32768)
-        self.send_update(0x11, 0x1e, dsp.lastdac[1] - 32768, dsp.lastdac[14] - 32768)
-              
+        self.send_update(0x10, 0x1f, dsp.lastdac[0], dsp.lastdac[15])
+        self.send_update(0x11, 0x1e, dsp.lastdac[1], dsp.lastdac[14])
+
         # Set up view in case of successfully finding DSP
         self.enable_gain(succeed)
         self.pushButton_Send_XY.setEnabled(succeed)
@@ -128,7 +128,7 @@ class myScan(myScan_):
             yoff = self.scrollBar_Yoffset_XY.value() + 0x8000   # Get Y offset target
             xin = self.scrollBar_Xin_XY.value() + 0x8000        # Get X in target
             yin = self.scrollBar_Yin_XY.value() + 0x8000        # Get Y in target
-            self.send_signal.emit(index, xin, yin, xoff, yoff, self.imagine_gain)   # Emit send signal
+            self.send_signal.emit(index, xin, yin, xoff, yoff)  # Emit send signal
         else:
             self.pushButton_Zero_XY.setEnabled(False)           # Disable stop button to avoid sending stop signal twice
             self.pushButton_Send_XY.setEnabled(False)           # Disable stop button to avoid sending stop signal twice
@@ -165,13 +165,21 @@ class myScan(myScan_):
         func_dict = {0x10: self.label_Xin_XY, 0x1f: self.label_Yin_XY, 0x11: self.label_Xoffset_XY, 0x1e: self.label_Yoffset_XY}    # Indicator dictionary
         var_dict = {0x10: 0, 0x1f: 1, 0x11: 2, 0x1e: 3}                                                                             # Variable dictionary
         gain_dict = {0x10: self.imagine_gain, 0x1f: self.imagine_gain, 0x11: 100, 0x1e: 100}                                        # Gain dictionary
-        
         func_dict[channels].setText(str(currents - 0x8000))                             # Update first channel indicator
         func_dict[channell].setText(str(currentl - 0x8000))                             # Update second channel indicator
         self.last_xy[var_dict[channels]] = (currents - 0x8000) * gain_dict[channels]    # Update first channel variable
         self.last_xy[var_dict[channell]] = (currentl - 0x8000) * gain_dict[channell]    # Update second channel variable
+
+        # Send area channels = 0x11
+        # x: self.last_xy[2]
+        # y: self.last_xy[3]
+        
+        # Send area channels = 0x10
+        # x: self.last_xy[0]
+        # y: self.last_xy[1]
+        
         # !!! update graphic view
-        self.scan_area.movePoint(self.target_area.getHandles()[0], [(currents - 0x8000)*100, (currentl - 0x8000)*100])
+        self.scan_area.movePoint(self.scan_area.getHandles()[0], [(currents - 0x8000)*100, (currentl - 0x8000)*100])
 
     # Update scan
     def scan_update(self, rdata):

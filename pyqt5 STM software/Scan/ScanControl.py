@@ -73,30 +73,31 @@ class myScanControl(myMainMenu):
         self.scan.seq_list.show()
 
     # Send execution
-    def send_excu(self, index, xin, yin, xoff, yoff, xygain):
+    def send_excu(self, index, xin, yin, xoff, yoff):
         if self.scan.idling:
-            self.scan.enable_mode_serial(False)                                         # Disable serial based on current mode
+            self.enable_mode_serial(False)                                              # Disable serial based on current mode
             self.scan.idling = False                                                    # Toggle scan idling flag
             self.scan.stop = False                                                      # Toggle stop flag
-            delay, step, limit = self.scan.send_options.configure_send()                # configure send options
+            delay, step, limit = self.scan.send_options.configure_send()                # Configure send options
+            xygain = self.scan.imagine_gain                                             # Get imagine gain data
             if index and (not self.scan.stop):                              # Send
-                self.pushButton_Send_XY.setText("Stop")                                 # Change button label
-                self.pushButton_Send_XY.setEnabled(True)                                # Enable corresponding label
-                self.dsp.rampDiag(0x11, 0x1e, xoff, yoff, step, delay, limit, True)     # Send XY offset
+                self.scan.pushButton_Send_XY.setText("Stop")                                 # Change button label
+                self.scan.pushButton_Send_XY.setEnabled(True)                                # Enable corresponding label
+                self.dsp.rampDiag(0x11, 0x1e, xoff, yoff, step, delay, limit, True)          # Send XY offset
             elif not (index or self.scan.stop):                             # Zero
-                self.pushButton_Zero_XY.setText("Stop")                                 # Change button label
-                self.pushButton_Zero_XY.setEnabled(True)                                # Enable corresponding label
+                self.scan.pushButton_Zero_XY.setText("Stop")                                 # Change button label
+                self.scan.pushButton_Zero_XY.setEnabled(True)                                # Enable corresponding label
             if not self.scan.stop:
                 self.dsp.rampDiag(0x10, 0x1f, xin, yin, int(step * 100 / xygain), delay, limit, True)   # Send XY in
-            self.scan.stop = True                       # Restore scan stop flag
-            self.scan.idling = True                     # Restore scan idling flag
-            self.pushButton_Zero_XY.setText("Zero")     # Restore zero button text
-            self.pushButton_Send_XY.setText("Send")     # Restore send button text
-            self.scan.enable_mode_serial(True)          # Enable serial based on current mode
+            self.scan.stop = True                           # Restore scan stop flag
+            self.scan.idling = True                         # Restore scan idling flag
+            self.scan.pushButton_Zero_XY.setText("Zero")    # Restore zero button text
+            self.scan.pushButton_Send_XY.setText("Send")    # Restore send button text
+            self.enable_mode_serial(True)                   # Enable serial based on current mode
 
     # Send signal slot
-    def send_thread(self, index, xin, yin, xoff, yoff, xygain, step_in, step_off, delay, limit):
-        threading.Thread(target=(lambda: self.send_excu(index, xin, yin, xoff, yoff, step_in, step_off, delay, limit))).start()
+    def send_thread(self, index, xin, yin, xoff, yoff):
+        threading.Thread(target=(lambda: self.send_excu(index, xin, yin, xoff, yoff))).start()
         
     # Scan execution
     def scan_excu(self, xin, yin, xoff, yoff, xygain, step_num, step_size, seq):
@@ -121,7 +122,7 @@ class myScanControl(myMainMenu):
             
             # Get system ready
             self.scan.setWindowTitle('Scan')                                            # Set window title to indicate status
-            self.scan.enable_mode_serial(False)                                         # Disable serial based on current mode
+            self.enable_mode_serial(False)                                              # Disable serial based on current mode
             self.scan.idling = False                                                    # Toggle scan idling flag
             self.scan.stop = False                                                      # Toggle stop flag
             self.dsp.rampDiag(1+16, 14+16, xoff, yoff, step_off, delay, 0, True)        # Send XY offset without crash protection
@@ -167,7 +168,7 @@ class myScanControl(myMainMenu):
             
             # Restore system status
             self.scan.pushButton_Start_Scan.setText('Start')        # Restore scan button text
-            self.scan.enable_mode_serial(True)                      # Enable serial based on current mode
+            self.enable_mode_serial(True)                           # Enable serial based on current mode
             self.scan.stop = True                                   # Restore scan stop flag
             self.scan.idling = True                                 # Restore scan idling flag
 
@@ -201,7 +202,7 @@ class myScanControl(myMainMenu):
             
             # Get system ready
             self.scan.dep.setWindowTitle('Deposition')      # Set window title to indicate status
-            self.scan.enable_mode_serial(False)             # Disable serial based on current mode
+            self.enable_mode_serial(False)                  # Disable serial based on current mode
             self.scan.idling = False                        # Toggle scan idling flag
             self.scan.dep.idling = False                    # Toggle deposition idling flag
             self.scan.stop = False                          # Toggle stop flag
@@ -233,7 +234,7 @@ class myScanControl(myMainMenu):
             
             # Restore system status
             self.scan.dep.pushButton_DoIt_Deposition.setText('Do it')   # Restore do it button text
-            self.scan.enable_mode_serial(True)                          # Enable serial based on current mode
+            self.enable_mode_serial(True)                               # Enable serial based on current mode
             self.scan.stop = True                                       # Restore scan stop flag
             self.scan.idling = True                                     # Restore scan idling flag
             self.scan.dep.idling = True                                 # Restore deposition idling flag
@@ -264,7 +265,7 @@ class myScanControl(myMainMenu):
         if self.scan.idling or loop_num:
             # Get system ready
             if not loop_num:
-                self.scan.enable_mode_serial(False)             # Disable serial based on current mode
+                self.enable_mode_serial(False)                  # Disable serial based on current mode
                 self.scan.idling = False                        # Toggle scan idling flag
                 self.scan.stop = False                          # Toggle stop flag
                 
@@ -286,7 +287,7 @@ class myScanControl(myMainMenu):
             self.scan.track.idling = True                                   # Restore track idling flag
             if not loop_num:
                 self.scan.track.pushButton_Start_Track.setText('Start')     # Restore track start button text
-                self.scan.enable_mode_serial(True)                          # Enable serial based on current mode
+                self.enable_mode_serial(True)                               # Enable serial based on current mode
                 self.scan.stop = True                                       # Restore scan stop flag
                 self.scan.idling = True                                     # Restore scan idling flag
             
@@ -319,14 +320,14 @@ class myScanControl(myMainMenu):
             
             # Get system ready
             self.scan.spc.setWindowTitle('Spectroscopy')        # Set window title to indicate status
-            self.scan.enable_mode_serial(False)                 # Disable serial based on current mode
+            self.enable_mode_serial(False)                      # Disable serial based on current mode
             self.scan.idling = False                            # Toggle scan idling flag
             self.scan.spc.idling = False                        # Toggle specteoscopy idling flag
             self.scan.stop = False                              # Toggle stop flag
             
             # Set up stop button
-            self.scan.track.pushButton_Start_Track.setText('Stop')
-            self.scan.track.pushButton_Start_Track.setEnable(True)
+            self.scan.spc.pushButton_Scan.setText('Stop')
+            self.scan.spc.pushButton_Scan.setEnable(True)
             
             # !!! Store system status for laster restore
             ditherB_s = self.dsp.lastdigital[0]                 # Store bias dither
@@ -383,7 +384,7 @@ class myScanControl(myMainMenu):
             
             # Restore system status
             self.scan.spc.pushButton_Scan.setText('Start')      # Restore scan button text
-            self.scan.enable_mode_serial(True)                  # Enable serial based on current mode
+            self.enable_mode_serial(True)                       # Enable serial based on current mode
             self.scan.stop = True                               # Restore scan stop flag
             self.scan.idling = True                             # Restore scan idling flag
             self.scan.spc.idling = True                         # Restore spectroscopy idling flag

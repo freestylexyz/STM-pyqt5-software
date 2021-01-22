@@ -266,9 +266,6 @@ class myScan_(QWidget, Ui_Scan):
         self.current_xy[xy] = value * self.imagine_gain     # Update variable
         self.xy_offset_range(xy)                            # Set XY offset range
 
-        self.current_xy[0] = self.spinBox_Yin_XY.value()    # update variable
-        self.current_xy[1] = self.scrollBar_Yin_XY.value()    # update variable
-
         # Set graphic
         xin = self.spinBox_Xin_XY.value() * 100
         yin = self.spinBox_Yin_XY.value() * 100
@@ -287,12 +284,8 @@ class myScan_(QWidget, Ui_Scan):
         spin.setValue(value)
         scroll.setValue(value)
         self.current_xy[xy + 2] = value * self.imagine_gain
-
         self.xy_in_range(xy)            # Set XY in range
         self.scan_size_range()          # Set scan size range
-
-        self.current_xy[2] = self.spinBox_Xoffset_XY.value()    # update variable
-        self.current_xy[3] = self.spinBox_Yoffset_XY.value()    # update variable
 
         # Set graphic
         xoffset = self.spinBox_Xoffset_XY.value() * 100
@@ -367,14 +360,15 @@ class myScan_(QWidget, Ui_Scan):
     # XY gain conversion
     def xy_gain_cnv(self, index, state):
         if state:
+            gain = self.imagine_gain
             self.imagine_gain = 100 * (index == 0) + 10 *(index == 1) + (index == 3)    # Determin imagine gain based on XY gain
             self.scrollBar_Yin_XY.setValue(0)                                           # Set Xin scroll bar
             self.scrollBar_Xin_XY.setValue(0)                                           # Set Yin scroll bar
             self.scrollBar_StepSize_ScanControl.setValue(1)                             # Set step size scroll bar
             self.scrollBar_ScanSize_ScanControl.setValue(2)                             # Set step number scroll bar
 
-            self.last_xy[0] = int(self.label_Xin_XY.text()) * self.imagine_gain         # Update Xin variable
-            self.last_xy[1] = int(self.label_Yin_XY.text()) * self.imagine_gain         # Update Yin variable
+            self.last_xy[0] = self.last_xy[0] / gain * self.imagine_gain                # Update Xin variable
+            self.last_xy[1] = self.last_xy[1] / gain * self.imagine_gain                # Update Yin variable
 
     # View Control | segment connecting scan area
     def connect_scan_area(self):
