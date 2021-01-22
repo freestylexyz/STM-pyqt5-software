@@ -1,0 +1,17 @@
+€•‰      Œsequence”Œ
+mySequence”“”)”}”(Œname”ŒNew Sequence”Œcommand_list”]”(K K KBKcKK¥KÜKâeŒ	data_list”]”(KdJ€Œ KJ  M‚J € KdJd  eŒseq_num”KŒread_num”KŒvalidation_required”ˆŒ	validated”ˆŒcommand”]”(ŒWait”ŒMatch”ŒDout”ŒShift”ŒAout”ŒRamp”ŒRead”Œ	ShiftRamp”eŒchannel”]”(Œ ”hŒFeedback”ŒZ offset”ŒBias”ŒIset”ŒPREAMP”ŒZ offset fine”eŒoption1”]”(K KK KK K K K eŒoption2”]”(K K K K K KZK KZeŒdata”]”(Œ100”ŒM”Œ1”h*ŒOrigin”h*h(h(eŒcommandDict”}”(h]”(K K K K Šÿÿÿÿ eh]”(K K J   K Mÿÿeh]”(K@KK K Keh]”(K`KJ   K Jÿÿ eh]”(K€KK K Jÿÿ eh]”(K KK Š  ğÿ Jÿÿ eh]”(KÀKK K Mÿÿeh]”(KàKJ   J  ğJÿÿ euŒchannelDict”}”(ŒZ offset fine”KŒZ offset”KhKŒDAC6”KŒDAC7”KŒDAC8”KŒDAC9”K	ŒDAC11”KhKŒAIN0”K ŒAIN1”KŒAIN2”KŒAIN3”KŒAIN4”KŒAIN5”KŒZOUT”Kh KŒDitherB”K ŒDitherZ”KhKhK uŒdataDict”}”(hŒbuiltins”Œgetattr”“”hŒbb”†”R”hhLhŒmb”†”R”hhLhhM†”R”hhLhŒab”†”R”hhLhhU†”R”hhLhhU†”R”hhLhhM†”R”hhLhhU†”R”uŒmode”ˆŒbias_dac”‰Œrange”]”(K
+K
+KK
+K
+K
+K
+K
+K
+K
+K
+K
+KK	K
+K
+K
+eŒ
+pream_gain”K	Œdac”]”(M €M €M €M €M €M €M €M €M €M €M €M €M €M‚M €M €Jõ( eŒfeedback”ˆŒditherB”‰ŒditherZ”‰ub.
