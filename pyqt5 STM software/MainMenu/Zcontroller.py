@@ -58,50 +58,7 @@ class myZcontroller(myMainMenu):
         self.groupBox_Gain_Zcontrol.setEnabled(self.mode == 1)
         self.init_Zcontroller()     # Reinit Z control view
         self.Zcontrol.show()        # Show Z control
-    
-    def init_Zcontroller(self):
-        # Enable serial related modules
-        self.enable_Zcontrol_serial(self.dsp.succeed)
-        
-        # Load status
-        self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
-        self.spinBox_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
-        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
-        self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)
-        self.slider_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)
-        self.radioButton_ON_ZDither.setChecked(self.dsp.lastdigital[1])
-        self.radioButton_OFF_ZDither.setChecked(not self.dsp.lastdigital[1])
-        self.radioButton_ON_Feedback.setChecked(self.dsp.lastdigital[2])
-        self.radioButton_OFF_Feedback.setChecked(not self.dsp.lastdigital[2])
-        self.radioButton_ON_Retract.setChecked(self.dsp.lastdigital[3])
-        self.radioButton_OFF_Retract.setChecked(not self.dsp.lastdigital[3])
-        self.load_z1_gain()
-        self.load_z2_gain()
-        
-        # Hard retract
-        if self.hard_retracted:
-            self.pushButton_HardRetract_Zoffset.setText("Hard unretract")
-        else:
-            self.pushButton_HardRetract_Zoffset.setText("Hard retract")
-        
-    # Load Z1 gain from DSP
-    def load_z1_gain(self):
-        if self.dsp.lastgain[2] == 0:
-            self.radioButton_Z1gain10_Gain.setChecked(True)
-        elif self.dsp.lastgain[2] == 1:
-            self.radioButton_Z1gain1_Gain.setChecked(True)
-        elif self.dsp.lastgain[2] == 3:
-            self.radioButton_Z1gain01_Gain.setChecked(True)
-    
-    # Load Z2 gain from DSP
-    def load_z2_gain(self):
-        if self.dsp.lastgain[3] == 0:
-            self.radioButton_Z2gain01_Gain.setChecked(True)
-        elif self.dsp.lastgain[3] == 1:
-            self.radioButton_Z2gain1_Gain.setChecked(True)
-        elif self.dsp.lastgain[3] == 3:
-            self.radioButton_Z2gain10_Gain.setChecked(True)
-    
+
     # Z offset coarse send
     def z_send(self):
         bits = self.scrollBar_Input_Zoffset.value()     # Obtain target bits

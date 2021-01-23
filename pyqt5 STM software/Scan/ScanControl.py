@@ -32,6 +32,15 @@ class myScanControl(myMainMenu):
     # Scan initial operation
     def enter_scan(self):
         pass
+        # if self.scan.idling:
+        #     self.enable_mode_serial(False)                                              # Disable serial based on current mode
+        #     self.scan.idling = False                                                    # Toggle scan idling flag
+        #     self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)            # Ramp XY in to 0V
+        #     self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)            # Ramp XY offset to 0V
+        #     self.dsp.gain(0, 1)                                                         # Change X gain to 1.0
+        #     self.dsp.gain(1, 1)                                                         # Change Y gain to 1.0
+            
+            
     # !!!
     # Exit scan operation
     def exit_scan(self):

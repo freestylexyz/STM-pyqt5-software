@@ -248,10 +248,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 0:
             self.mode = 2                                   # Change the mode variable
             self.enable_menubar(False)                      # Disable menubar to prevent softeware enter other mode
-            self.dsp.init_output()                          # Prepare all electronics to tip approach mode
-            self.init_bias()                                # Update bias dock view
-            self.init_current()                             # Update current dock view
-            self.init_Zcontroller()                         # Update Z controller dock view
+            self.setup_tipappr()                            # Prepare all electronics to tip approach mode
+            self.init_dock()                                # Reload all 3 dock view
             self.tipappr.init_tipAppr(self.dsp.succeed, self.dsp.lastdigital)     # Init tip approach view
             self.tipappr.show()                             # Show tip approach window
 
@@ -262,9 +260,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.enable_menubar(False)
             self.menuScan.setEnabled(True)
             self.enter_scan()
-            self.init_bias()
-            self.init_current()
-            self.init_Zcontroller()
+            self.init_dock()                                # Reload all 3 dock view
             self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)
             self.scan.show()
     
@@ -273,7 +269,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 3 and self.scan.mode == 0:
             self.scan.mode = 1
             self.menuScan.setEnabled(False)
-            self.scan.point_list = [[self.dsp.lasdac[0], self.dsp.lastdac[15]]]
+            self.scan.point_list = [[self.dsp.lastdac[0], self.dsp.lastdac[15]]]
             if self.scan.spc.adv.checkBox_Tracking_Correction.isChecked():
                 self.scan.open_track(2)
             self.scan.spc.show()
@@ -316,9 +312,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     def close_scan(self):
         if self.scan.mode == 0:
             self.exit_scan()
-            self.init_bias()
-            self.init_current()
-            self.init_Zcontroller()
+            self.init_dock()                                # Reload all 3 dock view
             self.closeWindow()
         else:
             self.scan.mode = 0

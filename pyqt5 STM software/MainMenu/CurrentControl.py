@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QMessageBox
 from MainMenu import myMainMenu
 import conversion as cnv
 import threading
-import math
 
 # myCurrentControl - This class handles current dock control
 class myCurrentControl(myMainMenu):
@@ -44,72 +43,7 @@ class myCurrentControl(myMainMenu):
     def current_update(self):
         value = self.b2i(self.dsp.lastdac[5], self.preamp_gain)
         self.spinBox_Input_Setpoint.setValue(value)  # Update main spinbox only, scrollbar will not follow
-    
-    def init_current(self):
-        self.enable_current_serial(self.dsp.succeed)    # Enable serial related modules
-        self.current_set_radio()                        # Set up preamp gain radio button
-        self.current_spinbox_range()                    # Set up all spin boxes range
-        
-        bits = self.dsp.lastdac[5]                      # Fetch current I ser bits
-        self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set up scroll bar
-        self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))  # Set up main spin box 
 
-    # Convert I set bits to current setpoint based on current status
-    def b2i(self, bits, gain):
-        value = cnv.bv(bits, 'd', self.dsp.dacrange[5])     # Conver bits to voltage
-        
-        # Determin mulitplier based on gain
-        if gain == 8:
-            multiplier = 10.0
-        elif gain == 9:
-            multiplier = 1.0
-        elif gain == 10:
-            multiplier = 0.1
-        return 10.0 ** (-value / 10.0) * multiplier     # Return current setpoint
-    
-    # Convert current setpoint to I set bits based on current status
-    def i2b(self, value, gain):
-        # Determin mulitplier based on gain
-        if gain == 8:
-            multiplier = 10.0
-        elif gain == 9:
-            multiplier = 1.0
-        elif gain == 10:
-            multiplier = 0.1
-        value = value / multiplier                      # Divide multiplier
-        value = -10.0 * math.log(value, 10)             # Calculate I set voltage
-        bits = cnv.vb(value, 'd', self.dsp.dacrange[5]) # Convert it to I set bits
-        return bits
-        
-    # Set up all spin boxes input range
-    def current_spinbox_range(self):
-        # Determin set point limit based on current preamp gain
-        minimum = self.b2i(0xffff, self.preamp_gain)
-        maximum = self.b2i(0x0, self.preamp_gain)
-
-        # Set minimum
-        self.spinBox_Input_Setpoint.setMinimum(minimum)
-        self.spinBox_Input1_CurrRamp.setMinimum(minimum)
-        self.spinBox_Input2_CurrRamp.setMinimum(minimum)
-        self.spinBox_Input3_CurrRamp.setMinimum(minimum)
-        self.spinBox_Input4_CurrRamp.setMinimum(minimum)
-
-        # Set maximum
-        self.spinBox_Input_Setpoint.setMaximum(maximum)
-        self.spinBox_Input1_CurrRamp.setMaximum(maximum)
-        self.spinBox_Input2_CurrRamp.setMaximum(maximum)
-        self.spinBox_Input3_CurrRamp.setMaximum(maximum)
-        self.spinBox_Input4_CurrRamp.setMaximum(maximum)
-    
-    # Set radio button for preamp gain
-    def current_set_radio(self):
-        if self.preamp_gain == 8:
-            self.radioButton_8_Gain.setChecked(True)    # Set gain 8 radio button if gain 8
-        elif self.preamp_gain == 9:
-            self.radioButton_9_Gain.setChecked(True)    # Set gain 9 radio button if gain 9
-        elif self.preamp_gain == 10:
-            self.radioButton_10_Gain.setChecked(True)   # Set gain 10 radio button if gain 10
-    
     # Pream gain execution
     def current_gain_excu(self, gain, value):
         if self.idling:

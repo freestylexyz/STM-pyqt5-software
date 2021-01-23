@@ -58,39 +58,7 @@ class myBiasControl(myMainMenu):
     def bias_show(self):
         self.init_bias()    # Reinital bias dock view, every time call bias dock
         self.Bias.show()    # Show bias dock
-    
-    # Init bias UI
-    def init_bias(self):
-        # Enable serial related modules
-        self.enable_bias_serial(self.dsp.succeed)
-        
-        # Set up UI
-        self.radioButton_ON_BiasDither.setChecked(self.dsp.lastdigital[0])      # Set up bias dither ON radio button
-        self.radioButton_OFF_BiasDither.setChecked(not self.dsp.lastdigital[0]) # Set up bias dither OFF radio button
-        self.radioButton_16bit_DAC.setChecked(not self.bias_dac)                # Set up 16bit DAC selection radio button
-        self.radioButton_20bit_DAC.setChecked(self.bias_dac)                    # Set up 20bit DAC selection radio buttion
-        self.bias_dac_slot(self.bias_dac)                                       # Set all other widgets based on bias DAC selection flag
-        
-    # Bias selection radio button slot
-    def bias_dac_slot(self, checked):
-        self.bias_dac = checked     # Change bias selection flag
-        self.bias_spinbox_range()   # Set up all bias spin boxes range
-        self.bias_range_radio()     # Set up bias range radio buttons
-        
-        # Set up scroll bar and main spin box value
-        if self.bias_dac:   # 20bit DAC case
-            self.scrollBar_Input_Bias.setMaximum(0xfffff)                       # Set scroll bar maximum first
-            self.scrollBar_Input_Bias.setValue(self.dsp.last20bit)              # Set scroll bar value
-            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.last20bit, '20'))  # Set spin box value
-            self.spinBox_SpeedInput_BiasRamp.setValue(30)                       # Set default ramp speed
-            self.scrollBar_Input_Bias.setPageStep(2500)                         # Set scroll bar page step
-        else:
-            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])    # Set scroll bar value first
-            self.scrollBar_Input_Bias.setMaximum(0xffff)                # Set scroll bar maximum
-            self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-            self.spinBox_SpeedInput_BiasRamp.setValue(2)                # Set default ramp speed
-            self.scrollBar_Input_Bias.setPageStep(150)                  # Set scroll bar page step
-    
+
     # Check feedback and cross zero to determin if OK to change current value
     # True stands for can not change    
     def check_feedback(self, bits, equal0):
