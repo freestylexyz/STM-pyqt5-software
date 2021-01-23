@@ -828,7 +828,6 @@ class myDSP(QObject):
                 i = 0
                 while True:
                     command = int.from_bytes(self.ser.read(1) ,"big")
-                    print('command:', hex(command))
                     if command != 0x5a:
                         break
                     else:
