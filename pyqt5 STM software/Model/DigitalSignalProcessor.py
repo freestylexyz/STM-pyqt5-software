@@ -704,9 +704,9 @@ class myDSP(QObject):
                         i += step
                     if checkstop and self.stop:    # If check stop is enabled and stop event is issued
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
-                        self.stop = False
+                        checkstop = False
                 # Receive finish command
-                if command == 0x1f:             # If crash protection triggered
+                if command == 0x8f:             # If crash protection triggered
                     self.lastdac[3] = int.from_bytes(self.ser.read(2) ,"big")   # Update last Z offset coarse output
                 self.stop = True                                                # Set stop flag to true
                 
@@ -790,23 +790,24 @@ class myDSP(QObject):
     #
     # rampDiag - This function ramp 2 output channels together
     #
-    def rampDiag(self, channels, channell, targets, targetl, step, delay, limit, checkstop):                        
-        if self.ok():
-            channels = channels & 0x3f
-            channell = channell & 0x3f
-            targets = targets & 0xffff
-            targetl = targetl & 0xffff
-            currents = self.lastdac[channels - 16]
-            currentl = self.lastdac[channell - 16]
-            ranges = targets - currents
-            rangel = targetl - currentl
-            stepnum = int(math.sqrt((ranges ** 2) + (rangel ** 2)) / step) & 0xffff
+    def rampDiag(self, channels, channell, targets, targetl, step, delay, limit, checkstop):   
+        channels = channels & 0x3f
+        channell = channell & 0x3f
+        targets = targets & 0xffff
+        targetl = targetl & 0xffff
+        currents = self.lastdac[channels - 16]
+        currentl = self.lastdac[channell - 16]
+        ranges = targets - currents
+        rangel = targetl - currentl
+        stepnum = int(math.sqrt((ranges ** 2) + (rangel ** 2)) / step) & 0xffff
+        delay = delay & 0xffff
+        limit = limit & 0x7fff
+        if checkstop:
+            limit += 0x8000         # Patch crash protection limit with check stop flag    
+        print(self.ok())
+        if self.ok() and stepnum:
             steps = ranges / stepnum
             stepl = rangel / stepnum
-            delay = delay & 0xffff
-            limit = limit & 0x7fff
-            if checkstop:
-                limit += 0x8000         # Patch crash protection limit with check stop flag
             self.idling = False
             self.ser.write(int(0x33).to_bytes(1, byteorder="big"))      # 0x33 for ramp diagonal function
             self.ser.write(int(channels).to_bytes(1, byteorder="big"))  # Send channels
@@ -820,34 +821,42 @@ class myDSP(QObject):
             # If receive start command
             if int.from_bytes(self.ser.read(1) ,"big") == 0xf0:
                 self.stop = False                       # Set stop flag to false
+                starts = currents * 1.0
+                startl = currentl * 1.0
                 
                 # Wait until receive any instruction
+                i = 0
                 while True:
                     command = int.from_bytes(self.ser.read(1) ,"big")
+                    print('command:', hex(command))
                     if command != 0x5a:
                         break
                     else:
+                        currents = starts + (i * steps)
+                        currentl = startl + (i * stepl)
                         self.lastdac[channels - 16] = int(currents) & 0xffff
                         self.lastdac[channell - 16] = int(currentl) & 0xffff
                         self.rampDiag_signal.emit(channels, channell, currents, currentl)
-                        currents += steps
-                        currentl += stepl
                     if checkstop and self.stop:    # If check stop is enabled and stop event is issued
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
-                        self.stop = False  
+                        checkstop = False
+                    i += 1
                 
                 # Receive finish command
-                if int.from_bytes(self.ser.read(1) ,"big") == 0x1f:             # Crash protection triggered
+                if command == 0x8f:                 # Crash protection triggered
                     self.lastdac[3] = int.from_bytes(self.ser.read(2) ,"big")   # Update last Z offset coarse output
-                self.stop = True    # Set stop flag to true
-                
                 # Update last dac based on return data
                 rdatas = int.from_bytes(self.ser.read(2) ,"big")                # Last output data
                 self.update_last(channels, rdatas)
                 rdatal = int.from_bytes(self.ser.read(2) ,"big")                # Last output data
                 self.update_last(channell, rdatal)
                 self.rampDiag_signal.emit(channels, channell, rdatas & 0xffff, rdatal & 0xffff)
-            self.idling = True            
+                self.stop = True    # Set stop flag to true
+            self.idling = True
+        elif self.ok() and (not stepnum):
+            self.dac_W(channels, targets)
+            self.dac_W(channell, targetl)
+            self.rampDiag_signal.emit(channels, channell, targets, targetl)
             
     #
     # giantStep - This function perform giant step of a specific channel

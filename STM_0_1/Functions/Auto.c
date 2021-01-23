@@ -15,7 +15,7 @@ void zAutoT(Uint16 target, Uint16 step)
     bool condition, dir, inrange;
     Uint32 zfeedback, zoffset, delay;
 
-    if(step >= 10)
+    if(step > 10)
     {
         delay = 300000;          // Delay long time for large step
     }
@@ -82,11 +82,7 @@ void zAuto0()
         break;
     }
 
-    if(gap > 101)
-    {
-        zAutoT(Zero_16, 100);               // Auto Z feedback to 0 with a big step size, if the gap is big
-        zAutoT(Zero_16, 10);                // Continue on auto z feedback with medium step size
-    }
+    if(gap > 101){zAutoT(Zero_16, 100);}    // Auto Z feedback to 0 with a big step size, if the gap is big
     if(gap > 11){zAutoT(Zero_16, 10);}      // Auto Z feedback to 0 with a medium step size, if the gap is medium
     zAutoT(Zero_16, 1);                     // Auto Z feedback to 0 with minimum step size to finish
 }

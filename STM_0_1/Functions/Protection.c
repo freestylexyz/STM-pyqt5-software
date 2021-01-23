@@ -24,7 +24,7 @@ bool protectRamp(bool enabled, Uint16 limit, bool* condition)
         if(abs16(zfeedback) > limit)
         {
             triggered = true;
-            zAuto0();                           // Adjust Z feedback to zero if out of limit
+            zAutoT(Zero_16, 30);                // Adjust Z feedback to zero if out of limit
             *condition &= (!reachLimit(Zoffc)); // Need to stop if Z offset coarse has reached the limit
         }
     }

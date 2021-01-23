@@ -20,19 +20,19 @@ void rampDiag(char channels, char channell, Uint16 targets, Uint16 targetl, Uint
     Uint16 i, startl, starts;
     float steps, stepl;
 
-    condition = true;               // Initialize loop condition to true
-    stopped = false;                // Initialize stop flag to false
-    protect_triggered = false;      // Initialize protect triggered flag to false
+    condition = true;                   // Initialize loop condition to true
+    stopped = false;                    // Initialize stop flag to false
+    protect_triggered = false;          // Initialize protect triggered flag to false
     crashprotection = (limit != 0);     // Deduce crash protection enabled based on feedback Z limit
     currents = lastdac[channels - 16];  // Obtain the starting point of short channel
     currentl = lastdac[channell - 16];  // Obtain the starting point of long channel
     ranges = bigger(targets, currents) - smaller(targets, currents);    // Short channel range
     rangel = bigger(targetl, currentl) - smaller(targetl, currentl);    // Long channel range
 
-    dirl = (targetl > currentl);    // Long channel ramp direction
-    dirs = (targets > currents);    // Short channel ramp direction
-    stepl = rangel / stepnum;       // Long channel step size
-    steps = ranges / stepnum;       // Short channel step size
+    dirl = (targetl > currentl);                    // Long channel ramp direction
+    dirs = (targets > currents);                    // Short channel ramp direction
+    stepl = (float)rangel / (float)stepnum;         // Long channel step size
+    steps = (float)ranges / (float)stepnum;         // Short channel step size
 
     startl = currentl;
     starts = currents;
@@ -41,14 +41,14 @@ void rampDiag(char channels, char channell, Uint16 targets, Uint16 targetl, Uint
     // Ramp loop
     for (i = 0; i < stepnum; i++)
     {
+        // Deduce the next cycle output value based on ramp direction
+        if(dirl){currentl = (Uint16)((float)startl + ((float)i * stepl));}
+        else{currentl = (Uint16)((float)startl - ((float)i * stepl));}
+        if(dirs){currents = (Uint16)((float)starts + ((float)i * steps));}
+        else{currents = (Uint16)((float)starts - ((float)i * steps));}
+
         dac_W(channell, currentl);  // Output long channel
         dac_W(channels, currents);  // Output short channel
-
-        // Deduce the next cycle output value based on ramp direction
-        if(dirl){currentl = (startl + (i * stepl));}
-        else{currentl = (startl - (i * stepl));}
-        if(dirs){currents = (starts + (i * steps));}
-        else{currents = (starts - (i * steps));}
 
         // Ramp protection and update protect triggered flag
         protect_triggered = protect_triggered || protectRamp(crashprotection, limit, &condition);
@@ -62,7 +62,6 @@ void rampDiag(char channels, char channell, Uint16 targets, Uint16 targetl, Uint
         DELAY_US(delay);
     }
 
-    serialOut(split(Finish, 1));        // Send out Finish command only
     if(!stopped)    // If not stopped, output target value to make sure it reaches target
     {
         dac_W(channell, targetl);
