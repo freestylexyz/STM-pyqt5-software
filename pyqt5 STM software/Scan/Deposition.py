@@ -95,9 +95,9 @@ class myDeposition(QWidget, Ui_Deposition):
 
         # graphicsView
         # self.graphicsView_Before_Deposition.setContentsMargins(1,1,1,1)
-        self.plot_before = self.graphicsView_Before_Deposition.addPlot(viewBox=CustomViewBox(enableMenu=False))
-        self.plot_during = self.graphicsView_During_Deposition.addPlot(viewBox=CustomViewBox(enableMenu=False))
-        self.plot_after = self.graphicsView_After_Deposition.addPlot(viewBox=CustomViewBox(enableMenu=False))
+        self.plot_before = self.graphicsView_Before_Deposition.addPlot()
+        self.plot_during = self.graphicsView_During_Deposition.addPlot()
+        self.plot_after = self.graphicsView_After_Deposition.addPlot()
 
         self.view_box_before = self.plot_before.getViewBox()
         self.view_box_during = self.plot_during.getViewBox()

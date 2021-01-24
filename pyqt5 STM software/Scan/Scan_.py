@@ -206,7 +206,7 @@ class myScan_(QWidget, Ui_Scan):
         self.tip_position.getHandles()[0].setPen(green_pen)
 
         # ROI | target position
-        self.target_position = CrossCenterROI2([200000, 200000], cross_size, pen=(255, 255, 255, 0), hoverPen=pink_pen)
+        self.target_position = CrossCenterROI2([200000, 200000], cross_size, pen=(255, 255, 255, 0), hoverPen=pink_pen, movable=True)
         self.view_box.addItem(self.target_position)
         self.target_position.removeHandle(0)
         self.target_position.addCustomHandle2_(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
@@ -267,9 +267,8 @@ class myScan_(QWidget, Ui_Scan):
         self.xy_offset_range(xy)                            # Set XY offset range
 
         # Set graphic
-        xin = self.spinBox_Xin_XY.value() * 100
-        yin = self.spinBox_Yin_XY.value() * 100
-        self.target_position.movePoint(self.target_position.getHandles()[0], [xin, yin])
+        self.target_position.movePoint(self.target_position.getHandles()[0], \
+                                       [self.current_xy[0]+self.current_xy[2], self.current_xy[1]+self.current_xy[3]])
 
     # XY offset conversion
     def xy_off_cnv(self, flag, xy, value):
@@ -288,9 +287,8 @@ class myScan_(QWidget, Ui_Scan):
         self.scan_size_range()          # Set scan size range
 
         # Set graphic
-        xoffset = self.spinBox_Xoffset_XY.value() * 100
-        yoffset = self.spinBox_Yoffset_XY.value() * 100
-        self.target_area.movePoint(self.target_area.getHandles()[0], [xoffset, yoffset])
+        print(self.current_xy[2], self.current_xy[3])
+        self.target_area.movePoint(self.target_area.getHandles()[0], [self.current_xy[2], self.current_xy[3]])
 
     # Scan size converstion
     def scan_size_cnv(self, flag, index, value):
@@ -315,10 +313,9 @@ class myScan_(QWidget, Ui_Scan):
         self.scan_size_range()                      # Set the other scan size range
 
         # Set graphic
-        scan_size = self.spinBox_ScanSize_ScanControl.value()*100
-        step_size = self.spinBox_StepSize_ScanControl.value()
-        self.target_area.setSize(scan_size*step_size, center=(0.5, 0.5))
-        self.scan_area.setSize(scan_size*step_size, center=(0.5, 0.5))
+        scan_size = self.scan_size[0]*self.scan_size[1]
+        self.target_area.setSize(scan_size, center=(0.5, 0.5))
+        self.scan_area.setSize(scan_size, center=(0.5, 0.5))
 
 
     # Set XY in spin boxes range
@@ -406,8 +403,10 @@ class myScan_(QWidget, Ui_Scan):
             self.scrollBar_Xoffset_XY.setValue(xoffset)
             self.scrollBar_Yoffset_XY.setValue(yoffset)
         elif index == 1:    # target position moved
-            xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/100)
-            yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/100)
+            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/100)
+            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/100)
+            xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/100) - xoffset
+            yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/100) - yoffset
             self.scrollBar_Xin_XY.setValue(xin)
             self.scrollBar_Yin_XY.setValue(yin)
 
@@ -447,7 +446,7 @@ class myScan_(QWidget, Ui_Scan):
         self.pushButton_Send_XY.setEnabled(enable)
         self.pushButton_Start_Scan.setEnabled(enable)
 
-        self.view_box.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
+        # self.view_box.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
         
         # self.pushButton_SaveAll_Scan.setEnabled(enable and (not self.data.data))
         # self.pushButton_Info_Scan.setEnabled(enable and (not self.data.data))

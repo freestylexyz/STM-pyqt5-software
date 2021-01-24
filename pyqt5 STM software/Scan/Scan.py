@@ -24,6 +24,9 @@ from DigitalSignalProcessor import myDSP
 import conversion as cnv
 import pickle
 import pyqtgraph as pg
+from images import myImages
+import cv2 as cv
+import copy
 
 class myScan(myScan_):
     close_signal = pyqtSignal()                                     # Close scan window signal
@@ -32,6 +35,7 @@ class myScan(myScan_):
     stop_signal = pyqtSignal()                                      # Stop signal
     send_signal = pyqtSignal(int, int, int, int, int)               # Send signal
     scan_signal = pyqtSignal(int, int, int, int, int, int, int)     # Scan signal
+    update_display_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -63,16 +67,54 @@ class myScan(myScan_):
         # pushButton | send and zero
         self.pushButton_Send_XY.clicked.connect(lambda: self.send_emit(1))
         self.pushButton_Zero_XY.clicked.connect(lambda: self.send_emit(0))
+
+        # radioButton | View Control
+        self.pallet_group = QButtonGroup()
+        self.pallet_group.addButton(self.radioButton_Color_Scan, 0)
+        self.pallet_group.addButton(self.radioButton_Gray_Scan, 1)
+        self.pallet_group.buttonToggled[int, bool].connect(self.pallet_changed)
+
+        # checkBox | View Control
+        self.filter_group = QButtonGroup()
+        self.filter_group.addButton(self.checkBox_Reverse_Scan, 0)
+        self.filter_group.addButton(self.checkBox_Illuminated_Scan, 1)
+        self.filter_group.addButton(self.checkBox_PlaneFit_Scan, 2)
+        self.filter_group.setExclusive(False)
+        self.filter_group.buttonToggled[int, bool].connect(self.filter_changed)
         
         # pushButton | scan
         self.pushButton_Start_Scan.clicked.connect(self.scan_emit)
 
         ## graphicsView | Scan main view
 
+        self.update_display_signal.connect(self.update_display)
+
         # imageItem | setup
         self.img_display = pg.ImageItem()
         self.view_box.addItem(self.img_display)
-        
+
+        ## graphicsView | Scan main view
+
+        # imageItem | setup
+
+        self.img_display = pg.ImageItem()
+        self.view_box.addItem(self.img_display)
+        self.myimg = myImages()
+
+        # raw_img = cv.imread('../data/scan_example_gray.jpg')
+
+        self.myimg.read_csv('../data/real_stm_img.csv')
+        raw_img = cv.imread('../data/real_stm_img.jpeg')
+
+        self.raw_img = cv.cvtColor(raw_img, cv.COLOR_BGR2GRAY)
+        self.current_img = copy.deepcopy(self.raw_img)
+
+        self.img_display.setImage(self.current_img)
+        cv.imshow('img', self.current_img)
+        cv.waitKey()
+        self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
+        self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
+
     # Init scan
     def init_scan(self, dsp, bias_dac, preamp_gain):
         succeed = dsp.succeed
@@ -179,16 +221,17 @@ class myScan(myScan_):
         # y: self.last_xy[1]
         
         # !!! update graphic view
-        self.scan_area.movePoint(self.scan_area.getHandles()[0], [(currents - 0x8000)*100, (currentl - 0x8000)*100])
+        self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
+        self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0]+self.last_xy[2], self.last_xy[1]+self.last_xy[3]])
 
     # Update scan
     def scan_update(self, rdata):
         plot_data = self.data.updata_data(rdata)        # Update scan data and obtain data used for plot
         # !!! Update graphic view
-        self.img_display.setRect(QRectF(self.last_xy[2]*100, self.last_xy[3]*100, self.scan_size[0]*self.scan_size[1], self.scan_size[0]*self.scan_size[1]))
         self.img_display.setImage(plot_data)
-        self.view_box.setRange(QRectF(0, 0, self.img_display.width(), self.img_display.height()), padding=0)
-
+        self.img_display.setRect(QRectF(self.last_xy[2], self.last_xy[3], self.scan_size[0]*self.scan_size[1], self.scan_size[0]*self.scan_size[1]))
+        self.view_box.setRange(QRectF(self.last_xy[2], self.last_xy[3], self.scan_size[0]*self.scan_size[1], self.scan_size[0]*self.scan_size[1]), padding=0)
+        self.raw_img = plot_data
         
     # Update plane fit paramenters in track window
     def track_update_fit(self):
@@ -219,7 +262,7 @@ class myScan(myScan_):
     # !!!
     # Edit points mode
     def edit_points(self):
-        pass
+        self.point_editor.show()
     
     # Save
     def save(self):
@@ -255,7 +298,6 @@ class myScan(myScan_):
             with open(fname, 'wb') as output:
                 self.data.path = fname                                      # Save path
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
-
     
     # Load
     def load(self):
@@ -303,6 +345,64 @@ class myScan(myScan_):
             self.track.pushButton_Start_Track.setEnabled(False)
             self.track.comboBox_ReadCh_Track.setEnabled(False)
             self.track.show()
+
+    # pallet radioButton slot | gray, color
+    def pallet_changed(self, index, status):
+        '''Change color map for displayed image: afm-hot or gray.'''
+        if status:
+            self.update_display_signal.emit()
+
+    # filter checkBox  slot | reverse, Illuminated and Plane fit
+    def filter_changed(self, index, status):
+        '''Process image based on checkBox signal: Reverse, Illuminated and Plane fit.'''
+        if_reverse = self.checkBox_Reverse_Scan.isChecked()
+        if_illuminated = self.checkBox_Illuminated_Scan.isChecked()
+        if_plane_fit = self.checkBox_PlaneFit_Scan.isChecked()
+
+        if if_reverse and (not if_plane_fit) and (not if_illuminated):
+            reverse_gray_img = self.myimg.gray2reverse(self.raw_img)
+            self.current_img = reverse_gray_img
+        elif if_illuminated and (not if_plane_fit) and (not if_reverse):
+            illuminated_img = self.myimg.illuminated(self.raw_img)
+            self.current_img = illuminated_img
+        elif if_plane_fit and (not if_illuminated) and (not if_reverse):
+            planefit_img = self.myimg.plane_fit(self.raw_img)
+            self.current_img = planefit_img
+        elif if_plane_fit and if_illuminated and (not if_reverse):
+            planefit_img = self.myimg.plane_fit(self.raw_img)
+            illuminated_planefit_img = self.myimg.illuminated(planefit_img)
+            self.current_img = illuminated_planefit_img
+        elif if_reverse and if_plane_fit and (not if_illuminated):
+            planefit_img = self.myimg.plane_fit(self.raw_img)
+            reverse_planefit_img = self.myimg.gray2reverse(planefit_img)
+            self.current_img = reverse_planefit_img
+        elif if_reverse and if_illuminated and (not if_plane_fit):
+            illuminated_img = self.myimg.illuminated(self.raw_img)
+            revered_illuminated_img = self.myimg.gray2reverse(illuminated_img)
+            self.current_img = revered_illuminated_img
+        elif if_reverse and if_illuminated and if_plane_fit:
+            planefit_img = self.myimg.plane_fit(self.raw_img)
+            illuminated_planefit_img = self.myimg.illuminated(planefit_img)
+            revered_illuminated_planefit_img = self.myimg.gray2reverse(illuminated_planefit_img)
+            self.current_img = revered_illuminated_planefit_img
+        elif (not if_reverse) and (not if_illuminated) and (not if_plane_fit):
+            self.current_img = copy.deepcopy(self.raw_img)
+
+        self.update_display_signal.emit()
+
+    # update display image
+    def update_display(self):
+        '''Update image based on user selected filter and colormap.'''
+        if self.radioButton_Gray_Scan.isChecked():
+            psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
+            self.color_current_img =  psudo_gray_img
+        elif self.radioButton_Color_Scan.isChecked():
+            color_img = self.myimg.color_map(self.current_img, 36)
+            self.color_current_img = color_img
+        self.img_display.setImage(self.color_current_img)
+
+
+
 
     # Emit close signal
     def closeEvent(self, event):

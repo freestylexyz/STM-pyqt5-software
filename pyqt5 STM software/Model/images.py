@@ -18,6 +18,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from matplotlib import cm
+from PIL import Image, ImageDraw
+from numpy import genfromtxt
+from imblearn.over_sampling import SMOTE, ADASYN
+
+
 class myImages(QWidget):
 
     def __init__(self):
@@ -42,8 +47,8 @@ class myImages(QWidget):
     #
     # gray -> color
     #
-    def gray2color(self, path):
-        img = cv.imread(path)
+    def gray2color(self, img):
+        # img = cv.imread(path)
         img = cv.resize(img, dsize=(440, 440))
         # cv.imshow('read_img',img)
         # img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -56,10 +61,10 @@ class myImages(QWidget):
     #
     # gray -> reversed
     #
-    def gray2reverse(self, path):
-        img = cv.imread(path, 0)  #读取一张图片，灰度
+    def gray2reverse(self, img):
+        # img = cv.imread(path, 0)
         height, width = img.shape
-        dst = np.zeros((height, width, 1), np.uint8)
+        dst = np.zeros((height, width), np.uint8)
         for i in range(height):
             for j in range(width):
                 dst[i, j] = 255-img[i,j]
@@ -88,8 +93,8 @@ class myImages(QWidget):
     #
     # gray --> scharr operator --> diff
     #
-    def illuminated(self, path):
-        img = cv.imread(path)
+    def illuminated(self, img):
+        # img = cv.imread(path)
         # scharr operator
         scharrx = cv.Scharr(img, cv.CV_64F, 1, 0)
         scharry = cv.Scharr(img, cv.CV_64F, 0, 1)
@@ -104,19 +109,15 @@ class myImages(QWidget):
         return scharrxy
 
     #
-    # plane fit
+    # gray -> plane fit
     #
-    def plane_fit(self, path):
-        # path = "../data/scan_example.png"
-        img = cv.imread(path)
-        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        # img = cv.resize(img, dsize=(128, 128))
+    def plane_fit(self, img):
         x = np.array([[i + 1] * img.shape[0] for i in range(img.shape[0])]).flatten()
         y = np.array(list(np.arange(img.shape[1]) + 1) * img.shape[1])
         z = img.flatten()
         index = np.argmin(z)
 
-        # 创建系数矩阵A
+        # Create coefficient matrix A
         A = np.zeros((3, 3))
         for i in range(0, img.size):
             A[0, 0] = A[0, 0] + x[i] ** 2
@@ -129,7 +130,7 @@ class myImages(QWidget):
             A[2, 1] = A[1, 2]
             A[2, 2] = img.size
 
-        # 创建b
+        # Create B
         b = np.zeros((3, 1))
         for i in range(0, img.size):
             b[0, 0] = b[0, 0] + x[i] * z[i]
@@ -137,18 +138,18 @@ class myImages(QWidget):
             b[2, 0] = b[2, 0] + z[i]
         # print(b)
 
-        # 求解X
+        # Solving x
         A_inv = np.linalg.inv(A)
         X = np.dot(A_inv, b)
-        print('平面拟合结果为：z = %.3f * x + %.3f * y + %.3f' % (X[0, 0], X[1, 0], X[2, 0]))
+        # print('PlaneFit: The result of plane fitting is：z = %.3f * x + %.3f * y + %.3f' % (X[0, 0], X[1, 0], X[2, 0]))
 
-        # 计算方差
+        # Calculate variance
         R = 0
         for i in range(0, img.size):
             R = R + (X[0, 0] * x[i] + X[1, 0] * y[i] + X[2, 0] - z[i]) ** 2
-        print('方差为：%.*f' % (3, R))
+        # print('PlaneFit: The variance is：%.*f' % (3, R))
 
-        # 展示图像
+        # Display image
         fig1 = plt.figure()
         ax1 = fig1.add_subplot(111, projection='3d')
         ax1.set_xlabel("x")
@@ -163,11 +164,11 @@ class myImages(QWidget):
         z_p = X[0, 0] * x_p + X[1, 0] * y_p + X[2, 0]
         new_z = X[0, 0] * x + X[1, 0] * y + X[2, 0]
         new_z = z - new_z
-        new_z = np.reshape(new_z, (img.shape[0], img.shape[1]))
+        new_z = np.reshape(new_z, (img.shape[0], img.shape[1])).astype(np.float32)
         ax1.plot_wireframe(x_p, y_p, z_p, rstride=10, cstride=10)
         ax1.scatter(x, y, new_z, c='g', marker='.')
-        plt.show()
-        # cv.imwrite('..\data\scan_example_planefit.png', new_z)
+        # plt.show()
+
         return new_z
 
     def prepare_data(self, array):
@@ -181,15 +182,33 @@ class myImages(QWidget):
         # print(array)
         return array
 
+    def read_csv(self, path):
+        g = open(path, 'r')
+        temp = genfromtxt(g, delimiter=',')
+        im = Image.fromarray(temp).convert('RGB')
+        pix = im.load()
+        rows, cols = im.size
+        for x in range(cols):
+            for y in range(rows):
+                print
+                str(x) + " " + str(y)
+                pix[x, y] = (int(temp[y, x] // 256 // 256 % 256), int(temp[y, x] // 256 % 256), int(temp[y, x] % 256))
+        im.save(g.name[0:-4] + '.jpeg')
+
+    def upsampling(self, img, up_height, up_width):
+        height, width, channels = img.shape
+        emptyImage = np.zeros((up_width, up_height, channels), np.uint8)
+        sh = up_height / height
+        sw = up_width / width
+        for i in range(up_width):
+            for j in range(up_height):
+                x = int(i / sh)
+                y = int(j / sw)
+                emptyImage[i, j] = img[x, y]
+        return emptyImage
+
+    # color -> colormap
     def color_map(self, img, index):
-        # img = cv.imread(path, 0)
-        # img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
-        # if index >= 0 and index <= 11:
-        #     img = cv.applyColorMap(img, index)
-        # elif index == 12:
-        #     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        #     img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
-        # return img
         if index == 0:
             img = np.uint8(cm.viridis(img) * 255)
         elif index == 1:
