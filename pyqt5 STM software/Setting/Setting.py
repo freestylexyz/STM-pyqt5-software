@@ -113,20 +113,6 @@ class mySetting(QWidget, Ui_Setting):
         self.spinBox_Biasoffset10_Setting.setEnabled(enable)  # Enable bias +/-10V offset spin box
         self.spinBox_Isetoff_Setting.setEnabled(enable)       # Enable I set offset spin box
 
-        
-    # Initial succeed message window
-    def succeed_message(self, succeed):
-        msgBox = QMessageBox()                          # Creat a message box
-        msgBox.setIcon(QMessageBox.Information)         # Set icon
-        if succeed:
-            msgBox.setText("Successfully found DSP")    # Successful finding DSP infomation
-        else:
-            msgBox.setText("No DSP found")              # Fail to find DSP information
-        msgBox.setWindowTitle("DSP initial message")    # Set title
-        msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
-        msgBox.exec_()
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = mySetting()

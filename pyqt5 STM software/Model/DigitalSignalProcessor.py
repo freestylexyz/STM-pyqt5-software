@@ -804,7 +804,6 @@ class myDSP(QObject):
         limit = limit & 0x7fff
         if checkstop:
             limit += 0x8000         # Patch crash protection limit with check stop flag    
-        print(self.ok())
         if self.ok() and stepnum:
             steps = ranges / stepnum
             stepl = rangel / stepnum
@@ -828,6 +827,7 @@ class myDSP(QObject):
                 i = 0
                 while True:
                     command = int.from_bytes(self.ser.read(1) ,"big")
+                    # print('command:', hex(command))
                     if command != 0x5a:
                         break
                     else:

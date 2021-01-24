@@ -51,8 +51,6 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.dsp = myDSP()                                          # DSP module
         self.cnfg = QSettings("config.ini", QSettings.IniFormat)    # Configuration module
 
-        
-
     # Set up UI for main menu
     def init_UI(self):
         screen = QDesktopWidget().screenGeometry()
@@ -86,17 +84,9 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.Zcontrol.move(sapcerVer, sizeMain.height()+2*spacerHor)
         self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())
 
-    # Initial succeed message window
-    def succeed_message(self, succeed):
-        msgBox = QMessageBox()                          # Creat a message box
-        msgBox.setIcon(QMessageBox.Information)         # Set icon
-        if succeed:
-            msgBox.setText("Successfully found DSP")    # Successful finding DSP infomation
-        else:
-            msgBox.setText("No DSP found")              # Fail to find DSP information
-        msgBox.setWindowTitle("DSP initial message")    # Set title
-        msgBox.setStandardButtons(QMessageBox.Ok)       # OK button
-        msgBox.exec_()
+    # Pop out a warning message
+    def msg(self, text):
+        QMessageBox.warning(None, "STM", text, QMessageBox.Ok)
 
     # Enable menu bar
     def enable_menubar(self, enable):
@@ -111,7 +101,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.enable_bias_serial(enable)             # Bias dock
         self.enable_current_serial(enable)          # Current dcok
         self.enable_Zcontrol_serial(enable)         # Z control dock
-        self.menuControl.setEnabled(enable)         # Controll menu
+        self.menuControl.setEnabled(enable)         # Control menu
     
     # Enable all serial related component in bias dock
     def enable_bias_serial(self, enable):
@@ -234,7 +224,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     
     # Convert I set bits to current setpoint based on current status
     def b2i(self, bits, gain):
-        value = cnv.bv(bits, 'd', self.dsp.dacrange[5])     # Conver bits to voltage
+        value = cnv.bv(bits, 'd', self.dsp.dacrange[5])     # Convert bits to voltage
         
         # Determin mulitplier based on gain
         if gain == 8:
@@ -243,7 +233,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             multiplier = 1.0
         elif gain == 10:
             multiplier = 0.1
-        return 10.0 ** (-value / 10.0) * multiplier     # Return current setpoint
+        return 10.0 ** (-value / 10.0) * multiplier         # Return current setpoint
     
     # Convert current setpoint to I set bits based on current status
     def i2b(self, value, gain):

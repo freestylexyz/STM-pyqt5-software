@@ -36,16 +36,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         
     def init_menu(self):
         # Menu bar
-        self.actionSetting.triggered['bool'].connect(self.open_setting)     # Connect open setting window
-        self.actionTipAppr.triggered['bool'].connect(self.open_tipappr)     # Connect open tip approach window
-        self.actionEtest.triggered['bool'].connect(self.open_etest)         # Connect open electronic test window
+        self.actionSetting.triggered['bool'].connect(lambda: self.open_window(-1))    # Connect open setting window
+        self.actionEtest.triggered['bool'].connect(lambda: self.open_window(1))       # Connect open electronic test window
+        self.actionTipAppr.triggered['bool'].connect(lambda: self.open_window(2))     # Connect open tip approach window
         
-        self.actionScan.triggered['bool'].connect(self.open_scan)
-        self.actionDeposition.triggered['bool'].connect(self.open_deposition)
-        self.actionSpectra.triggered['bool'].connect(self.open_spc)
-        self.actionTrack.triggered['bool'].connect(self.open_track)
-        self.actionHop.triggered['bool'].connect(self.open_hop)
-        self.actionManipulation.triggered['bool'].connect(self.open_manipulation)
+        self.actionScan.triggered['bool'].connect(lambda: self.open_scan(0))
+        self.actionSpectra.triggered['bool'].connect(lambda: self.open_scan(1))
+        self.actionDeposition.triggered['bool'].connect(lambda: self.open_scan(2))
+        self.actionTrack.triggered['bool'].connect(lambda: self.open_scan(-1))
+        # self.actionHop.triggered['bool'].connect(self.open_hop)
+        # self.actionManipulation.triggered['bool'].connect(self.open_manipulation)
         
         # Connect open control dock window
         self.actionShow_All_A.triggered.connect(self.show_all_dock)         # Connect open all docks
@@ -155,26 +155,29 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.initO = bool(os.stat("initO.log").st_size != 0)  # Get initO from initO.log
         # self.initO = True
         # self.bias_dac = self.cnfg.value()
-        if self.initO:
-            pass
-        else:
-            reply = QMessageBox.question(None, "STM", "Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            if reply == QMessageBox.Yes:
-                self.initO = True
-            else:
-                self.mode_last = int(self.cnfg.value("SETTING/MODE"))
-                self.preamp_gain = int(self.cnfg.value("SETTING/PREAMP_GAIN"))
+# =============================================================================
+#         # if self.initO:
+#         #     pass
+#         # else:
+#         #     reply = QMessageBox.question(None, "STM", "Initialize output?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+#         #     if reply == QMessageBox.Yes:
+#         #         self.initO = True
+#         #     else:
+#         #         self.mode_last = int(self.cnfg.value("SETTING/MODE"))
+#         #         self.preamp_gain = int(self.cnfg.value("SETTING/PREAMP_GAIN"))
+# =============================================================================
+        self.initO = True       # !!! For temporary use
         
     # DSP intial succeed slot
     def dsp_succeed_slot(self, succeed):
-        self.versionLabel.setText(self.dsp.ver)     # Change version label
-        if self.mode == -1:                         # Initial from setting
-            self.setting.succeed_message(succeed)       # Pop out succeed message from setting
-        elif self.mode == 0:                        # Initial form mian menu
-            self.succeed_message(succeed)               # Pop out succeed message from main menu
-
-        # Reinital setting view if succeed
-        self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)
+        # Pop out succees message
+        text = "Successfully found DSP" if succeed else "No DSP found"
+        QMessageBox.information(None, "STM", text, QMessageBox.Ok)
+        
+        # Set up view
+        self.versionLabel.setText(self.dsp.ver)                        # Change version label
+        self.setting.init_setting(self.dsp.succeed, self.dsp.port, \
+                                  self.dsp.baudrate, self.dsp.offset)  # Reinital setting view if succeed
             
     # DSP ramp to update signal:
     def dsp_rampTo_slot(self, channel, current):
@@ -207,7 +210,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):
-        # if True:                  # !!! For testing use
         if self.mode == 0:          # Can exit software, when in fundamental mode
             self.Bias.close()       # Close bias dock
             self.Zcontrol.close()   # Close Z controller dock
@@ -216,107 +218,73 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.write_cnfg()       # Write configuration file
             event.accept()          # Accept close event
         else:
-            QMessageBox.warning(None, "STM", "Close top window first!", QMessageBox.Ok)   # Pop out window to remind close the tip window
+            self.msg("Close top window first!")     # Pop out window to remind close the tip window
             event.ignore()          # Reject close event
 
-    
-    # Open setting window
-    def open_setting(self):
-        # Only can open setting window when software is in fundamental mode
-        if self.mode == 0:
-            self.mode = -1          # Change the mode variable
-            self.hide_all_dock()    # Hide all dock windows
+    # open window: tip approach, setting, etest
+    def open_window(self, index):
+        if (index == -1) and (self.mode == 0):          # Open setting
+            self.mode = -1                                      # Change the mode variable
+            self.hide_all_dock()                                # Hide all dock windows
             self.setting.init_setting(self.dsp.succeed, self.dsp.port, self.dsp.baudrate, self.dsp.offset)  # Init setting view
-            self.setting.show()     # Show setting window
-
-    # Open electronic test window
-    def open_etest(self):
-        # only can open electronic test window when software is in fundamental mode
-        if self.mode == 0:
-            self.mode = 1           # Change the mode variable
-            self.hide_all_dock()    # Hide all dock windows
-            self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)  # Init etest view
-            self.etest.show()       # Show electronics test window
-
-    # pop windown open scan first
-    def msg_open_scan(self):
-        QMessageBox.warning(None, "STM", "Open Scan window first!", QMessageBox.Ok)
-
-    # Open tip approach window
-    def open_tipappr(self):
-        # Only can open tip approach window when software is in fundamental mode
-        if self.mode == 0:
-            self.mode = 2                                   # Change the mode variable
-            self.enable_menubar(False)                      # Disable menubar to prevent softeware enter other mode
-            self.setup_tipappr()                            # Prepare all electronics to tip approach mode
-            self.init_dock()                                # Reload all 3 dock view
+            self.setting.show()                                 # Show setting window
+            
+        elif (index == 1) and (self.mode == 0):         # Open etest
+            self.mode = 1                                       # Change the mode variable
+            self.hide_all_dock()                                # Hide all dock windows
+            self.etest.init_etest(self.dsp.succeed, self.dsp.dacrange, self.dsp.adcrange, self.dsp.lastdigital, \
+                                  self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)  # Init etest view
+            self.etest.show()                                   # Show electronics test window
+            
+        elif (index == 2) and (self.mode == 0):         # Open tip appraoch
+            self.mode = 2                                       # Change the mode variable
+            self.enable_menubar(False)                          # Disable menubar to prevent softeware enter other mode
+            self.setup_tipappr(True)                            # Prepare all electronics to tip approach mode
             self.tipappr.init_tipAppr(self.dsp.succeed, self.dsp.lastdigital)     # Init tip approach view
-            self.tipappr.show()                             # Show tip approach window
+            self.tipappr.show()                                 # Show tip approach window
+
+    # Close serial window
+    # Used for closing setting, etest and tip approach
+    def closeWindow(self):
+        self.mode = 0
+        self.enable_menubar(True)
 
     # Open scan window
-    def open_scan(self):
-        if self.mode == 0:
+    # Open scan sub window
+    def open_scan(self, index):
+        if (index == 0) and (self.mode == 0):       # Open scan
             self.mode = 3
             self.enable_menubar(False)
             self.menuScan.setEnabled(True)
             self.enter_scan()
-            self.init_dock()                                # Reload all 3 dock view
             self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)
             self.scan.show()
-    
-    # Open spectroscopy window
-    def open_spc(self):
-        if self.mode == 3 and self.scan.mode == 0:
+        elif (index == 1) and (self.mode == 3):     # Open spectroscopy
             self.scan.mode = 1
             self.menuScan.setEnabled(False)
             self.scan.point_list = [[self.dsp.lastdac[0], self.dsp.lastdac[15]]]
             if self.scan.spc.adv.checkBox_Tracking_Correction.isChecked():
                 self.scan.open_track(2)
             self.scan.spc.show()
-        else:
-            self.msg_open_scan()
-            
-    # Open deposition window
-    def open_deposition(self):
-        if self.mode == 3 and self.scan.mode == 0:
+        elif (index == 2) and (self.mode == 3):     # Open deposition
             self.scan.mode = 2
             self.menuScan.setEnabled(False)
             self.scan.dep.show()
-        else:
-            self.msg_open_scan()
-    
-    # Open track window
-    def open_track(self):
-        if self.mode == 3:
-            # self.scan.mode = 3
-            # self.menuScan.setEnabled(False)
-            # self.scan.track.init_track()
+        elif (index == -1) and (self.mode == 3):    # Open track
             self.scan.track.show()
         else:
-            self.msg_open_scan()
+            self.msg("Open Scan window first!")
     
-    # Open hop window
-    def open_hop(self):
-        pass
-    
-    # Open manipulation window
-    def open_manipulation(self):
-        pass
-            
-    # Close serial window  
-    def closeWindow(self):
-        self.mode = 0
-        self.enable_menubar(True)
-    
-    # Close function for scan mode
+    # Close scan window
+    # Close scan sub window
     def close_scan(self):
         if self.scan.mode == 0:
             self.exit_scan()
-            self.init_dock()                                # Reload all 3 dock view
             self.closeWindow()
+            self.scan.track.hide()          # Also close track window
         else:
             self.scan.mode = 0
-            self.scan.opentrack(0)
+            self.scan.opentrack(0)          # In case of close spectroscopy with open track
             self.menuScan.setEnabled(True)
     
     # Show all dock windows    

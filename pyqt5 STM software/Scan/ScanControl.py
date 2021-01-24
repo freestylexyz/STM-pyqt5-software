@@ -26,25 +26,50 @@ import conversion as cnv
 import threading
 import copy
 import numpy as np
+import time
 
 class myScanControl(myMainMenu):
-    # !!!
     # Scan initial operation
     def enter_scan(self):
-        pass
-        # if self.scan.idling:
-        #     self.enable_mode_serial(False)                                              # Disable serial based on current mode
-        #     self.scan.idling = False                                                    # Toggle scan idling flag
-        #     self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)            # Ramp XY in to 0V
-        #     self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)            # Ramp XY offset to 0V
-        #     self.dsp.gain(0, 1)                                                         # Change X gain to 1.0
-        #     self.dsp.gain(1, 1)                                                         # Change Y gain to 1.0
+        if self.idling:
+            self.idling = False                                                 # Toggle idling flag mode to Flase
+            self.enable_mode_serial(False)                                      # Disable serial based on current mode
+            self.dsp.rampTo(0x1a, 0x8000, 2, 1000, 0, False)                    # Ramp Zouter to 0V
+            self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)    # Ramp XY in to 0V
+            self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)    # Ramp XY offset to 0V
+            self.dsp.gain(0, 1)                                                 # Change X gain to 1.0
+            self.dsp.gain(1, 1)                                                 # Change Y gain to 1.0
+            self.dsp.digital_o(4, 0)                                            # Change Zouter to fine mode
+            self.dsp.digital_o(5, 1)                                            # Change XY to translation mode
+            self.enable_mode_serial(True)                                       # Enable serial based on current mode
+            self.idling = True                                                  # Toggle idling flag back
+            self.init_dock()                                                    # Reload all 3 dock view
             
-            
-    # !!!
     # Exit scan operation
     def exit_scan(self):
-        pass
+        if self.scan.idling:
+            self.enable_mode_serial(False)                                  # Disable serial based on current mode
+            self.scan.idling = False                                        # Toggle scan idling flag
+            self.dsp.rampTo(0x1a, 0x8000, 2, 1000, 0, False)                # Ramp Zouter to 0V
+            self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)# Ramp XY in to 0V
+            self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)# Ramp XY offset to 0V
+            self.dsp.gain(0, 3)                                             # Change X gain to 10.0
+            self.dsp.gain(1, 3)                                             # Change Y gain to 10.0
+            self.dsp.digital_o(4, 1)                                        # Change Zouter to coarse mode
+            self.dsp.digital_o(5, 0)                                        # Change XY to rotation mode
+            # !!! Avoid stuck for no scanner testing
+            self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)              # Return Z offset fine to zero
+            # self.dsp.zAuto0()                                               # Command DSP to do Z auto
+            # bits = self.dsp.lastdac[3] + 300                                # Adjust Z feedback to be little bit contracted
+            # self.dsp.rampTo(0x13, bits, 1, 500, 0, False)                   # Execute the adjustment
+            time.sleep(1)                                                   # Wait 1 seconds to wait for feeback Z to respond
+            self.dsp.gain(3, 3)                                             # Change Z gain 2 to 10.0
+            self.dsp.rampTo(0x13, 0x8000, 2, 1000, 0, False)                # Ramp Z offset to 0V
+            self.dsp.gain(3, 3)                                             # Change Z gain 1 to 0.1
+
+            self.scan.idling = True                                         # Restore scan idling flag
+            self.enable_mode_serial(True)                                   # Enable serial based on current mode
+            self.init_dock()                                                # Reload all 3 dock view  
     
     # Scan related stop slot
     def scan_stop(self):
@@ -103,6 +128,7 @@ class myScanControl(myMainMenu):
             self.scan.pushButton_Zero_XY.setText("Zero")    # Restore zero button text
             self.scan.pushButton_Send_XY.setText("Send")    # Restore send button text
             self.enable_mode_serial(True)                   # Enable serial based on current mode
+            self.init_dock()                                # Reload all 3 dock view  
 
     # Send signal slot
     def send_thread(self, index, xin, yin, xoff, yoff):
@@ -180,6 +206,7 @@ class myScanControl(myMainMenu):
             self.enable_mode_serial(True)                           # Enable serial based on current mode
             self.scan.stop = True                                   # Restore scan stop flag
             self.scan.idling = True                                 # Restore scan idling flag
+            self.init_dock()                                        # Reload all 3 dock view  
 
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
@@ -247,6 +274,7 @@ class myScanControl(myMainMenu):
             self.scan.stop = True                                       # Restore scan stop flag
             self.scan.idling = True                                     # Restore scan idling flag
             self.scan.dep.idling = True                                 # Restore deposition idling flag
+            self.init_dock()                                            # Reload all 3 dock view  
             
     # Depostion signal slot
     def deposition_thread(self, read_before, read, poke_data):
