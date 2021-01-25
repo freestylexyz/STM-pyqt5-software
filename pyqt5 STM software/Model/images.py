@@ -20,7 +20,6 @@ from PIL import Image
 from matplotlib import cm
 from PIL import Image, ImageDraw
 from numpy import genfromtxt
-from imblearn.over_sampling import SMOTE, ADASYN
 
 
 class myImages(QWidget):
