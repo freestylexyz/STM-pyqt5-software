@@ -156,7 +156,6 @@ class myImages(QWidget):
         ax1.set_ylabel("y")
         ax1.set_zlabel("z")
         ax1.scatter(x, y, z, c='r', marker='.')
-        ax1.scatter(3, 6, 2, c='k', marker='^')
         x_p = np.linspace(1, img.shape[0]+1, 100)
         y_p = np.linspace(1, img.shape[1]+1, 100)
         x_p, y_p = np.meshgrid(x_p, y_p)
@@ -165,6 +164,7 @@ class myImages(QWidget):
         new_z = X[0, 0] * x + X[1, 0] * y + X[2, 0]
         new_z = z - new_z
         new_z = np.reshape(new_z, (img.shape[0], img.shape[1])).astype(np.float32)
+        # new_z = self.prepare_data(new_z)
         ax1.plot_wireframe(x_p, y_p, z_p, rstride=10, cstride=10)
         ax1.scatter(x, y, new_z, c='g', marker='.')
         # plt.show()
@@ -174,12 +174,13 @@ class myImages(QWidget):
     def prepare_data(self, array):
         xmax = max(map(max, array))
         xmin = min(map(min, array))
-        # print(xmax, xmin)
+        print(xmax, xmin)
         if xmax-xmin != 0:
             for i in range(array.shape[0]):
                 for j in range(array.shape[1]):
-                    array[i][j] = (array[i][j] - xmin) / (xmax - xmin)
-        # print(array)
+                    array[i][j] = (array[i][j] - xmin) / (xmax - xmin) * 255
+        array = array.astype(np.float32)
+        print("prepare data:", array.max(), array.min())
         return array
 
     def read_csv(self, path):
