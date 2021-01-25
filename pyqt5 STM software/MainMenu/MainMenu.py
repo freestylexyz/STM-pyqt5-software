@@ -89,12 +89,20 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         QMessageBox.warning(None, "STM", text, QMessageBox.Ok)
 
     # Enable menu bar
-    def enable_menubar(self, enable):
-        self.menuTest.setEnabled(enable)
-        self.menuTip_Approach.setEnabled(enable)
-        self.menuScan.setEnabled(enable)
-        self.menuSetting.setEnabled(enable)
+    def enable_menubar(self, index):
+        self.menuTest.setEnabled(index == 0)
+        self.menuTip_Approach.setEnabled((index == 0) or (index == 2))
+        self.menuScan.setEnabled((index == 0) or (index == 3))
+        self.menuSetting.setEnabled(index == 0)
         
+    # Enable scan menu
+    def enable_scan_menu(self, index):
+        self.actionScan.setEnabled(index == 0)
+        self.actionSpectra.setEnabled((index == 0) or (index == 1))
+        self.actionDeposition.setEnabled((index == 0) or (index == 2))
+        self.actionTrack.setEnabled(index == 0)
+        # self.actionHop.setEnabled(index == 0)
+        # self.actionManipulation.setEnabled(index == 0)
 
     # Enable serial related features in all docks
     def enable_dock_serial(self, enable):
@@ -105,42 +113,36 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     
     # Enable all serial related component in bias dock
     def enable_bias_serial(self, enable):
-        self.groupBox_Bias_Bias.setEnabled(enable)
-        self.groupBox_DAC_Bias.setEnabled(enable and (self.mode != 3))
-        self.groupBox_Dither_Bias.setEnabled(enable)
-        self.groupBox_Range_Bias.setEnabled(enable)
-        self.pushButton_Rampto1_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto2_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto3_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto4_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto5_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto6_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto7_BiasRamp.setEnabled(enable)
-        self.pushButton_Rampto8_BiasRamp.setEnabled(enable)
+        widgets = [self.groupBox_Bias_Bias, self.groupBox_Dither_Bias,\
+                   self.pushButton_Rampto1_BiasRamp, self.pushButton_Rampto2_BiasRamp,\
+                   self.pushButton_Rampto3_BiasRamp, self.pushButton_Rampto4_BiasRamp,\
+                   self.pushButton_Rampto5_BiasRamp, self.pushButton_Rampto6_BiasRamp,\
+                   self.pushButton_Rampto7_BiasRamp, self.pushButton_Rampto8_BiasRamp]
+        for widget in widgets:
+            widget.setEnabled(enable)
+        
+        self.groupBox_DAC_Bias.setEnabled(enable and (self.mode != 3))  # In scan mode will disable bais DAC selection
+        self.groupBox_Range_Bias.setEnabled(enable and (not self.bias)) # 20 bit DAC will disable range selection
         self.pushButton_StopRamp_BiasRamp.setEnabled(False)
         
     # Enable all serial related component in current dock
     def enable_current_serial(self, enable):
-        self.groupBox_Gain_Current.setEnabled(enable)
-        self.groupBox_Setpoint_Current.setEnabled(enable)
-        self.pushButton_Rampto1_CurrRamp.setEnabled(enable)
-        self.pushButton_Rampto2_CurrRamp.setEnabled(enable)
-        self.pushButton_Rampto3_CurrRamp.setEnabled(enable)
-        self.pushButton_Rampto4_CurrRamp.setEnabled(enable)
+        widgets = [self.groupBox_Gain_Current, self.groupBox_Setpoint_Current,\
+                   self.pushButton_Rampto1_CurrRamp, self.pushButton_Rampto2_CurrRamp,\
+                   self.pushButton_Rampto3_CurrRamp, self.pushButton_Rampto4_CurrRamp]
+        for widget in widgets:
+            widget.setEnabled(enable)
         self.pushButton_StopRamp_CurrRamp.setEnabled(False)
     
     # Enable all serial related component in Z control dock
     def enable_Zcontrol_serial(self, enable):
-        self.groupBox_Gain_Zcontrol.setEnabled(enable)
-        self.groupBox_Feedack_Zcontrol.setEnabled(enable)
-        self.groupBox_Retract_Zcontrol.setEnabled(enable)
-        self.groupBox_Dither_Zcontrol.setEnabled(enable)
-        self.pushButton_Send_Zoffset.setEnabled(enable)
-        self.pushButton_Zauto_Zoffset.setEnabled(enable)
-        self.pushButton_HardRetract_Zoffset.setEnabled(enable)
-        self.pushButton_Advance_Zoffsetfine.setEnabled(enable)
-        self.pushButton_Zero_Zoffsetfine.setEnabled(enable)
-        self.pushButton_MatchCurrent_Zoffsetfine.setEnabled(enable)
+        widgets = [self.groupBox_Gain_Zcontrol, self.groupBox_Feedack_Zcontrol,\
+                   self.groupBox_Retract_Zcontrol, self.groupBox_Dither_Zcontrol,\
+                   self.pushButton_Send_Zoffset, self.pushButton_Zauto_Zoffset,\
+                   self.pushButton_HardRetract_Zoffset, self.pushButton_Advance_Zoffsetfine,\
+                   self.pushButton_Zero_Zoffsetfine, self.pushButton_MatchCurrent_Zoffsetfine]
+        for widget in widgets:
+            widget.setEnabled(enable)
     
     # Enable serial related features in current mode
     def enable_mode_serial(self, enable):
@@ -153,7 +155,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             self.menuScan.setEnabled(enable)    # Scan menu
         elif self.mode == 0:
             self.enable_dock_serial(enable)     # All docks
-            self.enable_menubar(enable)         # All windows
+            self.enable_menubar(not enable)     # All windows
             
     # stop button slot
     def stop_slot(self):
@@ -172,6 +174,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     def init_bias(self):
         # Enable serial related modules
         self.enable_bias_serial(self.dsp.succeed)
+        self.groupBox_DAC_Bias.setEnabled(self.mode != 3)
         
         # Set up UI
         self.radioButton_ON_BiasDither.setChecked(self.dsp.lastdigital[0])      # Set up bias dither ON radio button
@@ -194,18 +197,46 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             self.spinBox_SpeedInput_BiasRamp.setValue(30)                       # Set default ramp speed
             self.scrollBar_Input_Bias.setPageStep(2500)                         # Set scroll bar page step
         else:
-            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])    # Set scroll bar value first
-            self.scrollBar_Input_Bias.setMaximum(0xffff)                # Set scroll bar maximum
+            self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])            # Set scroll bar value first
+            self.scrollBar_Input_Bias.setMaximum(0xffff)                        # Set scroll bar maximum
             self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
-            self.spinBox_SpeedInput_BiasRamp.setValue(2)                # Set default ramp speed
-            self.scrollBar_Input_Bias.setPageStep(150)                  # Set scroll bar page step
+            self.spinBox_SpeedInput_BiasRamp.setValue(2)                        # Set default ramp speed
+            self.scrollBar_Input_Bias.setPageStep(150)                          # Set scroll bar page step
     
+    # Set up all spin boxes input range
+    def bias_spinbox_range(self):
+        # Determin input limit based on selected DAC and DAC range
+        minimum = cnv.bv(0, '20') if self.bias_dac else cnv.bv(0, 'd', self.dsp.dacrange[13])
+        maximum = cnv.bv(0xfffff, '20') if self.bias_dac else cnv.bv(0xffff, 'd', self.dsp.dacrange[13])
+            
+        spinboxes = [self.spinBox_Input_Bias, self.spinBox_Input1_BiasRamp,\
+                self.spinBox_Input2_BiasRamp, self.spinBox_Input3_BiasRamp,\
+                self.spinBox_Input4_BiasRamp, self.spinBox_Input5_BiasRamp,\
+                self.spinBox_Input6_BiasRamp, self.spinBox_Input7_BiasRamp,\
+                self.spinBox_Input8_BiasRamp]
+            
+        for spin in spinboxes:
+            spin.setMinimum(minimum)    # Set minimum for main spin box and ramp spin boxes
+            spin.setMaximum(maximum)    # Set maximum for main spin box and ramp spin boxes
+    
+    # Set bias range radio button
+    def bias_range_radio(self):
+        if self.bias_dac:       # 20bit DAC case
+            self.radioButton_5_Range.setChecked(True)   # Set range to +/-5V
+            self.groupBox_Range_Bias.setEnabled(False)  # Disable range selection
+        else:                   # 16bit DAC case
+            radio_dict = {14: self.radioButton_25_Range, 9: self.radioButton_5_Range, 10: self.radioButton_10_Range}
+            radio_dict[self.dsp.dacrange[13]].setChecked(True)      # Set corresponding radio button
+            self.groupBox_Range_Bias.setEnabled(self.dsp.succeed)   # Enable range selection when found DSP
+
+                
     #
     # Current
     #
     # Init current UI
     def init_current(self):
         self.enable_current_serial(self.dsp.succeed)    # Enable serial related modules
+        self.groupBox_Gain_Current.setEnabled(True)     # Enable preamp gain selection no matter what
         self.current_set_radio()                        # Set up preamp gain radio button
         self.current_spinbox_range()                    # Set up all spin boxes range
         
@@ -215,36 +246,19 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
     # Set radio button for preamp gain
     def current_set_radio(self):
-        if self.preamp_gain == 8:
-            self.radioButton_8_Gain.setChecked(True)    # Set gain 8 radio button if gain 8
-        elif self.preamp_gain == 9:
-            self.radioButton_9_Gain.setChecked(True)    # Set gain 9 radio button if gain 9
-        elif self.preamp_gain == 10:
-            self.radioButton_10_Gain.setChecked(True)   # Set gain 10 radio button if gain 10
+        radio_list = [self.radioButton_8_Gain, self.radioButton_9_Gain, self.radioButton_10_Gain]
+        radio_list[self.preamp_gain - 8].setChecked(True)      # Set corresponding radio button
     
     # Convert I set bits to current setpoint based on current status
     def b2i(self, bits, gain):
-        value = cnv.bv(bits, 'd', self.dsp.dacrange[5])     # Convert bits to voltage
-        
-        # Determin mulitplier based on gain
-        if gain == 8:
-            multiplier = 10.0
-        elif gain == 9:
-            multiplier = 1.0
-        elif gain == 10:
-            multiplier = 0.1
-        return 10.0 ** (-value / 10.0) * multiplier         # Return current setpoint
+        value = cnv.bv(bits, 'd', self.dsp.dacrange[5])         # Convert bits to voltage
+        multiplier = [10.0, 1.0, 0.1]                           # Multiplier list
+        return 10.0 ** (-value / 10.0) * multiplier[gain - 8]   # Return current setpoint
     
     # Convert current setpoint to I set bits based on current status
     def i2b(self, value, gain):
-        # Determin mulitplier based on gain
-        if gain == 8:
-            multiplier = 10.0
-        elif gain == 9:
-            multiplier = 1.0
-        elif gain == 10:
-            multiplier = 0.1
-        value = value / multiplier                      # Divide multiplier
+        multiplier = [10.0, 1.0, 0.1]                   # Multiplier list
+        value = value / multiplier[gain - 8]            # Divide multiplier
         value = -10.0 * math.log(value, 10)             # Calculate I set voltage
         bits = cnv.vb(value, 'd', self.dsp.dacrange[5]) # Convert it to I set bits
         return bits
@@ -254,20 +268,12 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         # Determin set point limit based on current preamp gain
         minimum = self.b2i(0xffff, self.preamp_gain)
         maximum = self.b2i(0x0, self.preamp_gain)
-
-        # Set minimum
-        self.spinBox_Input_Setpoint.setMinimum(minimum)
-        self.spinBox_Input1_CurrRamp.setMinimum(minimum)
-        self.spinBox_Input2_CurrRamp.setMinimum(minimum)
-        self.spinBox_Input3_CurrRamp.setMinimum(minimum)
-        self.spinBox_Input4_CurrRamp.setMinimum(minimum)
-
-        # Set maximum
-        self.spinBox_Input_Setpoint.setMaximum(maximum)
-        self.spinBox_Input1_CurrRamp.setMaximum(maximum)
-        self.spinBox_Input2_CurrRamp.setMaximum(maximum)
-        self.spinBox_Input3_CurrRamp.setMaximum(maximum)
-        self.spinBox_Input4_CurrRamp.setMaximum(maximum)
+        spinboxes = [self.spinBox_Input_Setpoint, self.spinBox_Input1_CurrRamp, self.spinBox_Input2_CurrRamp,\
+                     self.spinBox_Input3_CurrRamp, self.spinBox_Input4_CurrRamp]
+            
+        for spin in spinboxes:
+            spin.setMinimum(minimum)    # Set minimum for main spin box and ramp spin boxes
+            spin.setMaximum(maximum)    # Set maximum for main spin box and ramp spin boxes
     
     #
     # Z controller
@@ -280,8 +286,8 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         # Load status
         self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
         self.spinBox_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
-        self.spinBox_Indication_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
-        self.spinBox_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)
+        self.label_Indication_Zoffset.setText(str(self.dsp.lastdac[3] - 0x8000))
+        self.label_Indication_Zoffsetfine.setText(str(self.dsp.lastdac[2] - 0x8000))
         self.slider_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)
         self.radioButton_ON_ZDither.setChecked(self.dsp.lastdigital[1])
         self.radioButton_OFF_ZDither.setChecked(not self.dsp.lastdigital[1])
@@ -300,23 +306,13 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
 
     # Load Z1 gain from DSP
     def load_z1_gain(self):
-        if self.dsp.lastgain[2] == 0:
-            self.radioButton_Z1gain10_Gain.setChecked(True)
-        elif self.dsp.lastgain[2] == 1:
-            self.radioButton_Z1gain1_Gain.setChecked(True)
-        elif self.dsp.lastgain[2] == 3:
-            self.radioButton_Z1gain01_Gain.setChecked(True)
+        radio_dict = {0: self.radioButton_Z1gain10_Gain, 1: self.radioButton_Z1gain1_Gain, 3: self.radioButton_Z1gain01_Gain}
+        radio_dict[self.dsp.lastgain[2]].setChecked(True)      # Set corresponding radio button
     
     # Load Z2 gain from DSP
     def load_z2_gain(self):
-        if self.dsp.lastgain[3] == 0:
-            self.radioButton_Z2gain01_Gain.setChecked(True)
-        elif self.dsp.lastgain[3] == 1:
-            self.radioButton_Z2gain1_Gain.setChecked(True)
-        elif self.dsp.lastgain[3] == 3:
-            self.radioButton_Z2gain10_Gain.setChecked(True)
-    
-        
+        radio_dict = {0: self.radioButton_Z2gain01_Gain, 1: self.radioButton_Z2gain1_Gain, 3: self.radioButton_Z2gain10_Gain}
+        radio_dict[self.dsp.lastgain[3]].setChecked(True)      # Set corresponding radio button
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

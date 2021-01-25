@@ -238,7 +238,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             
         elif (index == 2) and (self.mode == 0):         # Open tip appraoch
             self.mode = 2                                       # Change the mode variable
-            self.enable_menubar(False)                          # Disable menubar to prevent softeware enter other mode
+            self.enable_menubar(2)                              # Disable menubar to prevent softeware enter other mode
             self.setup_tipappr(True)                            # Prepare all electronics to tip approach mode
             self.tipappr.init_tipAppr(self.dsp.succeed, self.dsp.lastdigital)     # Init tip approach view
             self.tipappr.show()                                 # Show tip approach window
@@ -247,29 +247,33 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     # Used for closing setting, etest and tip approach
     def closeWindow(self):
         self.mode = 0
-        self.enable_menubar(True)
+        self.enable_menubar(0)
 
     # Open scan window
     # Open scan sub window
     def open_scan(self, index):
         if (index == 0) and (self.mode == 0):       # Open scan
             self.mode = 3
-            self.enable_menubar(False)
-            self.menuScan.setEnabled(True)
-            self.enter_scan()
-            self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)
+            self.enter_scan()                                               # Enter scan mode
+            self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)  # Init scan view
             self.scan.show()
+            self.enable_menubar(3)                                          # Disable menubar to prevent softeware enter other mode
+            self.enable_scan_menu(0)
         elif (index == 1) and (self.mode == 3):     # Open spectroscopy
             self.scan.mode = 1
-            self.menuScan.setEnabled(False)
-            self.scan.point_list = [[self.dsp.lastdac[0], self.dsp.lastdac[15]]]
+            self.scan.point_list = [[self.dsp.lastdac[0], self.dsp.lastdac[15]]]    # Init point list
+            self.scan.spc.groupBox_Mapping.setChecked(False)                        # Uncheck mapping groupbox
+            # Close and open track based on spectroscopy advance option
             if self.scan.spc.adv.checkBox_Tracking_Correction.isChecked():
                 self.scan.open_track(2)
+            else:
+                self.scan.open_track(0)
             self.scan.spc.show()
+            self.enable_scan_menu(1)
         elif (index == 2) and (self.mode == 3):     # Open deposition
             self.scan.mode = 2
-            self.menuScan.setEnabled(False)
             self.scan.dep.show()
+            self.enable_scan_menu(2)
         elif (index == -1) and (self.mode == 3):    # Open track
             self.scan.track.show()
         else:
@@ -285,7 +289,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         else:
             self.scan.mode = 0
             self.scan.opentrack(0)          # In case of close spectroscopy with open track
-            self.menuScan.setEnabled(True)
+            self.enable_scan_menu(0)        # Enable all scan action
     
     # Show all dock windows    
     def show_all_dock(self):

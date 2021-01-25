@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>226</height>
+    <height>196</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -62,55 +62,12 @@
     <item row="0" column="0">
      <widget class="QWidget" name="widget_3" native="true">
       <layout class="QGridLayout" name="gridLayout_11">
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>DSP version:</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="2">
         <widget class="QLabel" name="versionLabel">
          <property name="text">
           <string>No DSP found</string>
          </property>
         </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>None</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="3">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>PyQt5 Ho group STM software by Jiang Yao and Dan Bai</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <spacer name="horizontalSpacer_46">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>5</height>
-          </size>
-         </property>
-        </spacer>
        </item>
        <item row="2" column="0" colspan="3">
         <spacer name="horizontalSpacer_47">
@@ -137,6 +94,49 @@
           <string>Status：</string>
          </property>
         </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>None</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>DSP version:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>PyQt5 Ho group STM software by Jiang Yao and Dan Bai</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <spacer name="horizontalSpacer_46">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>5</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -198,11 +198,6 @@
     <addaction name="actionHop"/>
     <addaction name="actionManipulation"/>
    </widget>
-   <widget class="QMenu" name="menuControl">
-    <property name="title">
-     <string>Control</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuTest">
     <property name="title">
      <string>Test</string>
@@ -231,6 +226,15 @@
      <string>Help</string>
     </property>
     <addaction name="actionManual_A"/>
+   </widget>
+   <widget class="QMenu" name="menuControl">
+    <property name="title">
+     <string>Control</string>
+    </property>
+    <addaction name="actionBias"/>
+    <addaction name="actionZ"/>
+    <addaction name="actionCurrent"/>
+    <addaction name="actionShow_All_A"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuControl"/>
@@ -283,8 +287,27 @@
         <bool>false</bool>
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="2" column="0" colspan="10">
+        <item row="0" column="0" colspan="2">
+         <widget class="QSpinBox" name="spinBox_Input_Zoffset">
+          <property name="minimum">
+           <number>-32768</number>
+          </property>
+          <property name="maximum">
+           <number>32767</number>
+          </property>
+          <property name="singleStep">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="5">
          <widget class="QScrollBar" name="scrollBar_Input_Zoffset">
+          <property name="minimumSize">
+           <size>
+            <width>324</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="minimum">
            <number>-32768</number>
           </property>
@@ -292,14 +315,34 @@
            <number>32767</number>
           </property>
           <property name="value">
-           <number>-32768</number>
+           <number>0</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="0" column="8">
+        <item row="1" column="5">
+         <widget class="QPushButton" name="pushButton_Send_Zoffset">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Send</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4" colspan="2">
+         <widget class="QPushButton" name="pushButton_HardRetract_Zoffset">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Hard retract</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
          <widget class="QPushButton" name="pushButton_Zauto_Zoffset">
           <property name="enabled">
            <bool>false</bool>
@@ -315,189 +358,25 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="6">
-         <spacer name="horizontalSpacer_33">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_Indication_Zoffset">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="sizeHint" stdset="0">
+          <property name="minimumSize">
            <size>
-            <width>40</width>
+            <width>80</width>
             <height>0</height>
            </size>
           </property>
-         </spacer>
-        </item>
-        <item row="1" column="2">
-         <spacer name="horizontalSpacer_27">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="9">
-         <spacer name="horizontalSpacer_30">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="9" colspan="2">
-         <widget class="QPushButton" name="pushButton_HardRetract_Zoffset">
-          <property name="enabled">
-           <bool>false</bool>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
           <property name="text">
-           <string>Hard retract</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <spacer name="horizontalSpacer_26">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer_29">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="4">
-         <spacer name="horizontalSpacer_35">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="10">
-         <widget class="QPushButton" name="pushButton_Send_Zoffset">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Send</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <spacer name="horizontalSpacer_31">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="8">
-         <spacer name="horizontalSpacer_32">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="7">
-         <spacer name="horizontalSpacer_34">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="10">
-         <spacer name="horizontalSpacer_28">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="5">
-         <spacer name="horizontalSpacer_36">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0" colspan="4">
-         <widget class="QSpinBox" name="spinBox_Input_Zoffset">
-          <property name="minimum">
-           <number>-32768</number>
-          </property>
-          <property name="maximum">
-           <number>32767</number>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4" colspan="4">
-         <widget class="QSpinBox" name="spinBox_Indication_Zoffset">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="minimum">
-           <number>-32768</number>
-          </property>
-          <property name="maximum">
-           <number>32767</number>
+           <string>0</string>
           </property>
          </widget>
         </item>
@@ -513,347 +392,99 @@
         <bool>false</bool>
        </property>
        <layout class="QGridLayout" name="gridLayout_14">
+        <item row="1" column="4">
+         <widget class="QPushButton" name="pushButton_MatchCurrent_Zoffsetfine">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Match current</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="pushButton_Zero_Zoffsetfine">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Zero</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="spinBox_AdvInput_Zoffsetfine">
+          <property name="minimum">
+           <number>-32768</number>
+          </property>
+          <property name="maximum">
+           <number>32767</number>
+          </property>
+          <property name="singleStep">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_14">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>bits</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QWidget" name="widget" native="true">
-            <layout class="QGridLayout" name="gridLayout_3">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item row="3" column="11">
-              <spacer name="horizontalSpacer_24">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="9">
-              <spacer name="horizontalSpacer_16">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="7">
-              <spacer name="horizontalSpacer_20">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="10">
-              <spacer name="horizontalSpacer_25">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="6">
-              <spacer name="horizontalSpacer_18">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="0">
-              <spacer name="horizontalSpacer_11">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="13">
-              <spacer name="horizontalSpacer_15">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="1">
-              <spacer name="horizontalSpacer_14">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="2">
-              <spacer name="horizontalSpacer_21">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="3">
-              <spacer name="horizontalSpacer_22">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="12">
-              <spacer name="horizontalSpacer_23">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="8">
-              <spacer name="horizontalSpacer_17">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="3" column="5">
-              <spacer name="horizontalSpacer_19">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="0">
-              <widget class="QPushButton" name="pushButton_Advance_Zoffsetfine">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Advance</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QLabel" name="label_14">
-               <property name="text">
-                <string>bits</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1" colspan="3">
-              <widget class="QSpinBox" name="spinBox_AdvInput_Zoffsetfine">
-               <property name="minimum">
-                <number>-32768</number>
-               </property>
-               <property name="maximum">
-                <number>32767</number>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="7">
-              <widget class="QPushButton" name="pushButton_Zero_Zoffsetfine">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Zero</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="8" colspan="6">
-              <widget class="QPushButton" name="pushButton_MatchCurrent_Zoffsetfine">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Match current</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QPushButton" name="pushButton_Advance_Zoffsetfine">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Advance</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="4">
+         <widget class="QSlider" name="slider_Input_Zoffsetfine">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="minimum">
+           <number>-32768</number>
+          </property>
+          <property name="maximum">
+           <number>32767</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
         </item>
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_5">
-          <property name="leftMargin">
-           <number>0</number>
+         <widget class="QLabel" name="label_Indication_Zoffsetfine">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>28</height>
+           </size>
           </property>
-          <property name="rightMargin">
-           <number>0</number>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
-          <item row="1" column="2">
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>5</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0">
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>5</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0">
-           <widget class="QSpinBox" name="spinBox_Input_Zoffsetfine">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimum">
-             <number>-32768</number>
-            </property>
-            <property name="maximum">
-             <number>32767</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>5</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="1">
-           <spacer name="horizontalSpacer_10">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>5</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="4">
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>5</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="1" colspan="4">
-           <widget class="QSlider" name="slider_Input_Zoffsetfine">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimum">
-             <number>-32768</number>
-            </property>
-            <property name="maximum">
-             <number>32767</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -876,7 +507,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_Feedack_Zcontrol">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="title">
            <string>Feedback</string>
@@ -917,7 +548,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_Retract_Zcontrol">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="title">
            <string>Retract</string>
@@ -958,7 +589,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_Dither_Zcontrol">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="title">
            <string>Dither</string>
@@ -1002,7 +633,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_Gain_Zcontrol">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="title">
         <string>Gain</string>
@@ -1054,7 +685,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z1gain01_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>0.1</string>
@@ -1067,7 +698,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z1gain1_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>1</string>
@@ -1077,7 +708,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z1gain10_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>10</string>
@@ -1105,7 +736,7 @@
            <item>
             <widget class="QLabel" name="label_Z2gain_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>Z2 Gain</string>
@@ -1115,7 +746,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z2gain01_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>0.1</string>
@@ -1125,7 +756,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z2gain1_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>1</string>
@@ -1135,7 +766,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z2gain10_Gain">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>10</string>
@@ -1373,7 +1004,17 @@
          </widget>
         </item>
         <item row="5" column="5">
-         <widget class="QSpinBox" name="spinBox_SpeedInput_BiasRamp"/>
+         <widget class="QSpinBox" name="spinBox_SpeedInput_BiasRamp">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
         </item>
         <item row="2" column="5">
          <widget class="QPushButton" name="pushButton_Rampto6_BiasRamp">
@@ -1540,7 +1181,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_Dither_Bias">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="title">
            <string>Dither</string>
@@ -1604,6 +1245,9 @@
              <property name="text">
               <string>20 bit</string>
              </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
@@ -1612,7 +1256,7 @@
               <string>16 bit</string>
              </property>
              <property name="checked">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -1625,7 +1269,7 @@
      <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox_Bias_Bias">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1637,36 +1281,32 @@
         <string>Bias</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="1">
+        <item row="0" column="1" colspan="2">
          <widget class="QScrollBar" name="scrollBar_Input_Bias">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
+          </property>
+          <property name="minimum">
+           <number>0</number>
           </property>
           <property name="maximum">
            <number>1048575</number>
+          </property>
+          <property name="pageStep">
+           <number>2500</number>
+          </property>
+          <property name="value">
+           <number>524288</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer_12">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>9</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="0">
          <widget class="QDoubleSpinBox" name="spinBox_Input_Bias">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="decimals">
            <number>6</number>
@@ -1679,10 +1319,10 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="0" column="3">
          <widget class="QPushButton" name="pushButton_Filp_Bias">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1707,7 +1347,7 @@
      <item row="10" column="0">
       <widget class="QGroupBox" name="groupBox_Range_Bias">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="title">
         <string>Range</string>
@@ -1777,7 +1417,7 @@
    <property name="minimumSize">
     <size>
      <width>442</width>
-     <height>360</height>
+     <height>379</height>
     </size>
    </property>
    <property name="acceptDrops">
@@ -1803,7 +1443,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_Setpoint_Current">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1821,7 +1461,7 @@
            <bool>false</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1849,10 +1489,10 @@
         <item row="0" column="0">
          <widget class="QDoubleSpinBox" name="spinBox_Input_Setpoint">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1883,63 +1523,18 @@
         <item row="0" column="2">
          <widget class="QScrollBar" name="scrollBar_Input_Setpoint">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="maximum">
            <number>65535</number>
+          </property>
+          <property name="pageStep">
+           <number>200</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
-        </item>
-        <item row="2" column="1">
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>9</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="0">
-         <spacer name="horizontalSpacer_45">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>30</width>
-            <height>9</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="2">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>9</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -2216,6 +1811,18 @@
           <property name="enabled">
            <bool>true</bool>
           </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="singleStep">
+           <number>10</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
          </widget>
         </item>
         <item row="0" column="2">
@@ -2259,54 +1866,49 @@
     <string>Save(&amp;S)</string>
    </property>
   </action>
-  <action name="actionBias">
-   <property name="text">
-    <string>Bias</string>
-   </property>
-  </action>
-  <action name="actionCurrent">
-   <property name="text">
-    <string>Current</string>
-   </property>
-  </action>
-  <action name="actionZ">
-   <property name="text">
-    <string>Z</string>
-   </property>
-  </action>
   <action name="actionScan">
    <property name="text">
     <string>Scan</string>
    </property>
   </action>
   <action name="actionSpectra">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Spectra</string>
    </property>
   </action>
   <action name="actionDeposition">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Deposition</string>
    </property>
   </action>
   <action name="actionTrack">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Track</string>
    </property>
   </action>
   <action name="actionHop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Hop</string>
    </property>
   </action>
   <action name="actionManipulation">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Manipulation</string>
-   </property>
-  </action>
-  <action name="actionShow_All_A">
-   <property name="text">
-    <string>Show All(&amp;A)</string>
    </property>
   </action>
   <action name="actionManual_A">
@@ -2329,6 +1931,26 @@
     <string>Setting</string>
    </property>
   </action>
+  <action name="actionBias">
+   <property name="text">
+    <string>Bias</string>
+   </property>
+  </action>
+  <action name="actionZ">
+   <property name="text">
+    <string>Z</string>
+   </property>
+  </action>
+  <action name="actionCurrent">
+   <property name="text">
+    <string>Current</string>
+   </property>
+  </action>
+  <action name="actionShow_All_A">
+   <property name="text">
+    <string>Show All(A)</string>
+   </property>
+  </action>
   <zorder>Zcontrol</zorder>
   <zorder>Bias</zorder>
   <zorder>Current</zorder>
@@ -2336,102 +1958,5 @@
  <resources>
   <include location="logo.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>actionBias</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>Bias</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>435</x>
-     <y>494</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionCurrent</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>Current</receiver>
-   <slot>repaint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>329</x>
-     <y>390</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionZ</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>Zcontrol</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>362</x>
-     <y>255</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_16bit_DAC</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>groupBox_Range_Bias</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>405</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>360</x>
-     <y>531</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scrollBar_Input_Zoffset</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox_Input_Zoffset</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>73</x>
-     <y>153</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>68</x>
-     <y>103</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_Input_Zoffset</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scrollBar_Input_Zoffset</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>87</x>
-     <y>104</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>150</x>
-     <y>153</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
