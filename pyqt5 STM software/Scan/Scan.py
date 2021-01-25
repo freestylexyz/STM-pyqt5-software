@@ -110,8 +110,8 @@ class myScan(myScan_):
         self.current_img = copy.deepcopy(self.raw_img)
 
         self.img_display.setImage(self.current_img)
-        cv.imshow('img', self.current_img)
-        cv.waitKey()
+        # cv.imshow('img', self.current_img)
+        # cv.waitKey()
         self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
         self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
 
@@ -222,7 +222,7 @@ class myScan(myScan_):
         
         # !!! update graphic view
         self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
-        self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0]+self.last_xy[2], self.last_xy[1]+self.last_xy[3]])
+        self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
 
     # Update scan
     def scan_update(self, rdata):

@@ -268,7 +268,7 @@ class myScan_(QWidget, Ui_Scan):
 
         # Set graphic
         self.target_position.movePoint(self.target_position.getHandles()[0], \
-                                       [self.current_xy[0]+self.current_xy[2], self.current_xy[1]+self.current_xy[3]])
+                                       [self.current_xy[0]+self.last_xy[2], self.current_xy[1]+self.last_xy[3]])
 
     # XY offset conversion
     def xy_off_cnv(self, flag, xy, value):
@@ -398,15 +398,15 @@ class myScan_(QWidget, Ui_Scan):
     # View Control | target area and target position update
     def default_update(self, index):
         if index == 0:      # target area moved
-            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/100)
-            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/100)
+            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/self.imagine_gain)
+            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/self.imagine_gain)
             self.scrollBar_Xoffset_XY.setValue(xoffset)
             self.scrollBar_Yoffset_XY.setValue(yoffset)
         elif index == 1:    # target position moved
-            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/100)
-            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/100)
-            xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/100) - xoffset
-            yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/100) - yoffset
+            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/self.imagine_gain)
+            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/self.imagine_gain)
+            xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/self.imagine_gain) - xoffset
+            yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/self.imagine_gain) - yoffset
             self.scrollBar_Xin_XY.setValue(xin)
             self.scrollBar_Yin_XY.setValue(yin)
 
