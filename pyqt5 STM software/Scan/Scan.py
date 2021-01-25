@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, 
 from PyQt5.QtGui import QPixmap, QPen
 from PyQt5.QtCore import pyqtSignal , Qt, QRectF
 from PyQt5 import QtCore
-
+import numpy as np
 from Scan_ import myScan_
 from DigitalSignalProcessor import myDSP
 
@@ -101,19 +101,19 @@ class myScan(myScan_):
         self.view_box.addItem(self.img_display)
         self.myimg = myImages()
 
+        '''Image plot for test'''
+        # Test image no.1
         # raw_img = cv.imread('../data/scan_example_gray.jpg')
+        # Test image no.2
+        # self.myimg.read_csv('../data/real_stm_img.csv')
+        # raw_img = cv.imread('../data/real_stm_img.jpeg')
 
-        self.myimg.read_csv('../data/real_stm_img.csv')
-        raw_img = cv.imread('../data/real_stm_img.jpeg')
+        # self.raw_img = cv.cvtColor(raw_img, cv.COLOR_BGR2GRAY)
+        # self.current_img = copy.deepcopy(self.raw_img)
+        # self.img_display.setImage(self.current_img)
 
-        self.raw_img = cv.cvtColor(raw_img, cv.COLOR_BGR2GRAY)
-        self.current_img = copy.deepcopy(self.raw_img)
-
-        self.img_display.setImage(self.current_img)
-        # cv.imshow('img', self.current_img)
-        # cv.waitKey()
-        self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
-        self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
+        # self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
+        # self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
 
     # Init scan
     def init_scan(self, dsp, bias_dac, preamp_gain):
@@ -221,8 +221,8 @@ class myScan(myScan_):
         # y: self.last_xy[1]
         
         # !!! update graphic view
-        self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
+        # self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
 
     # Update scan
     def scan_update(self, rdata):
@@ -395,14 +395,11 @@ class myScan(myScan_):
         '''Update image based on user selected filter and colormap.'''
         if self.radioButton_Gray_Scan.isChecked():
             psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
-            self.color_current_img =  psudo_gray_img
+            self.color_current_img = psudo_gray_img
         elif self.radioButton_Color_Scan.isChecked():
             color_img = self.myimg.color_map(self.current_img, 36)
             self.color_current_img = color_img
         self.img_display.setImage(self.color_current_img)
-
-
-
 
     # Emit close signal
     def closeEvent(self, event):

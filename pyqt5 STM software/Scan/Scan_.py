@@ -81,7 +81,7 @@ class myScan_(QWidget, Ui_Scan):
         # XY and image variables (unit is in imagine bit)
         self.last_xy = [0]*4            # Xin(0), Yin(1), X offset(2), Y offset(3) --> values sent last time
         self.current_xy = [0]*4         # Xin(0), Yin(1), X offset(2), Y offset(3)
-        self.scan_size = [128, 25600]   # Scan size(0), Step size(1)
+        self.scan_size = [128, 2560]   # Scan size(0), Step size(1)
         self.imagine_gain = 10          # X/Y gain imaginary value
         self.tilt = [0.0] * 2           # Tilt X, Tilt Y
         
@@ -170,7 +170,7 @@ class myScan_(QWidget, Ui_Scan):
         self.serial_pen = [serial_pen_0, serial_pen_1, serial_pen_2, serial_pen_3, serial_pen_4, serial_pen_5]
 
         # ROI | scan area
-        self.scan_area = CrossCenterROI([0, 0], [300000, 300000], pen=green_pen, centered=True, \
+        self.scan_area = CrossCenterROI([-150000, -150000], [300000, 300000], pen=green_pen, centered=True, \
                                         movable=False, resizable=False, rotatable=False, \
                                         maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         self.scan_area.aspectLocked = True
@@ -182,7 +182,7 @@ class myScan_(QWidget, Ui_Scan):
         self.scan_area.getHandles()[0].setPen(green_pen)
 
         # ROI | target area
-        self.target_area = CrossCenterROI([0, 0], [300000, 300000], pen=baby_blue_pen, hoverPen=blue_pen, centered=True, \
+        self.target_area = CrossCenterROI([-150000, -150000], [300000, 300000], pen=baby_blue_pen, hoverPen=blue_pen, centered=True, \
                                           movable=True, resizable=False, rotatable=False, \
                                           maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
         self.target_area.setZValue(10)
@@ -206,7 +206,7 @@ class myScan_(QWidget, Ui_Scan):
         self.tip_position.getHandles()[0].setPen(green_pen)
 
         # ROI | target position
-        self.target_position = CrossCenterROI2([200000, 200000], cross_size, pen=(255, 255, 255, 0), hoverPen=pink_pen, movable=True)
+        self.target_position = CrossCenterROI2(cross_pos, cross_size, pen=(255, 255, 255, 0), hoverPen=pink_pen, movable=True)
         self.view_box.addItem(self.target_position)
         self.target_position.removeHandle(0)
         self.target_position.addCustomHandle2_(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
@@ -268,7 +268,7 @@ class myScan_(QWidget, Ui_Scan):
 
         # Set graphic
         self.target_position.movePoint(self.target_position.getHandles()[0], \
-                                       [self.current_xy[0]+self.last_xy[2], self.current_xy[1]+self.last_xy[3]])
+                                       [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
 
     # XY offset conversion
     def xy_off_cnv(self, flag, xy, value):
@@ -282,12 +282,11 @@ class myScan_(QWidget, Ui_Scan):
         value = min(ul, max(ll, value))
         spin.setValue(value)
         scroll.setValue(value)
-        self.current_xy[xy + 2] = value * self.imagine_gain
+        self.current_xy[xy + 2] = value * 100
         self.xy_in_range(xy)            # Set XY in range
         self.scan_size_range()          # Set scan size range
 
         # Set graphic
-        print(self.current_xy[2], self.current_xy[3])
         self.target_area.movePoint(self.target_area.getHandles()[0], [self.current_xy[2], self.current_xy[3]])
 
     # Scan size converstion
@@ -316,7 +315,7 @@ class myScan_(QWidget, Ui_Scan):
         scan_size = self.scan_size[0]*self.scan_size[1]
         self.target_area.setSize(scan_size, center=(0.5, 0.5))
         self.scan_area.setSize(scan_size, center=(0.5, 0.5))
-
+        self.target_position.setSize(int(scan_size/20), center=(0.5, 0.5))
 
     # Set XY in spin boxes range
     def xy_in_range(self, xy):
@@ -358,7 +357,7 @@ class myScan_(QWidget, Ui_Scan):
     def xy_gain_cnv(self, index, state):
         if state:
             gain = self.imagine_gain
-            self.imagine_gain = 100 * (index == 0) + 10 *(index == 1) + (index == 3)    # Determin imagine gain based on XY gain
+            self.imagine_gain = 100 * (index == 0) + 10 * (index == 1) + (index == 3)    # Determin imagine gain based on XY gain
             self.scrollBar_Yin_XY.setValue(0)                                           # Set Xin scroll bar
             self.scrollBar_Xin_XY.setValue(0)                                           # Set Yin scroll bar
             self.scrollBar_StepSize_ScanControl.setValue(1)                             # Set step size scroll bar
@@ -398,13 +397,13 @@ class myScan_(QWidget, Ui_Scan):
     # View Control | target area and target position update
     def default_update(self, index):
         if index == 0:      # target area moved
-            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/self.imagine_gain)
-            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/self.imagine_gain)
+            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/100)
+            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/100)
             self.scrollBar_Xoffset_XY.setValue(xoffset)
             self.scrollBar_Yoffset_XY.setValue(yoffset)
         elif index == 1:    # target position moved
-            xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/self.imagine_gain)
-            yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/self.imagine_gain)
+            xoffset = int((self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0])/100)
+            yoffset = int((self.scan_area.getHandles()[0].pos()[1]+self.scan_area.pos()[1])/100)
             xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/self.imagine_gain) - xoffset
             yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/self.imagine_gain) - yoffset
             self.scrollBar_Xin_XY.setValue(xin)
