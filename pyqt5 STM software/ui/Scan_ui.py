@@ -15,7 +15,7 @@ class Ui_Scan(object):
     def setupUi(self, Scan):
         Scan.setObjectName("Scan")
         Scan.setWindowModality(QtCore.Qt.NonModal)
-        Scan.resize(949, 549)
+        Scan.resize(920, 549)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -31,7 +31,7 @@ class Ui_Scan(object):
         sizePolicy.setHeightForWidth(self.graphicsView_Scan.sizePolicy().hasHeightForWidth())
         self.graphicsView_Scan.setSizePolicy(sizePolicy)
         self.graphicsView_Scan.setMinimumSize(QtCore.QSize(484, 484))
-        self.graphicsView_Scan.setMaximumSize(QtCore.QSize(500, 500))
+        self.graphicsView_Scan.setMaximumSize(QtCore.QSize(484, 484))
         self.graphicsView_Scan.setObjectName("graphicsView_Scan")
         self.gridLayout_10.addWidget(self.graphicsView_Scan, 1, 1, 1, 1)
         self.pushButton_Start_Scan = QtWidgets.QPushButton(Scan)
