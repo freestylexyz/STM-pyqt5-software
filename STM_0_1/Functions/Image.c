@@ -58,6 +58,7 @@ void scan()
     serialOut(split(Start, 1));     // Send out start command
     for (i = 0; i < stepnum; i++)   // Line loop
     {
+        rampTo_S(channel_x, stored_x, 1, move_delay);               // Ramp back to starting point
         // Figure out target based on direction
         current_y = stored_y + (i * stepsize);
         rampTo_S(channel_y, current_y, 1, move_delay);              // Ramp to next line
@@ -69,6 +70,7 @@ void scan()
             if(dir_x){current_x = stored_x + (j * stepsize);}
             else{current_x = stored_x - (j * stepsize);}
             rampTo_S(channel_x, current_x, 1, move_delay);              // Ramp to next step
+            serialOut(split(Ongoing, 1));                               // Output ongoing command
             DELAY_US(measure_delay);                                    // Measure delay
             pointSeq(deltaZ, ptSeq);                                    // Perform measurement sequence
             protectScan(flag, limit, &lastmax, &lastmin, &deltaZ, &condition);  // Do scan protection
@@ -77,13 +79,12 @@ void scan()
         }
         protectTip(tip_protection, tip_protect_data, false, target);    // Do tip protection
         if (stopped || (! condition)){break;}                           // If stopped or scan protection tells not continue, break loop
-        rampTo_S(channel_x, stored_x, 1, move_delay);                   // Ramp back to starting point
     }
     serialOut(split(Finish, 1));            // Send out Finish command only
-    if(stopped)                             // If stopped
-    {
-        serialOut(split(0xAA55A55A, 4));    // Send out a stop sequence to distinguish with remaining data
-    }
+//    if(stopped)                             // If stopped
+//    {
+//        serialOut(split(0xAA55A55A, 4));    // Send out a stop sequence to distinguish with remaining data
+//    }
     serialOut(split(lastdac[Zoffc - 16], 2));   // Send out Z offset coarse
 }
 

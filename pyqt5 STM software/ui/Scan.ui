@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>920</width>
+    <width>949</width>
     <height>549</height>
    </rect>
   </property>
@@ -248,10 +248,10 @@
          </size>
         </property>
         <property name="minimum">
-         <number>2</number>
+         <number>3</number>
         </property>
         <property name="maximum">
-         <number>1024</number>
+         <number>511</number>
         </property>
         <property name="singleStep">
          <number>2</number>
@@ -260,7 +260,7 @@
          <number>16</number>
         </property>
         <property name="value">
-         <number>128</number>
+         <number>129</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -288,16 +288,16 @@
          </size>
         </property>
         <property name="minimum">
-         <number>2</number>
+         <number>3</number>
         </property>
         <property name="maximum">
-         <number>1024</number>
+         <number>511</number>
         </property>
         <property name="singleStep">
          <number>2</number>
         </property>
         <property name="value">
-         <number>128</number>
+         <number>129</number>
         </property>
         <property name="displayIntegerBase">
          <number>10</number>
@@ -335,7 +335,7 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>65535</number>
+         <number>2048</number>
         </property>
         <property name="singleStep">
          <number>10</number>
@@ -388,7 +388,7 @@
          <number>1</number>
         </property>
         <property name="maximum">
-         <number>65535</number>
+         <number>2048</number>
         </property>
         <property name="singleStep">
          <number>1</number>

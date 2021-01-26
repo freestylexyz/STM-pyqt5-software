@@ -1012,20 +1012,38 @@ class myDSP(QObject):
             if int.from_bytes(self.ser.read(1), "big") == 0xf0:
                 self.stop = False                                   # Set stop flag to false
                 
-                for i in range(step_num * step_num):
-                    if self.stop:
+                i = 0
+                stopped = False
+                while True:
+                    command = int.from_bytes(self.ser.read(1) ,"big")
+                    if command != 0x5a:
                         break
-                    rdata = []
-                    for i in range(seq.read_num):
-                        rdata += [int.from_bytes(self.ser.read(2) ,"big")]  # Read data
-                    self.scan_signal.emit(rdata)
+                    else:
+                        rdata = []
+                        for j in range(seq.read_num):
+                            rdata += [int.from_bytes(self.ser.read(2) ,"big")]  # Read data
+                        self.scan_signal.emit(rdata)
+                    if self.stop and (not stopped):    # If check stop is enabled and stop event is issued
+                        self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
+                        stopped = True
+                    i += 1
+                if command == 0x0f:
+                    self.lastdac[3] = int.from_bytes(self.ser.read(2) ,"big")   # Update last Z offset coarse output
+                
+                # for i in range(step_num * step_num):
+                #     if self.stop:
+                #         break
+                #     rdata = []
+                #     for j in range(seq.read_num):
+                #         rdata += [int.from_bytes(self.ser.read(2) ,"big")]  # Read data
+                #     self.scan_signal.emit(rdata)
                     
-                # If stopped
-                if self.stop:
-                    self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
-                    self.checkStopSeq()                                     # Check stop sequence
-                else:
-                    int.from_bytes(self.ser.read(1), "big") == 0x0f         # Otherwise, just wait for the finish command
+                # # If stopped
+                # if self.stop:
+                #     self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
+                #     self.checkStopSeq()                                     # Check stop sequence
+                # else:
+                #     int.from_bytes(self.ser.read(1), "big") == 0x0f         # Otherwise, just wait for the finish command
                 self.stop = True  
                 
             self.idling = True

@@ -293,23 +293,27 @@ class myScan_(QWidget, Ui_Scan):
     def scan_size_cnv(self, flag, index, value):
         scroll = self.scrollBar_StepSize_ScanControl if index else self.scrollBar_ScanSize_ScanControl  # Determin scrollbar based on index flag
         spin = self.spinBox_StepSize_ScanControl if index else self.spinBox_ScanSize_ScanControl        # Determin spinbox based on index flag
-        ul = 65535 if index else 1024                                                                   # Hard upper bound
+        ul = 2048 if index else 511                                                                     # Hard upper bound
         gain = self.imagine_gain if index else 1                                                        # Gain
 
         # Area upper bound
-        area_ul = int(2 * min(3276700 - self.current_xy[2], 3276700 - self.current_xy[3], 3276800 + self.current_xy[2], 3276800 + self.current_xy[3]))
-        ul = min(ul, int(area_ul / self.scan_size[1 - index] / gain))                                   # Available upper bound
-        if flag:                            # Spinbox to scrollbar
-            value = spin.value()
-        value = min(ul, value)                      # Available lower bound
-        if (not index) and (value % 2):             # Pixel number has to be even
-            value -= 1
-        spin.setValue(value)                        # Set spinbox
-        scroll.setValue(value)                      # Set scrollbar
-        self.scan_size[index] = value * gain        # Update variable
-        self.xy_offset_range(0)                     # Set X offset range
-        self.xy_offset_range(1)                     # Set Y offset range
-        self.scan_size_range()                      # Set the other scan size range
+        area_ul = int(2 * min(3276700 - self.current_xy[2], 3276700 - self.current_xy[3],\
+                              3276800 + self.current_xy[2], 3276800 + self.current_xy[3]))
+        area_ul = min(area_ul, 65535 * self.imagine_gain)
+        n_ul = int(area_ul / self.scan_size[1 - index] / gain)
+        if (not index) and (n_ul % 2):                                          # Step number has to be even
+            n_ul -= 1
+        ul = min(ul, n_ul) if index else min(ul, n_ul + 1)                      # Available upper bound, Pixel number = step number + 1
+        value = spin.value() if flag else value                                 # Spinbox to scrollbar
+        if (not index) and (value % 2 == 0):                                    # Pixel number has to be odd (so that step number can be even)
+            value += 1
+        value = min(ul, value)                                                  # Manually limit value
+        spin.setValue(value)                                                    # Set spinbox
+        scroll.setValue(value)                                                  # Set scrollbar
+        self.scan_size[index] = value * gain if index else (value - 1) * gain   # Update variable
+        self.xy_offset_range(0)                                                 # Set X offset range
+        self.xy_offset_range(1)                                                 # Set Y offset range
+        self.scan_size_range()                                                  # Set the other scan size range
 
         # Set graphic
         scan_size = self.scan_size[0]*self.scan_size[1]
@@ -338,10 +342,12 @@ class myScan_(QWidget, Ui_Scan):
     def scan_size_range(self):
         # Area upper bound
         area_ul = int(2 * min(3276700 - self.current_xy[2], 3276700 - self.current_xy[3], 3276800 + self.current_xy[2], 3276800 + self.current_xy[3]))
-        size_ul = min(65535, int(area_ul / self.scan_size[0] / self.imagine_gain))  # Step size upper bound
-        num_ul = min(1024, int(area_ul / self.scan_size[1]))                        # Step number upper bound
-        if (num_ul % 2):                                             # Step number has to be even
-            num_ul -= 1
+        area_ul = min(area_ul, 65535 * self.imagine_gain)
+        size_ul = min(2048, int(area_ul / self.scan_size[0] / self.imagine_gain))   # Step size upper bound
+        num_ul_a = int(area_ul / self.scan_size[1]) + 1
+        if (num_ul_a % 2) == 0:                                                     # Pixel number has to be odd, so that step number can be even
+            num_ul_a -= 1
+        num_ul = min(511, num_ul_a)                                                 # Step number upper bound
         self.spinBox_StepSize_ScanControl.setMaximum(size_ul)                       # Set maximum
         self.spinBox_ScanSize_ScanControl.setMaximum(num_ul)                        # Set minimum
 
@@ -357,14 +363,20 @@ class myScan_(QWidget, Ui_Scan):
     def xy_gain_cnv(self, index, state):
         if state:
             gain = self.imagine_gain
-            self.imagine_gain = 100 * (index == 0) + 10 * (index == 1) + (index == 3)    # Determin imagine gain based on XY gain
+            self.imagine_gain = 100 * (index == 0) + 10 * (index == 1) + (index == 3)   # Determin imagine gain based on XY gain
             self.scrollBar_Yin_XY.setValue(0)                                           # Set Xin scroll bar
             self.scrollBar_Xin_XY.setValue(0)                                           # Set Yin scroll bar
-            self.scrollBar_StepSize_ScanControl.setValue(1)                             # Set step size scroll bar
-            self.scrollBar_ScanSize_ScanControl.setValue(2)                             # Set step number scroll bar
-
+            # If changing to a larger gain, set scan area to minimum
+            if self.imagine_gain > gain:
+                self.scrollBar_StepSize_ScanControl.setValue(1)                         # Set step size scroll bar
+                self.scrollBar_ScanSize_ScanControl.setValue(3)                         # Set pixel number scroll bar
+            
+            # Not very useful, XY gain wil not be enabled unless last = 0
+            # Current has set to be zero by changing scrollbars
             self.last_xy[0] = self.last_xy[0] / gain * self.imagine_gain                # Update Xin variable
             self.last_xy[1] = self.last_xy[1] / gain * self.imagine_gain                # Update Yin variable
+            self.current_xy[0] = self.current_xy[0] / gain * self.imagine_gain          # Update Xin variable
+            self.current_xy[1] = self.current_xy[1] / gain * self.imagine_gain          # Update Yin variable
 
     # View Control | segment connecting scan area
     def connect_scan_area(self):

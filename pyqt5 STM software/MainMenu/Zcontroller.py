@@ -47,15 +47,6 @@ class myZcontroller(myMainMenu):
         self.Z2_gain_group.addButton(self.radioButton_Z2gain1_Gain, 1)
         self.Z2_gain_group.addButton(self.radioButton_Z2gain10_Gain, 3)
         self.Z2_gain_group.buttonToggled[int, bool].connect(self.z_gain_2)
-        
-    # Z offset update
-    def z_offset_update(self):
-        self.label_Indication_Zoffset.setText(str(self.dsp.lastdac[3] - 0x8000))  # Update Z offset indication label
-        
-    # Z offset fine update
-    def z_fine_update(self):
-        self.label_Indication_Zoffsetfine.setText(str(self.dsp.lastdac[2] - 0x8000))    # Update Z offset fine indication label
-        self.slider_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)            # Update slider value
     
     # Show Zcontroller dock
     def Zcontroller_show(self):

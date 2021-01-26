@@ -43,7 +43,7 @@ class myCurrentControl(myMainMenu):
     
     # Update current indication
     def current_update(self):
-        value = self.b2i(self.dsp.lastdac[5], self.preamp_gain)
+        value = cnv.b2i(self.dsp.lastdac[5], self.preamp_gain, self.dsp.dacrange[5])
         self.spinBox_Input_Setpoint.setValue(value)  # Update main spinbox only, scrollbar will not follow
 
     # Pream gain execution
@@ -53,7 +53,7 @@ class myCurrentControl(myMainMenu):
             self.idling = False                             # Toggle dock idling flag
             self.preamp_gain = gain                         # Change preamp gain flag
             self.current_spinbox_range()                    # Set all spin boxes range
-            bits = self.i2b(value, self.preamp_gain)        # Obtain target bits after changing gain
+            bits = cnv.i2b(value, self.preamp_gain, self.dsp.dacrange[5])        # Obtain target bits after changing gain
             self.dsp.rampTo(0x15, bits, 200, 10000, 0, True)  # Ramp to target
             self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set scroll bar to current status
             self.idling = True                              # Toggle dock idling flag
@@ -63,9 +63,9 @@ class myCurrentControl(myMainMenu):
     def current_gain(self, gain, status):        
         # If preamp gain is changed
         if (gain != self.preamp_gain) and status:
-            minimum = self.b2i(0xffff, gain)                # Target gain setpoint minimum
-            maximum = self.b2i(0x0, gain)                   # Target gain setpoint maximum
-            value = self.b2i(self.dsp.lastdac[5], self.preamp_gain)     # Current setpoint
+            minimum = cnv.b2i(0xffff, gain, self.dsp.dacrange[5])                           # Target gain setpoint minimum
+            maximum = cnv.b2i(0, gain, self.dsp.dacrange[5])                                # Target gain setpoint maximum
+            value = cnv.b2i(self.dsp.lastdac[5], self.preamp_gain, self.dsp.dacrange[5])    # Current setpoint
             if (value > maximum) or (value < minimum):      # If current setpoint out of target range
                 QMessageBox.warning(None, "Current", "Set point is out of target range", QMessageBox.Ok) # Out of range
                 self.current_set_radio()                        # Set the radio button back
@@ -79,14 +79,15 @@ class myCurrentControl(myMainMenu):
     # Setpoint spinBox slot
     def current_value(self):
         value = self.spinBox_Input_Setpoint.value()     # Current setpoint
-        self.scrollBar_Input_Setpoint.setValue(0xffff - self.i2b(value, self.preamp_gain))   # Change I set by changing scrollbar value
+        self.scrollBar_Input_Setpoint.setValue(0xffff - cnv.i2b(value, self.preamp_gain, self.dsp.dacrange[5]))   # Change I set by changing scrollbar value
     
     # Setpoint scroll bar slot
     def current_out(self, bits):
         bits = 0xffff - bits
         if bits != self.dsp.lastdac[5]:     # It it is a real change
-            self.dsp.dac_W(0x15, bits)    # Direct output I set
-        self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))  # Set main spin box for indication
+            self.dsp.dac_W(0x15, bits)      # Direct output I set
+         # Set main spin box for indication
+        self.spinBox_Input_Setpoint.setValue(cnv.b2i(bits, self.preamp_gain, self.dsp.dacrange[5]))
     
     # Current stop ramp button slot
     def current_stop(self):
@@ -101,7 +102,7 @@ class myCurrentControl(myMainMenu):
             self.idling = False                                                     # Toggle dock idling flag
             self.pushButton_StopRamp_CurrRamp.setEnabled(True)                      # Enable stop button
             step = self.spinBox_SpeedInput_CurrRamp.value()                         # Obtain ramp speed
-            target = self.i2b(value, self.preamp_gain)                              # Obtain target
+            target = cnv.i2b(value, self.preamp_gain, self.dsp.dacrange[5])         # Obtain target
             self.dsp.rampTo(0x15, target, step * 10, 10000, 0, True)                # Ramp
             self.scrollBar_Input_Setpoint.setValue(0xffff - self.dsp.lastdac[5])    # Set scroll bar
             self.idling = True                                                      # Toggle dock idling flag

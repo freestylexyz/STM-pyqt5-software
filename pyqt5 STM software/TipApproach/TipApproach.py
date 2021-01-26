@@ -41,32 +41,6 @@ class myTipApproach(QWidget, Ui_TipApproach):
         self.setFixedSize(self.width(), self.height())
         
         #
-        # Init value for all input
-        #
-        # Waveform
-        self.spinBox_Delay.setValue(10)
-        self.scrollBar_Delay.setValue(10000)
-        self.spinBox_Accel.setValue(5)
-        self.scrollBar_Accel.setValue(5000)
-        self.spinBox_Xstep.setValue(cnv.bv(0xc000, 'd', 10))
-        self.scrollBar_Xstep.setValue(0xc000 - 0x8000)
-        self.spinBox_Zstep.setValue(cnv.bv(0xc000, 'd', 10))
-        self.scrollBar_Zstep.setValue(0xc000 - 0x8000)
-        # Approach parameters
-        self.scrollBar_Giant.setValue(5)
-        self.spinBox_Giant.setValue(5)
-        self.spinBox_Baby.setValue(2)
-        self.scrollBar_Baby.setValue(2)
-        # Minimum tunneling current
-        self.spinBox_MInCurr.setValue(cnv.bv(0x8140, 'a'))
-        self.scrollBar_MInCurr.setValue(0x0140)
-        # Step number
-        self.spinBox_StepNum.setValue(1000)
-        self.scrollBar_StepNum.setValue(1000)
-        # Translation
-        self.groupBox_Trans_TipAppr.setChecked(False)
-        
-        #
         # Connect signals
         #
         # Waveform
@@ -99,7 +73,6 @@ class myTipApproach(QWidget, Ui_TipApproach):
         self.pushButton_Up_Steps.clicked.connect(lambda: self.giant_step(0x10, False))
         # Stop
         self.pushButton_Stop.clicked.connect(self.stop)
-
 
         
     # Re-init tip approach view
@@ -159,39 +132,21 @@ class myTipApproach(QWidget, Ui_TipApproach):
     def giant_step(self, channel, direction):
         # Obtain all required information
         x = self.scrollBar_Xstep.value()
-        z = self.scrollBar_Zstep.value()
+        z = self.scrollBar_Zstep.value() + 0x8000
         delay = self.scrollBar_Delay.value()
         g = self.scrollBar_Accel.value()
         stepnum = self.scrollBar_StepNum.value()
         
-        # Calculate the real x based on direction
-        if direction:
-            x = 0x8000 + x
-        else:
-            x = 0x8000 - x 
-        
-        # Figure out channel text
-        chtxt = ' '
-        if channel == 0x10:
-            chtxt = 'X'
-        elif channel == 0x1f:
-            chtxt = 'Y'
-            
-        # Figure out direction text
-        dirtxt = ' '
-        if direction:
-            dirtxt = '+'
-        else:
-            dirtxt = '-'
-            
+        x = (0x8000 + x) if direction else (0x8000 - x )            # Calculate the real x based on direction
+        chtxt = 'X' if channel == 0x10 else 'Y'                     # Figure out channel text
+        dirtxt = '+' if direction else '-'                          # Figure out direction text
+        labeltxt = 'Stepping Down' if direction else 'Stepping Up'  # Figure out steping direction text
+
         # Set status label
         if self.groupBox_Trans_TipAppr.isChecked():
             self.label_Status_Status.setText('Translating to' + ' ' + dirtxt + chtxt +' direction')
         else:
-            if direction:
-                self.label_Status_Status.setText('Stepping Down')
-            else:
-                self.label_Status_Status.setText('Stepping Up')
+            self.label_Status_Status.setText(labeltxt)
         
         # Emit signal for giant steps
         self.giant_signal.emit(channel, x, z, delay, g, stepnum)
@@ -199,15 +154,14 @@ class myTipApproach(QWidget, Ui_TipApproach):
     # Tip approach slot
     def tip_approach(self):
         # Obtain all required information
-        x = self.scrollBar_Xstep.value()
-        z = self.scrollBar_Zstep.value()
+        x = self.scrollBar_Xstep.value() + 0x8000
+        z = self.scrollBar_Zstep.value() + 0x8000
         delay = self.scrollBar_Delay.value()
         g = self.scrollBar_Accel.value()
         giant = self.scrollBar_Giant.value()
         baby = self.scrollBar_Baby.value()
         minCurr = self.scrollBar_MInCurr.value()
-        
-        x = 0x8000 + x                                          # Calculate the real x
+
         self.label_Status_Status.setText('Tip approaching')     # Set status label
         
         # Emit signal for tip approach
@@ -241,8 +195,6 @@ class myTipApproach(QWidget, Ui_TipApproach):
         self.groupBox_Steps_TipAppr.setEnabled(enable)
         self.groupBox_Trans_TipAppr.setEnabled(enable)
         self.pushButton_Stop.setEnabled(False)
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

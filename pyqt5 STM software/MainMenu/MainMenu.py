@@ -23,14 +23,13 @@ from MainMenu_ui import Ui_HoGroupSTM
 from DigitalSignalProcessor import myDSP
 from Scan import myScan
 import conversion as cnv
-import math
 
 class myMainMenu(QMainWindow, Ui_HoGroupSTM):
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.init_UI()            # Set up main menu UI
+        self.init_UI()              # Set up main menu UI
         self.init_mainMenu()
         
     def init_mainMenu(self):
@@ -242,32 +241,18 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
         bits = self.dsp.lastdac[5]                      # Fetch current I ser bits
         self.scrollBar_Input_Setpoint.setValue(0xffff - bits)    # Set up scroll bar
-        self.spinBox_Input_Setpoint.setValue(self.b2i(bits, self.preamp_gain))  # Set up main spin box 
+        self.spinBox_Input_Setpoint.setValue(cnv.b2i(bits, self.preamp_gain, self.dsp.dacrange[5]))  # Set up main spin box 
         
     # Set radio button for preamp gain
     def current_set_radio(self):
         radio_list = [self.radioButton_8_Gain, self.radioButton_9_Gain, self.radioButton_10_Gain]
         radio_list[self.preamp_gain - 8].setChecked(True)      # Set corresponding radio button
-    
-    # Convert I set bits to current setpoint based on current status
-    def b2i(self, bits, gain):
-        value = cnv.bv(bits, 'd', self.dsp.dacrange[5])         # Convert bits to voltage
-        multiplier = [10.0, 1.0, 0.1]                           # Multiplier list
-        return 10.0 ** (-value / 10.0) * multiplier[gain - 8]   # Return current setpoint
-    
-    # Convert current setpoint to I set bits based on current status
-    def i2b(self, value, gain):
-        multiplier = [10.0, 1.0, 0.1]                   # Multiplier list
-        value = value / multiplier[gain - 8]            # Divide multiplier
-        value = -10.0 * math.log(value, 10)             # Calculate I set voltage
-        bits = cnv.vb(value, 'd', self.dsp.dacrange[5]) # Convert it to I set bits
-        return bits
         
     # Set up all spin boxes input range
     def current_spinbox_range(self):
         # Determin set point limit based on current preamp gain
-        minimum = self.b2i(0xffff, self.preamp_gain)
-        maximum = self.b2i(0x0, self.preamp_gain)
+        minimum = cnv.b2i(0xffff, self.preamp_gain, self.dsp.dacrange[5])
+        maximum = cnv.b2i(0, self.preamp_gain, self.dsp.dacrange[5])
         spinboxes = [self.spinBox_Input_Setpoint, self.spinBox_Input1_CurrRamp, self.spinBox_Input2_CurrRamp,\
                      self.spinBox_Input3_CurrRamp, self.spinBox_Input4_CurrRamp]
             
@@ -286,15 +271,15 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         # Load status
         self.scrollBar_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
         self.spinBox_Input_Zoffset.setValue(self.dsp.lastdac[3] - 0x8000)
-        self.label_Indication_Zoffset.setText(str(self.dsp.lastdac[3] - 0x8000))
-        self.label_Indication_Zoffsetfine.setText(str(self.dsp.lastdac[2] - 0x8000))
-        self.slider_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)
         self.radioButton_ON_ZDither.setChecked(self.dsp.lastdigital[1])
         self.radioButton_OFF_ZDither.setChecked(not self.dsp.lastdigital[1])
         self.radioButton_ON_Feedback.setChecked(self.dsp.lastdigital[2])
         self.radioButton_OFF_Feedback.setChecked(not self.dsp.lastdigital[2])
         self.radioButton_ON_Retract.setChecked(self.dsp.lastdigital[3])
         self.radioButton_OFF_Retract.setChecked(not self.dsp.lastdigital[3])
+        
+        self.z_offset_update()
+        self.z_fine_update()
         self.load_z1_gain()
         self.load_z2_gain()
         
@@ -313,6 +298,15 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     def load_z2_gain(self):
         radio_dict = {0: self.radioButton_Z2gain01_Gain, 1: self.radioButton_Z2gain1_Gain, 3: self.radioButton_Z2gain10_Gain}
         radio_dict[self.dsp.lastgain[3]].setChecked(True)      # Set corresponding radio button
+        
+    # Z offset update
+    def z_offset_update(self):
+        self.label_Indication_Zoffset.setText(str(self.dsp.lastdac[3] - 0x8000))  # Update Z offset indication label
+        
+    # Z offset fine update
+    def z_fine_update(self):
+        self.label_Indication_Zoffsetfine.setText(str(self.dsp.lastdac[2] - 0x8000))    # Update Z offset fine indication label
+        self.slider_Input_Zoffsetfine.setValue(self.dsp.lastdac[2] - 0x8000)            # Update slider value
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

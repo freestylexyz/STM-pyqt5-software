@@ -7,7 +7,6 @@ Created on Sun Dec 20 13:52:32 2020
 
 import conversion as cnv
 import numpy as np
-import math
 
 class mySequence():
     def __init__(self, command_list = [], data_list = [], mode = True):
@@ -172,10 +171,7 @@ class mySequence():
     
     # Data comipling fuction for general use
     def bb(self, dstr, ch):
-        if dstr == 'Origin':        # If back to orgin
-            return self.dac[ch]
-        else:
-            return int(dstr)
+        return self.dac[ch] if dstr == 'Origin' else int(dstr)
     
     # Data comipling function for matching current
     def mb(self, dstr, ch):
@@ -190,19 +186,8 @@ class mySequence():
         else:
             if (ch == 2) or (ch == 3):
                 b = int(dstr)                       # Convert data string to bits value
-            elif ch == 5:           
-                # Determin mulitplier based on gain
-                if self.preamp_gain == 8:
-                    multiplier = 10.0
-                elif self.preamp_gain == 9:
-                    multiplier = 1.0
-                elif self.preamp_gain == 10:
-                    multiplier = 0.1
-                
-                i = float(dstr)                     # Convert data string to current value
-                i = i / multiplier                  # Divide multiplier
-                i = -10.0 * math.log(i, 10)         # Calculate I set voltage
-                b = cnv.vb(i, 'd', self.range[5])   # Convert it to I set bits
+            elif ch == 5:
+                b = cnv.i2b(float(dstr), self.preamp_gain, self.range[5])
             else:
                 v = float(dstr)                     # Convert data string to voltage value
                 if ch != 16:

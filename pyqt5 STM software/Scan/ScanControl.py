@@ -143,9 +143,9 @@ class myScanControl(myMainMenu):
         tip_protection, tip_protect_data = self.scan.scan_options.configure_tip_protect(seq)            # Configure tip protection
         match_curr, advance_bit = self.scan.scan_options.configure_prescan(seq.feedback, self.dsp)      # Configure prescan
         
-        step_in = int(step_off * 100 / xygain)                                  # Calculate send step
-        y_pos = 0x8000 - int(step_num * step_size / 2)                          # Calculate scan start position line
-        x_pos = y_pos if dir_x else (0x8000 + int(step_num * step_size / 2))    # Calculate scan start position point
+        step_in = int(step_off * 100 / xygain)                                          # Calculate send step
+        y_pos = 0x8000 - int((step_num - 1) * step_size / 2)                            # Calculate scan start position line
+        x_pos = y_pos if dir_x else (0x8000 + int((step_num - 1) * step_size / 2))      # Calculate scan start position point
         
         if self.scan.idling:
             # Reinit scan data and load options

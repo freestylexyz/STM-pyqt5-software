@@ -252,7 +252,10 @@ class myScan(myScan_):
     # Open scan information windwow
     def open_info(self):
         # self.info.init_info()
-        self.info.show()
+        # self.info.show()
+        print('last', self.last_xy)
+        print('current', self.current_xy)
+        print('size', self.scan_size)
 
     # !!!
     # Select pattern mode
