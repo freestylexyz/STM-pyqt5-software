@@ -143,8 +143,8 @@ class myScan_(QWidget, Ui_Scan):
         self.graphicsView_Scan.setContentsMargins(-10, -10, -10, -10)
         self.view_box = self.graphicsView_Scan.addViewBox(enableMenu=False, enableMouse=True)
         self.view_box.setRange(QRectF(-3276800, -3276800, 6553600, 6553600), padding=0)
-        self.view_box.setLimits(xMin=-3276800, xMax=3276800, yMin=-3276800, yMax=3276800, \
-                                minXRange=3, maxXRange=6553600, minYRange=3, maxYRange=6553600)
+        self.view_box.setLimits(xMin=-3481600, xMax=3481600, yMin=-3481600, yMax=3481600, \
+                                minXRange=3, maxXRange=6963200, minYRange=3, maxYRange=6963200)
         self.view_box.setAspectLocked(True)
         self.view_box.setCursor(Qt.CrossCursor)
         self.view_box.setMouseMode(self.view_box.PanMode)
@@ -198,7 +198,8 @@ class myScan_(QWidget, Ui_Scan):
                      self.scan_area.pos()[1] + self.scan_area.getHandles()[0].pos()[1]]
         cross_size = [int(self.scan_area.size()[0] / 20), int(self.scan_area.size()[1] / 20)]
 
-        self.tip_position = CrossCenterROI2(cross_pos, cross_size, pen=(255, 255, 255, 0), movable=False)
+        self.tip_position = CrossCenterROI2(cross_pos, cross_size, maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600),\
+                                            pen=(255, 255, 255, 0), movable=False)
         self.view_box.addItem(self.tip_position)
         self.tip_position.removeHandle(0)
         self.tip_position.addCustomHandle2(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
@@ -206,7 +207,8 @@ class myScan_(QWidget, Ui_Scan):
         self.tip_position.getHandles()[0].setPen(green_pen)
 
         # ROI | target position
-        self.target_position = CrossCenterROI2(cross_pos, cross_size, pen=(255, 255, 255, 0), hoverPen=pink_pen, movable=True)
+        self.target_position = CrossCenterROI2(cross_pos, cross_size, maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600),\
+                                               pen=(255, 255, 255, 0), hoverPen=pink_pen, movable=True)
         self.view_box.addItem(self.target_position)
         self.target_position.removeHandle(0)
         self.target_position.addCustomHandle2_(info={'type': 't', 'pos': [0.5, 0.5]}, index=3)
@@ -421,6 +423,20 @@ class myScan_(QWidget, Ui_Scan):
             self.scrollBar_Xin_XY.setValue(xin)
             self.scrollBar_Yin_XY.setValue(yin)
 
+            # out of range protection
+            if not(xin in range(-32768, 32768)) or not(yin in range(-32768, 32768)):
+                if abs(xin) > abs(yin):
+                    x = 32767 * self.imagine_gain if abs(xin-32768) < abs(xin+32768) else -32768 * self.imagine_gain
+                    y = self.target_position.getHandles()[0].pos()[1] + self.target_position.pos()[1]
+                    self.target_position.movePoint(self.target_position.getHandles()[0], [x+100*xoffset, y])
+                elif abs(xin) < abs(yin):
+                    x = self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0]
+                    y = 32767 * self.imagine_gain if abs(yin-32768) < abs(yin+32768) else -32768 * self.imagine_gain
+                    self.target_position.movePoint(self.target_position.getHandles()[0], [x, y+100*yoffset])
+                else:
+                    x = 32767 * self.imagine_gain if abs(xin - 32768) < abs(xin + 32768) else -32768 * self.imagine_gain
+                    y = 32767 * self.imagine_gain if abs(yin - 32768) < abs(yin + 32768) else -32768 * self.imagine_gain
+                    self.target_position.movePoint(self.target_position.getHandles()[0], [x+100*xoffset, y+100*yoffset])
 
     # View Control | full view button slot
     def full_view(self):
