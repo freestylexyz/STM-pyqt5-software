@@ -417,8 +417,8 @@ class myScan_(QWidget, Ui_Scan):
         elif index == 1:    # target position moved
             # xoffset = int((self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0])/100)
             # yoffset = int((self.scan_area.getHandles()[0].pos()[1]+self.scan_area.pos()[1])/100)
-            xoffset = self.last_xy[2]*100
-            yoffset = self.last_xy[3]*100
+            xoffset = int(self.last_xy[2]/100)
+            yoffset = int(self.last_xy[3]/100)
             xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/self.imagine_gain) - xoffset
             yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/self.imagine_gain) - yoffset
             self.scrollBar_Xin_XY.setValue(xin)
