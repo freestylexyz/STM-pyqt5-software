@@ -221,8 +221,12 @@ class myScan(myScan_):
         # y: self.last_xy[1]
         
         # !!! update graphic view
+        # print("------------------")
+        # print(self.last_xy)
+
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
-        # self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
+        self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
+
 
     # Update scan
     def scan_update(self, rdata):
