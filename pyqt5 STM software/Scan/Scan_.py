@@ -253,7 +253,7 @@ class myScan_(QWidget, Ui_Scan):
         self.pushButton_Reset_ViewControl.clicked.connect(self.reset_view)
 
     # XY in conversion
-    def xy_in_cnv(self, flag, xy, value):
+    def xy_in_cnv(self, flag, xy, f, value):
         scroll = self.scrollBar_Yin_XY if xy else self.scrollBar_Xin_XY                     # Determin scrollbar based on xy flag
         spin = self.spinBox_Yin_XY if xy else self.spinBox_Xin_XY                           # Determin spinbox based on xy flag
         ul = min(int((3276700 - self.current_xy[xy + 2]) / self.imagine_gain), 32767)       # Available upper bound
@@ -268,11 +268,11 @@ class myScan_(QWidget, Ui_Scan):
         self.xy_offset_range(xy)                            # Set XY offset range
 
         # Set graphic
-        self.target_position.movePoint(self.target_position.getHandles()[0], \
-                                       [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
+        # self.target_position.movePoint(self.target_position.getHandles()[0], \
+        #                                 [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
 
     # XY offset conversion
-    def xy_off_cnv(self, flag, xy, value):
+    def xy_off_cnv(self, flag, xy, f, value):
         scroll = self.scrollBar_Yoffset_XY if xy else self.scrollBar_Xoffset_XY
         spin = self.spinBox_Yoffset_XY if xy else self.spinBox_Xoffset_XY
         scan_area = self.scan_size[0] * self.scan_size[1]
@@ -412,8 +412,12 @@ class myScan_(QWidget, Ui_Scan):
         if index == 0:      # target area moved
             xoffset = int((self.target_area.getHandles()[0].pos()[0]+self.target_area.pos()[0])/100)
             yoffset = int((self.target_area.getHandles()[0].pos()[1]+self.target_area.pos()[1])/100)
-            self.scrollBar_Xoffset_XY.setValue(xoffset)
-            self.scrollBar_Yoffset_XY.setValue(yoffset)
+            # self.xy_off_cnv(False, 0, xoffset)
+            # self.xy_off_cnv(False, 1, yoffset)
+            if self.scrollBar_Xoffset_XY.value() != xoffset:
+                self.scrollBar_Xoffset_XY.setValue(xoffset)
+            if self.scrollBar_Yoffset_XY.value() != yoffset:
+                self.scrollBar_Yoffset_XY.setValue(yoffset)
         elif index == 1:    # target position moved
             # xoffset = int((self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0])/100)
             # yoffset = int((self.scan_area.getHandles()[0].pos()[1]+self.scan_area.pos()[1])/100)
@@ -421,23 +425,28 @@ class myScan_(QWidget, Ui_Scan):
             yoffset = int(self.last_xy[3]/100)
             xin = int((self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0])/self.imagine_gain) - xoffset
             yin = int((self.target_position.getHandles()[0].pos()[1]+self.target_position.pos()[1])/self.imagine_gain) - yoffset
-            self.scrollBar_Xin_XY.setValue(xin)
-            self.scrollBar_Yin_XY.setValue(yin)
+            # print(self.target_position.getHandles()[0].pos()[0], self.target_position.getHandles()[0].pos()[1])
+            # self.xy_in_cnv(False, 0, False, xin)
+            # self.xy_in_cnv(False, 1, False, yin)
+            if self.scrollBar_Xin_XY.value() != xin:
+                self.scrollBar_Xin_XY.setValue(xin)
+            if self.scrollBar_Yin_XY.value() != yin:
+                self.scrollBar_Yin_XY.setValue(yin)
 
-            # out of range protection
-            if not(xin in range(-32768, 32768)) or not(yin in range(-32768, 32768)):
-                if abs(xin) > abs(yin):
-                    x = 32767 * self.imagine_gain if abs(xin-32768) < abs(xin+32768) else -32768 * self.imagine_gain
-                    y = self.target_position.getHandles()[0].pos()[1] + self.target_position.pos()[1]
-                    self.target_position.movePoint(self.target_position.getHandles()[0], [x+100*xoffset, y])
-                elif abs(xin) < abs(yin):
-                    x = self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0]
-                    y = 32767 * self.imagine_gain if abs(yin-32768) < abs(yin+32768) else -32768 * self.imagine_gain
-                    self.target_position.movePoint(self.target_position.getHandles()[0], [x, y+100*yoffset])
-                else:
-                    x = 32767 * self.imagine_gain if abs(xin - 32768) < abs(xin + 32768) else -32768 * self.imagine_gain
-                    y = 32767 * self.imagine_gain if abs(yin - 32768) < abs(yin + 32768) else -32768 * self.imagine_gain
-                    self.target_position.movePoint(self.target_position.getHandles()[0], [x+100*xoffset, y+100*yoffset])
+            # # out of range protection
+            # if not(xin in range(-32768, 32768)) or not(yin in range(-32768, 32768)):
+            #     if abs(xin) > abs(yin):
+            #         x = 32767 * self.imagine_gain if abs(xin-32768) < abs(xin+32768) else -32768 * self.imagine_gain
+            #         y = self.target_position.getHandles()[0].pos()[1] + self.target_position.pos()[1]
+            #         self.target_position.movePoint(self.target_position.getHandles()[0], [x+100*xoffset, y])
+            #     elif abs(xin) < abs(yin):
+            #         x = self.target_position.getHandles()[0].pos()[0]+self.target_position.pos()[0]
+            #         y = 32767 * self.imagine_gain if abs(yin-32768) < abs(yin+32768) else -32768 * self.imagine_gain
+            #         self.target_position.movePoint(self.target_position.getHandles()[0], [x, y+100*yoffset])
+            #     else:
+            #         x = 32767 * self.imagine_gain if abs(xin - 32768) < abs(xin + 32768) else -32768 * self.imagine_gain
+            #         y = 32767 * self.imagine_gain if abs(yin - 32768) < abs(yin + 32768) else -32768 * self.imagine_gain
+            #         self.target_position.movePoint(self.target_position.getHandles()[0], [x+100*xoffset, y+100*yoffset])
 
     # View Control | full view button slot
     def full_view(self):

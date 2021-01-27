@@ -121,7 +121,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             widget.setEnabled(enable)
         
         self.groupBox_DAC_Bias.setEnabled(enable and (self.mode != 3))  # In scan mode will disable bais DAC selection
-        self.groupBox_Range_Bias.setEnabled(enable and (not self.bias)) # 20 bit DAC will disable range selection
+        self.groupBox_Range_Bias.setEnabled(enable and (not self.bias_dac)) # 20 bit DAC will disable range selection
         self.pushButton_StopRamp_BiasRamp.setEnabled(False)
         
     # Enable all serial related component in current dock

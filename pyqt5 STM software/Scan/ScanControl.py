@@ -47,29 +47,30 @@ class myScanControl(myMainMenu):
             
     # Exit scan operation
     def exit_scan(self):
-        if self.scan.idling:
-            self.enable_mode_serial(False)                                  # Disable serial based on current mode
-            self.scan.idling = False                                        # Toggle scan idling flag
-            self.dsp.rampTo(0x1a, 0x8000, 2, 1000, 0, False)                # Ramp Zouter to 0V
-            self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)# Ramp XY in to 0V
-            self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)# Ramp XY offset to 0V
-            self.dsp.gain(0, 3)                                             # Change X gain to 10.0
-            self.dsp.gain(1, 3)                                             # Change Y gain to 10.0
-            self.dsp.digital_o(4, 1)                                        # Change Zouter to coarse mode
-            self.dsp.digital_o(5, 0)                                        # Change XY to rotation mode
-            # !!! Avoid stuck for no scanner testing
-            self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)              # Return Z offset fine to zero
-            # self.dsp.zAuto0()                                               # Command DSP to do Z auto
-            # bits = self.dsp.lastdac[3] + 300                                # Adjust Z feedback to be little bit contracted
-            # self.dsp.rampTo(0x13, bits, 1, 500, 0, False)                   # Execute the adjustment
-            time.sleep(1)                                                   # Wait 1 seconds to wait for feeback Z to respond
-            self.dsp.gain(3, 3)                                             # Change Z gain 2 to 10.0
-            self.dsp.rampTo(0x13, 0x8000, 2, 1000, 0, False)                # Ramp Z offset to 0V
-            self.dsp.gain(3, 3)                                             # Change Z gain 1 to 0.1
+        pass
+        # if self.scan.idling:
+        #     self.enable_mode_serial(False)                                  # Disable serial based on current mode
+        #     self.scan.idling = False                                        # Toggle scan idling flag
+        #     self.dsp.rampTo(0x1a, 0x8000, 2, 1000, 0, False)                # Ramp Zouter to 0V
+        #     self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)# Ramp XY in to 0V
+        #     self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)# Ramp XY offset to 0V
+        #     self.dsp.gain(0, 3)                                             # Change X gain to 10.0
+        #     self.dsp.gain(1, 3)                                             # Change Y gain to 10.0
+        #     self.dsp.digital_o(4, 1)                                        # Change Zouter to coarse mode
+        #     self.dsp.digital_o(5, 0)                                        # Change XY to rotation mode
+        #     # !!! Avoid stuck for no scanner testing
+        #     self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)              # Return Z offset fine to zero
+        #     # self.dsp.zAuto0()                                               # Command DSP to do Z auto
+        #     # bits = self.dsp.lastdac[3] + 300                                # Adjust Z feedback to be little bit contracted
+        #     # self.dsp.rampTo(0x13, bits, 1, 500, 0, False)                   # Execute the adjustment
+        #     time.sleep(1)                                                   # Wait 1 seconds to wait for feeback Z to respond
+        #     self.dsp.gain(3, 3)                                             # Change Z gain 2 to 10.0
+        #     self.dsp.rampTo(0x13, 0x8000, 2, 1000, 0, False)                # Ramp Z offset to 0V
+        #     self.dsp.gain(3, 3)                                             # Change Z gain 1 to 0.1
 
-            self.scan.idling = True                                         # Restore scan idling flag
-            self.enable_mode_serial(True)                                   # Enable serial based on current mode
-            self.init_dock()                                                # Reload all 3 dock view  
+        #     self.scan.idling = True                                         # Restore scan idling flag
+        #     self.enable_mode_serial(True)                                   # Enable serial based on current mode
+        #     self.init_dock()                                                # Reload all 3 dock view  
     
     # Scan related stop slot
     def scan_stop(self):

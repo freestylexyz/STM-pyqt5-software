@@ -224,8 +224,15 @@ class myScan(myScan_):
         # print("------------------")
         # print(self.last_xy)
 
+        if (channels == 0x11) or (channels == 0x1e):
+            
+            self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
+            # self.xy_in_cnv(False, 0, self.scrollBar_Xin_XY.value())
+            # self.xy_in_cnv(False, 1, self.scrollBar_Yin_XY.value())
+            self.target_position.movePoint(self.target_position.getHandles()[0], \
+                                            [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
-        self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
+            
 
 
     # Update scan
@@ -260,6 +267,8 @@ class myScan(myScan_):
         print('last', self.last_xy)
         print('current', self.current_xy)
         print('size', self.scan_size)
+        self.target_position.movePoint(self.target_position.getHandles()[0], \
+                                       [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
 
     # !!!
     # Select pattern mode
