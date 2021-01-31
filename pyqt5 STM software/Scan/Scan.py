@@ -111,7 +111,7 @@ class myScan(myScan_):
         # self.raw_img = cv.cvtColor(raw_img, cv.COLOR_BGR2GRAY)
         # self.current_img = copy.deepcopy(self.raw_img)
         # self.img_display.setImage(self.current_img)
-
+        #
         # self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
         # self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
 
