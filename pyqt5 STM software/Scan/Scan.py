@@ -14,13 +14,13 @@ sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog
-from PyQt5.QtGui import QPixmap, QPen
+from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal , Qt, QRectF
 from PyQt5 import QtCore
 import numpy as np
 from Scan_ import myScan_
 from DigitalSignalProcessor import myDSP
-
+from customGradientWidget import *
 import conversion as cnv
 import pickle
 import pyqtgraph as pg
@@ -96,7 +96,6 @@ class myScan(myScan_):
         ## graphicsView | Scan main view
 
         # imageItem | setup
-
         self.img_display = pg.ImageItem()
         self.view_box.addItem(self.img_display)
         self.myimg = myImages()
@@ -114,6 +113,20 @@ class myScan(myScan_):
         #
         # self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
         # self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
+
+        # pallet bar | setup
+        self.ll = QtGui.QGridLayout()
+        self.ll.setSpacing(0)
+        self.graphicsView_ColorBar_Scan.setLayout(self.ll)
+        self.pallet_bar = customGradientWidget(orientation='right', allowAdd=False)
+        self.ll.addWidget(self.pallet_bar, 0, 1)
+        self.graphicsView_ColorBar_Scan.setMinimumHeight(484)
+        self.graphicsView_ColorBar_Scan.setMaximumHeight(512)
+        self.graphicsView_ColorBar_Scan.setMinimumWidth(30)
+        self.graphicsView_ColorBar_Scan.setMaximumWidth(30)
+        self.graphicsView_ColorBar_Scan.setContentsMargins(0,0,0,0)
+        self.pallet_bar.loadPreset('grey')
+
 
     # Init scan
     def init_scan(self, dsp, bias_dac, preamp_gain):
@@ -212,18 +225,6 @@ class myScan(myScan_):
         self.last_xy[var_dict[channels]] = (currents - 0x8000) * gain_dict[channels]    # Update first channel variable
         self.last_xy[var_dict[channell]] = (currentl - 0x8000) * gain_dict[channell]    # Update second channel variable
 
-        # Send area channels = 0x11
-        # x: self.last_xy[2]
-        # y: self.last_xy[3]
-        
-        # Send area channels = 0x10
-        # x: self.last_xy[0]
-        # y: self.last_xy[1]
-        
-        # !!! update graphic view
-        # print("------------------")
-        # print(self.last_xy)
-
         if (channels == 0x11) or (channels == 0x1e):
             
             self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
@@ -232,8 +233,6 @@ class myScan(myScan_):
             self.target_position.movePoint(self.target_position.getHandles()[0], \
                                             [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
-            
-
 
     # Update scan
     def scan_update(self, rdata):
@@ -332,18 +331,23 @@ class myScan(myScan_):
                 with open(fname, 'rb') as input:
                     self.data = pickle.load(input)
                     self.data.path = fname                      # Change file path
-                    
                 self.saved = True
                 self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Chage window title for saving status indication
                     
                 # Set up scroll bars
-                self.scrollBar_Xin_XY.setvalue(self.data.lastdac[0] - 0x8000)
-                self.scrollBar_Yin_XY.setvalue(self.data.lastdac[15] - 0x8000)
-                self.scrollBar_Xoffset_XY.setvalue(self.data.lastdac[1] - 0x8000)
-                self.scrollBar_Yoffset_XY.setvalue(self.data.lastdac[14] - 0x8000)
-                self.scrollBar_ScanSize_ScanControl.setvalue(self.data.step_num)
-                self.scrollBar_StepSize_ScanControl.setvalue(self.data.step_size)
+                self.scrollBar_Xin_XY.setValue(self.data.lastdac[0] - 0x8000)
+                self.scrollBar_Yin_XY.setValue(self.data.lastdac[15] - 0x8000)
+                self.scrollBar_Xoffset_XY.setValue(self.data.lastdac[1] - 0x8000)
+                self.scrollBar_Yoffset_XY.setValue(self.data.lastdac[14] - 0x8000)
+                self.scrollBar_ScanSize_ScanControl.setValue(self.data.step_num)
+                self.scrollBar_StepSize_ScanControl.setValue(self.data.step_size)
                 # !!! Need to plot image
+                # self.img_display.setImage(self.data)
+                # self.img_display.setRect(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
+                #                                 self.scan_size[0] * self.scan_size[1]))
+                # self.view_box.setRange(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
+                #                               self.scan_size[0] * self.scan_size[1]), padding=0)
+                # self.raw_img = self.data
     
     # Pop out message
     def message(self, text):
@@ -412,9 +416,11 @@ class myScan(myScan_):
         if self.radioButton_Gray_Scan.isChecked():
             psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
             self.color_current_img = psudo_gray_img
+            self.pallet_bar.loadPreset('grey')
         elif self.radioButton_Color_Scan.isChecked():
             color_img = self.myimg.color_map(self.current_img, 36)
             self.color_current_img = color_img
+            self.pallet_bar.loadPreset('thermal')
         self.img_display.setImage(self.color_current_img)
 
     # Emit close signal

@@ -105,7 +105,7 @@ class myScan_(QWidget, Ui_Scan):
     def init_UI(self):
         # Init ui position and size
         screen = QDesktopWidget().screenGeometry()
-        self.resize(1029, 549)
+        self.resize(990, 549)
         size = self.frameGeometry()
         self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
         self.setFixedSize(self.width(), self.height())
