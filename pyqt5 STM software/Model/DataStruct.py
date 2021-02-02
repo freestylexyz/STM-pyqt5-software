@@ -96,7 +96,7 @@ class ScanData(STMData):
         self.line = 0       # Line index variable for updating data
         self.minimum = 0    # Minimum variable for updating data
         
-        self.step_num, self.step_size = 128, 1                              # Pixel number per line, pixel size
+        self.step_num, self.step_size = 127, 1                              # Pixel number per line, pixel size
         self.channel_x, self.channel_y, self.dir_x = 0x1f, 0x10, True       # Point ramp channel, line ramp channel, point ramp direction
         self.move_delay, self.measure_delay, self.line_delay = 0, 0, 0      # Delay waited before moving 1 step, delay watied before read sequence
                                                                             # Delay waited before starting each line
