@@ -331,7 +331,6 @@ class myScan(myScan_):
                 with open(fname, 'rb') as input:
                     self.data = pickle.load(input)
                     self.data.path = fname                      # Change file path
-                    print(self.data.data)
                 self.saved = True
                 self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Chage window title for saving status indication
                     
