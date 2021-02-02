@@ -20,6 +20,7 @@ from PIL import Image
 from matplotlib import cm
 from PIL import Image, ImageDraw
 from numpy import genfromtxt
+import pandas as pd
 
 
 class myImages(QWidget):
@@ -77,11 +78,11 @@ class myImages(QWidget):
     # color -> reversed
     #
     def color2reverse(self, path):
-        img = cv.imread(path, 1)  #读取一张图片，彩色
+        img = cv.imread(path, 1)
         cha = img.shape
         height, width, deep = cha
         dst = np.zeros((height, width, 3), np.uint8)
-        for i in range(height):  #色彩反转
+        for i in range(height):
             for j in range(width):
                 b, g, r = img[i, j]
                 dst[i, j] = (255-b, 255-g, 255-r)
@@ -154,7 +155,7 @@ class myImages(QWidget):
         ax1.set_xlabel("x")
         ax1.set_ylabel("y")
         ax1.set_zlabel("z")
-        ax1.scatter(x, y, z, c='r', marker='.')
+        ax1.scatter(x, y, z, c='r', marker='.', alpha = 0.03)
         x_p = np.linspace(1, img.shape[0]+1, 100)
         y_p = np.linspace(1, img.shape[1]+1, 100)
         x_p, y_p = np.meshgrid(x_p, y_p)
@@ -163,12 +164,33 @@ class myImages(QWidget):
         new_z = X[0, 0] * x + X[1, 0] * y + X[2, 0]
         new_z = z - new_z
         new_z = np.reshape(new_z, (img.shape[0], img.shape[1])).astype(np.float32)
-        # new_z = self.prepare_data(new_z)
-        ax1.plot_wireframe(x_p, y_p, z_p, rstride=10, cstride=10)
-        ax1.scatter(x, y, new_z, c='g', marker='.')
+
+        ax1.plot_wireframe(x_p, y_p, z_p, rstride=10, cstride=10, alpha=0.7)
+        ax1.scatter(x, y, new_z, c='g', marker='.', alpha=0.03)
+
         # plt.show()
 
+        # img = cv.cvtColor(new_z, cv.COLOR_GRAY2BGR)
+        # cv.imshow('img', img)
+        # cv.waitKey()
+        # cv.destroyAllWindows()
+
+        new_z = self.hist_normalization(new_z)
+
         return new_z
+
+    # histogram normalization
+    def hist_normalization(self, img, a=0, b=255):
+        # get max and min
+        c = img.min()
+        d = img.max()
+        out = img.copy()
+        # normalization
+        out = (b - a) / (d - c) * (out - c) + a
+        out[out < a] = a
+        out[out > b] = b
+        out = out.astype(np.uint8)
+        return out
 
     def prepare_data(self, array):
         xmax = max(map(max, array))
@@ -194,6 +216,13 @@ class myImages(QWidget):
                 str(x) + " " + str(y)
                 pix[x, y] = (int(temp[y, x] // 256 // 256 % 256), int(temp[y, x] // 256 % 256), int(temp[y, x] % 256))
         im.save(g.name[0:-4] + '.jpeg')
+        # img = cv.imread(g.name[0:-4] + '.jpeg')
+        # img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        # img = np.reshape(img, (1, rows, cols))
+        # data = pd.DataFrame(data=img.tolist())
+        # data.to_csv('../data/real_stm_img_.csv',header=False)
+        # print(img.shape)
+
 
     def upsampling(self, img, up_height, up_width):
         height, width, channels = img.shape
