@@ -110,7 +110,7 @@ class myScan(myScan_):
         # self.raw_img = cv.cvtColor(raw_img, cv.COLOR_BGR2GRAY)
         # self.current_img = copy.deepcopy(self.raw_img)
         # self.img_display.setImage(self.current_img)
-        #
+
         # self.img_display.setRect(QRectF(-300000, -300000, 300000, 300000))
         # self.view_box.setRange(QRectF(-300000, -300000, 300000, 300000), padding=0)
 
@@ -331,6 +331,7 @@ class myScan(myScan_):
                 with open(fname, 'rb') as input:
                     self.data = pickle.load(input)
                     self.data.path = fname                      # Change file path
+                    print(self.data.data)
                 self.saved = True
                 self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Chage window title for saving status indication
                     
@@ -342,12 +343,13 @@ class myScan(myScan_):
                 self.scrollBar_ScanSize_ScanControl.setValue(self.data.step_num)
                 self.scrollBar_StepSize_ScanControl.setValue(self.data.step_size)
                 # !!! Need to plot image
-                # self.img_display.setImage(self.data)
-                # self.img_display.setRect(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
-                #                                 self.scan_size[0] * self.scan_size[1]))
-                # self.view_box.setRange(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
-                #                               self.scan_size[0] * self.scan_size[1]), padding=0)
-                # self.raw_img = self.data
+                self.raw_img = copy.deepcopy(self.data.data[0])
+                self.current_img = copy.deepcopy(self.raw_img)
+                self.img_display.setImage(self.current_img)
+                self.img_display.setRect(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
+                                                self.scan_size[0] * self.scan_size[1]))
+                self.view_box.setRange(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
+                                              self.scan_size[0] * self.scan_size[1]), padding=0)
     
     # Pop out message
     def message(self, text):
