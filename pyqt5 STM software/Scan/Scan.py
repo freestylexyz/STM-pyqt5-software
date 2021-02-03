@@ -345,9 +345,9 @@ class myScan(myScan_):
                 self.raw_img = copy.deepcopy(self.data.data[0])
                 self.current_img = copy.deepcopy(self.raw_img)
                 self.img_display.setImage(self.current_img)
-                self.img_display.setRect(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
+                self.img_display.setRect(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)), self.scan_size[0] * self.scan_size[1],
                                                 self.scan_size[0] * self.scan_size[1]))
-                self.view_box.setRange(QRectF(self.current_xy[2], self.current_xy[3], self.scan_size[0] * self.scan_size[1],
+                self.view_box.setRange(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)), self.scan_size[0] * self.scan_size[1],
                                               self.scan_size[0] * self.scan_size[1]), padding=0)
     
     # Pop out message
@@ -376,6 +376,22 @@ class myScan(myScan_):
     # filter checkBox  slot | reverse, Illuminated and Plane fit
     def filter_changed(self, index, status):
         '''Process image based on checkBox signal: Reverse, Illuminated and Plane fit.'''
+        if self.checkBox_Illuminated_Scan.isChecked():
+            if index == 2 and status:
+                self.checkBox_Illuminated_Scan.setChecked(False)
+                self.checkBox_PlaneFit_Scan.setChecked(True)
+            else:
+                self.checkBox_Illuminated_Scan.setChecked(True)
+                self.checkBox_PlaneFit_Scan.setChecked(False)
+
+        if self.checkBox_PlaneFit_Scan.isChecked():
+            if index == 1 and status:
+                self.checkBox_PlaneFit_Scan.setChecked(False)
+                self.checkBox_Illuminated_Scan.setChecked(True)
+            else:
+                self.checkBox_PlaneFit_Scan.setChecked(True)
+                self.checkBox_Illuminated_Scan.setChecked(False)
+
         if_reverse = self.checkBox_Reverse_Scan.isChecked()
         if_illuminated = self.checkBox_Illuminated_Scan.isChecked()
         if_plane_fit = self.checkBox_PlaneFit_Scan.isChecked()
