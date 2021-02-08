@@ -77,7 +77,6 @@ class myScan_(QWidget, Ui_Scan):
         self.saved = True               # Saved status
         self.bias_dac = False           # Bias DAC selection
         self.bias_ran = 9               # Bias range
-        self.point_mode = False         # Point Editor mode
         
         # XY and image variables (unit is in imagine bit)
         self.last_xy = [0]*4            # Xin(0), Yin(1), X offset(2), Y offset(3) --> values sent last time
