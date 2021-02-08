@@ -76,7 +76,6 @@ class myPointEditor(QWidget, Ui_PointEditor):
         y.setValue(0)
         self.table_Content.setCellWidget(curRow, 0, x)
         self.table_Content.setCellWidget(curRow, 1, y)
-        print('add:', self.table_Content.rowCount())
         x.editingFinished.connect(self.update_graphics)
         y.editingFinished.connect(self.update_graphics)
 
@@ -185,7 +184,6 @@ class myPointEditor(QWidget, Ui_PointEditor):
     def update_graphics(self):
         self.points = []
         for i in range(self.table_Content.rowCount()):
-            print('update_graphics:', self.table_Content.rowCount())
             x = int(self.table_Content.cellWidget(i, 0).value())
             y = int(self.table_Content.cellWidget(i, 1).value())
             self.points += [(x, y)]
