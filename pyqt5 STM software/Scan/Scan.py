@@ -41,12 +41,16 @@ class myScan(myScan_):
         super().__init__()
         self.setup_UI()
 
-    def setup_UI(self):      
+    def setup_UI(self):
+        # Point Editor signal
+        self.point_editor.points_signal.connect(self.points_update)
+        self.point_editor.close_signal.connect(self.edit_points)
+
         # Track signal
         self.track.pushButton_PlaneFit.clicked.connect(self.track_update_fit)               # Track want to use current image plane fit
         
         # Spectroscopy signal
-        self.spc.pushButton_EditPoints.clicked.connect(self.edit_points)                    # Edit points mode
+        self.spc.pushButton_EditPoints.clicked.connect(lambda: self.edit_points(0))                    # Edit points mode
         self.spc.pushButton_LockIn_General.clicked.connect(self.lockin.show)                # Spectroscopy want open lock in window
         self.spc.adv.pushButton_SelectPattern_Rescan.clicked.connect(self.select_pattern)   # Select pattern for rescan
         self.spc.adv.checkBox_Tracking_Correction.stateChanged.connect(self.open_track)     # Spectroscopy want to track
@@ -56,6 +60,7 @@ class myScan(myScan_):
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)            # Open scan option window
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)            # Open send option window
         self.pushButton_Info_Scan.clicked.connect(self.open_info)                           # Open scan data info window
+        self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
         
         # PushButton | file
         self.pushButton_SaveAll_Scan.clicked.connect(self.save)                             # Save data
@@ -236,12 +241,19 @@ class myScan(myScan_):
 
     # Update scan
     def scan_update(self, rdata):
-        plot_data = self.data.updata_data(rdata)        # Update scan data and obtain data used for plot
         # !!! Update graphic view
-        self.img_display.setImage(plot_data)
-        self.img_display.setRect(QRectF(self.last_xy[2], self.last_xy[3], self.scan_size[0]*self.scan_size[1], self.scan_size[0]*self.scan_size[1]))
-        self.view_box.setRange(QRectF(self.last_xy[2], self.last_xy[3], self.scan_size[0]*self.scan_size[1], self.scan_size[0]*self.scan_size[1]), padding=0)
-        self.raw_img = plot_data
+        plot_data = self.data.updata_data(rdata)            # Update scan data and obtain data used for plot
+        self.raw_img = copy.deepcopy(plot_data)
+        self.current_img = copy.deepcopy(self.raw_img)
+        self.img_display.setImage(self.current_img)
+        self.img_display.setRect(QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
+                                        int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
+                                        self.scan_size[0] * self.scan_size[1],
+                                        self.scan_size[0] * self.scan_size[1]))
+        self.view_box.setRange(QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
+                                      int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
+                                      self.scan_size[0] * self.scan_size[1],
+                                      self.scan_size[0] * self.scan_size[1]), padding=0)
         
     # Update plane fit paramenters in track window
     def track_update_fit(self):
@@ -273,11 +285,62 @@ class myScan(myScan_):
     # Select pattern mode
     def select_pattern(self):
         pass
-    
-    # !!!
+
     # Edit points mode
-    def edit_points(self):
-        self.point_editor.show()
+    def edit_points(self, index):
+        if index == 0:      # open point editor
+            self.point_editor.show()
+            self.point_mode = True
+            self.init_point_mode(True)
+            self.init_default_mode(False)
+            # self.init_rescan_mode(False)
+            self.view_box.setMouseEnabled(x=False, y=False)
+            xmin = int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2))
+            ymin = int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2))
+            xmax = xmin + self.scan_size[0] * self.scan_size[1]
+            ymax = ymin + self.scan_size[0] * self.scan_size[1]
+            self.view_box.setRange(QRectF(xmin, xmax, self.scan_size[0] * self.scan_size[1], self.scan_size[0] * self.scan_size[1]), padding=0)
+            self.view_box.setLimits(xMin=xmin, xMax=xmax, yMin=ymin, yMax=ymax, minXRange=3, maxXRange=xmax-xmin, minYRange=3, maxYRange=ymax-ymin)
+            self.select_point.setSize([(xmax-xmin)/20, (ymax-ymin)/20])
+            self.select_point.setPos([int((xmax + xmin)/2-(xmax-xmin)/40), int((ymax + ymin)/2-(ymax-ymin)/40)])
+            self.select_point.maxBounds = QRectF(QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
+                                          int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
+                                          self.scan_size[0] * self.scan_size[1],
+                                          self.scan_size[0] * self.scan_size[1]))
+
+        elif index == -1:   # close point editor
+            self.point_mode = False
+            self.init_point_mode(False)
+            self.init_default_mode(True)
+            # self.init_rescan_mode(False)
+            self.view_box.setMouseEnabled(x=True, y=True)
+            self.view_box.setRange(QRectF(-3276800, -3276800, 6553600, 6553600), padding=0)
+            self.view_box.setLimits(xMin=-3481600, xMax=3481600, yMin=-3481600, yMax=3481600, \
+                                    minXRange=3, maxXRange=6963200, minYRange=3, maxYRange=6963200)
+
+    def init_default_mode(self, status):
+        if status:
+            self.scan_area.show()
+            self.target_area.show()
+            self.connect_area.show()
+            self.tip_position.show()
+            self.target_position.show()
+            self.connect_position.show()
+        else:
+            self.scan_area.hide()
+            self.target_area.hide()
+            self.connect_area.hide()
+            self.tip_position.hide()
+            self.target_position.hide()
+            self.connect_position.hide()
+
+    def init_point_mode(self, status):
+        if status:
+            self.points.show()
+            self.select_point.show()
+        else:
+            self.points.hide()
+            self.select_point.hide()
     
     # Save
     def save(self):
@@ -439,6 +502,81 @@ class myScan(myScan_):
             self.color_current_img = color_img
             self.pallet_bar.loadPreset('thermal')
         self.img_display.setImage(self.color_current_img)
+
+    # Point Editor | update varible and draw points
+    def points_update(self, index):
+        # update graphics
+        if index == 0:
+
+            # update point_list variable
+            self.point_list.clear()
+            for point in self.point_editor.points:
+                self.point_list += [(point[0]*self.imagine_gain, point[1]*self.imagine_gain)]
+
+            # draw points
+            if len(self.points.getHandles()) <= len(self.point_list):
+                for i in range(len(self.points.getHandles())):
+                    self.points.movePoint(self.points.getHandles()[i], self.point_list[i])
+                for i in range(len(self.points.getHandles()), len(self.point_list)):
+                    self.points.addFreeHandle(self.point_list[i])
+            elif len(self.points.getHandles()) > len(self.point_list):
+                for i in range(len(self.point_list)):
+                    self.points.movePoint(self.points.getHandles()[i], self.point_list[i])
+                for i in range(len(self.point_list), len(self.points.getHandles())):
+                    self.points.removeHandle(self.points.handles[i]['item'])
+                    # self.points.scene().removeItem(self.points.handles[i]['item'])
+
+            # draw dashed lines
+            start = -1 if self.points.closed else 0
+            for i in range(start, len(self.points.handles) - 1):
+                self.points.addSegment(self.points.handles[i]['item'], self.points.handles[i + 1]['item'])
+            self.points.update()
+
+        # update point editor
+        elif index == 1:
+
+            # update table widget
+            self.point_list_2table = []
+            for handle in self.points.getHandles():
+                x = int((handle.pos()[0] + self.points.pos()[0])/self.imagine_gain)
+                y = int((handle.pos()[1] + self.points.pos()[1])/self.imagine_gain)
+                self.point_list_2table += [(x, y)]
+            self.point_editor.update_from_graphics(self.point_list_2table)
+
+            # set point limit
+            xmin = int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2))
+            ymin = int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2))
+            xmax = xmin + self.scan_size[0] * self.scan_size[1]
+            ymax = ymin + self.scan_size[0] * self.scan_size[1]
+
+            x_handles = []
+            y_handles = []
+
+            for i in range(len(self.points.getHandles())):
+                x_handles += [abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmin) \
+                                  if abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmin) > \
+                                     abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmax) \
+                                  else abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmax)]
+                y_handles += [abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymin) \
+                                  if abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymin) > \
+                                     abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymax) \
+                                  else abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymax)]
+            index = x_handles.index(max(x_handles)) if max(x_handles) > max(y_handles) else y_handles.index(max(y_handles))
+            x_handle = self.points.getHandles()[index].pos()[0] + self.points.pos()[0]
+            y_handle = self.points.getHandles()[index].pos()[1] + self.points.pos()[1]
+
+            if not (x_handle in range(xmin, xmax)) or not (y_handle in range(xmin, xmax)):
+                if abs(x_handle) > abs(y_handle):
+                    x = xmax if abs(x_handle - xmax) < abs(x_handle - xmin) else xmin
+                    y = y_handle
+                elif abs(x_handle) < abs(y_handle):
+                    x = x_handle
+                    y = ymax if abs(y_handle - ymax) < abs(y_handle - ymin) else ymin
+                else:
+                    x = xmax if abs(x_handle - xmax) < abs(x_handle - xmin) else xmin
+                    y = ymax if abs(y_handle - ymax) < abs(y_handle - ymin) else ymin
+                # self.points.movePoint(self.points.getHandles()[index], [x, y])
+                # !!! Add the above line causes "maximum recursion depth exceeded" error.
 
     # Emit close signal
     def closeEvent(self, event):

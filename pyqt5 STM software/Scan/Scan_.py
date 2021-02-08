@@ -77,6 +77,7 @@ class myScan_(QWidget, Ui_Scan):
         self.saved = True               # Saved status
         self.bias_dac = False           # Bias DAC selection
         self.bias_ran = 9               # Bias range
+        self.point_mode = False         # Point Editor mode
         
         # XY and image variables (unit is in imagine bit)
         self.last_xy = [0]*4            # Xin(0), Yin(1), X offset(2), Y offset(3) --> values sent last time
@@ -251,6 +252,32 @@ class myScan_(QWidget, Ui_Scan):
         self.pushButton_Full_ViewControl.clicked.connect(self.full_view)
         self.pushButton_Detail_ViewControl.clicked.connect(self.detail_view)
         self.pushButton_Reset_ViewControl.clicked.connect(self.reset_view)
+
+        # ROI | points
+        self.points = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0], movable=False)
+        self.view_box.addItem(self.points)
+        self.points.removeHandle(self.points.handles[0]['item'])
+        self.points.getHandles()[0].pen.setWidth(2)
+        purple_brush = pg.mkBrush('deaaff')
+        self.points.getHandles()[0].pen.setBrush(purple_brush)
+        self.points.sigRegionChanged.connect(lambda: self.points_update(1))
+        self.points.hide()
+
+        # ROI | point selection
+        pos = [self.points.pos()[0], self.points.pos()[1]]
+        self.select_point = pg.RectROI([-100000,-100000], [200000,200000], pen=baby_green_pen, hoverPen=baby_yellow_pen, handlePen=baby_yellow_pen, movable=True)
+        self.view_box.addItem(self.select_point)
+        # self.select_point.addScaleHandle([0, 0], [1, 1], index=1)
+        self.select_point.removeHandle(0)
+        self.points.setParentItem(self.select_point)
+        self.select_point.sigRegionChanged.connect(self.move_points)
+        # self.select_point.sigRegionChanged.connect(lambda: self.points_update(1))
+        self.select_point.hide()
+
+    def move_points(self):
+        self.points.setPos(self.select_point.pos())
+        print(self.select_point.pos(), self.points.pos(), self.points.getHandles()[0].pos())
+        # self.points.movePoint(self.points.getHandles()[0], [0, 0])
 
     # XY in conversion
     def xy_in_cnv(self, flag, xy, value):
