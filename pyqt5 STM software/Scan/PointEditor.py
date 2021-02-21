@@ -31,6 +31,7 @@ import pickle
 class myPointEditor(QWidget, Ui_PointEditor):
     close_signal = pyqtSignal(int)
     points_signal = pyqtSignal(int)
+    one_point_signal = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -104,8 +105,22 @@ class myPointEditor(QWidget, Ui_PointEditor):
 
     # Clear all button slot
     def clear(self):
-        self.table_Content.setRowCount(0)
+        self.table_Content.setRowCount(1)
         self.table_Content.clearContents()
+        x = QSpinBox()
+        x.setMinimum(-32768)
+        x.setMaximum(32767)
+        x.setValue(100)
+        y = QSpinBox()
+        y.setMinimum(-32768)
+        y.setMaximum(32767)
+        y.setValue(100)
+        self.table_Content.setCellWidget(0, 0, x)
+        self.table_Content.setCellWidget(0, 1, y)
+        x.editingFinished.connect(self.update_graphics)
+        y.editingFinished.connect(self.update_graphics)
+        self.one_point_signal.emit(2)
+
 
     # Save as .pts button slot
     def save(self):
@@ -183,11 +198,17 @@ class myPointEditor(QWidget, Ui_PointEditor):
     # Update Scan graphics view when each point finished
     def update_graphics(self):
         self.points = []
-        for i in range(self.table_Content.rowCount()):
-            x = int(self.table_Content.cellWidget(i, 0).value())
-            y = int(self.table_Content.cellWidget(i, 1).value())
-            self.points += [(x, y)]
-        self.points_signal.emit(0)  # update point list variable
+        if self.table_Content.rowCount() > 0:
+            if self.table_Content.rowCount() == 1 or self.table_Content.rowCount() == 0:
+                print("<=1:", self.table_Content.rowCount())
+                self.one_point_signal.emit(2)
+            else:
+                print(">1:", self.table_Content.rowCount())
+                for i in range(self.table_Content.rowCount()):
+                    x = int(self.table_Content.cellWidget(i, 0).value())
+                    y = int(self.table_Content.cellWidget(i, 1).value())
+                    self.points += [(x, y)]
+                self.points_signal.emit(0)  # update point list variable
 
 
     def enable_serial(self, enable):

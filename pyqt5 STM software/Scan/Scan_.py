@@ -77,6 +77,7 @@ class myScan_(QWidget, Ui_Scan):
         self.saved = True               # Saved status
         self.bias_dac = False           # Bias DAC selection
         self.bias_ran = 9               # Bias range
+        self.point_mode = False
         
         # XY and image variables (unit is in imagine bit)
         self.last_xy = [0]*4            # Xin(0), Yin(1), X offset(2), Y offset(3) --> values sent last time
@@ -105,7 +106,7 @@ class myScan_(QWidget, Ui_Scan):
     def init_UI(self):
         # Init ui position and size
         screen = QDesktopWidget().screenGeometry()
-        self.resize(990, 549)
+        self.resize(981, 549)
         size = self.frameGeometry()
         self.move(int((screen.width()-size.width())/2), int((screen.height()-size.height())/2))
         self.setFixedSize(self.width(), self.height())
@@ -268,8 +269,9 @@ class myScan_(QWidget, Ui_Scan):
         self.view_box.addItem(self.select_point)
         # self.select_point.addScaleHandle([0, 0], [1, 1], index=1)
         self.select_point.removeHandle(0)
-        self.points.setParentItem(self.select_point)
-        self.select_point.sigRegionChanged.connect(self.move_points)
+        # self.points.setParentItem(self.select_point)
+        # self.select_point.sigRegionChanged.connect(self.move_points)
+        self.select_point.sigRegionChanged.connect(lambda: self.points_update(3))
         # self.select_point.sigRegionChanged.connect(lambda: self.points_update(1))
         self.select_point.hide()
 
@@ -480,16 +482,28 @@ class myScan_(QWidget, Ui_Scan):
         '''Zoom in to scan area'''
         self.view_box.setRange(QRectF(self.scan_area.pos()[0], self.scan_area.pos()[1], \
                                       self.scan_area.size()[0], self.scan_area.size()[1]), padding=0)
+
     # View Control | reset button slot
     def reset_view(self):
         '''Reset target area to scan area, target position to tip position'''
-        x1 = self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0]
-        y1 = self.scan_area.getHandles()[0].pos()[1] + self.scan_area.pos()[1]
-        self.target_area.movePoint(self.target_area.getHandles()[0], [x1, y1])
+        if self.point_mode == False:
 
-        x2 = self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0]
-        y2 = self.tip_position.pos()[1]+self.tip_position.getHandles()[0].pos()[1]
-        self.target_position.movePoint(self.target_position.getHandles()[0], [x2, y2])
+            x1 = self.scan_area.getHandles()[0].pos()[0]+self.scan_area.pos()[0]
+            y1 = self.scan_area.getHandles()[0].pos()[1] + self.scan_area.pos()[1]
+            self.target_area.movePoint(self.target_area.getHandles()[0], [x1, y1])
+
+            x2 = self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0]
+            y2 = self.tip_position.pos()[1]+self.tip_position.getHandles()[0].pos()[1]
+            self.target_position.movePoint(self.target_position.getHandles()[0], [x2, y2])
+
+        # '''Reset select point to origin'''
+        elif self.point_mode:
+            xmin = int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2))
+            ymin = int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2))
+            xmax = xmin + self.scan_size[0] * self.scan_size[1]
+            ymax = ymin + self.scan_size[0] * self.scan_size[1]
+            self.select_point.setPos([(xmin+xmax)/2,(ymin+ymax)/2])
+            self.points_update(3)
 
     # Enable serial
     def enable_serial(self, enable):
