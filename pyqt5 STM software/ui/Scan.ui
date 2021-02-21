@@ -547,8 +547,8 @@
     <widget class="GraphicsLayoutWidget" name="graphicsView_Scan">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>1</horstretch>
-       <verstretch>1</verstretch>
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
