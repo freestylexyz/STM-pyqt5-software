@@ -154,6 +154,8 @@ class myScanControl(myMainMenu):
             self.scan.data.load_status(self.dsp, self.preamp_gain, self.bias_dac, seq)
             self.scan.data.load(step_num, step_size, channel_x, channel_y, dir_x, move_delay, measure_delay, line_delay, \
              scan_protect_flag, limit, tip_protection, tip_protect_data, match_curr, advance_bit)
+            if self.scan.checkBox_LockIn_ScanControl.isEnabled:
+                self.scan.pushButton_LockIn_ScanControl.setEnabled(True)                # Load lock in
             self.scan.saved = False                                                     # Set saved flag to false
             
             # Get system ready
@@ -207,7 +209,8 @@ class myScanControl(myMainMenu):
             self.enable_mode_serial(True)                           # Enable serial based on current mode
             self.scan.stop = True                                   # Restore scan stop flag
             self.scan.idling = True                                 # Restore scan idling flag
-            self.init_dock()                                        # Reload all 3 dock view  
+            self.init_dock()                                        # Reload all 3 dock view
+            self.scan.pushButton_Info_Scan.setEnabled(True)         # Set Scan Info button enabled
 
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
@@ -275,7 +278,8 @@ class myScanControl(myMainMenu):
             self.scan.stop = True                                       # Restore scan stop flag
             self.scan.idling = True                                     # Restore scan idling flag
             self.scan.dep.idling = True                                 # Restore deposition idling flag
-            self.init_dock()                                            # Reload all 3 dock view  
+            self.init_dock()                                            # Reload all 3 dock view
+            self.scan.dep.pushButton_Info_Deposition.setEnabled(True)   # Set Deposition Info button enabled
             
     # Depostion signal slot
     def deposition_thread(self, read_before, read, poke_data):
@@ -328,8 +332,7 @@ class myScanControl(myMainMenu):
                 self.enable_mode_serial(True)                               # Enable serial based on current mode
                 self.scan.stop = True                                       # Restore scan stop flag
                 self.scan.idling = True                                     # Restore scan idling flag
-            
-    
+
     # Track slot
     def track_thread(self):
         track = self.scan.track.configure_track()
@@ -426,6 +429,7 @@ class myScanControl(myMainMenu):
             self.scan.stop = True                               # Restore scan stop flag
             self.scan.idling = True                             # Restore scan idling flag
             self.scan.spc.idling = True                         # Restore spectroscopy idling flag
+            self.scan.spc.pushButton_Info_Deposition.setEnabled(True)   # Set Spectroscopy Info button enabled
             
     # Spectroscopy slot
     def spectroscopy_thread(self):

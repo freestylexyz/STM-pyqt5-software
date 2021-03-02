@@ -85,6 +85,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
     # Load a sequence
     def load_seq(self, seq, enable, edit):
         # For load form list use (-1 stands for new sequence)
+
         self.edit = edit
         if self.edit >= 0:
             self.pushButton_AddtoList_Edit.setText('Update list')

@@ -279,7 +279,7 @@ class myDeposition(QWidget, Ui_Deposition):
     # !!!
     # Open Inforamtion window
     def open_Info(self):
-        # self.info.init_info()
+        self.info.init_depInfo(self.data)
         self.info.show()
 
     # Save data slot

@@ -13,7 +13,7 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog, QUndoStack, QUndoCommand
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal , Qt, QRectF
 from PyQt5 import QtCore
@@ -60,7 +60,9 @@ class myScan(myScan_):
         self.pushButton_LockIn_ScanControl.clicked.connect(self.lockin.show)                # Open lock in window
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)            # Open scan option window
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)            # Open send option window
-        self.pushButton_Info_Scan.clicked.connect(self.open_info)                           # Open scan data info window
+        # self.pushButton_Info_Scan.clicked.connect(self.open_info)                           # Open scan data info window
+        # self.pushButton_Info_Scan.setEnabled(False)
+        self.pushButton_LockIn_ScanControl.setEnabled(False)
         self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
         
         # PushButton | file
@@ -132,6 +134,8 @@ class myScan(myScan_):
         self.graphicsView_ColorBar_Scan.setMaximumWidth(30)
         self.graphicsView_ColorBar_Scan.setContentsMargins(0,0,0,0)
         self.pallet_bar.loadPreset('grey')
+
+        self.undoStack = QUndoStack(self)
 
     # Init scan
     def init_scan(self, dsp, bias_dac, preamp_gain):
@@ -273,13 +277,13 @@ class myScan(myScan_):
     # !!!
     # Open scan information windwow
     def open_info(self):
-        # self.info.init_info()
-        # self.info.show()
+
+        self.info.init_scanInfo(self.data)
+        self.info.show()
         # print('last', self.last_xy)
         # print('current', self.current_xy)
         # print('size', self.scan_size)
         pass
-
 
     # !!!
     # Select pattern mode
@@ -307,8 +311,8 @@ class myScan(myScan_):
             self.select_point.setPos([0,0])
             self.select_point.maxBounds = QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                           int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
-                                          self.scan_size[0] * self.scan_size[1] + (xmax-xmin)/20,
-                                          self.scan_size[0] * self.scan_size[1] + (ymax-ymin)/20)
+                                          self.scan_size[0] * self.scan_size[1] ,
+                                          self.scan_size[0] * self.scan_size[1] )
             self.points.movePoint(self.points.getHandles()[0],[self.last_xy[0]+self.last_xy[2],self.last_xy[1]+self.last_xy[3]])
 
         elif index == -1:   # close point editor
@@ -321,6 +325,7 @@ class myScan(myScan_):
             self.view_box.setLimits(xMin=-3481600, xMax=3481600, yMin=-3481600, yMax=3481600, \
                                     minXRange=3, maxXRange=6963200, minYRange=3, maxYRange=6963200)
 
+    # Control ROIs visibility in default mode
     def init_default_mode(self, status):
         if status:
             self.scan_area.show()
@@ -337,6 +342,7 @@ class myScan(myScan_):
             self.target_position.hide()
             self.connect_position.hide()
 
+    # Control ROIs visibility in point mode
     def init_point_mode(self, status):
         if status:
             self.points.show()
@@ -407,7 +413,7 @@ class myScan(myScan_):
                 self.scrollBar_Yoffset_XY.setValue(self.data.lastdac[14] - 0x8000)
                 self.scrollBar_ScanSize_ScanControl.setValue(self.data.step_num)
                 self.scrollBar_StepSize_ScanControl.setValue(self.data.step_size)
-                # !!! Need to plot image
+                # Plot image
                 self.raw_img = copy.deepcopy(self.data.data[0])
                 self.current_img = copy.deepcopy(self.raw_img)
                 self.img_display.setImage(self.current_img)
@@ -415,6 +421,10 @@ class myScan(myScan_):
                                                 self.scan_size[0] * self.scan_size[1]))
                 self.view_box.setRange(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)), self.scan_size[0] * self.scan_size[1],
                                               self.scan_size[0] * self.scan_size[1]), padding=0)
+                self.pushButton_Info_Scan.setEnabled(True)
+                # !!! if self.data.lockin_flag:
+                if True:
+                    self.pushButton_LockIn_ScanControl.setEnabled(True)
     
     # Pop out message
     def message(self, text):
@@ -442,6 +452,8 @@ class myScan(myScan_):
     # filter checkBox  slot | reverse, Illuminated and Plane fit
     def filter_changed(self, index, status):
         '''Process image based on checkBox signal: Reverse, Illuminated and Plane fit.'''
+
+        # Set mutual exclusion of Illuminated and Plane fit
         if self.checkBox_Illuminated_Scan.isChecked():
             if index == 2 and status:
                 self.checkBox_Illuminated_Scan.setChecked(False)
@@ -458,10 +470,12 @@ class myScan(myScan_):
                 self.checkBox_PlaneFit_Scan.setChecked(True)
                 self.checkBox_Illuminated_Scan.setChecked(False)
 
+        # CheckBox status variable
         if_reverse = self.checkBox_Reverse_Scan.isChecked()
         if_illuminated = self.checkBox_Illuminated_Scan.isChecked()
         if_plane_fit = self.checkBox_PlaneFit_Scan.isChecked()
 
+        # Get current selected display mode
         if if_reverse and (not if_plane_fit) and (not if_illuminated):
             reverse_gray_img = self.myimg.gray2reverse(self.raw_img)
             self.current_img = reverse_gray_img
@@ -506,28 +520,24 @@ class myScan(myScan_):
             self.pallet_bar.loadPreset('thermal')
         self.img_display.setImage(self.color_current_img)
 
-    # Point Editor | update varible and draw points
+    # Point Editor | update variable and draw points
     def points_update(self, index):
-        # update graphics
+
+        # Update graphics
         if index == 0:
 
-            # update point_list variable
+            # Update point_list variable
             self.point_list.clear()
             for point in self.point_editor.points:
                 self.point_list += [(point[0]*self.imagine_gain+self.last_xy[2], point[1]*self.imagine_gain+self.last_xy[3])]
 
-            # draw points
+            # Draw points
             if len(self.points.getHandles()) <= len(self.point_list):
                 for i in range(len(self.points.getHandles())):
                     self.points.movePoint(self.points.getHandles()[i], self.point_list[i])
                 for i in range(len(self.points.getHandles()), len(self.point_list)):
                     self.points.addFreeHandle(self.point_list[i])
             elif len(self.points.getHandles()) > len(self.point_list):
-                # for i in range(len(self.point_list)):
-                #     self.points.movePoint(self.points.getHandles()[i], self.point_list[i])
-                # for i in range(len(self.point_list), len(self.points.getHandles())):
-                    # self.points.scene().removeItem(self.points.handles[i]['item'])
-                    # self.points.removeHandle(self.points.handles[i]['item'])
                 self.view_box.removeItem(self.points)
                 self.points = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0], movable=False)
                 self.view_box.addItem(self.points)
@@ -541,70 +551,38 @@ class myScan(myScan_):
                 for i in range(1,len(self.point_list)):
                     self.points.addFreeHandle(self.point_list[i])
 
-            # draw dashed lines
+            # Draw dashed lines
             start = -1 if self.points.closed else 0
             for i in range(start, len(self.points.handles) - 1):
                 self.points.addSegment(self.points.handles[i]['item'], self.points.handles[i + 1]['item'])
             self.points.update()
 
-        # update point editor
+        # Update point editor
         elif index == 1:
 
-            # set point limit
-            xmin = int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2))
-            ymin = int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2))
-            xmax = xmin + self.scan_size[0] * self.scan_size[1]
-            ymax = ymin + self.scan_size[0] * self.scan_size[1]
-            print("range:", xmin, xmax, ymin, ymax)
-            x_handles = []
-            y_handles = []
-            for i in range(len(self.points.getHandles())):
-                x_handles += [abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmin) \
-                                  if abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmin) < \
-                                     abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmax) \
-                                  else abs(self.points.getHandles()[i].pos()[0] + self.points.pos()[0] - xmax)]
-                y_handles += [abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymin) \
-                                  if abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymin) < \
-                                     abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymax) \
-                                  else abs(self.points.getHandles()[i].pos()[1] + self.points.pos()[1] - ymax)]
-            index = x_handles.index(min(x_handles)) if min(x_handles) < min(y_handles) else y_handles.index(min(y_handles))
-            x_handle = int(self.points.getHandles()[index].pos()[0] + self.points.pos()[0])
-            y_handle = int(self.points.getHandles()[index].pos()[1] + self.points.pos()[1])
-
-            print("index:", index)
-            print("position:", x_handle, y_handle)
-
+            # Record other points position
             self.point_list_others = []
+            x_others = []
+            y_others = []
             for i in range(len(self.points.handles)):
                 x_other = self.points.getHandles()[i].pos()[0]
                 y_other = self.points.getHandles()[i].pos()[1]
                 self.point_list_others += [(x_other, y_other)]
+                x_others += [x_other]
+                y_others += [y_other]
 
-            if (not (x_handle in range(xmin, xmax+1))) or (not (y_handle in range(ymin, ymax+1))):
-                print("hhhhhhhhhhhhhhhh:")
-                if abs(x_handle - self.last_xy[2]) > abs(y_handle - self.last_xy[3]):
-                    x = xmax if abs(x_handle - xmax) < abs(x_handle - xmin) else xmin
-                    y = int(self.points.getHandles()[index].pos()[1]+self.points.pos()[1])
-                    # self.points.movePoint(self.points.getHandles()[index], [x, y])
-                elif abs(x_handle - self.last_xy[2]) < abs(y_handle - self.last_xy[3]):
-                    x = int(self.points.getHandles()[index].pos()[0]+self.points.pos()[0])
-                    y = ymax if abs(y_handle - ymax) < abs(y_handle - ymin) else ymin
-                    # self.points.movePoint(self.points.getHandles()[index], [x, y])
-                else:
-                    x = xmax if abs(x_handle - xmax) < abs(x_handle - xmin) else xmin
-                    y = ymax if abs(y_handle - ymax) < abs(y_handle - ymin) else ymin
-                    # self.points.movePoint(self.points.getHandles()[index], [x, y])
+            # Set up size of select point roi
+            index_xmin = x_others.index(min(x_others))
+            index_ymin = y_others.index(min(y_others))
+            index_xmax = x_others.index(max(x_others))
+            index_ymax = y_others.index(max(y_others))
+            self.select_point.sigRegionChanged.disconnect(self.points_overall)
+            self.select_point.setPos([self.point_list_others[index_xmin][0], self.point_list_others[index_ymin][1]])
+            self.select_point.setSize([self.point_list_others[index_xmax][0] - self.point_list_others[index_xmin][0], \
+                                       self.point_list_others[index_ymax][1] - self.point_list_others[index_ymin][1]])
+            self.select_point.sigRegionChanged.connect(self.points_overall)
 
-                for i in range(len(self.point_list_others)):
-                    if i == index:
-                        self.points.movePoint(self.points.getHandles()[index], [x, y])
-                    else:
-                        self.points.movePoint(self.points.getHandles()[i], [self.point_list_others[i][0], self.point_list_others[i][1]])
-
-                self.points.update()
-
-
-            # update table widget
+            # Update table widget
             self.point_list_2table = []
             for handle in self.points.getHandles():
                 x = int((handle.pos()[0] + self.points.pos()[0] - self.last_xy[2])/self.imagine_gain)
@@ -612,16 +590,15 @@ class myScan(myScan_):
                 self.point_list_2table += [(x, y)]
             self.point_editor.update_from_graphics(self.point_list_2table)
 
-        # special case for only one point left
+        # Special case for only one point left
         elif index == 2:
 
-            # update table widget
+            # Update table widget
             self.point_list.clear()
             self.point_list += [(self.last_xy[0]+self.last_xy[2], self.last_xy[1]+self.last_xy[3])]
             self.point_editor.update_from_graphics(self.point_list)
 
-            # draw points
-            # if len(self.points.handles) == 2:
+            # Draw points
             self.view_box.removeItem(self.points)
             self.points = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0], movable=False)
             self.view_box.addItem(self.points)
@@ -632,28 +609,40 @@ class myScan(myScan_):
             self.points.sigRegionChanged.connect(lambda: self.points_update(1))
             self.points.movePoint(self.points.getHandles()[0],
                                   [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
-            # self.points.setParentItem(self.select_point)
 
-        # overall displacement
-        elif index == 3:
-            # get points position from table widget
-            self.point_list_overall = []
-            print("row count --->", self.point_editor.table_Content.rowCount())
-            if self.point_editor.table_Content.rowCount() > 0:
-                for i in range(self.point_editor.table_Content.rowCount()):
-                    x = int(self.point_editor.table_Content.cellWidget(i, 0).value())
-                    y = int(self.point_editor.table_Content.cellWidget(i, 1).value())
-                    self.point_list_overall += [(x * self.imagine_gain + self.last_xy[2], y * self.imagine_gain + self.last_xy[3])]
+    # Point Editor | overall displacement of points
+    def points_overall(self):
 
-            if len(self.point_list_overall) > 0:
-                ref_position = self.point_list_overall[0]
-            for i in range(len(self.point_list_overall)):
-                self.point_list_overall[i] = copy.deepcopy((self.point_list_overall[i][0] - ref_position[0], self.point_list_overall[i][1] - ref_position[1]))
+        # Get points position
+        self.point_list_overall = []
+        x_overall = []
+        y_overall = []
+        for i in range(len(self.points.handles)):
+            x = self.points.getHandles()[i].pos()[0]
+            y = self.points.getHandles()[i].pos()[1]
+            self.point_list_overall += [(x, y)]
+            x_overall += [x]
+            y_overall += [y]
 
-            origin_position = (self.select_point.pos()[0], self.select_point.pos()[1])
-            for i in range(len(self.point_list_overall)):
-                self.points.movePoint(self.points.getHandles()[i], [self.point_list_overall[i][0]+origin_position[0], self.point_list_overall[i][1]+origin_position[1]])
+        # Get border point position
+        index_xmin = x_overall.index(min(x_overall))
+        index_ymin = y_overall.index(min(y_overall))
+        index_xmax = x_overall.index(max(x_overall))
+        index_ymax = y_overall.index(max(y_overall))
+        center_x = int((x_overall[index_xmax] + x_overall[index_xmin])/2)
+        center_y = int((y_overall[index_ymax] + y_overall[index_ymin])/2)
 
+        # Move points
+        if len(self.point_list_overall) > 0:
+            ref_position = (center_x, center_y)     # Set ref_position to center of all points
+        for i in range(len(self.point_list_overall)):
+            self.point_list_overall[i] = copy.deepcopy(
+                (self.point_list_overall[i][0] - ref_position[0], self.point_list_overall[i][1] - ref_position[1]))
+        origin_position = (int(self.select_point.pos()[0]+self.select_point.size()[0]/2), \
+                          int(self.select_point.pos()[1]+self.select_point.size()[1]/2))    # Set origin_position to square center
+        for i in range(len(self.point_list_overall)):
+            self.points.movePoint(self.points.getHandles()[i], [self.point_list_overall[i][0] + origin_position[0],
+                                                                self.point_list_overall[i][1] + origin_position[1]])
 
     # Emit close signal
     def closeEvent(self, event):

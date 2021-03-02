@@ -137,7 +137,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
     # !!!
     # Open spectroscopy information window
     def open_info(self):
-        # self.info.init_info()
+        self.info.init_spcInfo(self.data)
         self.info.show()
     
     # !!!

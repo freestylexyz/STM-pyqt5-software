@@ -160,9 +160,8 @@ class myPointEditor(QWidget, Ui_PointEditor):
             self.table_Content.setCellWidget(i, 1, y)
             x.editingFinished.connect(self.update_graphics)
             y.editingFinished.connect(self.update_graphics)
-        # update graphics!!!
 
-    # Ppdate table widget when scan view changed
+    # Update table widget when scan view changed
     def update_from_graphics(self, points):
         self.points = []
         for point in points:
@@ -200,10 +199,8 @@ class myPointEditor(QWidget, Ui_PointEditor):
         self.points = []
         if self.table_Content.rowCount() > 0:
             if self.table_Content.rowCount() == 1 or self.table_Content.rowCount() == 0:
-                print("<=1:", self.table_Content.rowCount())
                 self.one_point_signal.emit(2)
             else:
-                print(">1:", self.table_Content.rowCount())
                 for i in range(self.table_Content.rowCount()):
                     x = int(self.table_Content.cellWidget(i, 0).value())
                     y = int(self.table_Content.cellWidget(i, 1).value())

@@ -265,20 +265,13 @@ class myScan_(QWidget, Ui_Scan):
 
         # ROI | point selection
         pos = [self.points.pos()[0], self.points.pos()[1]]
-        self.select_point = pg.RectROI([-100000,-100000], [200000,200000], pen=baby_green_pen, hoverPen=baby_yellow_pen, handlePen=baby_yellow_pen, movable=True)
+        self.select_point = pg.RectROI([-100000,-100000], [200000,200000], pen=baby_green_pen, hoverPen=baby_yellow_pen, handlePen=baby_yellow_pen, movable=True, centered=True)
         self.view_box.addItem(self.select_point)
-        # self.select_point.addScaleHandle([0, 0], [1, 1], index=1)
         self.select_point.removeHandle(0)
         # self.points.setParentItem(self.select_point)
-        # self.select_point.sigRegionChanged.connect(self.move_points)
-        self.select_point.sigRegionChanged.connect(lambda: self.points_update(3))
-        # self.select_point.sigRegionChanged.connect(lambda: self.points_update(1))
+        # self.select_point.sigRegionChanged.connect(lambda: self.points_update(3))
+        self.select_point.sigRegionChanged.connect(self.points_overall)
         self.select_point.hide()
-
-    def move_points(self):
-        self.points.setPos(self.select_point.pos())
-        print(self.select_point.pos(), self.points.pos(), self.points.getHandles()[0].pos())
-        # self.points.movePoint(self.points.getHandles()[0], [0, 0])
 
     # XY in conversion
     def xy_in_cnv(self, flag, xy, value):

@@ -81,7 +81,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
         # Load sequence name list and add list widget items
         for seqq in seq_list:
             seq = copy.deepcopy(seqq)
-            self.seqlist =+ [self.config_seq(seq)]
+            self.seqlist += [self.config_seq(seq)]
             self.listWidget_SeqList.addItem(seq.name)
             self.namelist += [seq.name]
         
