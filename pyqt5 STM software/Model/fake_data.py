@@ -44,8 +44,25 @@ img = np.reshape(img, (1, rows, cols))
 
 ''' Make fake data '''
 scan_data = ScanData()
-scan_data.load(127, 1, 0x1f, 0x10, True, 0, 0, 0, False, 0, False, 0, False, 0)
+scan_data.load(127, 256, 0x1f, 0x10, True, 0, 0, 0, False, 0, False, 0, False, 0)
 scan_data.data = img
+# !!! set up sequence params
+
+
+fname = '../Scan/seq data/seq_1.seq'
+if fname != '':
+    with open(fname, 'rb') as input:
+        scan_data.seq = pickle.load(input)
+scan_data.seq.name = 'Fake data Sequence'
+
+print(scan_data.seq.name,scan_data.seq.path)
+print(scan_data.seq.command_list,scan_data.seq.data_list)
+print(scan_data.seq.command)
+print(scan_data.seq.channel)
+print(scan_data.seq.option1)
+print(scan_data.seq.option2)
+print(scan_data.seq.data)
+
 fname = '../data/02012100.stm'
 if fname != '':
     with open(fname, 'wb') as output:

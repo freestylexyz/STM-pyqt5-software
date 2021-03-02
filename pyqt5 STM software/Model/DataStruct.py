@@ -18,7 +18,8 @@ class STMData():
         self.data = np.array([])        # Data
         self.bias_dac = False           # Bias DAC selection, False -> 16bit DAC, True -> 20bitDAC
         self.preamp_gain = 9            # Pre-amp gain
-        
+        self.lockin_flag = False        # Lock
+
         self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
         self.dacrange = [10] * 16       # All DAC channels' current range
         self.adcrange = [0] * 8         # All ADC channels' current range
@@ -46,17 +47,17 @@ class STMData():
     # params is a list of parameters, osc_type is string
     def load_lockin(self, params, osc_type):
         self.ocs_type = osc_type
-        self.osc_rms = self.params[0]
-        self.osc_freq = self.params[1]
-        self.lockin_freq = self.params[2]
-        self.phase1 = self.params[3]
-        self.phase2 = self.params[4]
-        self.sen1 = self.params[5]
-        self.sen2 = self.params[6]
-        self.offset1 = self.params[7]
-        self.offset2 = self.params[8]
-        self.tc1 = self.params[9]
-        self.tc2 = self.params[10]
+        self.osc_rms = params[0]
+        self.osc_freq = params[1]
+        self.lockin_freq = params[2]
+        self.phase1 = params[3]
+        self.phase2 = params[4]
+        self.sen1 = params[5]
+        self.sen2 = params[6]
+        self.offset1 = params[7]
+        self.offset2 = params[8]
+        self.tc1 = params[9]
+        self.tc2 = params[10]
 
 # Depostion data class
 class DepData(STMData):
@@ -171,7 +172,7 @@ class SpcData(STMData):
         self.pattern = [0, 0, 1]                        # Match pattern [pattern center x, pattern center y, pattern size]
         self.point_list = [[0, 0]]                      # Physical point list
         
-        self.prescan = ScanData()                       # Prescan data
+        self.pre_scan = ScanData()                       # Prescan data
         
     # Load options for spectroscopy    
     def load(self, start, step, data_num, ramp_ch, delta_data, move_delay, measure_delay,\
