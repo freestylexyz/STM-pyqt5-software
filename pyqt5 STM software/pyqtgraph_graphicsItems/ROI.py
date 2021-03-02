@@ -1481,10 +1481,12 @@ class Handle(UIGraphicsItem):
         self._shape = None  ## invalidate shape, recompute later if requested.
         self.update()
 
-
+from PyQt5.QtCore import pyqtSignal # added by Dan 2021/3/2
+from PyQt5.QtCore import QPointF # added by Dan 2021/3/2
 class MouseDragHandler(object):
     """Implements default mouse drag behavior for ROI (not for ROI handles).
     """
+    itemMoveSignal = pyqtSignal(ROI, QPointF)       # added by Dan 2021/3/2
     def __init__(self, roi):
         self.roi = roi
         self.dragMode = None
@@ -1546,6 +1548,15 @@ class MouseDragHandler(object):
             diff = self.scaleSpeed ** -(ev.scenePos() - ev.buttonDownScenePos()).y()
             roi.setSize(Point(self.startState['size']) * diff, centerLocal=ev.buttonDownPos(), snap=snap, finish=False)
 
+    # def mouseReleaseEvent(self, event):             # added by Dan 2021/3/2
+    #     self.m_Item = self.roi
+    #     self.m_oldPos = self.startPos
+    #     if (self.m_Item is not None) & (event.button() == Qt.LeftButton):
+    #         if self.m_oldPos != self.m_Item.pos():
+    #             self.itemMoveSignal.emit(self.m_Item, self.m_oldPos)
+    #             self.m_Item = None
+    #     super(MouseDragHandler, self).mouseReleaseEvent(event)
+
 
 class TestROI(ROI):
     def __init__(self, pos, size, **args):
@@ -1578,6 +1589,8 @@ class RectROI(ROI):
     """
     def __init__(self, pos, size, centered=False, sideScalers=False, **args):
         ROI.__init__(self, pos, size, **args)
+        self.mouseDragHandler = MouseDragHandler(self)     # added by Dan 2021/3/2
+
         if centered:
             center = [0.5, 0.5]
         else:
@@ -1587,6 +1600,9 @@ class RectROI(ROI):
         if sideScalers:
             self.addScaleHandle([1, 0.5], [center[0], 0.5])
             self.addScaleHandle([0.5, 1], [0.5, center[1]])
+
+    def mouseDragEvent(self, ev):                          # added by Dan 2021/3/2
+        self.mouseDragHandler.mouseDragEvent(ev)
 
 class LineROI(ROI):
     r"""
@@ -1620,9 +1636,6 @@ class LineROI(ROI):
         self.addScaleRotateHandle([1, 0.5], [0, 0.5])
         self.addScaleHandle([0.5, 1], [0.5, 0.5])
         
-
-        
-
 
 class MultiRectROI(QtGui.QGraphicsObject):
     r"""
@@ -1860,8 +1873,7 @@ class EllipseROI(ROI):
             self.path = path
         
         return self.path
-        
-        
+
 
 class CircleROI(EllipseROI):
     r"""
@@ -2066,9 +2078,10 @@ class PolyLineROI(ROI):
             handles.remove(handle)
             segments[0].replaceHandle(handle, handles[0])
             self.removeSegment(segments[1])
-        self.getHandles()[0].pen.setWidth(2)                    # Dan 1/19/2021
-        purple_brush = pyqtgraph.mkBrush('deaaff')              # Dan 1/19/2021
-        self.getHandles()[0].pen.setBrush(purple_brush)         # Dan 1/19/2021
+        if len(self.getHandles()) > 0:                              # Dan 2/5/2021
+            self.getHandles()[0].pen.setWidth(2)                    # Dan 1/19/2021
+            purple_brush = pyqtgraph.mkBrush('deaaff')              # Dan 1/19/2021
+            self.getHandles()[0].pen.setBrush(purple_brush)         # Dan 1/19/2021
         self.stateChanged(finish=True)
         
     def removeSegment(self, seg):
@@ -2083,7 +2096,7 @@ class PolyLineROI(ROI):
         if self.closed:
             return len(self.handles) > 3
         else:
-            return len(self.handles) > 2
+            return len(self.handles) > 0    # dan 2/9/2021
         
     def paint(self, p, *args):
         pass
