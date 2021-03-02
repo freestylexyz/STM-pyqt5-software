@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>760</width>
-    <height>414</height>
+    <width>982</width>
+    <height>416</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="5" column="1">
-       <widget class="QLabel" name="label_41">
+       <widget class="QLabel" name="label_xoffset">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -52,7 +52,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLabel" name="label_52">
+       <widget class="QLabel" name="label_pream_gain">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -130,7 +130,7 @@
        </widget>
       </item>
       <item row="8" column="1">
-       <widget class="QLabel" name="label_37">
+       <widget class="QLabel" name="label_xgain">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -183,7 +183,7 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QLabel" name="label_51">
+       <widget class="QLabel" name="label_iset">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -211,7 +211,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_44">
+       <widget class="QLabel" name="label_bias_dac">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -314,7 +314,7 @@
        </widget>
       </item>
       <item row="5" column="3">
-       <widget class="QLabel" name="label_49">
+       <widget class="QLabel" name="label_yoffset">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -342,7 +342,7 @@
        </widget>
       </item>
       <item row="3" column="3">
-       <widget class="QLabel" name="label_50">
+       <widget class="QLabel" name="label_zdither">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -470,7 +470,7 @@
        </widget>
       </item>
       <item row="9" column="1">
-       <widget class="QLabel" name="label_36">
+       <widget class="QLabel" name="label_zgain1">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -498,7 +498,7 @@
        </widget>
       </item>
       <item row="6" column="3">
-       <widget class="QLabel" name="label_48">
+       <widget class="QLabel" name="label_zoffset_fine">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -526,7 +526,7 @@
        </widget>
       </item>
       <item row="9" column="3">
-       <widget class="QLabel" name="label_45">
+       <widget class="QLabel" name="label_zgain2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -579,7 +579,7 @@
        </widget>
       </item>
       <item row="10" column="3">
-       <widget class="QLabel" name="label_54">
+       <widget class="QLabel" name="label_bias_range">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -639,7 +639,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLabel" name="label_42">
+       <widget class="QLabel" name="label_bias_dither">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -692,7 +692,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLabel" name="label_43">
+       <widget class="QLabel" name="label_bias">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -720,7 +720,7 @@
        </widget>
       </item>
       <item row="8" column="3">
-       <widget class="QLabel" name="label_46">
+       <widget class="QLabel" name="label_ygain">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -773,7 +773,7 @@
        </widget>
       </item>
       <item row="7" column="1">
-       <widget class="QLabel" name="label_39">
+       <widget class="QLabel" name="label_xin">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -858,7 +858,7 @@
        </widget>
       </item>
       <item row="7" column="3">
-       <widget class="QLabel" name="label_47">
+       <widget class="QLabel" name="label_yin">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -886,7 +886,7 @@
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QLabel" name="label_40">
+       <widget class="QLabel" name="label_zoffset">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -914,7 +914,7 @@
        </widget>
       </item>
       <item row="10" column="1">
-       <widget class="QLabel" name="label_38">
+       <widget class="QLabel" name="label_feedback">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -958,7 +958,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="label_date">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -993,7 +993,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLabel" name="label_14">
+       <widget class="QLabel" name="label_time">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1030,10 +1030,10 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="3" column="0" colspan="4">
-       <widget class="QListWidget" name="listWidget_2"/>
+       <widget class="QListWidget" name="listWidget_seq"/>
       </item>
       <item row="1" column="1">
-       <widget class="QLabel" name="label_56">
+       <widget class="QLabel" name="label_bias_dither_seq">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1136,7 +1136,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_31">
+       <widget class="QLabel" name="label_seq_name">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1164,7 +1164,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLabel" name="label_60">
+       <widget class="QLabel" name="label_feedback_seq">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1217,7 +1217,7 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QLabel" name="label_57">
+       <widget class="QLabel" name="label_z_dither_seq">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1304,7 +1304,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLabel" name="label_19">
+       <widget class="QLabel" name="label_avg_num">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1332,7 +1332,7 @@
        </widget>
       </item>
       <item row="2" column="4">
-       <widget class="QLabel" name="label_33">
+       <widget class="QLabel" name="label_sampling_delay">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -1342,7 +1342,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_17">
+       <widget class="QLabel" name="label_read_ch">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1370,7 +1370,7 @@
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QLabel" name="label_32">
+       <widget class="QLabel" name="label_read_delay">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -1419,7 +1419,7 @@
        </widget>
       </item>
       <item row="3" column="1" colspan="4">
-       <widget class="QLabel" name="label_18">
+       <widget class="QLabel" name="label_read_mode">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
