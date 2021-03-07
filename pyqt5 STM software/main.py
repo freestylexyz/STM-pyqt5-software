@@ -14,6 +14,7 @@ sys.path.append("./Scan/")
 sys.path.append("./Etest/")
 import os
 from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox
+from PyQt5.QtCore import QSettings
 from BiasControl import myBiasControl
 from Zcontroller import myZcontroller
 from CurrentControl import myCurrentControl
@@ -24,6 +25,7 @@ from ScanControl import myScanControl
 import conversion as cnv
 from logger import Logger
 import functools as ft
+import numpy as np
 
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
@@ -33,6 +35,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.init_Zcontroller_dock()
         self.init_current_dock()
         self.init_STM()
+
         
     def init_menu(self):
         # Menu bar
@@ -63,20 +66,20 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.dsp.track_signal.connect(self.scan.track_update)
         self.dsp.rampDiag_signal.connect(self.scan.send_update)
         self.dsp.scan_signal.connect(self.scan.scan_update)
-        
-        
+
+
         # Connect setting signal
         self.setting.initDSP_signal.connect(self.setting_init_slot)
         self.setting.loadOffset_signal.connect(self.setting_load_slot)
         self.setting.close_signal.connect(self.closeWindow)
-        
+
         # Connect tip approach signal
         self.tipappr.close_signal.connect(self.closeWindow)
         self.tipappr.stop_signal.connect(self.stop_slot)
         self.tipappr.mode_signal.connect(self.dsp.digital_o)
         self.tipappr.giant_signal.connect(self.giant_slot)
         self.tipappr.approach_signal.connect(self.tip_appr_slot)
-        
+
         # Connect electronic test signal
         self.etest.Etest.tabBarClicked.connect(self.init_tab_slot)
         self.etest.close_signal.connect(self.closeWindow)
@@ -111,16 +114,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.scan_signal.connect(self.scan_thread)
         self.scan.stop_signal.connect(self.scan_stop)
         self.scan.gain_changed_signal.connect(self.dsp.gain)
-        
+
         # Sequence
         self.scan.seq_list.close_signal.connect(self.close_seq_list)
-        
+
         # Deposition
         self.scan.dep.close_signal.connect(self.close_scan)
         self.scan.dep.seq_list_signal.connect(ft.partial(self.open_seq_list, 1))
         self.scan.dep.do_it_signal.connect(self.deposition_thread)
         self.scan.dep.stop_signal.connect(self.scan_stop)
-        
+
         # Track
         self.scan.track.track_signal.connect(self.track_thread)
         self.scan.track.stop_signal.connect(self.scan_stop)
@@ -145,7 +148,144 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfg.setValue("SETTING/PREAMP_GAIN", self.preamp_gain)
         self.cnfg.setValue("SETTING/MODE", self.mode)
         self.cnfg.setValue("SETTING/BIAS_DAC", self.bias_dac)
+
+        # DSP
+        self.cnfg.setValue("DSP/LAST_DAC", self.dsp.lastdac)
+        self.cnfg.setValue("DSP/DAC_RANGE", self.dsp.dacrange)
+        self.cnfg.setValue("DSP/ADC_RANGE", self.dsp.adcrange)
+        self.cnfg.setValue("DSP/LAST_20BIT", self.dsp.last20bit)
+        self.cnfg.setValue("DSP/LAST_DIGITAL", self.dsp.lastdigital)
+        self.cnfg.setValue("DSP/LAST_GAIN", self.dsp.lastgain)
+        self.cnfg.setValue("DSP/OFFSET", self.dsp.offset)
+        # Main menu
+        self.cnfg.setValue("MAIN/HARD_RETRACT", self.hard_retracted)
+        self.cnfg.setValue("MAIN/PREAMP_GAIN", self.preamp_gain)
+        self.cnfg.setValue("MAIN/BIAS_DAC", self.bias_dac)
+        self.cnfg.setValue("MAIN/MODE", self.mode)
+        # Bias control
+        self.cnfg.setValue("BIAS/RAMP_SPEED", self.spinBox_SpeedInput_BiasRamp.value())
+        # Current control
+        self.cnfg.setValue("CURRENT/RAMP_SPEED", self.spinBox_SpeedInput_CurrRamp.value())
+        # Tip approach
+        self.cnfg.setValue("TIP_APPROACH/DELAY", self.tipappr.spinBox_Delay.value())
+        self.cnfg.setValue("TIP_APPROACH/XIN_STEP_SIZE", self.tipappr.spinBox_Xstep.value())
+        self.cnfg.setValue("TIP_APPROACH/ACCELERATION", self.tipappr.spinBox_Accel.value())
+        self.cnfg.setValue("TIP_APPROACH/ZOUTER_STEP_SIZE", self.tipappr.spinBox_Zstep.value())
+        self.cnfg.setValue("TIP_APPROACH/GIANT_STEP", self.tipappr.spinBox_Giant.value())
+        self.cnfg.setValue("TIP_APPROACH/MIN_CURRENT", self.tipappr.spinBox_MInCurr.value())
+        self.cnfg.setValue("TIP_APPROACH/BABY_STEP", self.tipappr.spinBox_Baby.value())
+        self.cnfg.setValue("TIP_APPROACH/STEP_NUM", self.tipappr.spinBox_StepNum.value())
+        # Scan | Send options
+        self.cnfg.setValue("SEND_OPTIONS/MOVE_DELAY", self.scan.send_options.spinBox_MoveDelay_SendOptions.value())
+        self.cnfg.setValue("SEND_OPTIONS/STEP_SIZE", self.scan.send_options.spinBox_StepSize_SendOptions.value())
+        self.cnfg.setValue("SEND_OPTIONS/STEP_SIZE", self.scan.send_options.groupBox_Crash_SendOptions.isChecked())
+        self.cnfg.setValue("SEND_OPTIONS/STEP_SIZE", self.scan.send_options.spinBox_Limit_Crash.value())
+        # Scan | Scan options
+        self.cnfg.setValue("SCAN_OPTIONS/SCAN_ORDER",
+                                self.scan.scan_options.radioButton_YFirst_OrderandDirection.isChecked())
+        self.cnfg.setValue("SCAN_OPTIONS/READ_DIRECTION",
+                                self.scan.scan_options.radioButton_ReadForward_OrderandDirection.isChecked())
+        self.cnfg.setValue("SCAN_OPTIONS/TIP_PROTECTION",
+                                self.scan.scan_options.groupBox_Tip_ScanOptions.isChecked())
+        self.cnfg.setValue("SCAN_OPTIONS/RETRACT", self.scan.scan_options.spinBox_Retract_Tip.value())
+        self.cnfg.setValue("SCAN_OPTIONS/SCAN_PROTECTION",
+                                self.scan.scan_options.groupBox_Scan_ScanOptions.isChecked())
+        self.cnfg.setValue("SCAN_OPTIONS/ZOUT_LIMIT", self.scan.scan_options.spinBox_ZoutLmit_Scan.value())
+        option = 0 if self.scan.scan_options.radioButton_Stop_Scan.isChecked() else (
+            1 if self.scan.scan_options.radioButton_Auto0_Scan.isChecked() else 2)
+        self.cnfg.setValue("SCAN_OPTIONS/SCAN_PROTECTION_OPTION", option)
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_OPTION", self.scan.scan_options.radioButton_Fixed_Delay.isChecked())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_MOVE_CONTROL",
+                                self.scan.scan_options.spinBox_MoveControl_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_MOVE_OFF", self.scan.scan_options.spinBox_MoveOFF_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_MOVE_ON", self.scan.scan_options.spinBox_MoveON_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_READ_CONTROL",
+                                self.scan.scan_options.spinBox_ReadControl_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_READ_OFF", self.scan.scan_options.spinBox_ReadOFF_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_READ_ON", self.scan.scan_options.spinBox_ReadON_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_LINE_CONTROL",
+                                self.scan.scan_options.spinBox_LineControl_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_LINE_OFF", self.scan.scan_options.spinBox_LineOFF_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/DELAY_LINE_ON", self.scan.scan_options.spinBox_LineON_Delay.value())
+        self.cnfg.setValue("SCAN_OPTIONS/AVERAGE_NUM", self.scan.scan_options.spinBox_Avg.value())
+        # !!! Pre-scan
+        # Scan | Scan control
+        self.cnfg.setValue("SCAN_CONTROL/SCAN_SIZE", self.scan.spinBox_ScanSize_ScanControl.value())
+        self.cnfg.setValue("SCAN_CONTROL/STEP_SIZE", self.scan.spinBox_StepSize_ScanControl.value())
+        self.cnfg.setValue("SCAN_CONTROL/SEQUENCE", self.scan.scan_seq_list)
+        # Scan | Track
+        self.cnfg.setValue("TRACK/TRACK_SIZE", self.scan.track.spinBox_TrackSize_Track.value())
+        self.cnfg.setValue("TRACK/STEP_SIZE", self.scan.track.spinBox_StepSize_Track.value())
+        self.cnfg.setValue("TRACK/READ_CHANNEL", self.scan.track.comboBox_ReadCh_Track.currentIndex())
+        self.cnfg.setValue("TRACK/AVERAGE", self.scan.track.spinBox_Avg_Track.value())
+        self.cnfg.setValue("TRACK/SCAN_DELAY", self.scan.track.spinBox_ScanDelay_Track.value())
+        self.cnfg.setValue("TRACK/STAY_DELAY", self.scan.track.spinBox_StayDelay_Track.value())
+        self.cnfg.setValue("TRACK/PLANE_FIT", self.scan.track.groupBox_PlaneFit_Track.isChecked())
+        self.cnfg.setValue("TRACK/PLANE_FIT_X", self.scan.track.spinBox_X_PlaneFit.value())
+        self.cnfg.setValue("TRACK/PLANE_FIT_Y", self.scan.track.spinBox_Y_PlaneFit.value())
+        self.cnfg.setValue("TRACK/MODE", self.scan.track.radioButton_Max_PlaneFit.isChecked())
+        # Scan | Deposition
+        self.cnfg.setValue("DEPOSITION/POKE_TIP", self.scan.dep.spinBox_Bias_PokeTip.value())
+        self.cnfg.setValue("DEPOSITION/DELTA_Z", self.scan.dep.spinBox_DeltaZ_PokeTip.value())
+        self.cnfg.setValue("DEPOSITION/SEQUENCE", self.scan.dep.groupBox_Seq_Deposition.isChecked())
+        self.cnfg.setValue("DEPOSITION/SEQUENCE_NAME", self.scan.dep_seq_list)
+        self.cnfg.setValue("DEPOSITION/READ", self.scan.dep.groupBox_Read_Deposition.isChecked())
+        self.cnfg.setValue("TRACK/READ_CHANNEL", self.scan.dep.comboBox_Ch_Read.currentIndex())
+        self.cnfg.setValue("DEPOSITION/AVERAGE_NUM", self.scan.dep.spinBox_AvgNum_Read.value())
+        self.cnfg.setValue("DEPOSITION/READ_NUM", self.scan.dep.spinBox_Num_Read.value())
+        self.cnfg.setValue("DEPOSITION/PULSE_READ_CHANNEL", self.scan.dep.comboBox_Ch_Pulse.currentIndex())
+        self.cnfg.setValue("DEPOSITION/PULSE_WAIT", self.scan.dep.spinBox_Wait_Pulse.value())
+        self.cnfg.setValue("DEPOSITION/PULSE_AVERAGE_NUM", self.scan.dep.spinBox_AvgNum_Pulse.value())
+        self.cnfg.setValue("DEPOSITION/PULSE_DELAY", self.scan.dep.spinBox_Delay_Pulse.value())
+        self.cnfg.setValue("DEPOSITION/N_SAMPLE", self.scan.dep.groupBox_ReadNSample_Deposition.isChecked())
+        self.cnfg.setValue("DEPOSITION/N_SAMPLE_NUM", self.scan.dep.spinBox_Num_ReadNSample.value())
+        self.cnfg.setValue("DEPOSITION/READ_UNTIL", self.scan.dep.groupBox_ReadUntil_Deposition.isChecked())
+        self.cnfg.setValue("DEPOSITION/READ_UNTIL_NUM", self.scan.dep.spinBox_StopNum_ReadUntil.value())
+        self.cnfg.setValue("DEPOSITION/READ_UNTIL_CHANGE", self.scan.dep.spinBox_Change_ReadUntil.value())
+        self.cnfg.setValue("DEPOSITION/READ_UNTIL_MODE",
+                                self.scan.dep.radioButton_Continuous_ReadUntil.isChecked())
+        # Scan | Spectroscopy
+        self.cnfg.setValue("SPECTROSCOPY/MIN", self.scan.spc.spinBox_Min_General.value())
+        self.cnfg.setValue("SPECTROSCOPY/MAX", self.scan.spc.spinBox_Max_General.value())
+        self.cnfg.setValue("SPECTROSCOPY/STEP_SIZE", self.scan.spc.spiBox_StepSize_General.value())
+        self.cnfg.setValue("SPECTROSCOPY/NUM", self.scan.spc.label_DataNum_General.text())
+        self.cnfg.setValue("SPECTROSCOPY/PASS", self.scan.spc.spinBox_Pass_General.value())
+        self.cnfg.setValue("SPECTROSCOPY/RAMP_CHANNEL", self.scan.spc.comboBox_RampCh_General.currentIndex())
+        self.cnfg.setValue("SPECTROSCOPY/DELTA", self.scan.spc.groupBox_Delta_General.isChecked())
+        self.cnfg.setValue("SPECTROSCOPY/DELTA_Z", self.scan.spc.spinBox_Delta_Z.value())
+        self.cnfg.setValue("SPECTROSCOPY/DELTA_BIAS", self.scan.spc.spinBox_Bias_Delta.value())
+        self.cnfg.setValue("SPECTROSCOPY/MAPPING", self.scan.spc.groupBox_Mapping.isChecked())
+        # Scan | Advance option
+        self.cnfg.setValue("ADVANCE_OPTION/DO", self.scan.spc.adv.spinBox_DoZCorrection_ZDrift.value())
+        self.cnfg.setValue("ADVANCE_OPTION/Z_CORRECTION", self.scan.spc.adv.groupBox_ZDrift_Correction.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/DELAY", self.scan.spc.adv.spinBox_Delay_ZDrift.value())
+        self.cnfg.setValue("ADVANCE_OPTION/MATCH", self.scan.spc.adv.checkBox_MatchCurr_ZDrift.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/TRACK", self.scan.spc.adv.checkBox_Tracking_Correction.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/MEASURE_MODE", self.scan.spc.adv.radioButton_I_Measure.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/CH2", self.scan.spc.adv.checkBox_Ch2_Measure.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/CH3", self.scan.spc.adv.checkBox_Ch3_Measure.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/AVERAGE_I", self.scan.spc.adv.spinBox_Avg_I_2.value())
+        self.cnfg.setValue("ADVANCE_OPTION/AVERAGE_Z", self.scan.spc.adv.spinBox_Avg_Z.value())
+        self.cnfg.setValue("ADVANCE_OPTION/AVERAGE_CH2", self.scan.spc.adv.spinBox_Avg_CH2.value())
+        self.cnfg.setValue("ADVANCE_OPTION/AVERAGE_CH3", self.scan.spc.adv.spinBox_Avg_CH3.value())
+        self.cnfg.setValue("ADVANCE_OPTION/AUTO_SAVE", self.scan.spc.adv.groupBox_AutoSave_AdvOption.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/AUTO_SAVE_EVERY",
+                                self.scan.spc.adv.checkBox_SaveEveryPasses_Autosave.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/SEQUENCE", self.scan.spc.adv.groupBox_Seq_AdvOption.isChecked())
+        self.cnfg.setValue("ADVANCE_OPTION/SEQUENCE_NAME", self.scan.spc_seq_list)
+        self.cnfg.setValue("ADVANCE_OPTION/MOVE_DELAY", self.scan.spc.adv.spinBox_MoveDelay_Dealy.value())
+        self.cnfg.setValue("ADVANCE_OPTION/MEASURE_DELAY", self.scan.spc.adv.spinBox_MeasureDelay_Dealy.value())
+        self.cnfg.setValue("ADVANCE_OPTION/WAIT_DELAY", self.scan.spc.adv.spinBox_Wait_Delay.value())
+        scan_direction = 0 if self.scan.spc.adv.radioButton_Forward_Dir.isChecked() else (
+            1 if self.scan.spc.adv.radioButton_Bacward_Dir.isChecked() else (
+                2 if self.scan.spc.adv.radioButton_AvgBoth_Dir.isChecked() else 3))
+        self.cnfg.setValue("ADVANCE_OPTION/SCAN_DIRECTION", scan_direction)
+        # !!! pre-scan
+        # Scan | Point editor
+        self.cnfg.setValue("SCAN/POINT_EDITOR", self.scan.point_list)
         self.cnfg.sync()
+
+
 
     # !!! Load all settings stored in configuration file to dsp module
     def load_config(self):
@@ -167,7 +307,148 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 #         #         self.preamp_gain = int(self.cnfg.value("SETTING/PREAMP_GAIN"))
 # =============================================================================
         self.initO = True       # !!! For temporary use
-        
+        # Load params from config
+        # DSP
+        self.dsp.lastdac = self.cnfg.value("DSP/LAST_DAC", type=int)
+        self.dsp.dacrange = self.cnfg.value("DSP/DAC_RANGE", type=int)
+        self.dsp.adcrange = self.cnfg.value("DSP/ADC_RANGE", type=int)
+        self.dsp.last20bit = self.cnfg.value("DSP/LAST_20BIT", type=int)
+        self.dsp.lastdigital = self.cnfg.value("DSP/LAST_DIGITAL", type=bool)
+        self.dsp.lastgain = self.cnfg.value("DSP/LAST_GAIN", type=int)
+        self.dsp.offset = self.cnfg.value("DSP/OFFSET", type=int)
+        # Main menu
+        self.hard_retracted = self.cnfg.value("MAIN/HARD_RETRACT", type=bool)
+        self.preamp_gain = self.cnfg.value("MAIN/PREAMP_GAIN", type=int)
+        self.bias_dac = self.cnfg.value("MAIN/BIAS_DAC", type=bool)
+        self.mode = self.cnfg.value("MAIN/MODE", type=int)
+        # Bias control
+        self.spinBox_SpeedInput_BiasRamp.setValue(self.cnfg.value("BIAS/RAMP_SPEED", type=int))
+        # Current control
+        self.spinBox_SpeedInput_CurrRamp.setValue(self.cnfg.value("CURRENT/RAMP_SPEED", type=int))
+        # Tip approach
+        self.tipappr.spinBox_Delay.setValue(self.cnfg.value("TIP_APPROACH/DELAY", type=int))
+        self.tipappr.spinBox_Xstep.setValue(self.cnfg.value("TIP_APPROACH/XIN_STEP_SIZE", type=float))
+        self.tipappr.spinBox_Accel.setValue(self.cnfg.value("TIP_APPROACH/ACCELERATION", type=float))
+        self.tipappr.spinBox_Zstep.setValue(self.cnfg.value("TIP_APPROACH/ZOUTER_STEP_SIZE", type=float))
+        self.tipappr.spinBox_Giant.setValue(self.cnfg.value("TIP_APPROACH/GIANT_STEP", type=int))
+        self.tipappr.spinBox_MInCurr.setValue(self.cnfg.value("TIP_APPROACH/MIN_CURRENT", type=float))
+        self.tipappr.spinBox_Baby.setValue(self.cnfg.value("TIP_APPROACH/BABY_STEP", type=int))
+        self.tipappr.spinBox_StepNum.setValue(self.cnfg.value("TIP_APPROACH/STEP_NUM", type=int))
+        # Scan | Send options
+        self.scan.send_options.spinBox_MoveDelay_SendOptions.setValue(self.cnfg.value("SEND_OPTIONS/MOVE_DELAY", type=int))
+        self.scan.send_options.spinBox_StepSize_SendOptions.setValue(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=int))
+        self.scan.send_options.groupBox_Crash_SendOptions.setChecked(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=bool))
+        self.scan.send_options.spinBox_Limit_Crash.setValue(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=float))
+        # Scan | Scan options
+        self.scan.scan_options.radioButton_YFirst_OrderandDirection.setChecked(
+            self.cnfg.value("SCAN_OPTIONS/SCAN_ORDER", type=bool))
+        self.scan.scan_options.radioButton_ReadForward_OrderandDirection.setChecked(
+            self.cnfg.value("SCAN_OPTIONS/READ_DIRECTION", type=bool))
+        self.scan.scan_options.groupBox_Tip_ScanOptions.setChecked(self.cnfg.value("SCAN_OPTIONS/TIP_PROTECTION", type=bool))
+        self.scan.scan_options.spinBox_Retract_Tip.setValue(self.cnfg.value("SCAN_OPTIONS/RETRACT", type=int))
+        self.scan.scan_options.groupBox_Scan_ScanOptions.setChecked(
+            self.cnfg.value("SCAN_OPTIONS/SCAN_PROTECTION", type=bool))
+        self.scan.scan_options.spinBox_ZoutLmit_Scan.setValue(self.cnfg.value("SCAN_OPTIONS/ZOUT_LIMIT", type=float))
+        if self.cnfg.value("SCAN_OPTIONS/SCAN_PROTECTION_OPTION") == 0:
+            self.scan.scan_options.radioButton_Stop_Scan.setChecked(True)
+        elif self.cnfg.value("SCAN_OPTIONS/SCAN_PROTECTION_OPTION") == 1:
+            self.scan.scan_options.radioButton_Auto0_Scan.setChecked(True)
+        elif self.cnfg.value("SCAN_OPTIONS/SCAN_PROTECTION_OPTION") == 2:
+            self.scan.scan_options.radioButton_AutoPre_Scan.setChecked(True)
+        self.scan.scan_options.radioButton_Fixed_Delay.setChecked(self.cnfg.value("SCAN_OPTIONS/DELAY_OPTION", type=bool))
+        self.scan.scan_options.spinBox_MoveControl_Delay.setValue(
+            self.cnfg.value("SCAN_OPTIONS/DELAY_MOVE_CONTROL", type=int))
+        self.scan.scan_options.spinBox_MoveOFF_Delay.setValue(self.cnfg.value("SCAN_OPTIONS/DELAY_MOVE_OFF", type=int))
+        self.scan.scan_options.spinBox_MoveON_Delay.setValue(self.cnfg.value("SCAN_OPTIONS/DELAY_MOVE_ON", type=int))
+        self.scan.scan_options.spinBox_ReadControl_Delay.setValue(
+            self.cnfg.value("SCAN_OPTIONS/DELAY_READ_CONTROL", type=int))
+        self.scan.scan_options.spinBox_ReadOFF_Delay.setValue(self.cnfg.value("SCAN_OPTIONS/DELAY_READ_OFF", type=int))
+        self.scan.scan_options.spinBox_ReadON_Delay.setValue(self.cnfg.value("SCAN_OPTIONS/DELAY_READ_ON", type=int))
+        self.scan.scan_options.spinBox_LineControl_Delay.setValue(
+            self.cnfg.value("SCAN_OPTIONS/DELAY_LINE_CONTROL", type=int))
+        self.scan.scan_options.spinBox_LineOFF_Delay.setValue(self.cnfg.value("SCAN_OPTIONS/DELAY_LINE_OFF", type=int))
+        self.scan.scan_options.spinBox_LineON_Delay.setValue(self.cnfg.value("SCAN_OPTIONS/DELAY_LINE_ON", type=int))
+        self.scan.scan_options.spinBox_Avg.setValue(self.cnfg.value("SCAN_OPTIONS/AVERAGE_NUM", type=int))
+        # !!! Pre-scan
+        # Scan | Scan control
+        self.scan.spinBox_ScanSize_ScanControl.setValue(self.cnfg.value("SCAN_CONTROL/SCAN_SIZE", type=int))
+        self.scan.spinBox_StepSize_ScanControl.setValue(self.cnfg.value("SCAN_CONTROL/STEP_SIZE", type=int))
+        self.scan.scan_seq_list = self.cnfg.value("SCAN_CONTROL/SEQUENCE")
+        # Scan | Track
+        self.scan.track.spinBox_TrackSize_Track.setValue(self.cnfg.value("TRACK/TRACK_SIZE", type=int))
+        self.scan.track.spinBox_StepSize_Track.setValue(self.cnfg.value("TRACK/STEP_SIZE", type=int))
+        self.scan.track.comboBox_ReadCh_Track.setCurrentIndex(self.cnfg.value("TRACK/READ_CHANNEL", type=int))
+        self.scan.track.spinBox_Avg_Track.setValue(self.cnfg.value("TRACK/AVERAGE", type=int))
+        self.scan.track.spinBox_ScanDelay_Track.setValue(self.cnfg.value("TRACK/SCAN_DELAY", type=int))
+        self.scan.track.spinBox_StayDelay_Track.setValue(self.cnfg.value("TRACK/STAY_DELAY", type=int))
+        self.scan.track.groupBox_PlaneFit_Track.setChecked(self.cnfg.value("TRACK/PLANE_FIT", type=bool))
+        self.scan.track.spinBox_X_PlaneFit.setValue(self.cnfg.value("TRACK/PLANE_FIT_X", type=float))
+        self.scan.track.spinBox_Y_PlaneFit.setValue(self.cnfg.value("TRACK/PLANE_FIT_Y", type=float))
+        self.scan.track.radioButton_Max_PlaneFit.setChecked(self.cnfg.value("TRACK/MODE", type=bool))
+        # Scan | Deposition
+        self.scan.dep.spinBox_Bias_PokeTip.setValue(self.cnfg.value("DEPOSITION/POKE_TIP", type=float))
+        self.scan.dep.spinBox_DeltaZ_PokeTip.setValue(self.cnfg.value("DEPOSITION/DELTA_Z", type=int))
+        self.scan.dep.groupBox_Seq_Deposition.setChecked(self.cnfg.value("DEPOSITION/SEQUENCE", type=bool))
+        self.scan.dep_seq_list = self.cnfg.value("DEPOSITION/SEQUENCE_NAME")
+        self.scan.dep.groupBox_Read_Deposition.setChecked(self.cnfg.value("DEPOSITION/READ", type=bool))
+        self.scan.dep.comboBox_Ch_Read.setCurrentIndex(self.cnfg.value("TRACK/READ_CHANNEL", type=int))
+        self.scan.dep.spinBox_AvgNum_Read.setValue(self.cnfg.value("DEPOSITION/AVERAGE_NUM", type=int))
+        self.scan.dep.spinBox_Num_Read.setValue(self.cnfg.value("DEPOSITION/READ_NUM", type=int))
+        self.scan.dep.comboBox_Ch_Pulse.setCurrentIndex(self.cnfg.value("DEPOSITION/PULSE_READ_CHANNEL", type=int))
+        self.scan.dep.spinBox_Wait_Pulse.setValue(self.cnfg.value("DEPOSITION/PULSE_WAIT", type=int))
+        self.scan.dep.spinBox_AvgNum_Pulse.setValue(self.cnfg.value("DEPOSITION/PULSE_AVERAGE_NUM", type=int))
+        self.scan.dep.spinBox_Delay_Pulse.setValue(self.cnfg.value("DEPOSITION/PULSE_DELAY", type=int))
+        self.scan.dep.groupBox_ReadNSample_Deposition.setChecked(self.cnfg.value("DEPOSITION/N_SAMPLE", type=bool))
+        self.scan.dep.spinBox_Num_ReadNSample.setValue(self.cnfg.value("DEPOSITION/N_SAMPLE_NUM", type=int))
+        self.scan.dep.groupBox_ReadUntil_Deposition.setChecked(self.cnfg.value("DEPOSITION/READ_UNTIL", type=bool))
+        self.scan.dep.spinBox_StopNum_ReadUntil.setValue(self.cnfg.value("DEPOSITION/READ_UNTIL_NUM", type=int))
+        self.scan.dep.spinBox_Change_ReadUntil.setValue(self.cnfg.value("DEPOSITION/READ_UNTIL_CHANGE", type=float))
+        self.scan.dep.radioButton_Continuous_ReadUntil.setChecked(self.cnfg.value("DEPOSITION/READ_UNTIL_MODE", type=bool))
+        # Scan | Spectroscopy
+        self.scan.spc.spinBox_Min_General.setValue(self.cnfg.value("SPECTROSCOPY/MIN", type=float))
+        self.scan.spc.spinBox_Max_General.setValue(self.cnfg.value("SPECTROSCOPY/MAX", type=float))
+        self.scan.spc.spiBox_StepSize_General.setValue(self.cnfg.value("SPECTROSCOPY/STEP_SIZE", type=float))
+        self.scan.spc.label_DataNum_General.setText(self.cnfg.value("SPECTROSCOPY/NUM"))
+        self.scan.spc.spinBox_Pass_General.setValue(self.cnfg.value("SPECTROSCOPY/PASS", type=int))
+        self.scan.spc.comboBox_RampCh_General.setCurrentIndex(self.cnfg.value("SPECTROSCOPY/RAMP_CHANNEL", type=int))
+        self.scan.spc.groupBox_Delta_General.setChecked(self.cnfg.value("SPECTROSCOPY/DELTA", type=bool))
+        self.scan.spc.spinBox_Delta_Z.setValue(self.cnfg.value("SPECTROSCOPY/DELTA_Z", type=int))
+        self.scan.spc.spinBox_Bias_Delta.setValue(self.cnfg.value("SPECTROSCOPY/DELTA_BIAS", type=float))
+        self.scan.spc.groupBox_Mapping.setChecked(self.cnfg.value("SPECTROSCOPY/MAPPING", type=bool))
+        # Scan | Advance option
+        self.scan.spc.adv.spinBox_DoZCorrection_ZDrift.setValue(self.cnfg.value("ADVANCE_OPTION/DO", type=int))
+        self.scan.spc.adv.groupBox_ZDrift_Correction.setChecked(self.cnfg.value("ADVANCE_OPTION/Z_CORRECTION", type=bool))
+        self.scan.spc.adv.spinBox_Delay_ZDrift.setValue(self.cnfg.value("ADVANCE_OPTION/DELAY", type=int))
+        self.scan.spc.adv.checkBox_MatchCurr_ZDrift.setChecked(self.cnfg.value("ADVANCE_OPTION/MATCH", type=bool))
+        self.scan.spc.adv.checkBox_Tracking_Correction.setChecked(self.cnfg.value("ADVANCE_OPTION/TRACK", type=bool))
+        self.scan.spc.adv.radioButton_I_Measure.setChecked(self.cnfg.value("ADVANCE_OPTION/MEASURE_MODE", type=bool))
+        self.scan.spc.adv.checkBox_Ch2_Measure.setChecked(self.cnfg.value("ADVANCE_OPTION/CH2", type=bool))
+        self.scan.spc.adv.checkBox_Ch3_Measure.setChecked(self.cnfg.value("ADVANCE_OPTION/CH3", type=bool))
+        self.scan.spc.adv.spinBox_Avg_I_2.setValue(self.cnfg.value("ADVANCE_OPTION/AVERAGE_I", type=int))
+        self.scan.spc.adv.spinBox_Avg_Z.setValue(self.cnfg.value("ADVANCE_OPTION/AVERAGE_Z", type=int))
+        self.scan.spc.adv.spinBox_Avg_CH2.setValue(self.cnfg.value("ADVANCE_OPTION/AVERAGE_CH2", type=int))
+        self.scan.spc.adv.spinBox_Avg_CH3.setValue(self.cnfg.value("ADVANCE_OPTION/AVERAGE_CH3", type=int))
+        self.scan.spc.adv.groupBox_AutoSave_AdvOption.setChecked(self.cnfg.value("ADVANCE_OPTION/AUTO_SAVE", type=bool))
+        self.scan.spc.adv.checkBox_SaveEveryPasses_Autosave.setChecked(
+            self.cnfg.value("ADVANCE_OPTION/AUTO_SAVE_EVERY", type=bool))
+        self.scan.spc.adv.groupBox_Seq_AdvOption.setChecked(self.cnfg.value("ADVANCE_OPTION/SEQUENCE", type=bool))
+        self.scan.spc_seq_list = self.cnfg.value("ADVANCE_OPTION/SEQUENCE_NAME")
+        self.scan.spc.adv.spinBox_MoveDelay_Dealy.setValue(self.cnfg.value("ADVANCE_OPTION/MOVE_DELAY", type=int))
+        self.scan.spc.adv.spinBox_MeasureDelay_Dealy.setValue(self.cnfg.value("ADVANCE_OPTION/MEASURE_DELAY", type=int))
+        self.scan.spc.adv.spinBox_Wait_Delay.setValue(self.cnfg.value("ADVANCE_OPTION/WAIT_DELAY", type=int))
+        if self.cnfg.value("ADVANCE_OPTION/SCAN_DIRECTION") == 0:
+            self.scan.spc.adv.radioButton_Forward_Dir.setChecked(True)
+        elif self.cnfg.value("ADVANCE_OPTION/SCAN_DIRECTION") == 1:
+            self.scan.spc.adv.radioButton_Bacward_Dir.setChecked(True)
+        elif self.cnfg.value("ADVANCE_OPTION/SCAN_DIRECTION") == 2:
+            self.scan.spc.adv.radioButton_AvgBoth_Dir.setChecked(True)
+        elif self.cnfg.value("ADVANCE_OPTION/SCAN_DIRECTION") == 3:
+            self.scan.spc.adv.radioButton_Both_Dir.setChecked(True)
+        # !!! pre-scan
+        # Scan | Point editor
+        self.scan.point_list = self.cnfg.value("SCAN/POINT_EDITOR")
+
+
     # DSP intial succeed slot
     def dsp_succeed_slot(self, succeed):
         # Pop out succees message
