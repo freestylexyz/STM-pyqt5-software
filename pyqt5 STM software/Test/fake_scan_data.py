@@ -65,7 +65,7 @@ print(scan_data.seq.option1)
 print(scan_data.seq.option2)
 print(scan_data.seq.data)
 
-fname = '../data/03222100.stm'
+fname = './test data/03222100.stm'
 if fname != '':
     with open(fname, 'wb') as output:
         pickle.dump(scan_data, output, pickle.HIGHEST_PROTOCOL)

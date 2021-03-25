@@ -90,12 +90,12 @@ spc_data.seq.name = 'Fake data Sequence'
 #
 
 ''' Save fake data '''
-fname = '../data/03242101.spc'
+fname = './test data/03242101.spc'
 if fname != '':
     with open(fname, 'wb') as output:
         pickle.dump(spc_data, output, pickle.HIGHEST_PROTOCOL)
 
 ''' Open fake data '''
-with open('../data/03242101.spc', 'rb') as input:
+with open('./test data/03242101.spc', 'rb') as input:
     spc_data = pickle.load(input)
 print(spc_data.data_.shape[:])
