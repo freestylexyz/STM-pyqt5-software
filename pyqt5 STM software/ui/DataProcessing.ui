@@ -201,9 +201,9 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="pushButton_ShowInfo">
          <property name="text">
-          <string>Open info</string>
+          <string>Show info</string>
          </property>
         </widget>
        </item>
@@ -255,7 +255,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="checkBox_Scanner">
           <property name="text">
            <string>Show scanner</string>
           </property>

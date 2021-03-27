@@ -4,13 +4,14 @@
     <file>../data/STMlogo_NiCp2.png</file>
   </qresource>
   <qresource prefix="toolbar">
-    <file>../data/grid.png</file>
+    <file>../data/left.png</file>
+    <file>../data/right.png</file>
+    <file>../data/left_right.png</file>
+    <file>../data/up_down.png</file>
     <file>../data/rotate.png</file>
     <file>../data/open.png</file>
     <file>../data/saveas.png</file>
     <file>../data/save.png</file>
-    <file>../data/left.png</file>
-    <file>../data/right.png</file>
     <file>../data/Reset.png</file>
     <file>../data/zoom.png</file>
     <file>../data/move.png</file>

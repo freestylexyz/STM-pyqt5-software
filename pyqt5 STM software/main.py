@@ -335,10 +335,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.tipappr.spinBox_Baby.setValue(self.cnfg.value("TIP_APPROACH/BABY_STEP", type=int))
         self.tipappr.spinBox_StepNum.setValue(self.cnfg.value("TIP_APPROACH/STEP_NUM", type=int))
         # Scan | Send options
-        self.scan.send_options.spinBox_MoveDelay_SendOptions.setValue(self.cnfg.value("SEND_OPTIONS/MOVE_DELAY", type=int))
-        self.scan.send_options.spinBox_StepSize_SendOptions.setValue(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=int))
-        self.scan.send_options.groupBox_Crash_SendOptions.setChecked(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=bool))
-        self.scan.send_options.spinBox_Limit_Crash.setValue(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=float))
+        # self.scan.send_options.spinBox_MoveDelay_SendOptions.setValue(self.cnfg.value("SEND_OPTIONS/MOVE_DELAY", type=int))
+        # self.scan.send_options.spinBox_StepSize_SendOptions.setValue(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=int))
+        # self.scan.send_options.groupBox_Crash_SendOptions.setChecked(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=bool))
+        # self.scan.send_options.spinBox_Limit_Crash.setValue(self.cnfg.value("SEND_OPTIONS/STEP_SIZE", type=float))
         # Scan | Scan options
         self.scan.scan_options.radioButton_YFirst_OrderandDirection.setChecked(
             self.cnfg.value("SCAN_OPTIONS/SCAN_ORDER", type=bool))
