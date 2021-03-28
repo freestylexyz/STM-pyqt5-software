@@ -48,7 +48,8 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.etest = myEtest()                                      # Electronic test window
         self.scan = myScan()                                        # Scan window
         self.dsp = myDSP()                                          # DSP module
-        self.cnfg = QSettings("config.ini", QSettings.IniFormat)    # Configuration module
+        self.cnfgBS = QSettings("configBS.ini", QSettings.IniFormat)  # Basic configuration module
+        self.cnfgEX = QSettings("configEX.ini", QSettings.IniFormat)  # Extended configuration module
 
     # Set up UI for main menu
     def init_UI(self):
