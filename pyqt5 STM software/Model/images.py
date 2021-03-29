@@ -21,6 +21,7 @@ from matplotlib import cm
 from PIL import Image, ImageDraw
 from numpy import genfromtxt
 import pandas as pd
+from PIL import Image
 
 
 class myImages(QWidget):
@@ -223,6 +224,22 @@ class myImages(QWidget):
         # data.to_csv('../data/real_stm_img_.csv',header=False)
         # print(img.shape)
 
+    # RGB to HEX
+    def RGB_to_Hex(self, rgb):
+        color = '#'
+        for i in rgb[0:3]:
+            num = int(i)
+            color += str(hex(num))[-2:].replace('x', '0').upper()
+        return color
+
+    # HEX to RGB
+    def Hex_to_RGB(hex):
+        r = int(hex[1:3], 16)
+        g = int(hex[3:5], 16)
+        b = int(hex[5:7], 16)
+        rgb = str(r) + ',' + str(g) + ',' + str(b)
+        print(rgb)
+        return rgb
 
     def upsampling(self, img, up_height, up_width):
         height, width, channels = img.shape
@@ -432,4 +449,6 @@ cmaps = [('Perceptually Uniform Sequential', [
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
             'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
             'gist_ncar'])]'''
+
+
 
