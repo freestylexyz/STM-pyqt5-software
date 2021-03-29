@@ -647,11 +647,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
             maximum = 5000
             self.spinBox_Delay_Osci.setMinimum(minimum)
             self.spinBox_Delay_Osci.setMaximum(maximum)
+            self.label_12.setText('us')
         else:           # Continuous mode selected
-            minimum = 1000
-            maximum = 65535
+            minimum = 2
+            maximum = 1000
             self.spinBox_Delay_Osci.setMinimum(minimum)
             self.spinBox_Delay_Osci.setMaximum(maximum)
+            self.label_12.setText('ms')
 
     # Echo | start(stop) button slot
     def echo_start_emit(self):

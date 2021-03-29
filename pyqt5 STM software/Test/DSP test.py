@@ -39,12 +39,12 @@ print(dsp.ver)
 
 # =============================================================================
 # OSC test
-ch = 4
-n = 1024
-average = 1
-delay = 100
-rdata = dsp.osc_N(ch * 4 + 0xc0, n, average, delay)
-np.savetxt("test data/OSC_N.csv", rdata, delimiter =", ", fmt ='% s')
+# ch = 4
+# n = 1024
+# average = 1
+# delay = 100
+# rdata = dsp.osc_N(ch * 4 + 0xc0, n, average, delay)
+# np.savetxt("test data/OSC_N.csv", rdata, delimiter =", ", fmt ='% s')
 # =============================================================================
 
 # =============================================================================

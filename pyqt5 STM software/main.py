@@ -135,13 +135,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.spc.stop_signal.connect(self.scan_stop)
 
         # Do some real stuff
-        self.load_config()              # Load DSP settings
+        self.load_config_bs()           # Load DSP settings
+        # self.load_config_ex()
         self.dsp.init_dsp(self.initO)   # Try to initial DSP
         # if self.mode_last != 0:
         #     pass
         # !!! self.write_cnfg()         # Update config in real time
 
-    def write_cnfg(self):
+    def write_cnfg_bs(self):
         self.cnfgBS.clear()
         # Settings
         self.cnfgBS.setValue("CONFIG/BAUD_VALUE", self.dsp.baudrate)
@@ -165,6 +166,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgBS.setValue("MAIN/MODE", self.mode)
         self.cnfgBS.sync()
         
+    def write_cnfg_ex(self):
         self.cnfgEX.clear()
         # Bias control
         self.cnfgEX.setValue("BIAS/RAMP_SPEED", self.spinBox_SpeedInput_BiasRamp.value())
@@ -292,7 +294,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
 
 
     # !!! Load all settings stored in configuration file to dsp module
-    def load_config(self):
+    def load_config_bs(self):
         self.dsp.baudrate = self.cnfgBS.value("CONFIG/BAUD_VALUE")
         self.dsp.port = self.cnfgBS.value("CONFIG/COM_VALUE")
         # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
@@ -325,6 +327,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.preamp_gain = self.cnfgBS.value("MAIN/PREAMP_GAIN", type=int)
         self.bias_dac = self.cnfgBS.value("MAIN/BIAS_DAC", type=bool)
         self.mode = self.cnfgBS.value("MAIN/MODE", type=int)
+        
+    def load_config_ex(self):
         # Bias control
         self.spinBox_SpeedInput_BiasRamp.setValue(self.cnfgEX.value("BIAS/RAMP_SPEED", type=int))
         # Current control
@@ -500,7 +504,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.Zcontrol.close()   # Close Z controller dock
             self.Current.close()    # Close Current dock
             self.dsp.close()        # Terminate DSP serial communication
-            self.write_cnfg()       # Write configuration file
+            self.write_cnfg_bs()    # Write configuration file
+            # self.write_cnfg_ex()
             event.accept()          # Accept close event
         else:
             self.msg("Close top window first!")     # Pop out window to remind close the tip window
