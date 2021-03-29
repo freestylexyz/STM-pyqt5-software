@@ -376,6 +376,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         maximum = cnv.bv(0xffff, 'd', ran)
         self.dac_val.setMinimum(minimum)
         self.dac_val.setMaximum(maximum)
+        self.dac_val.setValue(cnv.bv(self.dac_bit.value(), 'd', ran))
 
     # I/O | when adc(index = 0) or dac(index = 1) range changed by user, send signal
     def range_changed_emit(self, index, ran, status):
@@ -415,13 +416,13 @@ class myEtest(QWidget, Ui_ElectronicTest):
 
     # I/O | dac output/zero button clicked, send output signal
     def dac_output_emit(self, index):
-        adrr = self.dac_ch.currentIndex() + 16
+        addr = self.dac_ch.currentIndex() + 16
         if index == 0:          # zero button clicked
-            bits = 0x8000;
-            self.dac_bit.setValue(0x8000)
+            bits = cnv.vb(0.0, 'd', self.dac_range[0])
+            self.dac_bit.setValue(bits)
         else:
             bits = self.dac_bit.value()
-        self.dac_output_signal.emit(adrr, bits)
+        self.dac_output_signal.emit(addr, bits)
 
     # I/O | 20 bit dac output/zero button clicked, send output signal
     def bit20_output_emit(self, index):
