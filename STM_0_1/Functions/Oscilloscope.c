@@ -15,15 +15,16 @@ Uint16 ldata[4096];     // Large data storage
 void OSC_C(Uint16 command, Uint16 average, Uint16 delay)
 {
     Uint16 i, rdata;
-    Uint32 sum = 0;
+    Uint32 sum = 0, delay_us;
     adc_command(command);               // Start a conversion of specific channel
+    delay_us = (Uint32)delay * 1000;    // Convert ms delay to us delay
     while(true)
     {
         sum = 0;
         for(i = 0; i < average; i++){sum += adc_command(command);}  // Measure n times of selected channel
         rdata = (Uint16)(sum / average);                            // Return averaged conversion result of corresponding channel
         serialOut(split(rdata, 2));                                 // Output data through serial
-        DELAY_US(delay);                                            // Delay
+        DELAY_US(delay_us);                                         // Delay
         if(serialCheck() == Stop){break;}                           //Check stop
     }
 }
