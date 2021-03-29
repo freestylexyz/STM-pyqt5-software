@@ -28,6 +28,7 @@ import conversion as cnv
 import functools as ft
 import math
 import pickle
+import copy
 
 class myDataProcessing(QMainWindow, Ui_DataProcessing):
     # Common signal
@@ -64,11 +65,12 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
         # pushButton |
         self.pushButton_Open.clicked.connect(self.open_file)
         self.pushButton_Saveas.clicked.connect(self.save_as)
-        # self.pushButton_Saveall.clicked.connect(self.save_all)
         self.pushButton_Previous.clicked.connect(lambda: self.select_file(0))
         self.pushButton_Next.clicked.connect(lambda: self.select_file(1))
         self.pushButton_Refresh.clicked.connect(self.refresh_file)
         self.pushButton_ShowInfo.clicked.connect(self.show_info)
+        self.pushButton_Smooth.clicked.connect(self.do_smooth)
+        self.pushButton_Copy.clicked.connect(self.copy2window)
 
         # comboBox |
         self.comboBox.currentIndexChanged.connect(self.file_type_changed)
@@ -147,8 +149,8 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
 
                 # add files to new window
                 self.windows[-1].listWidget.addItems(add_name)
-                self.windows[-1].set_list_checked()
-                self.windows[-1].refresh_list()
+                self.windows[-1].set_list_checked(0)
+                self.windows[-1].refresh_list(0)
                 self.windows[-1].show()
 
         elif index == 1:  # file selection changed / single click slot
@@ -156,8 +158,8 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
                 self.file_index = self.listWidget.currentRow()
 
                 # update plot list in window
-                if self.previous_window != None and self.previous_window.listWidget.currentItem() != None:
-                    self.previous_window.delete()
+                if self.previous_window != (None or self.spc_info or self.dep_info) and self.previous_window.listWidget.currentItem() != None:
+                    self.previous_window.delete(0)
                     self.add2window()
                     self.previous_window.listWidget.setCurrentRow(0)
 
@@ -170,6 +172,7 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
         rightMenu.addAction(open2winAction)
         rightMenu.exec_(QtGui.QCursor.pos())
 
+    # Menu | add to current window action slot
     def add2window(self):
         # get selected file index
         items = self.listWidget.selectedItems()
@@ -191,9 +194,10 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
                     add_name.append(name)
 
         self.previous_window.listWidget.addItems(add_name)
-        self.previous_window.set_list_checked()
-        self.previous_window.refresh_list()
+        self.previous_window.set_list_checked(0)
+        self.previous_window.refresh_list(0)
 
+    # Menu | open  to another window action slot
     def open2window(self):
         # get selected file index
         items = self.listWidget.selectedItems()
@@ -225,10 +229,28 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
             self.windows[-1].comboBox.setCurrentIndex(1)
             self.windows[-1].file_type = 1
         self.windows[-1].listWidget.addItems(add_name)
-        self.windows[-1].set_list_checked()
-        self.windows[-1].refresh_list()
+        self.windows[-1].set_list_checked(0)
+        self.windows[-1].refresh_list(0)
         self.windows[-1].show()
 
+    # Processing | copy to new window button slot
+    def copy2window(self):
+        data_window = myDataWindow(self.overall_names, self.overall_paths)
+        self.windows.append(data_window)
+        self.windows[-1].listWidget.list_changed_signal.connect(self.refresh_file)
+        self.windows[-1].file_type = copy.deepcopy(self.previous_window.file_type)
+        self.windows[-1].comboBox.setCurrentIndex(self.windows[-1].file_type)
+        self.windows[-1].listWidget.addItems(self.previous_window.plot_list)
+        self.windows[-1].set_list_checked(0)
+        self.windows[-1].refresh_list(0)
+        self.windows[-1].listWidget_Processed.addItems(self.previous_window.processed_list)
+        self.windows[-1].processed_data = copy.deepcopy(self.previous_window.processed_data)
+        self.windows[-1].set_list_checked(1)
+        self.windows[-1].refresh_list(1)
+        self.windows[-1].show()
+
+    # load all file names and paths for current dir
+    # overall_names and overall_paths are used to initialize new Data Window
     def get_overall_list(self):
         self.overall_names.clear()
         self.overall_paths.clear()
@@ -380,18 +402,47 @@ class myDataProcessing(QMainWindow, Ui_DataProcessing):
 
     # Data List | save as button slot
     def save_as(self):
-        self.data_window = myDataWindow(self.overall_names, self.overall_paths)
-        self.data_window.listWidget.list_changed_signal.connect(self.refresh_file)
-        self.data_window.show()
+        index = self.file_names.index(self.listWidget.currentItem().text())
+        data_path = self.file_paths[index]
+        with open(data_path, 'rb') as input:
+            data = pickle.load(input)
+        if self.listWidget.currentItem().text().find('.spc') != -1:
+            data2save = data.data_
+            if data2save.shape[0] > 1:
+                for i in range(data2save.shape[0]):
+                    default_name = data_path[:-4]+'_No'+str(i+1)
+                    fileName, ok = QFileDialog.getSaveFileName(self, "Save", default_name, "DAT(*.dat)")
+                    np.savetxt(fileName, data2save[i])
+            elif data2save.shape[0] == 1:
+                default_name = data_path[:-4]
+                fileName, ok = QFileDialog.getSaveFileName(self, "Save", default_name, "DAT(*.dat)")
+                np.savetxt(fileName, data2save[0])
+        elif self.listWidget.currentItem().text().find('.dep') != -1:
+            data2save = data.data
+            default_name = data_path[:-4]
+            fileName, ok = QFileDialog.getSaveFileName(self, "Save", default_name, "DAT(*.dat)")
+            np.savetxt(fileName, data2save)
 
     # Processing | open info button slot
     def show_info(self):
+        data_path = self.file_paths[self.file_names.index(self.listWidget.currentItem().text())]
+        with open(data_path, 'rb') as input:
+            data = pickle.load(input)
         if self.file_type == 0:
+            self.spc_info.init_spcInfo(data)
+            self.spc_info.setWindowTitle('Info: '+ self.listWidget.currentItem().text())
+            self.spc_info.setWindowModality(2)
             self.spc_info.show()
         elif self.file_type == 1:
+            self.dep_info.init_depInfo(data)
+            self.dep_info.setWindowTitle('Info: ' + self.listWidget.currentItem().text())
+            self.dep_info.setWindowModality(2)
             self.dep_info.show()
-            # init_spcInfo(self.data)
-            # init_depInfo(self.data)
+
+    # Processing | smooth do it button slot
+    def do_smooth(self):
+        degree = self.spinBox_degree.value()
+        self.previous_window.smooth(degree)
 
     # Windows | update previous/current window
     def focus_window_changed(self, old, new):
