@@ -1,1 +1,91 @@
 running!!
+[4;33mReloaded modules[24m: logo_rc, Setting_ui, conversion, Setting, TipApproach_ui, TipApproach, Etest_ui, Etest, MainMenu_ui, sequence, DigitalSignalProcessor, Scan_ui, Spectroscopy_ui, AdvanceOption_ui, AdvanceOption, SpectroscopyInfo_ui, SpectroscopyInfo, DataStruct, Spectroscopy, Deposition_ui, DepositionInfo_ui, DepositionInfo, customViewBox, Deposition, Track_ui, Track, ScanOptions_ui, ScanOptions, SendOptions_ui, SendOptions, PointEditor_ui, PointEditor, SequenceList_ui, SequenceEditor_ui, SequenceEditor, SequenceList, ScanInfo_ui, ScanInfo, LockIn_ui, LockIn, images, customROI, Scan_, customGradientWidget, Scan, MainMenu, BiasControl, Zcontroller, CurrentControl, SettingControl, EtestControl, TipApproachControl, ScanControl, logger[0m
+running!!
+[14:41:11]  Error sending click event:
+
+    |==============================>>
+    |  Traceback (most recent call last):
+    |    File "C:\Users\yaoji\anaconda3\lib\runpy.py", line 194, in _run_module_as_main
+    |      return _run_code(code, main_globals, None,
+    |    File "C:\Users\yaoji\anaconda3\lib\runpy.py", line 87, in _run_code
+    |      exec(code, run_globals)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\spyder_kernels\console\__main__.py", line 23, in <module>
+    |      start.main()
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\spyder_kernels\console\start.py", line 296, in main
+    |      kernel.start()
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\ipykernel\kernelapp.py", line 612, in start
+    |      self.io_loop.start()
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\platform\asyncio.py", line 199, in start
+    |      self.asyncio_loop.run_forever()
+    |    File "C:\Users\yaoji\anaconda3\lib\asyncio\base_events.py", line 570, in run_forever
+    |      self._run_once()
+    |    File "C:\Users\yaoji\anaconda3\lib\asyncio\base_events.py", line 1859, in _run_once
+    |      handle._run()
+    |    File "C:\Users\yaoji\anaconda3\lib\asyncio\events.py", line 81, in _run
+    |      self._context.run(self._callback, *self._args)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\ioloop.py", line 688, in <lambda>
+    |      lambda f: self._run_callback(functools.partial(callback, future))
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\ioloop.py", line 741, in _run_callback
+    |      ret = callback()
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\gen.py", line 814, in inner
+    |      self.ctx_run(self.run)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\gen.py", line 775, in run
+    |      yielded = self.gen.send(value)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 365, in process_one
+    |      yield gen.maybe_future(dispatch(*args))
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\gen.py", line 234, in wrapper
+    |      yielded = ctx_run(next, result)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 268, in dispatch_shell
+    |      yield gen.maybe_future(handler(stream, idents, msg))
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\gen.py", line 234, in wrapper
+    |      yielded = ctx_run(next, result)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\ipykernel\kernelbase.py", line 543, in execute_request
+    |      self.do_execute(
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\tornado\gen.py", line 234, in wrapper
+    |      yielded = ctx_run(next, result)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\ipykernel\ipkernel.py", line 306, in do_execute
+    |      res = shell.run_cell(code, store_history=store_history, silent=silent)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\ipykernel\zmqshell.py", line 536, in run_cell
+    |      return super(ZMQInteractiveShell, self).run_cell(*args, **kwargs)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 2894, in run_cell
+    |      result = self._run_cell(
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 2940, in _run_cell
+    |      return runner(coro)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\IPython\core\async_helpers.py", line 68, in _pseudo_sync_runner
+    |      coro.send(None)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 3165, in run_cell_async
+    |      has_raised = await self.run_ast_nodes(code_ast.body, cell_name,
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 3357, in run_ast_nodes
+    |      if (await self.run_code(code, result,  async_=asy)):
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\IPython\core\interactiveshell.py", line 3437, in run_code
+    |      exec(code_obj, self.user_global_ns, self.user_ns)
+    |    File "<ipython-input-18-fcc9c08fb9ee>", line 1, in <module>
+    |      runfile('C:/Users/yaoji/OneDrive - personalmicrosoftsoftware.uci.edu/STM software/Jiang pyqt5 STM software project/main.py', wdir='C:/Users/yaoji/OneDrive - personalmicrosoftsoftware.uci.edu/STM software/Jiang pyqt5 STM software project')
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\spyder_kernels\customize\spydercustomize.py", line 565, in runfile
+    |      exec_code(file_code, filename, ns_globals, ns_locals,
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\spyder_kernels\customize\spydercustomize.py", line 453, in exec_code
+    |      exec(compiled, ns_globals, ns_locals)
+    |    File "C:\Users\yaoji\OneDrive - personalmicrosoftsoftware.uci.edu\STM software\Jiang pyqt5 STM software project\main.py", line 598, in <module>
+    |      sys.exit(app.exec_())
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\widgets\GraphicsView.py", line 369, in mouseReleaseEvent
+    |      QtGui.QGraphicsView.mouseReleaseEvent(self, ev)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\GraphicsScene\GraphicsScene.py", line 246, in mouseReleaseEvent
+    |      if self.sendClickEvent(cev[0]):
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\GraphicsScene\GraphicsScene.py", line 393, in sendClickEvent
+    |      debug.printExc("Error sending click event:")
+    |    --- exception caught here ---
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\GraphicsScene\GraphicsScene.py", line 391, in sendClickEvent
+    |      item.mouseClickEvent(ev)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\graphicsItems\ViewBox\ViewBox.py", line 1245, in mouseClickEvent
+    |      self.raiseContextMenu(ev)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\graphicsItems\ViewBox\ViewBox.py", line 1256, in raiseContextMenu
+    |      self.scene().addParentContextMenus(self, menu, ev)
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\GraphicsScene\GraphicsScene.py", line 539, in addParentContextMenus
+    |      subMenus = item.getContextMenus(event) or []
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\graphicsItems\PlotItem\PlotItem.py", line 1052, in getContextMenus
+    |      if self.menuEnabled():
+    |    File "C:\Users\yaoji\anaconda3\lib\site-packages\pyqtgraph\graphicsItems\PlotItem\PlotItem.py", line 1071, in menuEnabled
+    |      return self._menuEnabled
+    |  AttributeError: 'PlotItem' object has no attribute '_menuEnabled'
+    |==============================<<
+[4;33mReloaded modules[24m: logo_rc, Setting_ui, conversion, Setting, TipApproach_ui, TipApproach, Etest_ui, Etest, MainMenu_ui, sequence, DigitalSignalProcessor, Scan_ui, Spectroscopy_ui, AdvanceOption_ui, AdvanceOption, SpectroscopyInfo_ui, SpectroscopyInfo, DataStruct, Spectroscopy, Deposition_ui, DepositionInfo_ui, DepositionInfo, customViewBox, Deposition, Track_ui, Track, ScanOptions_ui, ScanOptions, SendOptions_ui, SendOptions, PointEditor_ui, PointEditor, SequenceList_ui, SequenceEditor_ui, SequenceEditor, SequenceList, ScanInfo_ui, ScanInfo, LockIn_ui, LockIn, images, customROI, Scan_, customGradientWidget, Scan, MainMenu, BiasControl, Zcontroller, CurrentControl, SettingControl, TipApproachControl, ScanControl, logger, EtestControl[0m

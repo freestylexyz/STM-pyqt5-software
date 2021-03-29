@@ -5,6 +5,7 @@ Created on Fri Jan 22 11:32:13 2021
 @author: yaoji
 """
 import sys
+import numpy as np
 sys.path.append("../Model/")
 from DigitalSignalProcessor import myDSP
 import conversion as cnv
@@ -18,22 +19,32 @@ dsp.init_dsp(True)
 print(dsp.ver)
 
 # =============================================================================
-# DAC ouput
-ch = 9
-volt = 0.0
-ran = 10
+# # DAC ouput
+# ch = 9
+# volt = 0.0
+# ran = 10
 
-dsp.dac_W(ch + 16, cnv.vb(volt, 'd', ran))
+# dsp.dac_W(ch + 16, cnv.vb(volt, 'd', ran))
 # =============================================================================
 
 # =============================================================================
-# ADC read
+# # ADC read
+# ch = 4
+# ran = 0
+
+# bits = dsp.adc(ch * 4 + 0xc0)
+# print(cnv.bv(bits, 'a', ran))
+
+# =============================================================================
+
+# =============================================================================
+# OSC test
 ch = 4
-ran = 0
-
-bits = dsp.adc(ch * 4 + 0xc0)
-print(cnv.bv(bits, 'a', ran))
-
+n = 1024
+average = 1
+delay = 100
+rdata = dsp.osc_N(ch * 4 + 0xc0, n, average, delay)
+np.savetxt("test data/OSC_N.csv", rdata, delimiter =", ", fmt ='% s')
 # =============================================================================
 
 # =============================================================================

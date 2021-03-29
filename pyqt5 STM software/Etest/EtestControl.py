@@ -169,8 +169,6 @@ class myEtestControl(myMainMenu):
             self.etest.idling = False
             if mode == 0:   # N sample
                 rdata = self.dsp.osc_N(ch*4+0xC0, N, avg_times, delay)
-                # for i in rdata:
-                #     print(hex(i))
                 data = [cnv.bv(i, 'a', self.dsp.adcrange[ch]) for i in rdata]
                 self.etest.osci_nsample_data = data
                 self.etest.osci_nsample_curve.setData(self.etest.osci_nsample_data)
