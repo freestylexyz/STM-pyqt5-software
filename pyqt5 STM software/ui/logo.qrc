@@ -4,6 +4,7 @@
     <file>../data/STMlogo_NiCp2.png</file>
   </qresource>
   <qresource prefix="toolbar">
+    <file>../data/scanner.png</file>
     <file>../data/left.png</file>
     <file>../data/right.png</file>
     <file>../data/left_right.png</file>
@@ -19,6 +20,7 @@
     <file>../data/full_view.png</file>
   </qresource>
   <qresource prefix="menuIcon">
+    <file>../data/info.png</file>
     <file>../data/helpiconblack.png</file>
     <file>../data/ramptesticonblack.png</file>
     <file>../data/settingiconblack.png</file>

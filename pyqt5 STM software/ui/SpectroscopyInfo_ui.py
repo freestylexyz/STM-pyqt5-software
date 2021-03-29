@@ -16,6 +16,9 @@ class Ui_SpectroscopyInfo(object):
         SpectroscopyInfo.setObjectName("SpectroscopyInfo")
         SpectroscopyInfo.setWindowModality(QtCore.Qt.ApplicationModal)
         SpectroscopyInfo.resize(967, 828)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/menuIcon/data/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        SpectroscopyInfo.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(SpectroscopyInfo)
         self.gridLayout.setObjectName("gridLayout")
         self.groupBox_4 = QtWidgets.QGroupBox(SpectroscopyInfo)
@@ -1163,3 +1166,4 @@ class Ui_SpectroscopyInfo(object):
         self.label_scan_direction.setText(_translate("SpectroscopyInfo", "TextLabel"))
         self.label_delta.setText(_translate("SpectroscopyInfo", "TextLabel"))
         self.label_ramp_ch.setText(_translate("SpectroscopyInfo", "TextLabel"))
+import logo_rc

@@ -16,6 +16,9 @@ class Ui_ScanInfo(object):
         ScanInfo.setObjectName("ScanInfo")
         ScanInfo.setWindowModality(QtCore.Qt.ApplicationModal)
         ScanInfo.resize(895, 715)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/menuIcon/data/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        ScanInfo.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(ScanInfo)
         self.gridLayout.setObjectName("gridLayout")
         self.groupBox_8 = QtWidgets.QGroupBox(ScanInfo)
@@ -1014,7 +1017,7 @@ class Ui_ScanInfo(object):
         self.label_yin.setText(_translate("ScanInfo", "TextLabel"))
         self.label_zoffset.setText(_translate("ScanInfo", "TextLabel"))
         self.label_feedback.setText(_translate("ScanInfo", "TextLabel"))
-        self.groupBox_2.setTitle(_translate("ScanInfo", "Lock in paramenter"))
+        self.groupBox_2.setTitle(_translate("ScanInfo", "Lock in parameter"))
         self.label_lockin_frequency.setText(_translate("ScanInfo", "TextLabel"))
         self.label_87.setText(_translate("ScanInfo", "Lock-in frequency (Hz)"))
         self.label_67.setText(_translate("ScanInfo", "Phase 1"))
@@ -1057,3 +1060,4 @@ class Ui_ScanInfo(object):
         self.label_12.setText(_translate("ScanInfo", "Scan Direction"))
         self.label_tip_protection.setText(_translate("ScanInfo", "TextLabel"))
         self.label_scan_protection.setText(_translate("ScanInfo", "TextLabel"))
+import logo_rc

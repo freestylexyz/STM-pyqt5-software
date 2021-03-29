@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>Scan Data Info</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="logo.qrc">
+    <normaloff>:/menuIcon/data/info.png</normaloff>:/menuIcon/data/info.png</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_8">
@@ -2325,6 +2329,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="logo.qrc"/>
+ </resources>
  <connections/>
 </ui>

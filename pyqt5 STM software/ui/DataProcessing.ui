@@ -33,8 +33,8 @@
        <string>Data list</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="4">
-        <widget class="QPushButton" name="pushButton_Open">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButton_Refresh">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -46,15 +46,55 @@
          </property>
          <property name="icon">
           <iconset resource="logo.qrc">
-           <normaloff>:/toolbar/data/open.png</normaloff>:/toolbar/data/open.png</iconset>
+           <normaloff>:/toolbar/data/Reset.png</normaloff>:/toolbar/data/Reset.png</iconset>
          </property>
          <property name="flat">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="3" column="0" colspan="5">
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pushButton_Previous">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="logo.qrc">
+           <normaloff>:/toolbar/data/left.png</normaloff>:/toolbar/data/left.png</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="4">
         <widget class="QListWidget" name="listWidget"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="pushButton_Next">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="logo.qrc">
+           <normaloff>:/toolbar/data/right.png</normaloff>:/toolbar/data/right.png</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QPushButton" name="pushButton_Saveas">
@@ -76,8 +116,8 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="pushButton_Previous">
+       <item row="0" column="3">
+        <widget class="QPushButton" name="pushButton_Open">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -89,95 +129,17 @@
          </property>
          <property name="icon">
           <iconset resource="logo.qrc">
-           <normaloff>:/toolbar/data/left.png</normaloff>:/toolbar/data/left.png</iconset>
+           <normaloff>:/toolbar/data/open.png</normaloff>:/toolbar/data/open.png</iconset>
          </property>
          <property name="flat">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="pushButton_Refresh">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="logo.qrc">
-           <normaloff>:/toolbar/data/Reset.png</normaloff>:/toolbar/data/Reset.png</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QPushButton" name="pushButton_Next">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="logo.qrc">
-           <normaloff>:/toolbar/data/right.png</normaloff>:/toolbar/data/right.png</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="4">
+       <item row="0" column="0" colspan="3">
         <widget class="QLineEdit" name="lineEdit"/>
        </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="pushButton_Saveall">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="mouseTracking">
-          <bool>true</bool>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="whatsThis">
-          <string>Save all</string>
-         </property>
-         <property name="accessibleName">
-          <string/>
-         </property>
-         <property name="accessibleDescription">
-          <string/>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="logo.qrc">
-           <normaloff>:/toolbar/data/saveas.png</normaloff>:/toolbar/data/saveas.png</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="5">
+       <item row="2" column="0" colspan="4">
         <widget class="QComboBox" name="comboBox">
          <item>
           <property name="text">
@@ -239,7 +201,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="pushButton_Copy">
           <property name="text">
            <string>Do it</string>
           </property>
@@ -251,13 +213,27 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_2">
        <property name="title">
-        <string>Select data</string>
+        <string>Smooth</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_Scanner">
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>Show scanner</string>
+           <string>Degree</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="spinBox_degree">
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_Smooth">
+          <property name="text">
+           <string>Do it</string>
           </property>
          </widget>
         </item>

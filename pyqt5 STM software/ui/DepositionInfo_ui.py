@@ -16,6 +16,9 @@ class Ui_DepositionInfo(object):
         DepositionInfo.setObjectName("DepositionInfo")
         DepositionInfo.setWindowModality(QtCore.Qt.ApplicationModal)
         DepositionInfo.resize(982, 416)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/menuIcon/data/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        DepositionInfo.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(DepositionInfo)
         self.gridLayout.setObjectName("gridLayout")
         self.groupBox_4 = QtWidgets.QGroupBox(DepositionInfo)
@@ -663,3 +666,4 @@ class Ui_DepositionInfo(object):
         self.label_2.setText(_translate("DepositionInfo", "Read Delay (us)"))
         self.label_15.setText(_translate("DepositionInfo", "Read mode"))
         self.label_read_mode.setText(_translate("DepositionInfo", "TextLabel"))
+import logo_rc
