@@ -82,14 +82,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.rtest_ramp_read_outdata = [] * 100        # Ramp Test | ramp read output data
         self.rtest_ramp_read_indata = [] * 100         # Ramp Test | ramp read input data
         self.rtest_ramp_data = [] * 100                # Ramp Test | ramp data
-        self.ptr2 = 0                          # Ramp Test | ramp plot update count
-        self.ptr1 = 0                          # Oscilloscope | plot update count
-        self.ptr3 = 0                          # Feedback Test | plot update count
-        self.osci_nsample_data = []                     # Oscilloscope | N sample data
-        self.osci_continuous_data = np.zeros(1)         # Oscilloscope | Continuous data
-        self.ftest_zout_data = np.zeros(1)     # Feedback Test | feedback z data
-        self.ftest_vout_data = np.zeros(1)     # Feedback Test | preamp voltage data
-        self.ftest_parm = [0.1] * 3            # Feedback Test | parameters A, Z0, Delay
+        self.ptr2 = 0                                  # Ramp Test | ramp plot update count
+        self.ptr1 = 0                                  # Oscilloscope | plot update count
+        self.ptr3 = 0                                  # Feedback Test | plot update count
+        self.osci_nsample_data = []                    # Oscilloscope | N sample data
+        self.osci_continuous_data = np.zeros(1)        # Oscilloscope | Continuous data
+        self.ftest_zout_data = np.zeros(1)             # Feedback Test | feedback z data
+        self.ftest_vout_data = np.zeros(1)             # Feedback Test | preamp voltage data
+        self.ftest_parm = [-0.23, 0.0, 1.0]            # Feedback Test | parameters A, Z0, Delay
 
 
         # adc | pushButton

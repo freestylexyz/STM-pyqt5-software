@@ -230,8 +230,8 @@ class myEtestControl(myMainMenu):
             self.etest.ftest_stop = False                                  # set stop flag to false
 
             # init range and gain
-            self.dsp.gain(2, 0)                                            # init Z1 gain to 0.1
-            self.dsp.gain(3, 0)                                            # init Z2 gain to 10
+            self.dsp.gain(2, 1)                                            # init Z1 gain to 0.1
+            self.dsp.gain(3, 1)                                            # init Z2 gain to 10
             self.dsp.adc_W((6 + 5) << 1, 0)                                # init Zout range to +/-10.24V
             self.dsp.dac_range(outch, 10)                                  # init dac output range to +/-10V
             self.dsp.dac_range(5, 10)                                      # init I set range to +/-10V
@@ -241,6 +241,22 @@ class myEtestControl(myMainMenu):
                 if self.etest.ftest_stop:  # Wait until external source change the stop flag
                     break
                 self.etest.ptr3 += 1                                       # plot count +1
+
+                # Output | Isetpoint (I set point)
+                Ispt_val = self.etest.spinBox_IsptInput_FTest.value()      # require I set point value
+                Ispt_voltage_val = -10.0 * math.log(Ispt_val, 10)
+                if Ispt_voltage_val > 9.999694:                            # if converted value is too large
+                    Ispt_voltage_val = 9.999694                            # set output voltage to maximum
+                elif Ispt_voltage_val < -10.0:                             # if converted value is too small
+                    Ispt_voltage_val = -10.0                               # set output voltage to minimum
+                Isetpoint = cnv.vb(Ispt_voltage_val, 'd', self.dsp.dacrange[5])
+                self.dsp.dac_W(5+16, Isetpoint)                            # send to dsp
+
+                # Output | Feedback and Retract
+                feedback_on = self.etest.radioButton_ON_Fdbk.isChecked()   # require feedback status
+                self.dsp.digital_o(2, feedback_on)                         # send to dsp
+                retract_on = self.etest.radioButton_ON_Retr.isChecked()    # require retract status
+                self.dsp.digital_o(3, retract_on)                          # send to dsp
 
                 # Input | Zout (feedback Z)
                 Zout = self.dsp.adc(6 * 4 + 0xC0)                          # load Z out from dsp
@@ -273,34 +289,12 @@ class myEtestControl(myMainMenu):
                 self.etest.ftest_input_curve.setPos(self.etest.ptr3, 0)
                 self.etest.ftest_output_curve.setPos(self.etest.ptr3, 0)
 
-                # Output | Isetpoint (I set point)
-                Ispt_val = self.etest.spinBox_IsptInput_FTest.value()      # require I set point value
-                Ispt_voltage_val = -10.0 * math.log(Ispt_val, 10)
-                if Ispt_voltage_val > 9.999694:                            # if converted value is too large
-                    Ispt_voltage_val = 9.999694                            # set output voltage to maximum
-                elif Ispt_voltage_val < -10.0:                             # if converted value is too small
-                    Ispt_voltage_val = -10.0                               # set output voltage to minimum
-                Isetpoint = cnv.vb(Ispt_voltage_val, 'd', self.dsp.dacrange[5])
-                self.dsp.dac_W(5+16, Isetpoint)                            # send to dsp
-
-                # Output | Feedback and Retract
-                feedback_on = self.etest.radioButton_ON_Fdbk.isChecked()   # require feedback status
-                self.dsp.digital_o(2, feedback_on)                         # send to dsp
-                retract_on = self.etest.radioButton_ON_Retr.isChecked()    # require retract status
-                self.dsp.digital_o(3, retract_on)                          # send to dsp
-
                 # Delay | from view
                 delay = self.etest.ftest_parm[2]                           # require delay value(ms)
                 if delay < 0.1:
                     delay = 0.1
                 time.sleep(delay/1000)                                     # take some time(s)
 
-            if self.etest.ftest_stop:
-                # self.etest.ftest_output_curve.clear()                      # clear old plot
-                # self.etest.ftest_input_curve.clear()                       # clear old plot
-                # self.etest.ftest_output_curve.setPos(0, 0)                 # reset plot origin
-                # self.etest.ftest_input_curve.setPos(0, 0)                  # reset plot origin
-                pass
             self.etest.ftest_stop = True                                   # flip stop flag
 
     # Feedback Test | start setup
