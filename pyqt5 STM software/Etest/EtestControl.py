@@ -140,7 +140,7 @@ class myEtestControl(myMainMenu):
             tmp1 = self.etest.rtest_ramp_data
             self.etest.rtest_ramp_data = [] * (len(self.etest.rtest_ramp_data) * 2)
             self.etest.rtest_ramp_data[:len(tmp1)] = tmp1
-        self.etest.rtest_output_curve.setData(self.etest.rtest_ramp_data[:self.etest.ptr2])
+        self.etest.rtest_output_curve.setData(self.etest.rtest_ramp_data[1:self.etest.ptr2-2])
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):
