@@ -232,7 +232,9 @@ class myEtestControl(myMainMenu):
     # Feedback Test | test loop
     def ftest_loop(self, outch):
             self.etest.ftest_stop = False                                  # set stop flag to false
-
+            # self.etest.ftest_output_curve.clear()                          # clear old plot
+            # self.etest.ftest_input_curve.clear()                           # clear old plot
+            
             # init range and gain
             self.dsp.gain(2, 1)                                            # init Z1 gain to 0.1
             self.dsp.gain(3, 1)                                            # init Z2 gain to 10

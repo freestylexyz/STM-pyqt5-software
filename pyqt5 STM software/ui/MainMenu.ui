@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>196</height>
+    <width>694</width>
+    <height>263</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -170,7 +170,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>694</width>
      <height>26</height>
     </rect>
    </property>
@@ -633,7 +633,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_Gain_Zcontrol">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="title">
         <string>Gain</string>
@@ -685,7 +685,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z1gain01_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>0.1</string>
@@ -698,7 +698,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z1gain1_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>1</string>
@@ -708,7 +708,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z1gain10_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>10</string>
@@ -736,7 +736,7 @@
            <item>
             <widget class="QLabel" name="label_Z2gain_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>Z2 Gain</string>
@@ -746,7 +746,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z2gain01_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>0.1</string>
@@ -756,7 +756,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z2gain1_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>1</string>
@@ -766,7 +766,7 @@
            <item>
             <widget class="QRadioButton" name="radioButton_Z2gain10_Gain">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>10</string>
@@ -1269,7 +1269,7 @@
      <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox_Bias_Bias">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1284,7 +1284,7 @@
         <item row="0" column="1" colspan="2">
          <widget class="QScrollBar" name="scrollBar_Input_Bias">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="minimum">
            <number>0</number>
@@ -1306,7 +1306,7 @@
         <item row="0" column="0">
          <widget class="QDoubleSpinBox" name="spinBox_Input_Bias">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="decimals">
            <number>6</number>
@@ -1322,7 +1322,7 @@
         <item row="0" column="3">
          <widget class="QPushButton" name="pushButton_Filp_Bias">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1443,7 +1443,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_Setpoint_Current">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1489,7 +1489,7 @@
         <item row="0" column="0">
          <widget class="QDoubleSpinBox" name="spinBox_Input_Setpoint">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
@@ -1523,7 +1523,7 @@
         <item row="0" column="2">
          <widget class="QScrollBar" name="scrollBar_Input_Setpoint">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="maximum">
            <number>65535</number>
