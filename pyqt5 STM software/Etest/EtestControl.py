@@ -80,12 +80,14 @@ class myEtestControl(myMainMenu):
             self.etest.idling = False
             origin = self.dsp.current_last(outch+16)                            # get initial value
             if index == 0:                                                      # ramp button clicked
+                self.etest.rflag = True                                         # toggle flag to ramp update mode
                 self.etest.pushButton_Ramp_RTest.setText("Stop")                # change ramp button text
                 self.etest.pushButton_Ramp_RTest.setEnabled(True)               # enable stop button
                 self.dsp.rampTo(outch+16, init, 10, 100, 0, False)              # ramp to initial value
                 self.dsp.rampTo(outch+16, final, step_size, 10000, 0, True)     # ramp to final value
                 self.dsp.rampTo(outch+16, origin, 10, 100, 0, False)            # ramp back to original value
             else:                                                               # ramp read button clicked
+                self.etest.rflag = False                                        # toggle flag to ramp read update mode
                 self.etest.pushButton_RRead_RTest.setText("Stop")               # change ramp read button text
                 self.etest.pushButton_RRead_RTest.setEnabled(True)              # enable stop button
                 command = 4 * inch + 0xC0
@@ -108,7 +110,7 @@ class myEtestControl(myMainMenu):
         if outch != 16:
             ramp_read_outdata = cnv.bv(rdata[0], 'd', self.dsp.dacrange[outch])
         else:
-            ramp_read_outdata = cnv.bv(rdata[0], 20)
+            ramp_read_outdata = cnv.bv(rdata[0], '20')
         self.etest.rtest_ramp_read_indata += [ramp_read_indata]
         self.etest.rtest_ramp_read_outdata += [ramp_read_outdata]
 
@@ -140,7 +142,9 @@ class myEtestControl(myMainMenu):
             tmp1 = self.etest.rtest_ramp_data
             self.etest.rtest_ramp_data = [] * (len(self.etest.rtest_ramp_data) * 2)
             self.etest.rtest_ramp_data[:len(tmp1)] = tmp1
-        self.etest.rtest_output_curve.setData(self.etest.rtest_ramp_data[1:self.etest.ptr2-2])
+        
+        if self.etest.rflag:
+            self.etest.rtest_output_curve.setData(self.etest.rtest_ramp_data[1:self.etest.ptr2-2])
 
     # Ramp Test | ramp signal slot
     def rtest_ramp_slot(self, index, inch, outch, init, final, step_size):

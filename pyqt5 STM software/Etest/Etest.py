@@ -82,6 +82,7 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.rtest_ramp_read_outdata = [] * 100        # Ramp Test | ramp read output data
         self.rtest_ramp_read_indata = [] * 100         # Ramp Test | ramp read input data
         self.rtest_ramp_data = [] * 100                # Ramp Test | ramp data
+        self.rflag = True                              # Ramp Test | ramp/ramp read -> True/False
         self.ptr2 = 0                                  # Ramp Test | ramp plot update count
         self.ptr1 = 0                                  # Oscilloscope | plot update count
         self.ptr3 = 0                                  # Feedback Test | plot update count
