@@ -498,7 +498,7 @@ class myDSP(QObject):
                         break
 
                 # If receive finish command
-                if int.from_bytes(self.ser.read(1) ,"big") == 0x0f:
+                if int.from_bytes(self.ser.read(1) ,"big") == 0xff:
                     self.stop = True                                   # Set stop flag to true
                     rdata = int.from_bytes(self.ser.read(3) ,"big")     # Obtain the final data of corresponding channel
                     # Update status variable
