@@ -29,6 +29,7 @@ import numpy as np
 import time
 
 class myScanControl(myMainMenu):
+
     # Scan initial operation
     def enter_scan(self):
         if self.idling:

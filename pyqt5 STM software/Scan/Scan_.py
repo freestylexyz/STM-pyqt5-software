@@ -75,14 +75,17 @@ class myScan_(QWidget, Ui_Scan):
         self.stop = True                # Stop flag
         self.idling = True              # Idling status
         self.saved = True               # Saved status
+        self.remember_path = ''         # Last opened directory when loading
         self.bias_dac = False           # Bias DAC selection
         self.bias_ran = 9               # Bias range
         self.point_mode = False
-        
+        self.raw_img = np.array([])     # Raw image
+        self.current_img= np.array([])  # Displayed image
+
         # XY and image variables (unit is in imagine bit)
         self.last_xy = [0]*4            # Xin(0), Yin(1), X offset(2), Y offset(3) --> values sent last time
         self.current_xy = [0]*4         # Xin(0), Yin(1), X offset(2), Y offset(3)
-        self.scan_size = [128, 2560]   # Scan size(0), Step size(1)
+        self.scan_size = [128, 2560]    # Scan size(0), Step size(1)
         self.imagine_gain = 10          # X/Y gain imaginary value
         self.tilt = [0.0] * 2           # Tilt X, Tilt Y
         

@@ -31,6 +31,9 @@ import copy
 class myScan(myScan_):
     close_signal = pyqtSignal()                                     # Close scan window signal
     seq_list_signal = pyqtSignal(str)                               # Open sequence list window signal
+    open_track_signal = pyqtSignal(int)                             # Open Track window signal
+    open_spc_signal = pyqtSignal(int)                               # Open Spectroscopy window signal
+    open_dep_signal = pyqtSignal(int)                               # Open Deposition window signal
     gain_changed_signal = pyqtSignal(int, int)                      # Change XY gian signal
     stop_signal = pyqtSignal()                                      # Stop signal
     send_signal = pyqtSignal(int, int, int, int, int)               # Send signal
@@ -60,10 +63,14 @@ class myScan(myScan_):
         self.pushButton_LockIn_ScanControl.clicked.connect(self.lockin.show)                # Open lock in window
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)            # Open scan option window
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)            # Open send option window
-        # self.pushButton_Info_Scan.clicked.connect(self.open_info)                           # Open scan data info window
+        self.pushButton_Info_Scan.clicked.connect(self.open_info)                         # Open scan data info window
         # self.pushButton_Info_Scan.setEnabled(False)
         self.pushButton_LockIn_ScanControl.setEnabled(False)
-        self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
+        # self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
+        self.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
+        self.pushButton_Track.clicked.connect(self.open_track_win)
+        self.pushButton_Deposition.clicked.connect(self.open_dep_win)
+        self.pushButton_Spectrosocpy.clicked.connect(self.open_spc_win)
         
         # PushButton | file
         self.pushButton_SaveAll_Scan.clicked.connect(self.save)                             # Save data
@@ -285,6 +292,22 @@ class myScan(myScan_):
         # print('size', self.scan_size)
         pass
 
+    # Open sequence list window
+    def open_seq_list(self):
+        self.seq_list_signal.emit(self.data.seq.name)
+
+    # Open Track window
+    def open_track_win(self):
+        self.open_track_signal.emit(-1)
+
+    # Open Spectroscopy window
+    def open_spc_win(self):
+        self.open_spc_signal.emit(1)
+
+    # Open Deposition window
+    def open_dep_win(self):
+        self.open_dep_signal.emit(2)
+
     # !!!
     # Select pattern mode
     def select_pattern(self):
@@ -396,6 +419,8 @@ class myScan(myScan_):
             # Set up file dialog for load
             self.dlg.setFileMode(QFileDialog.ExistingFile)
             self.dlg.setAcceptMode(QFileDialog.AcceptOpen)
+            if self.remember_path != '':
+                self.dlg.setDirectory(self.remember_path)
             if self.dlg.exec_():        # File selected
                 fname = self.dlg.selectedFiles()[0]             # File path
                 directory = self.dlg.directory().path()         # Directory path
@@ -404,6 +429,7 @@ class myScan(myScan_):
                     self.data = pickle.load(input)
                     self.data.path = fname                      # Change file path
                 self.saved = True
+                self.remember_path = directory
                 self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Chage window title for saving status indication
                     
                 # Set up scroll bars
@@ -417,10 +443,13 @@ class myScan(myScan_):
                 self.raw_img = copy.deepcopy(self.data.data[0])
                 self.current_img = copy.deepcopy(self.raw_img)
                 self.img_display.setImage(self.current_img)
-                self.img_display.setRect(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)), self.scan_size[0] * self.scan_size[1],
-                                                self.scan_size[0] * self.scan_size[1]))
-                self.view_box.setRange(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)), self.scan_size[0] * self.scan_size[1],
-                                              self.scan_size[0] * self.scan_size[1]), padding=0)
+                gain_dict = {8: 1, 9: 10, 10: 100}
+                gain = gain_dict[self.data.preamp_gain]
+                self.img_display.setRect(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain),
+                                                self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain)))
+                self.view_box.setRange(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain),
+                                              self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain)), padding=0)
+
                 self.pushButton_Info_Scan.setEnabled(True)
                 # !!! if self.data.lockin_flag:
                 if True:
@@ -430,7 +459,7 @@ class myScan(myScan_):
     def message(self, text):
         QMessageBox.warning(None, "Scan", text, QMessageBox.Ok)
 
-    # Spctroscopy open track
+    # Spectroscopy open track
     def open_track(self, state):
         if state == 0:
             self.track.closable = True
@@ -452,73 +481,80 @@ class myScan(myScan_):
     # filter checkBox  slot | reverse, Illuminated and Plane fit
     def filter_changed(self, index, status):
         '''Process image based on checkBox signal: Reverse, Illuminated and Plane fit.'''
+        if len(self.raw_img) != 0:
+            # Set mutual exclusion of Illuminated and Plane fit
+            if self.checkBox_Illuminated_Scan.isChecked():
+                if index == 2 and status:
+                    self.checkBox_Illuminated_Scan.setChecked(False)
+                    self.checkBox_PlaneFit_Scan.setChecked(True)
+                else:
+                    self.checkBox_Illuminated_Scan.setChecked(True)
+                    self.checkBox_PlaneFit_Scan.setChecked(False)
 
-        # Set mutual exclusion of Illuminated and Plane fit
-        if self.checkBox_Illuminated_Scan.isChecked():
-            if index == 2 and status:
-                self.checkBox_Illuminated_Scan.setChecked(False)
-                self.checkBox_PlaneFit_Scan.setChecked(True)
-            else:
-                self.checkBox_Illuminated_Scan.setChecked(True)
-                self.checkBox_PlaneFit_Scan.setChecked(False)
+            if self.checkBox_PlaneFit_Scan.isChecked():
+                if index == 1 and status:
+                    self.checkBox_PlaneFit_Scan.setChecked(False)
+                    self.checkBox_Illuminated_Scan.setChecked(True)
+                else:
+                    self.checkBox_PlaneFit_Scan.setChecked(True)
+                    self.checkBox_Illuminated_Scan.setChecked(False)
 
-        if self.checkBox_PlaneFit_Scan.isChecked():
-            if index == 1 and status:
-                self.checkBox_PlaneFit_Scan.setChecked(False)
-                self.checkBox_Illuminated_Scan.setChecked(True)
-            else:
-                self.checkBox_PlaneFit_Scan.setChecked(True)
-                self.checkBox_Illuminated_Scan.setChecked(False)
+            # CheckBox status variable
+            if_reverse = self.checkBox_Reverse_Scan.isChecked()
+            if_illuminated = self.checkBox_Illuminated_Scan.isChecked()
+            if_plane_fit = self.checkBox_PlaneFit_Scan.isChecked()
 
-        # CheckBox status variable
-        if_reverse = self.checkBox_Reverse_Scan.isChecked()
-        if_illuminated = self.checkBox_Illuminated_Scan.isChecked()
-        if_plane_fit = self.checkBox_PlaneFit_Scan.isChecked()
+            # Get current selected display mode
+            if if_reverse and (not if_plane_fit) and (not if_illuminated):
+                reverse_gray_img = self.myimg.gray2reverse(self.raw_img)
+                self.current_img = reverse_gray_img
+            elif if_illuminated and (not if_plane_fit) and (not if_reverse):
+                illuminated_img = self.myimg.illuminated(self.raw_img)
+                self.current_img = illuminated_img
+            elif if_plane_fit and (not if_illuminated) and (not if_reverse):
+                planefit_img = self.myimg.plane_fit(self.raw_img)
+                self.current_img = planefit_img
+            elif if_plane_fit and if_illuminated and (not if_reverse):
+                planefit_img = self.myimg.plane_fit(self.raw_img)
+                illuminated_planefit_img = self.myimg.illuminated(planefit_img)
+                self.current_img = illuminated_planefit_img
+            elif if_reverse and if_plane_fit and (not if_illuminated):
+                planefit_img = self.myimg.plane_fit(self.raw_img)
+                reverse_planefit_img = self.myimg.gray2reverse(planefit_img)
+                self.current_img = reverse_planefit_img
+            elif if_reverse and if_illuminated and (not if_plane_fit):
+                illuminated_img = self.myimg.illuminated(self.raw_img)
+                revered_illuminated_img = self.myimg.gray2reverse(illuminated_img)
+                self.current_img = revered_illuminated_img
+            elif if_reverse and if_illuminated and if_plane_fit:
+                planefit_img = self.myimg.plane_fit(self.raw_img)
+                illuminated_planefit_img = self.myimg.illuminated(planefit_img)
+                revered_illuminated_planefit_img = self.myimg.gray2reverse(illuminated_planefit_img)
+                self.current_img = revered_illuminated_planefit_img
+            elif (not if_reverse) and (not if_illuminated) and (not if_plane_fit):
+                self.current_img = copy.deepcopy(self.raw_img)
 
-        # Get current selected display mode
-        if if_reverse and (not if_plane_fit) and (not if_illuminated):
-            reverse_gray_img = self.myimg.gray2reverse(self.raw_img)
-            self.current_img = reverse_gray_img
-        elif if_illuminated and (not if_plane_fit) and (not if_reverse):
-            illuminated_img = self.myimg.illuminated(self.raw_img)
-            self.current_img = illuminated_img
-        elif if_plane_fit and (not if_illuminated) and (not if_reverse):
-            planefit_img = self.myimg.plane_fit(self.raw_img)
-            self.current_img = planefit_img
-        elif if_plane_fit and if_illuminated and (not if_reverse):
-            planefit_img = self.myimg.plane_fit(self.raw_img)
-            illuminated_planefit_img = self.myimg.illuminated(planefit_img)
-            self.current_img = illuminated_planefit_img
-        elif if_reverse and if_plane_fit and (not if_illuminated):
-            planefit_img = self.myimg.plane_fit(self.raw_img)
-            reverse_planefit_img = self.myimg.gray2reverse(planefit_img)
-            self.current_img = reverse_planefit_img
-        elif if_reverse and if_illuminated and (not if_plane_fit):
-            illuminated_img = self.myimg.illuminated(self.raw_img)
-            revered_illuminated_img = self.myimg.gray2reverse(illuminated_img)
-            self.current_img = revered_illuminated_img
-        elif if_reverse and if_illuminated and if_plane_fit:
-            planefit_img = self.myimg.plane_fit(self.raw_img)
-            illuminated_planefit_img = self.myimg.illuminated(planefit_img)
-            revered_illuminated_planefit_img = self.myimg.gray2reverse(illuminated_planefit_img)
-            self.current_img = revered_illuminated_planefit_img
-        elif (not if_reverse) and (not if_illuminated) and (not if_plane_fit):
-            self.current_img = copy.deepcopy(self.raw_img)
-
-        self.update_display_signal.emit()
+            self.update_display_signal.emit()
 
     # update display image
     def update_display(self):
         '''Update image based on user selected filter and colormap.'''
-        if self.radioButton_Gray_Scan.isChecked():
-            psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
-            self.color_current_img = psudo_gray_img
-            self.pallet_bar.loadPreset('grey')
-        elif self.radioButton_Color_Scan.isChecked():
-            color_img = self.myimg.color_map(self.current_img, 36)
-            self.color_current_img = color_img
-            self.pallet_bar.loadPreset('thermal')
-        self.img_display.setImage(self.color_current_img)
+        if len(self.current_img) != 0:
+            if self.radioButton_Gray_Scan.isChecked():
+                psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
+                self.color_current_img = psudo_gray_img
+                if self.checkBox_Reverse_Scan.isChecked():
+                    self.pallet_bar.loadPreset('reverse_grey')
+                else:
+                    self.pallet_bar.loadPreset('grey')
+            elif self.radioButton_Color_Scan.isChecked():
+                color_img = self.myimg.color_map(self.current_img, 36)
+                self.color_current_img = color_img
+                if self.checkBox_Reverse_Scan.isChecked():
+                    self.pallet_bar.loadPreset('reverse_thermal')
+                else:
+                    self.pallet_bar.loadPreset('thermal')
+            self.img_display.setImage(self.color_current_img)
 
     # Point Editor | update variable and draw points
     def points_update(self, index):

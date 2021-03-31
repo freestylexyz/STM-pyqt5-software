@@ -103,11 +103,11 @@ class mySpc(QWidget, Ui_Spectroscopy):
         
         # Set selected sequence name
         seq_name = '' if selected < 0 else seq_list[selected].name
-        self.adv.label_Seq.setText(seq_name)
+        self.adv.label_Seq_AdvOption.setText(seq_name)
         
     # Emit open sequence list signal
     def open_seq_list(self):
-        self.seq_list_signal.emit(self.adv.label_Seq.text())    # Get current selected sequence name
+        self.seq_list_signal.emit(self.adv.label_Seq_AdvOption.text())    # Get current selected sequence name
         
     # Emit scan signal
     def scan_emit(self):
