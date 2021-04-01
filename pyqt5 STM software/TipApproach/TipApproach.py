@@ -69,8 +69,8 @@ class myTipApproach(QWidget, Ui_TipApproach):
         self.pushButton_Ybkwd_Trans.clicked.connect(lambda: self.giant_step(0x1f, False))
         # Rotation
         self.pushButton_TipAppr_Steps.clicked.connect(self.tip_approach)
-        self.pushButton_Down_Steps.clicked.connect(lambda: self.giant_step(0x10, True))
-        self.pushButton_Up_Steps.clicked.connect(lambda: self.giant_step(0x10, False))
+        self.pushButton_Down_Steps.clicked.connect(lambda: self.giant_step(0x10, False))
+        self.pushButton_Up_Steps.clicked.connect(lambda: self.giant_step(0x10, True))
         # Stop
         self.pushButton_Stop.clicked.connect(self.stop)
 
@@ -117,9 +117,9 @@ class myTipApproach(QWidget, Ui_TipApproach):
     # Acceleration conversion slot
     def accel_slot(self, box_to_bar):
         if box_to_bar:
-            self.scrollBar_Accel.setValue(int(self.spinBox_Accel.value() * 100))
+            self.scrollBar_Accel.setValue(int(self.spinBox_Accel.value() * 8.163))
         else:
-            self.spinBox_Accel.setValue(self.scrollBar_Accel.value() / 100)
+            self.spinBox_Accel.setValue(self.scrollBar_Accel.value() / 8.163)
             
     # Minimum tunneling current conversion slot
     def min_curr_slot(self, box_to_bar):
@@ -154,7 +154,7 @@ class myTipApproach(QWidget, Ui_TipApproach):
     # Tip approach slot
     def tip_approach(self):
         # Obtain all required information
-        x = self.scrollBar_Xstep.value() + 0x8000
+        x = 0x8000 - self.scrollBar_Xstep.value() 
         z = self.scrollBar_Zstep.value() + 0x8000
         delay = self.scrollBar_Delay.value()
         g = self.scrollBar_Accel.value()
@@ -194,6 +194,7 @@ class myTipApproach(QWidget, Ui_TipApproach):
         self.groupBox_ApprPar_TipAppr.setEnabled(enable)
         self.groupBox_Steps_TipAppr.setEnabled(enable)
         self.groupBox_Trans_TipAppr.setEnabled(enable)
+        self.groupBox_MInCurr_TipAppr.setEnabled(enable)
         self.pushButton_Stop.setEnabled(False)
 
 if __name__ == "__main__":

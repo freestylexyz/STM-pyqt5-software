@@ -6,6 +6,7 @@ Created on Sat Nov 14 18:35:18 2020
 """
 import serial
 import time
+import winsound
 from PyQt5.QtCore import pyqtSignal, QObject
 import conversion as cnv
 from sequence import mySequence
@@ -860,25 +861,21 @@ class myDSP(QObject):
     #
     # giantStep - This function perform giant step of a specific channel
     #
-    def giantStep(self, channel, x, z, delay1, delay, gx, gz, stepnum):
+    def giantStep(self, channel, x, z, delay, g, stepnum):
         if self.ok():
             channel = channel & 0x3f
             x = x & 0xffff
             z = z & 0xffff
-            delay1 = delay1 & 0xffff
             delay = delay & 0xffff
-            gx = gx & 0xffff
-            gz = gz & 0xffff
+            g = g & 0xff
             stepnum = stepnum & 0xffff
             self.idling = False
             self.ser.write(int(0x83).to_bytes(1, byteorder="big"))      # 0x83 for giant step function
             self.ser.write(int(channel).to_bytes(1, byteorder="big"))   # Send ramp channel
             self.ser.write(int(x).to_bytes(2, byteorder="big"))         # Send x step
             self.ser.write(int(z).to_bytes(2, byteorder="big"))         # Send z step
-            self.ser.write(int(delay1).to_bytes(2, byteorder="big"))    # Send inter giant step delay us
             self.ser.write(int(delay).to_bytes(2, byteorder="big"))     # Send wait sample stable delay us
-            self.ser.write(int(gx).to_bytes(2, byteorder="big"))        # Send acceleration for x ramp
-            self.ser.write(int(gz).to_bytes(2, byteorder="big"))        # Send acceleration for z ramp
+            self.ser.write(int(g).to_bytes(1, byteorder="big"))         # Send acceleration
             self.ser.write(int(stepnum).to_bytes(2, byteorder="big"))   # Send step number
             
             # If receive start command
@@ -886,6 +883,7 @@ class myDSP(QObject):
                 self.stop = False           # Set stop flag to false
                 i = 0                       # Intial giant step counter
                 instruction = 0                 # Initial instruction
+                self.giantStep_signal.emit(i)   # Emit Giant step counter
                 while (instruction != 0x0f):    # Wait until receive finish command
                 
                     # If stop event issued
@@ -904,29 +902,24 @@ class myDSP(QObject):
     #
     # tipApproach - This function perform tipApproach
     #
-    def tipApproach(self, x, z, delay1, delay, gx, gz, giant, baby, babyg, limit):
+    def tipApproach(self, x, z, delay, g, giant, baby, limit):
         if self.ok():
+            beep = True
             x = x & 0xffff
             z = z & 0xffff
-            delay1 = delay1 & 0xffff
             delay = delay & 0xffff
-            gx = gx & 0xffff
-            gz = gz & 0xffff
+            g = g & 0xff
             giant = giant & 0xffff
             baby = baby & 0xffff
-            babyg = babyg & 0xffff
             limit = limit & 0xffff
             self.idling = False
             self.ser.write(int(0x84).to_bytes(1, byteorder="big"))      # 0x84 for giant step function
             self.ser.write(int(x).to_bytes(2, byteorder="big"))         # Send x step
             self.ser.write(int(z).to_bytes(2, byteorder="big"))         # Send z step
-            self.ser.write(int(delay1).to_bytes(2, byteorder="big"))    # Send inter giant step delay us
             self.ser.write(int(delay).to_bytes(2, byteorder="big"))     # Send wait sample stable delay us
-            self.ser.write(int(gx).to_bytes(2, byteorder="big"))        # Send acceleration for x ramp
-            self.ser.write(int(gz).to_bytes(2, byteorder="big"))        # Send acceleration for z ramp
+            self.ser.write(int(g).to_bytes(1, byteorder="big"))         # Send acceleration
             self.ser.write(int(giant).to_bytes(2, byteorder="big"))     # Send giant step number
             self.ser.write(int(baby).to_bytes(2, byteorder="big"))      # Send baby step ramp size
-            self.ser.write(int(babyg).to_bytes(2, byteorder="big"))     # Send baby step restore acceleration
             self.ser.write(int(limit).to_bytes(2, byteorder="big"))     # Send tunneling current lower limit
             
             # If receive start command
@@ -934,18 +927,22 @@ class myDSP(QObject):
                 self.stop = False           # Set stop flag to false
                 i = 0                       # Intial giant step counter
                 instruction = 0                 # Initial instruction
+                self.giantStep_signal.emit(i)   # Emit Giant step counter
                 while (instruction != 0x0f):    # Wait until receive finish command
                 
                     # If stop event issued
                     if self.stop:
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
                         self.stop = False
+                        beep = False
                     instruction = int.from_bytes(self.ser.read(1) ,"big")       # Receive new instruction
                     
                     # If instruction is ongoing
                     if instruction == 0x5a:
                         i += giant                      # Giant step counter + giant step number
                         self.giantStep_signal.emit(i)   # Emit Giant step counter
+                if beep:
+                    winsound.Beep(2500, 200)
                 self.stop = True                # Set stop flag to true
             self.idling = True    
     

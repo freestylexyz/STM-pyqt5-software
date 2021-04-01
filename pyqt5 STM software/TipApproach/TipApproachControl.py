@@ -58,14 +58,12 @@ class myTipApproachControl(myMainMenu):
             self.enable_mode_serial(False)                                      # Disable all serial realted features
             self.tipappr.idling = False                                         # Toggle idling flag
             self.tipappr.pushButton_Stop.setEnabled(True)                       # Enable stop push button
-            gx = g                                                              # Caluculate nonlinear coefficient for x channel
-            gz = g                                                              # Caluculate nonlinear coefficient for z channel
             
             self.setup_tipappr(False)                                           # Set up tip approach
             self.dsp.digital_o(3, 1)                                            # Retract tip
             self.init_dock()                                                    # Reload all 3 dock view
             time.sleep(1)                                                       # Wait 1s to let feedback loop respond
-            self.dsp.giantStep(channel, x, z, 100, delay, gx, gz, stepnum)      # Execute giant stpes
+            self.dsp.giantStep(channel, x, z, delay, g, stepnum)                # Execute giant stpes
             self.dsp.digital_o(3, 0)                                            # Unretract tip
             time.sleep(5)                                                       # Wait 5s to let feedback loop respond
             self.init_dock()                                                    # Reload all 3 dock view
@@ -86,15 +84,13 @@ class myTipApproachControl(myMainMenu):
             self.enable_mode_serial(False)                                      # Disable all serial realted features
             self.tipappr.idling = False                                         # Toggle idling flag
             self.tipappr.pushButton_Stop.setEnabled(True)                       # Enable stop push button
-            gx = g                                                              # Caluculate nonlinear coefficient for x channel
-            gz = g                                                              # Caluculate nonlinear coefficient for z channel
             
             self.setup_tipappr(False)                                           # Set up tip approach
-            self.digital_o(5, 0)                                                # Set up in rotation mode
+            self.dsp.digital_o(5, 0)                                            # Set up in rotation mode
             self.dsp.digital_o(3, 1)                                            # Retract tip
             self.init_dock()                                                    # Reload all 3 dock view
             time.sleep(1)                                                       # Wait 1s to let feedback loop respond
-            self. dsp.tipApproach(x, z, 100, delay, gx, gz, giant, baby, gz, minCurr)      # Execute Tip approach
+            self.dsp.tipApproach(x, z, delay, g, giant, baby, minCurr)          # Execute Tip approach
             self.dsp.digital_o(3, 0)                                            # Unretract tip
             time.sleep(5)                                                       # Wait 5s to let feedback loop respond
             self.init_dock()                                                    # Reload all 3 dock view

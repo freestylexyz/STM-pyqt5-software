@@ -242,6 +242,9 @@
               <property name="pageStep">
                <number>1000</number>
               </property>
+              <property name="value">
+               <number>1000</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -369,10 +372,10 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>10</number>
+            <number>100</number>
            </property>
            <property name="value">
-            <number>2</number>
+            <number>30</number>
            </property>
           </widget>
          </item>
@@ -430,13 +433,13 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>10</number>
+            <number>100</number>
            </property>
            <property name="pageStep">
-            <number>2</number>
+            <number>10</number>
            </property>
            <property name="value">
-            <number>2</number>
+            <number>30</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -522,10 +525,10 @@
                <number>1</number>
               </property>
               <property name="maximum">
-               <number>1000</number>
+               <number>255</number>
               </property>
               <property name="value">
-               <number>500</number>
+               <number>40</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -544,7 +547,7 @@
                <number>30000</number>
               </property>
               <property name="value">
-               <number>10000</number>
+               <number>1000</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -624,14 +627,20 @@
                 <pointsize>8</pointsize>
                </font>
               </property>
+              <property name="decimals">
+               <number>1</number>
+              </property>
               <property name="minimum">
-               <double>0.010000000000000</double>
+               <double>0.000000000000000</double>
               </property>
               <property name="maximum">
-               <double>10.000000000000000</double>
+               <double>30.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>5.000000000000000</double>
+               <double>3.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>4.900000000000000</double>
               </property>
              </widget>
             </item>
@@ -656,7 +665,7 @@
                <number>30</number>
               </property>
               <property name="value">
-               <number>10</number>
+               <number>1</number>
               </property>
              </widget>
             </item>
