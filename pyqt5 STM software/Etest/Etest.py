@@ -82,15 +82,14 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.rtest_ramp_read_outdata = [] * 100        # Ramp Test | ramp read output data
         self.rtest_ramp_read_indata = [] * 100         # Ramp Test | ramp read input data
         self.rtest_ramp_data = [] * 100                # Ramp Test | ramp data
-        self.rflag = True                              # Ramp Test | ramp/ramp read -> True/False
-        self.ptr2 = 0                                  # Ramp Test | ramp plot update count
-        self.ptr1 = 0                                  # Oscilloscope | plot update count
-        self.ptr3 = 0                                  # Feedback Test | plot update count
-        self.osci_nsample_data = []                    # Oscilloscope | N sample data
-        self.osci_continuous_data = np.zeros(1)        # Oscilloscope | Continuous data
-        self.ftest_zout_data = np.zeros(1)             # Feedback Test | feedback z data
-        self.ftest_vout_data = np.zeros(1)             # Feedback Test | preamp voltage data
-        self.ftest_parm = [-0.23, 0.0, 1.0]            # Feedback Test | parameters A, Z0, Delay
+        self.ptr2 = 0                          # Ramp Test | ramp plot update count
+        self.ptr1 = 0                          # Oscilloscope | plot update count
+        self.ptr3 = 0                          # Feedback Test | plot update count
+        self.osci_nsample_data = []                     # Oscilloscope | N sample data
+        self.osci_continuous_data = np.zeros(1)         # Oscilloscope | Continuous data
+        self.ftest_zout_data = np.zeros(1)     # Feedback Test | feedback z data
+        self.ftest_vout_data = np.zeros(1)     # Feedback Test | preamp voltage data
+        self.ftest_parm = [0.1] * 3            # Feedback Test | parameters A, Z0, Delay
 
 
         # adc | pushButton
@@ -150,24 +149,24 @@ class myEtest(QWidget, Ui_ElectronicTest):
 
         # last gain | radioButton
         self.x_gain_group = QButtonGroup()
-        self.x_gain_group.addButton(self.xgain10, 3)
+        self.x_gain_group.addButton(self.xgain10, 0)
         self.x_gain_group.addButton(self.xgain1, 1)
-        self.x_gain_group.addButton(self.xgain0_1, 0)
+        self.x_gain_group.addButton(self.xgain0_1, 3)
         self.x_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 0))
         self.y_gain_group = QButtonGroup()
-        self.y_gain_group.addButton(self.ygain10, 3)
+        self.y_gain_group.addButton(self.ygain10, 0)
         self.y_gain_group.addButton(self.ygain1, 1)
-        self.y_gain_group.addButton(self.ygain0_1, 0)
+        self.y_gain_group.addButton(self.ygain0_1, 3)
         self.y_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 1))
         self.z1_gain_group = QButtonGroup()
-        self.z1_gain_group.addButton(self.z1gain0_1, 3)
+        self.z1_gain_group.addButton(self.z1gain0_1, 0)
         self.z1_gain_group.addButton(self.z1gain1, 1)
-        self.z1_gain_group.addButton(self.z1gain10, 0)
+        self.z1_gain_group.addButton(self.z1gain10, 3)
         self.z1_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 2))
         self.z2_gain_group = QButtonGroup()
-        self.z2_gain_group.addButton(self.z2gain10, 3)
+        self.z2_gain_group.addButton(self.z2gain10, 0)
         self.z2_gain_group.addButton(self.z2gain1, 1)
-        self.z2_gain_group.addButton(self.z2gain0_1, 0)
+        self.z2_gain_group.addButton(self.z2gain0_1, 3)
         self.z2_gain_group.buttonToggled[int, bool].connect(ft.partial(self.gain_changed_emit, 3))
 
         # Ramp Test | pushButton
@@ -437,38 +436,38 @@ class myEtest(QWidget, Ui_ElectronicTest):
 
     # I/O | load x gain radio button status from dsp
     def load_x_gain(self, lastgain):
-        if lastgain[0] == 3:
+        if lastgain[0] == 0:
             self.xgain10.setChecked(True)
         elif lastgain[0] == 1:
             self.xgain1.setChecked(True)
-        elif lastgain[0] == 0:
+        elif lastgain[0] == 3:
             self.xgain0_1.setChecked(True)
 
     # I/O | load y gain radio button status from dsp
     def load_y_gain(self, lastgain):
-        if lastgain[1] == 3:
+        if lastgain[1] == 0:
             self.ygain10.setChecked(True)
         elif lastgain[1] == 1:
             self.ygain1.setChecked(True)
-        elif lastgain[1] == 0:
+        elif lastgain[1] == 3:
             self.ygain0_1.setChecked(True)
 
     # I/O | load z1 gain radio button status from dsp
     def load_z1_gain(self,lastgain):
-        if lastgain[2] == 3:
+        if lastgain[2] == 0:
             self.z1gain0_1.setChecked(True)
         elif lastgain[2] == 1:
             self.z1gain1.setChecked(True)
-        elif lastgain[2] == 0:
+        elif lastgain[2] == 3:
             self.z1gain10.setChecked(True)
 
     # I/O | load z2 gain radio button status from dsp
     def load_z2_gain(self,lastgain):
-        if lastgain[3] == 3:
+        if lastgain[3] == 0:
             self.z2gain10.setChecked(True)
         elif lastgain[3] == 1:
             self.z2gain1.setChecked(True)
-        elif lastgain[3] == 0:
+        elif lastgain[3] == 3:
             self.z2gain0_1.setChecked(True)
 
     # I/O | convert spinBox to scrollBar
@@ -693,6 +692,8 @@ class myEtest(QWidget, Ui_ElectronicTest):
             self.ftest_vout_data = np.zeros(1)      # init N sample data
             self.ftest_output_curve.clear()         # clear old plot
             self.ftest_input_curve.clear()          # clear old plot
+            self.ftest_output_curve.setPos(0, 0)                 # reset plot origin
+            self.ftest_input_curve.setPos(0, 0)                  # reset plot origin
             self.ftest_start_signal.emit(outch)
         else:
             self.enable_serial(False)
