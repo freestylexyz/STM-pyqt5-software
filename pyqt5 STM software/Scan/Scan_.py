@@ -524,7 +524,57 @@ class myScan_(QWidget, Ui_Scan):
         # Sub modules enable/ disable
         self.dep.enable_serial(enable)
         self.track.enable_serial(enable)
-        self.spc.enable_serial(enable)    
+        self.spc.enable_serial(enable)
+
+    # Enable / disable widgets based on Point Editor mode
+    def enable_point(self, enable):
+        self.spinBox_Xoffset_XY.setEnabled(enable)
+        self.spinBox_Yoffset_XY.setEnabled(enable)
+        self.spinBox_Xin_XY.setEnabled(enable)
+        self.spinBox_Yin_XY.setEnabled(enable)
+        self.scrollBar_Xoffset_XY.setEnabled(enable)
+        self.scrollBar_Yoffset_XY.setEnabled(enable)
+        self.scrollBar_Xin_XY.setEnabled(enable)
+        self.scrollBar_Yin_XY.setEnabled(enable)
+
+        self.radioButton_Gain0_1_XY.setEnabled(enable)
+        self.radioButton_Gain1_XY.setEnabled(enable)
+        self.radioButton_Gain10_XY.setEnabled(enable)
+
+        self.pushButton_Zero_XY.setEnabled(enable)
+        self.pushButton_Send_XY.setEnabled(enable)
+
+        self.pushButton_SendOptions_Scan.setEnabled(enable)
+        self.pushButton_ScanOptions_Scan.setEnabled(enable)
+
+        self.radioButton_Gray_Scan.setEnabled(enable)
+        self.radioButton_Color_Scan.setEnabled(enable)
+        self.checkBox_PlaneFit_Scan.setEnabled(enable)
+        self.checkBox_Illuminated_Scan.setEnabled(enable)
+        self.checkBox_Reverse_Scan.setEnabled(enable)
+
+        self.spinBox_ScanSize_ScanControl.setEnabled(enable)
+        self.spinBox_StepSize_ScanControl.setEnabled(enable)
+        self.scrollBar_ScanSize_ScanControl.setEnabled(enable)
+        self.scrollBar_StepSize_ScanControl.setEnabled(enable)
+
+        self.pushButton_SeqList_ScanControl.setEnabled(enable)
+        self.checkBox_LockIn_ScanControl.setEnabled(enable)
+        self.pushButton_LockIn_ScanControl.setEnabled(enable)
+
+        self.pushButton_SaveAll_Scan.setEnabled(enable)
+        self.pushButton_Load_Scan.setEnabled(enable)
+        self.pushButton_Info_Scan.setEnabled(enable)
+        self.pushButton_Start_Scan.setEnabled(enable)
+
+        self.pushButton_Track.setEnabled(enable)
+        self.pushButton_Deposition.setEnabled(enable)
+        self.pushButton_Spectrosocpy.setEnabled(enable)
+
+        self.pushButton_Reset_ViewControl.setEnabled(enable)
+        self.pushButton_Full_ViewControl.setEnabled(enable)
+        self.pushButton_Detail_ViewControl.setEnabled(enable)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

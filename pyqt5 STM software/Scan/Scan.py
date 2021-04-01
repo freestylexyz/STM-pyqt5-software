@@ -34,6 +34,7 @@ class myScan(myScan_):
     open_track_signal = pyqtSignal(int)                             # Open Track window signal
     open_spc_signal = pyqtSignal(int)                               # Open Spectroscopy window signal
     open_dep_signal = pyqtSignal(int)                               # Open Deposition window signal
+    point_editor_signal = pyqtSignal(bool)                          # Point editing mode signal
     gain_changed_signal = pyqtSignal(int, int)                      # Change XY gian signal
     stop_signal = pyqtSignal()                                      # Stop signal
     send_signal = pyqtSignal(int, int, int, int, int)               # Send signal
@@ -63,10 +64,10 @@ class myScan(myScan_):
         self.pushButton_LockIn_ScanControl.clicked.connect(self.lockin.show)                # Open lock in window
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)            # Open scan option window
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)            # Open send option window
-        self.pushButton_Info_Scan.clicked.connect(self.open_info)                         # Open scan data info window
+        # self.pushButton_Info_Scan.clicked.connect(self.open_info)                         # Open scan data info window
         # self.pushButton_Info_Scan.setEnabled(False)
         self.pushButton_LockIn_ScanControl.setEnabled(False)
-        # self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
+        self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
         self.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
         self.pushButton_Track.clicked.connect(self.open_track_win)
         self.pushButton_Deposition.clicked.connect(self.open_dep_win)
@@ -317,10 +318,17 @@ class myScan(myScan_):
     def edit_points(self, index):
         if index == 0:      # open point editor
             self.point_mode = True
+            # Init Point Editor size and position
+            screen = QDesktopWidget().screenGeometry()
+            spacerHor = int(screen.height() * 0.01)
+            sizeScan = self.frameGeometry()
+            self.point_editor.resize(424, 320)
+            self.point_editor.move(self.x() + sizeScan.width() + spacerHor, self.y())
             self.point_editor.show()
             self.init_point_mode(True)
             self.init_default_mode(False)
             # self.init_rescan_mode(False)
+            # Set up viewBox in Scan window
             self.view_box.setMouseEnabled(x=False, y=False)
             xmin = int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2))
             ymin = int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2))
@@ -329,6 +337,7 @@ class myScan(myScan_):
             self.view_box.setLimits(xMin=xmin, xMax=xmax, yMin=ymin, yMax=ymax, minXRange=3, maxXRange=xmax - xmin,
                                     minYRange=3, maxYRange=ymax - ymin)
             self.view_box.setRange(QRectF(xmin, xmax, self.scan_size[0] * self.scan_size[1], self.scan_size[0] * self.scan_size[1]), padding=0)
+            # Set up Points related ROI
             self.select_point.setSize([(xmax-xmin)/20, (ymax-ymin)/20])
             # self.select_point.setPos([int((xmax + xmin)/2-(xmax-xmin)/40), int((ymax + ymin)/2-(ymax-ymin)/40)])
             self.select_point.setPos([0,0])
@@ -337,6 +346,16 @@ class myScan(myScan_):
                                           self.scan_size[0] * self.scan_size[1] ,
                                           self.scan_size[0] * self.scan_size[1] )
             self.points.movePoint(self.points.getHandles()[0],[self.last_xy[0]+self.last_xy[2],self.last_xy[1]+self.last_xy[3]])
+            # Disable all widgets in Scan window except the viewBox
+            self.enable_point(False)
+            # Remember window states
+            self.spcVisible = self.spc.isVisible()
+            self.trackVisible = self.track.isVisible()
+            # Activate Scan window and minimize other windows
+            self.raise_()
+            self.spc.hide()
+            self.track.hide()
+            self.point_editor_signal.emit(True)
 
         elif index == -1:   # close point editor
             self.point_mode = False
@@ -347,6 +366,14 @@ class myScan(myScan_):
             self.view_box.setRange(QRectF(-3276800, -3276800, 6553600, 6553600), padding=0)
             self.view_box.setLimits(xMin=-3481600, xMax=3481600, yMin=-3481600, yMax=3481600, \
                                     minXRange=3, maxXRange=6963200, minYRange=3, maxYRange=6963200)
+            # Enable all widgets in Scan window except the viewBox
+            self.enable_point(True)
+            # Activate windows
+            if self.trackVisible:
+                self.track.showNormal()
+            if self.spcVisible:
+                self.spc.showNormal()
+            self.point_editor_signal.emit(False)
 
     # Control ROIs visibility in default mode
     def init_default_mode(self, status):
@@ -461,12 +488,12 @@ class myScan(myScan_):
 
     # Spectroscopy open track
     def open_track(self, state):
-        if state == 0:
+        if state == 0:  # if spc adv checkBox is unchecked
             self.track.closable = True
             self.track.comboBox_ReadCh_Track.setEnabled(True)
             self.track.pushButton_Start_Track.setEnabled(self.pushButton_Start_Scan.isEnabled())    # Reset enable based on succeed
-            self.track.close()
-        elif state == 2:
+            self.track.close()  # !!! not working
+        elif state == 2:    # if spc adv checkBox is checked (0: unchecked, 1: partially checked, 2: checked)
             self.track.closable = False
             self.track.pushButton_Start_Track.setEnabled(False)
             self.track.comboBox_ReadCh_Track.setEnabled(False)
@@ -566,7 +593,7 @@ class myScan(myScan_):
             self.point_list.clear()
             for point in self.point_editor.points:
                 self.point_list += [(point[0]*self.imagine_gain+self.last_xy[2], point[1]*self.imagine_gain+self.last_xy[3])]
-
+            print("point_list: ", self.point_list)
             # Draw points
             if len(self.points.getHandles()) <= len(self.point_list):
                 for i in range(len(self.points.getHandles())):
@@ -574,6 +601,7 @@ class myScan(myScan_):
                 for i in range(len(self.points.getHandles()), len(self.point_list)):
                     self.points.addFreeHandle(self.point_list[i])
             elif len(self.points.getHandles()) > len(self.point_list):
+                print("delete condition")
                 self.view_box.removeItem(self.points)
                 self.points = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0], movable=False)
                 self.view_box.addItem(self.points)
@@ -584,8 +612,10 @@ class myScan(myScan_):
                 self.points.sigRegionChanged.connect(lambda: self.points_update(1))
                 self.points.setParentItem(self.select_point)
                 self.points.movePoint(self.points.getHandles()[0], self.point_list[0])
-                for i in range(1,len(self.point_list)):
+                print("first point: ", self.point_list[0])
+                for i in range(1, len(self.point_list)):
                     self.points.addFreeHandle(self.point_list[i])
+                    print(i+1, "th point: ", self.point_list[i])
 
             # Draw dashed lines
             start = -1 if self.points.closed else 0
