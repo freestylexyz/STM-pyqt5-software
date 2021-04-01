@@ -11,8 +11,15 @@
 #include "DSP.h"
 
 //
+// Global variables declaration
+//
+//extern Uint16 sin_table[256];
+
+//
 // Function declaration
 //
 void scan();
+//void scan_cc();
+//void scan_ex();
 
 #endif /* HEADERS_IMAGE_H_ */

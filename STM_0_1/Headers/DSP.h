@@ -31,6 +31,7 @@
 #include "RampDiag.h"           // Ramp diagonal header file
 #include "Image.h"              // Image header file
 #include "Deposition.h"         // Deposition header file
+#include "Track.h"              // Track header file
 
 //
 // Function declaration

@@ -13,10 +13,10 @@
 //
 // Function declaration
 //
-void parabSlide(char, Uint16, Uint16);
-void parabSteady(char, Uint32, Uint16);
+void parabSlide(char, Uint32, Uint32);
+void parabSteady(char, Uint32, Uint32);
 bool babyStep(Uint16, Uint16, Uint16);
-void oneGiant(char, Uint16, Uint16, Uint16, Uint16, Uint16);
+void oneGiant(char, Uint16, Uint16, Uint16, Uint16);
 void giantStep();
 void tipApproach();
 

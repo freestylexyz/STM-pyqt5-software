@@ -44,7 +44,7 @@ void dac_W(char addr, Uint16 data)
     sdata.arr[0] = (0x3F & addr);           // Patch address with write flag for first sent byte
 
     spib_dac(sdata);                        // Transmit data
-    DELAY_US(20);                           // Wait 20us, settling time is 12us
+//    DELAY_US(20);                           // Wait 20us, settling time is 12us
 
     // Check if writing to DAC register
     if ((0x30 & addr) == 0x10)
