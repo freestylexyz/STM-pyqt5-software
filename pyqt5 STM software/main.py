@@ -114,6 +114,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.scan_signal.connect(self.scan_thread)
         self.scan.stop_signal.connect(self.scan_stop)
         self.scan.gain_changed_signal.connect(self.dsp.gain)
+        self.scan.open_track_signal.connect(self.open_scan)
+        self.scan.open_spc_signal.connect(self.open_scan)
+        self.scan.open_dep_signal.connect(self.open_scan)
+        self.scan.point_editor_signal.connect(self.point_edit_mode)
 
         # Sequence
         self.scan.seq_list.close_signal.connect(self.close_seq_list)
@@ -568,6 +572,24 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.track.show()
         else:
             self.msg("Open Scan window first!")
+
+    # Hide / Show dock windows if enter/exit point editing mode
+    def point_edit_mode(self, state):
+        if state:   # Point editing mode
+            self.biasVisible = self.Bias.isVisible()
+            self.currentVisible = self.Current.isVisible()
+            self.ZcontrolVisible = self.Zcontrol.isVisible()
+            self.hide_all_dock()
+            self.menubar.setEnabled(False)
+        else:       # Exit point editing mode
+            self.menubar.setEnabled(True)
+            if self.biasVisible:
+                self.Bias.show()
+            if self.currentVisible:
+                self.Current.show()
+            if self.ZcontrolVisible:
+                self.Zcontrol.show()
+
     
     # Close scan window
     # Close scan sub window
