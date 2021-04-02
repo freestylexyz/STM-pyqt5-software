@@ -72,7 +72,7 @@ class myScan(myScan_):
         self.pushButton_Track.clicked.connect(self.open_track_win)
         self.pushButton_Deposition.clicked.connect(self.open_dep_win)
         self.pushButton_Spectrosocpy.clicked.connect(self.open_spc_win)
-        
+
         # PushButton | file
         self.pushButton_SaveAll_Scan.clicked.connect(self.save)                             # Save data
         self.pushButton_Load_Scan.clicked.connect(self.load)                                # Load data
@@ -472,10 +472,16 @@ class myScan(myScan_):
                 self.img_display.setImage(self.current_img)
                 gain_dict = {8: 1, 9: 10, 10: 100}
                 gain = gain_dict[self.data.preamp_gain]
-                self.img_display.setRect(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain),
-                                                self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain)))
-                self.view_box.setRange(QRectF(int(self.current_xy[2]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), int(self.current_xy[3]-(self.scan_size[0]*self.scan_size[1]/2)*(gain/self.imagine_gain)), self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain),
-                                              self.scan_size[0] * self.scan_size[1]*(gain/self.imagine_gain)), padding=0)
+                self.img_display.setRect(QRectF(
+                    int(self.current_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2) * (gain / self.imagine_gain)),
+                    int(self.current_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2) * (gain / self.imagine_gain)),
+                    self.scan_size[0] * self.scan_size[1] * (gain / self.imagine_gain),
+                    self.scan_size[0] * self.scan_size[1] * (gain / self.imagine_gain)))
+                self.view_box.setRange(QRectF(
+                    int(self.current_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2) * (gain / self.imagine_gain)),
+                    int(self.current_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2) * (gain / self.imagine_gain)),
+                    self.scan_size[0] * self.scan_size[1] * (gain / self.imagine_gain),
+                    self.scan_size[0] * self.scan_size[1] * (gain / self.imagine_gain)), padding=0)
 
                 self.pushButton_Info_Scan.setEnabled(True)
                 # !!! if self.data.lockin_flag:
@@ -593,7 +599,7 @@ class myScan(myScan_):
             self.point_list.clear()
             for point in self.point_editor.points:
                 self.point_list += [(point[0]*self.imagine_gain+self.last_xy[2], point[1]*self.imagine_gain+self.last_xy[3])]
-            print("point_list: ", self.point_list)
+
             # Draw points
             if len(self.points.getHandles()) <= len(self.point_list):
                 for i in range(len(self.points.getHandles())):
@@ -601,7 +607,6 @@ class myScan(myScan_):
                 for i in range(len(self.points.getHandles()), len(self.point_list)):
                     self.points.addFreeHandle(self.point_list[i])
             elif len(self.points.getHandles()) > len(self.point_list):
-                print("delete condition")
                 self.view_box.removeItem(self.points)
                 self.points = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0], movable=False)
                 self.view_box.addItem(self.points)
@@ -609,13 +614,11 @@ class myScan(myScan_):
                 self.points.getHandles()[0].pen.setWidth(2)
                 purple_brush = pg.mkBrush('deaaff')
                 self.points.getHandles()[0].pen.setBrush(purple_brush)
-                self.points.sigRegionChanged.connect(lambda: self.points_update(1))
-                self.points.setParentItem(self.select_point)
+                # self.points.sigRegionChanged.connect(lambda: self.points_update(1))
+                self.points.sigRegionChanged.connect(self.update_point_editor)
                 self.points.movePoint(self.points.getHandles()[0], self.point_list[0])
-                print("first point: ", self.point_list[0])
                 for i in range(1, len(self.point_list)):
                     self.points.addFreeHandle(self.point_list[i])
-                    print(i+1, "th point: ", self.point_list[i])
 
             # Draw dashed lines
             start = -1 if self.points.closed else 0
@@ -623,6 +626,7 @@ class myScan(myScan_):
                 self.points.addSegment(self.points.handles[i]['item'], self.points.handles[i + 1]['item'])
             self.points.update()
 
+        # !!! Replaced with update_point_editor()
         # Update point editor
         elif index == 1:
 
@@ -672,9 +676,42 @@ class myScan(myScan_):
             self.points.getHandles()[0].pen.setWidth(2)
             purple_brush = pg.mkBrush('deaaff')
             self.points.getHandles()[0].pen.setBrush(purple_brush)
-            self.points.sigRegionChanged.connect(lambda: self.points_update(1))
+            # self.points.sigRegionChanged.connect(lambda: self.points_update(1))
+            self.points.sigRegionChanged.connect(self.update_point_editor)
             self.points.movePoint(self.points.getHandles()[0],
                                   [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
+
+    # points_update index == 1
+    def update_point_editor(self):
+        # Record other points position
+        self.point_list_others = []
+        x_others = []
+        y_others = []
+        for i in range(len(self.points.handles)):
+            x_other = self.points.getHandles()[i].pos()[0]
+            y_other = self.points.getHandles()[i].pos()[1]
+            self.point_list_others += [(x_other, y_other)]
+            x_others += [x_other]
+            y_others += [y_other]
+
+        # Set up size of select point roi
+        index_xmin = x_others.index(min(x_others))
+        index_ymin = y_others.index(min(y_others))
+        index_xmax = x_others.index(max(x_others))
+        index_ymax = y_others.index(max(y_others))
+        self.select_point.sigRegionChanged.disconnect(self.points_overall)
+        self.select_point.setPos([self.point_list_others[index_xmin][0], self.point_list_others[index_ymin][1]])
+        self.select_point.setSize([self.point_list_others[index_xmax][0] - self.point_list_others[index_xmin][0], \
+                                   self.point_list_others[index_ymax][1] - self.point_list_others[index_ymin][1]])
+        self.select_point.sigRegionChanged.connect(self.points_overall)
+
+        # Update table widget
+        self.point_list_2table = []
+        for handle in self.points.getHandles():
+            x = int((handle.pos()[0] + self.points.pos()[0] - self.last_xy[2]) / self.imagine_gain)
+            y = int((handle.pos()[1] + self.points.pos()[1] - self.last_xy[3]) / self.imagine_gain)
+            self.point_list_2table += [(x, y)]
+        self.point_editor.update_from_graphics(self.point_list_2table)
 
     # Point Editor | overall displacement of points
     def points_overall(self):

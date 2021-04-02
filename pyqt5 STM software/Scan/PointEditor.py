@@ -79,12 +79,14 @@ class myPointEditor(QWidget, Ui_PointEditor):
         self.table_Content.setCellWidget(curRow, 1, y)
         x.editingFinished.connect(self.update_graphics)
         y.editingFinished.connect(self.update_graphics)
+        self.update_graphics()
 
     # Remove slelcted button slot
     def remove(self):
         curRow = self.table_Content.currentRow()
-        self.table_Content.removeRow(curRow)
-        self.update_graphics()
+        if curRow != -1:
+            self.table_Content.removeRow(curRow)
+            self.update_graphics()
 
     # Insert point button slot
     def insert(self):
@@ -102,6 +104,7 @@ class myPointEditor(QWidget, Ui_PointEditor):
         self.table_Content.setCellWidget(curRow, 1, y)
         x.editingFinished.connect(self.update_graphics)
         y.editingFinished.connect(self.update_graphics)
+        self.update_graphics()
 
     # Clear all button slot
     def clear(self):
@@ -120,7 +123,6 @@ class myPointEditor(QWidget, Ui_PointEditor):
         x.editingFinished.connect(self.update_graphics)
         y.editingFinished.connect(self.update_graphics)
         self.one_point_signal.emit(2)
-
 
     # Save as .pts button slot
     def save(self):

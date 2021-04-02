@@ -263,7 +263,8 @@ class myScan_(QWidget, Ui_Scan):
         self.points.getHandles()[0].pen.setWidth(2)
         purple_brush = pg.mkBrush('deaaff')
         self.points.getHandles()[0].pen.setBrush(purple_brush)
-        self.points.sigRegionChanged.connect(lambda: self.points_update(1))
+        # self.points.sigRegionChanged.connect(lambda: self.points_update(1))
+        self.points.sigRegionChanged.connect(self.update_point_editor)
         self.points.hide()
 
         # ROI | point selection
@@ -271,6 +272,7 @@ class myScan_(QWidget, Ui_Scan):
         self.select_point = pg.RectROI([-100000,-100000], [200000,200000], pen=baby_green_pen, hoverPen=baby_yellow_pen, handlePen=baby_yellow_pen, movable=True, centered=True)
         self.view_box.addItem(self.select_point)
         self.select_point.removeHandle(0)
+        self.select_point.setZValue(self.points.zValue() - 1)
         # self.points.setParentItem(self.select_point)
         # self.select_point.sigRegionChanged.connect(lambda: self.points_update(3))
         self.select_point.sigRegionChanged.connect(self.points_overall)
