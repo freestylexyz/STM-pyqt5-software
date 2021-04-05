@@ -84,9 +84,8 @@ class myPointEditor(QWidget, Ui_PointEditor):
     # Remove slelcted button slot
     def remove(self):
         curRow = self.table_Content.currentRow()
-        if curRow != -1:
-            self.table_Content.removeRow(curRow)
-            self.update_graphics()
+        self.table_Content.removeRow(curRow)
+        self.update_graphics()
 
     # Insert point button slot
     def insert(self):
@@ -199,7 +198,7 @@ class myPointEditor(QWidget, Ui_PointEditor):
     # Update Scan graphics view when each point finished
     def update_graphics(self):
         self.points = []
-        if self.table_Content.rowCount() > 0:
+        if self.table_Content.rowCount() >= 0:
             if self.table_Content.rowCount() == 1 or self.table_Content.rowCount() == 0:
                 self.one_point_signal.emit(2)
             else:
