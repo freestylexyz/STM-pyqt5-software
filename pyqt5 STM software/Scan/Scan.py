@@ -303,6 +303,9 @@ class myScan(myScan_):
 
     # Open Spectroscopy window
     def open_spc_win(self):
+        self.trackVisible_ = self.track.isVisible()
+        if self.trackVisible_:
+            self.track.hide()
         self.open_spc_signal.emit(1)
 
     # Open Deposition window
@@ -503,6 +506,9 @@ class myScan(myScan_):
             self.track.closable = False
             self.track.pushButton_Start_Track.setEnabled(False)
             self.track.comboBox_ReadCh_Track.setEnabled(False)
+            # Init Track size and position
+            self.track.resize(472, 274)
+            self.track.move(11, 757)
             self.track.show()
 
     # pallet radioButton slot | gray, color
@@ -567,12 +573,12 @@ class myScan(myScan_):
             elif (not if_reverse) and (not if_illuminated) and (not if_plane_fit):
                 self.current_img = copy.deepcopy(self.raw_img)
 
-            self.update_display_signal.emit()
+        self.update_display_signal.emit()
 
     # update display image
     def update_display(self):
         '''Update image based on user selected filter and colormap.'''
-        if len(self.current_img) != 0:
+        if len(self.current_img) != 0:      # For real image display
             if self.radioButton_Gray_Scan.isChecked():
                 psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
                 self.color_current_img = psudo_gray_img
@@ -588,6 +594,18 @@ class myScan(myScan_):
                 else:
                     self.pallet_bar.loadPreset('thermal')
             self.img_display.setImage(self.color_current_img)
+        else:                              # For no image display
+            if self.radioButton_Gray_Scan.isChecked():
+                if self.checkBox_Reverse_Scan.isChecked():
+                    self.pallet_bar.loadPreset('reverse_grey')
+                else:
+                    self.pallet_bar.loadPreset('grey')
+            elif self.radioButton_Color_Scan.isChecked():
+                if self.checkBox_Reverse_Scan.isChecked():
+                    self.pallet_bar.loadPreset('reverse_thermal')
+                else:
+                    self.pallet_bar.loadPreset('thermal')
+
 
     # Point Editor | update variable and draw points
     def points_update(self, index):
