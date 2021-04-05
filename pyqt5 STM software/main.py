@@ -600,7 +600,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.track.hide()          # Also close track window
         else:
             self.scan.mode = 0
-            self.scan.open_track(0)          # In case of close spectroscopy with open track
+            self.scan.open_track(0)         # In case of close spectroscopy with open track
             self.enable_scan_menu(0)        # Enable all scan action
     
     # Show all dock windows    
