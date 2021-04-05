@@ -555,6 +555,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.enable_scan_menu(0)
         elif (index == 1) and (self.mode == 3):     # Open spectroscopy
             self.scan.mode = 1
+            self.scan.pushButton_Deposition.setEnabled(False)
+            self.actionSpectra.setEnabled(False)
             self.scan.point_list = [[self.dsp.lastdac[0], self.dsp.lastdac[15]]]    # Init point list
             self.scan.spc.groupBox_Mapping.setChecked(False)                        # Uncheck mapping groupbox
             # Close and open track based on spectroscopy advance option
@@ -566,9 +568,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.enable_scan_menu(1)
         elif (index == 2) and (self.mode == 3):     # Open deposition
             self.scan.mode = 2
+            self.scan.pushButton_Spectrosocpy.setEnabled(False)
+            self.actionDeposition.setEnabled(False)
             self.scan.dep.show()
             self.enable_scan_menu(2)
         elif (index == -1) and (self.mode == 3):    # Open track
+            # Init Track size and position
+            self.scan.track.resize(472, 274)
+            self.scan.track.move(11, 757)
             self.scan.track.show()
         else:
             self.msg("Open Scan window first!")
@@ -594,7 +601,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
     # Close scan window
     # Close scan sub window
     def close_scan(self):
-        if self.scan.mode == 0:
+        self.scan.pushButton_Deposition.setEnabled(True)
+        self.actionDeposition.setEnabled(True)
+        self.scan.pushButton_Spectrosocpy.setEnabled(True)
+        self.actionSpectra.setEnabled(True)
+        if self.scan.mode == 0:             # Scan mode
             self.exit_scan()
             self.closeWindow()
             self.scan.track.hide()          # Also close track window
@@ -602,6 +613,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.mode = 0
             self.scan.open_track(0)         # In case of close spectroscopy with open track
             self.enable_scan_menu(0)        # Enable all scan action
+
     
     # Show all dock windows    
     def show_all_dock(self):
