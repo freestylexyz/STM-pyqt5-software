@@ -5,39 +5,27 @@
 @FileName : AdvanceOption.py
 """
 import sys
-
 sys.path.append("../ui/")
-sys.path.append("../MainMenu/")
-sys.path.append("../Setting/")
-sys.path.append("../Model/")
-sys.path.append("../TipApproach/")
-sys.path.append("../Scan/")
-sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
-from PyQt5.QtCore import pyqtSignal, Qt
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
+from PyQt5.QtWidgets import QApplication, QWidget
 from AdvanceOption_ui import Ui_AdvanceOption
-import numpy as np
-import conversion as cnv
-import functools as ft
+
 
 class myAdvanceOption(QWidget, Ui_AdvanceOption):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
-    # Configure prescan for sequence
+    # Configure pre-scan for sequence
     def configure_prescan(self):
-        feedback = self.radioButton_FeedbackON.isChecked()      # Default sequence, feedback 
-        ditherB = self.radioButton_BiasON_AdvOption.isChecked() # Default sequence, bias dither
-        ditherZ = self.radioButton_ZON_AdvOption.isChecked()    # Default sequence, Z dither
+        feedback = self.radioButton_FeedbackON.isChecked()          # Default sequence, feedback
+        ditherB = self.radioButton_BiasON_AdvOption.isChecked()     # Default sequence, bias dither
+        ditherZ = self.radioButton_ZON_AdvOption.isChecked()        # Default sequence, Z dither
         return feedback, ditherB, ditherZ
     
     # Configure delays
     def configure_delay(self):
         move_delay = self.spinBox_MoveDelay_Dealy.value()           # Delay waited before moving 1 step
-        measure_delay = self.spinBox_MeasureDelay_Dealy.value()     # Delay watied before read sequence
+        measure_delay = self.spinBox_MeasureDelay_Dealy.value()     # Delay waited before read sequence
         return move_delay, measure_delay
         
     # Configure command list and data list for sequence
@@ -58,7 +46,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
             data_list += [self.spinBox_Avg_CH3.value()]         # ADC3 average number
             
         if self.groupBox_Seq_AdvOption.isChecked():
-            return command_list, data_list                      # Retuen command list and data list
+            return command_list, data_list                      # Return command list and data list
         else:
             return [], []                                       # Return empty list to indicate not using sequence
     
@@ -68,7 +56,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
         z_flag = self.groupBox_ZDrift_Correction.isChecked() and (not feedback) # No need to do z drift correction if feedback in on
         match_flag = self.checkBox_MatchCurr_ZDrift.isChecked() and z_flag      # No to do current matching if not doing Z drift correction
         feedback_delay = self.spinBox_Delay_ZDrift.value() if z_flag else 0     # Feedback delay 0ms if not doing Z drift correction
-        track_flag = self.checkBox_Tracking_Correction.isChecked()              # XY drift corrention (tracking)
+        track_flag = self.checkBox_Tracking_Correction.isChecked()              # XY drift correction (tracking)
         
         return corr_pass_num, z_flag, match_flag, feedback_delay, track_flag
         
@@ -76,7 +64,7 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
     def configure_scan(self):
         forward = True      # If measuring forward pass
         backward = True     # If measuring backward pass
-        average = False     # If averaging forwad and backward pass
+        average = False     # If averaging forward and backward pass
         if self.radioButton_Forward_Dir.isChecked():
             backward = False
         elif self.radioButton_Bacward_Dir.isChecked():

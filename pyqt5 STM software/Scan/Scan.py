@@ -5,23 +5,16 @@ Created on Wed Dec  2 15:18:34 2020
 """
 
 import sys
-import io
-sys.path.append("../ui/")
-sys.path.append("../MainMenu/")
-sys.path.append("../Setting/")
 sys.path.append("../Model/")
-sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
-sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog, QUndoStack, QUndoCommand
+
+from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog, QUndoStack, QUndoCommand
 from PyQt5 import QtGui
-from PyQt5.QtCore import pyqtSignal , Qt, QRectF
-from PyQt5 import QtCore
-import numpy as np
+from PyQt5.QtCore import pyqtSignal, QRectF
+
 from Scan_ import myScan_
 from DigitalSignalProcessor import myDSP
 from customGradientWidget import *
-import conversion as cnv
 import pickle
 import pyqtgraph as pg
 from images import myImages
@@ -229,10 +222,10 @@ class myScan(myScan_):
 
     # Bias range change slot
     def bias_ran_change(self, ran):
-        self.dep.bias_ran_change(ran)   # Change related parts in depostion
+        self.dep.bias_ran_change(ran)   # Change related parts in deposition
         self.spc.bias_ran_change(ran)   # Change related parts in spectroscopy
 
-    # Update ramp diagnal
+    # Update ramp diagonal
     def send_update(self, channels, channell, currents, currentl):
         func_dict = {0x10: self.label_Xin_XY, 0x1f: self.label_Yin_XY, 0x11: self.label_Xoffset_XY, 0x1e: self.label_Yoffset_XY}    # Indicator dictionary
         var_dict = {0x10: 0, 0x1f: 1, 0x11: 2, 0x1e: 3}                                                                             # Variable dictionary
@@ -267,7 +260,7 @@ class myScan(myScan_):
                                       self.scan_size[0] * self.scan_size[1],
                                       self.scan_size[0] * self.scan_size[1]), padding=0)
         
-    # Update plane fit paramenters in track window
+    # Update plane fit parameters in track window
     def track_update_fit(self):
         self.track.spinBox_X_PlaneFit.setValue(self.tilt[0])    # Sync tilt X
         self.track.spinBox_Y_PlaneFit.setValue(self.tilt[1])    # Sync tilt y
@@ -278,20 +271,14 @@ class myScan(myScan_):
         # If out of track size
         stop_flag = (abs(self.track.x - x) > self.track.track_size)                     # X out of boundary
         stop_flag = stop_flag or (abs(self.track.y - y) > self.track.track_size)        # Y out of boundary
-        if stop_flag and (not self.stop):       # Either X or Y outof boudary, avoid sending stop signal twice
+        if stop_flag and (not self.stop):       # Either X or Y out of boundary, avoid sending stop signal twice
             self.track.pushButton_Start_Track.setEnable(False)                          # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                                                     # Emit stop signal
 
-    # !!!
-    # Open scan information windwow
+    # Open scan information window
     def open_info(self):
-
         self.info.init_scanInfo(self.data)
         self.info.show()
-        # print('last', self.last_xy)
-        # print('current', self.current_xy)
-        # print('size', self.scan_size)
-        pass
 
     # Open sequence list window
     def open_seq_list(self):
@@ -312,8 +299,7 @@ class myScan(myScan_):
     def open_dep_win(self):
         self.open_dep_signal.emit(2)
 
-    # !!!
-    # Select pattern mode
+    # !!! Select pattern mode
     def select_pattern(self):
         pass
 
@@ -412,9 +398,9 @@ class myScan(myScan_):
         
         if self.data.time.strftime("%m%d%y") != self.today:             # New day, init file_index
             self.today = self.data.time.strftime("%m%d%y")
-            self.file_idex = 0
+            self.file_index = 0
         name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name list
-        name = self.today + name_list[self.file_idex // 36] + name_list[self.file_idex % 36]    # Auto configure file name
+        name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]    # Auto configure file name
         self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.stm')                  # Set default file name as auto configured
         
         if self.dlg.exec_():                                            # File selected
@@ -427,14 +413,14 @@ class myScan(myScan_):
             if save_name != name:
                 try:        # See if current file name is in our naming system
                     if save_name[0:6] == self.today:        # Reset file index if match
-                        self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
+                        self.file_index = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
                     else:
-                        self.file_idex -= 1
+                        self.file_index -= 1
                 except:     # Otherwise do not consume file index
-                    self.file_idex -= 1
+                    self.file_index -= 1
             self.saved = True                                               # Toggle saved flag
-            self.setWindowTitle('Scan-' + save_name)                        # Chage window title for saving status indication
-            self.file_idex += 1                                             # Consume 1 file index
+            self.setWindowTitle('Scan-' + save_name)                        # Change window title for saving status indication
+            self.file_index += 1                                            # Consume 1 file index
             with open(fname, 'wb') as output:
                 self.data.path = fname                                      # Save path
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
@@ -443,7 +429,7 @@ class myScan(myScan_):
     def load(self):
         flag = self.saved        # If able to load flag
         if not flag:
-            msg = QMessageBox.question(None, "Scan", "Imaged not saved, do you overwirte current data?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            msg = QMessageBox.question(None, "Scan", "Imaged not saved, do you overwrite current data?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             flag = (msg == QMessageBox.Yes)
         if flag:                # Able to load
             # Set up file dialog for load
@@ -460,7 +446,7 @@ class myScan(myScan_):
                     self.data.path = fname                      # Change file path
                 self.saved = True
                 self.remember_path = directory
-                self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Chage window title for saving status indication
+                self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Change window title for saving status indication
                     
                 # Set up scroll bars
                 self.scrollBar_Xin_XY.setValue(self.data.lastdac[0] - 0x8000)
@@ -609,7 +595,6 @@ class myScan(myScan_):
 
     # Point Editor | update variable and draw points
     def points_update(self, index):
-
         # Update graphics
         if index == 0:
 
@@ -733,7 +718,6 @@ class myScan(myScan_):
 
     # Point Editor | overall displacement of points
     def points_overall(self):
-
         # Get points position
         self.point_list_overall = []
         x_overall = []

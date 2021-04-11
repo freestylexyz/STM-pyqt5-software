@@ -13,8 +13,7 @@ sys.path.append("./TipApproach/")
 sys.path.append("./Scan/")
 sys.path.append("./Etest/")
 import os
-from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox
-from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from BiasControl import myBiasControl
 from Zcontroller import myZcontroller
 from CurrentControl import myCurrentControl
@@ -22,10 +21,8 @@ from SettingControl import mySettingControl
 from EtestControl import myEtestControl
 from TipApproachControl import myTipApproachControl
 from ScanControl import myScanControl
-import conversion as cnv
 from logger import Logger
 import functools as ft
-import numpy as np
 
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
@@ -36,7 +33,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.init_current_dock()
         self.init_STM()
 
-        
     def init_menu(self):
         # Menu bar
         self.actionSetting.triggered['bool'].connect(lambda: self.open_window(-1))    # Connect open setting window
@@ -57,7 +53,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock
 
     def init_STM(self):
-        # Connect DSP singal
+        # Connect DSP single
         self.dsp.succeed_signal.connect(self.dsp_succeed_slot)
         self.dsp.oscc_signal.connect(self.dsp_oscc_slot)
         self.dsp.rampMeasure_signal.connect(self.dsp_rampMeasure_slot)
@@ -66,7 +62,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.dsp.track_signal.connect(self.scan.track_update)
         self.dsp.rampDiag_signal.connect(self.scan.send_update)
         self.dsp.scan_signal.connect(self.scan.scan_update)
-
 
         # Connect setting signal
         self.setting.initDSP_signal.connect(self.setting_init_slot)
@@ -295,13 +290,11 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("SCAN/POINT_EDITOR", self.scan.point_list)
         self.cnfgEX.sync()
 
-
-
     # !!! Load all settings stored in configuration file to dsp module
     def load_config_bs(self):
         self.dsp.baudrate = self.cnfgBS.value("CONFIG/BAUD_VALUE")
         self.dsp.port = self.cnfgBS.value("CONFIG/COM_VALUE")
-        # !!! Need to determine if accidently exit and pop out window to let user decide if initialize output
+        # !!! Need to determine if accidentally exit and pop out window to let user decide if initialize output
         self.initO = bool(os.stat("initO.log").st_size != 0)  # Get initO from initO.log
         # self.initO = True
         # self.bias_dac = self.cnfg.value()
@@ -460,17 +453,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Scan | Point editor
         self.scan.point_list = self.cnfgEX.value("SCAN/POINT_EDITOR")
 
-
-    # DSP intial succeed slot
+    # DSP initial succeed slot
     def dsp_succeed_slot(self, succeed):
-        # Pop out succees message
+        # Pop out success message
         text = "Successfully found DSP" if succeed else "No DSP found"
         QMessageBox.information(None, "STM", text, QMessageBox.Ok)
         
         # Set up view
         self.versionLabel.setText(self.dsp.ver)                        # Change version label
         self.setting.init_setting(self.dsp.succeed, self.dsp.port, \
-                                  self.dsp.baudrate, self.dsp.offset)  # Reinital setting view if succeed
+                                  self.dsp.baudrate, self.dsp.offset)  # Re-initial setting view if succeed
             
     # DSP ramp to update signal:
     def dsp_rampTo_slot(self, channel, current):
@@ -530,15 +522,15 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
                                   self.dsp.lastgain, self.dsp.lastdac, self.dsp.last20bit)  # Init etest view
             self.etest.show()                                   # Show electronics test window
             
-        elif (index == 2) and (self.mode == 0):         # Open tip appraoch
+        elif (index == 2) and (self.mode == 0):         # Open tip approach
             self.mode = 2                                       # Change the mode variable
-            self.enable_menubar(2)                              # Disable menubar to prevent softeware enter other mode
+            self.enable_menubar(2)                              # Disable menubar to prevent software enter other mode
             self.setup_tipappr(True)                            # Prepare all electronics to tip approach mode
             self.tipappr.init_tipAppr(self.dsp.succeed, self.dsp.lastdigital)     # Init tip approach view
             self.tipappr.show()                                 # Show tip approach window
 
     # Close serial window
-    # Used for closing setting, etest and tip approach
+    # Used for closing setting, E-test and tip approach
     def closeWindow(self):
         self.mode = 0
         self.enable_menubar(0)
@@ -551,7 +543,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.enter_scan()                                               # Enter scan mode
             self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)  # Init scan view
             self.scan.show()
-            self.enable_menubar(3)                                          # Disable menubar to prevent softeware enter other mode
+            self.enable_menubar(3)                                          # Disable menubar to prevent software enter other mode
             self.enable_scan_menu(0)
         elif (index == 1) and (self.mode == 3):     # Open spectroscopy
             self.scan.mode = 1
@@ -597,7 +589,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             if self.ZcontrolVisible:
                 self.Zcontrol.show()
 
-    
     # Close scan window
     # Close scan sub window
     def close_scan(self):
@@ -614,7 +605,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.open_track(0)         # In case of close spectroscopy with open track
             self.enable_scan_menu(0)        # Enable all scan action
 
-    
     # Show all dock windows    
     def show_all_dock(self):
         self.bias_show()

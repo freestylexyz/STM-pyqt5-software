@@ -16,7 +16,7 @@ sys.path.append("../Etest/")
 from MainMenu import myMainMenu
 
 
-#  mySettingControl class - This class handles signal from setting, uppack data and execute corresponding operation
+#  mySettingControl class - This class handles signal from setting, unpack data and execute corresponding operation
 class mySettingControl(myMainMenu):
     # Setting initial DSP slot
     def setting_init_slot(self, vport, vbaudrate):

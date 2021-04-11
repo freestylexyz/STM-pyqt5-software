@@ -7,14 +7,11 @@ Created on Wed Dec  2 15:19:02 2020
 
 import sys
 sys.path.append("../ui/")
-sys.path.append("../MainMenu/")
-sys.path.append("../Setting/")
 sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
-sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication , QWidget, QFileDialog, QMessageBox
-from PyQt5.QtCore import pyqtSignal , Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
+from PyQt5.QtCore import pyqtSignal
 from Spectroscopy_ui import Ui_Spectroscopy
 from AdvanceOption import myAdvanceOption
 from SpectroscopyInfo import mySpectroscopyInfo
@@ -51,7 +48,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         
         # For automatically assign file name
         self.today = datetime.now().strftime("%m%d%y")
-        self.file_idex = 0
+        self.file_index = 0
         
         # System status
         self.bias_dac = False   # Bias DAC selection
@@ -117,31 +114,28 @@ class mySpc(QWidget, Ui_Spectroscopy):
         if self.idling and (not flag):
             msg = QMessageBox.question(None, "Spectroscopy", "Spectrum not saved, do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             flag = (msg == QMessageBox.Yes)
-            
+
         if self.idling and flag:    # Start case if idling and able to start
             self.spectroscopy_signal.emit()         # Emit spectroscopy start signal
         elif not self.idling:       # Stop case if not idling
             self.pushButton_Scan.setEnabled(False)  # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                 # Emit stop signal
-        
-    # !!!
-    # Update spectroscopy current pass data
-    def update_spc_(self, rdata):
-        f, b = self.data.update_data(rdata)          # Update current pass data and obtain forwad data and backward data for plot
-    
-    # !!!
-    # Update spectroscopy averaged data
-    def update_spc(self):
+
+    # !!! Update spectroscopy current pass data
+    def update_spc(self, rdata):
+        f, b = self.data.update_data(rdata)     # Update current pass data and obtain forward data and backward data for plot
+
+    # !!! Update spectroscopy averaged data
+    def update_spc_(self):
+        self.data.combine_data()                # Combine forward and backward data
         self.data.avg_data()                    # Average current pass data with previous passes
 
-    # !!!
     # Open spectroscopy information window
     def open_info(self):
         self.info.init_spcInfo(self.data)
         self.info.show()
-    
-    # !!!
-    # Clear graph
+
+    # !!! Clear graph
     def clear_graph(self):
         pass
     
@@ -213,7 +207,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
             self.spinBox_Max_General.setMaximum(0x7fff)     # Set the maximum of 'Max'
             self.spiBox_StepSize_General.setMinimum(1)      # Set the minimum of 'step'
         else:       # Ramp bias
-            # Determine percision based on 20bit DAC
+            # Determine precision based on 20bit DAC
             self.spinBox_Min_General.setDecimals(7)
             self.spinBox_Max_General.setDecimals(7)
             self.spiBox_StepSize_General.setDecimals(7)
@@ -228,7 +222,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         
     # Min spin box to scroll bar
     def min_cnv(self, flag, value):
-        ch = self.comboBox_RampCh_General.currentIndex()    # Determin ramp channel
+        ch = self.comboBox_RampCh_General.currentIndex()    # Determine ramp channel
         bias_flag = '20' if self.bias_dac else 'd'          # Conversion flag
         bias_mid = 0x80000 if self.bias_dac else 0x8000     # Different bias mid scale
         step = self.scrollBar_StepSize_General.value()      # Current step size
@@ -349,7 +343,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         if flag:                                # If savable
             self.auto_save(name, 0)             # Save averaged data
             
-    # Confgure auto save      
+    # Configure auto save
     def configure_autosave(self):
         # Auto save is only enabled when auto save enabled AND setup proper file name
         autosave_name = self.atuo_save_window() if self.adv.groupBox_AutoSave_AdvOption.isChecked() else ''
@@ -358,13 +352,13 @@ class mySpc(QWidget, Ui_Spectroscopy):
         return autosave_name, every
 
     # Auto save pop window
-    def atuo_save_window(self):
+    def auto_save_window(self):
         # Re-init file index if date change
         if self.data.time.strftime("%m%d%y") != self.today:
             self.today = self.data.time.strftime("%m%d%y")
-            self.file_idex = 0
+            self.file_index = 0
         name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name list
-        name = self.today + name_list[self.file_idex // 36] + name_list[self.file_idex % 36]    # Auto configure file name
+        name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]    # Auto configure file name
         self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.spc')                  # Set default file name as auto configured
         
         if self.dlg.exec_():        # File selected
@@ -376,11 +370,11 @@ class mySpc(QWidget, Ui_Spectroscopy):
             if save_name != name:
                 try:    # See if current file name is in our naming system
                     if save_name[0:6] == self.today:        # Reset file index if match
-                        self.file_idex = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
+                        self.file_index = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
                     else:
-                        self.file_idex -= 1
+                        self.file_index -= 1
                 except: # Otherwise do not consume file index
-                    self.file_idex -= 1
+                    self.file_index -= 1
                 name = save_name
         else:                       # No file selected
             name = ''   # Empty file name
@@ -394,7 +388,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
             fname = self.dlg.directory().path() + '/' + name + '.spc'   # Averaged data file name
             self.file_index += 1                                        # Consume 1 file index
             self.saved = True                                           # Toggle saved flag
-            self.setWindowTitle('Spectroscopy-' + name)                 # Chage window title for saving status indication
+            self.setWindowTitle('Spectroscopy-' + name)                 # Change window title for saving status indication
         with open(fname, 'wb') as output:
             self.data.path = fname                                      # Save path
             pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data

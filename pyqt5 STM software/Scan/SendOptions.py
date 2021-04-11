@@ -5,23 +5,12 @@
 @FileName : SendOptions.py
 """
 import sys
-
 sys.path.append("../ui/")
-sys.path.append("../MainMenu/")
-sys.path.append("../Setting/")
 sys.path.append("../Model/")
-sys.path.append("../TipApproach/")
-sys.path.append("../Scan/")
-sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
-from PyQt5.QtCore import pyqtSignal, Qt
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
-from SendOptions_ui import Ui_SendOptions
-import numpy as np
-import conversion as cnv
-import functools as ft
 
+from PyQt5.QtWidgets import QApplication, QWidget
+from SendOptions_ui import Ui_SendOptions
+import conversion as cnv
 
 class mySendOptions(QWidget, Ui_SendOptions):
     def __init__(self):

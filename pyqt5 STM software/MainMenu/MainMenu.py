@@ -12,10 +12,8 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget, QMessageBox
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
+from PyQt5.QtCore import QSettings
 from Setting import mySetting
 from TipApproach import myTipApproach
 from Etest import myEtest
@@ -34,7 +32,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
     def init_mainMenu(self):
         # Initial flags
-        self.initO = True           # Inital output
+        self.initO = True           # Initial output
         self.idling = True          # Dock idling flag
         self.hard_retracted = False # Hard retract flag
         self.preamp_gain = 9        # Preamp gain flag gain 8(8), gain 9(9), gain(10)
@@ -54,15 +52,15 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     # Set up UI for main menu
     def init_UI(self):
         screen = QDesktopWidget().screenGeometry()
-        sapcerVer = int(screen.width()*0.006)
+        spacerVer = int(screen.width()*0.006)
         spacerHor = int(screen.height()*0.01)
 
         # Init Main menu size and position
         sizeMain = self.frameGeometry()
-        self.move(sapcerVer, spacerHor)
+        self.move(spacerVer, spacerHor)
         self.setFixedSize(self.width(), self.height())
 
-        # Init control menubar
+        # Init control menu bar
         self.Current.setVisible(False)
         self.Bias.setVisible(False)
         self.Zcontrol.setVisible(False)
@@ -70,18 +68,18 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         # Init Current dock size and position
         self.Current.resize(430, 360)
         sizeCurrent = self.Current.frameGeometry()
-        self.Current.move( screen.width()-sizeCurrent.width()-sapcerVer, spacerHor)
+        self.Current.move( screen.width()-sizeCurrent.width()-spacerVer, spacerHor)
         self.Current.setFixedSize(self.Current.width(), self.Current.height())
 
         # Init bias dock size and position
         self.Bias.resize(430, 460)
         sizeBias = self.Bias.geometry()
-        self.Bias.move(screen.width()-sizeBias.width()-sapcerVer, sizeCurrent.height() + 2 * spacerHor)
+        self.Bias.move(screen.width()-sizeBias.width()-spacerVer, sizeCurrent.height() + 2 * spacerHor)
         self.Bias.setFixedSize(self.Bias.width(), self.Bias.height())
         
-        # Init Z control dock size and poisition
+        # Init Z control dock size and position
         self.Zcontrol.resize(430, 460)
-        self.Zcontrol.move(sapcerVer, sizeMain.height()+2*spacerHor)
+        self.Zcontrol.move(spacerVer, sizeMain.height()+2*spacerHor)
         self.Zcontrol.setFixedSize(self.Zcontrol.width(), self.Zcontrol.height())
 
     # Pop out a warning message
@@ -107,7 +105,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     # Enable serial related features in all docks
     def enable_dock_serial(self, enable):
         self.enable_bias_serial(enable)             # Bias dock
-        self.enable_current_serial(enable)          # Current dcok
+        self.enable_current_serial(enable)          # Current dock
         self.enable_Zcontrol_serial(enable)         # Z control dock
         self.menuControl.setEnabled(enable)         # Control menu
     
@@ -121,7 +119,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         for widget in widgets:
             widget.setEnabled(enable)
         
-        self.groupBox_DAC_Bias.setEnabled(enable and (self.mode != 3))  # In scan mode will disable bais DAC selection
+        self.groupBox_DAC_Bias.setEnabled(enable and (self.mode != 3))  # In scan mode will disable bias DAC selection
         self.groupBox_Range_Bias.setEnabled(enable and (not self.bias_dac)) # 20 bit DAC will disable range selection
         self.pushButton_StopRamp_BiasRamp.setEnabled(False)
         
@@ -180,7 +178,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         self.radioButton_ON_BiasDither.setChecked(self.dsp.lastdigital[0])      # Set up bias dither ON radio button
         self.radioButton_OFF_BiasDither.setChecked(not self.dsp.lastdigital[0]) # Set up bias dither OFF radio button
         self.radioButton_16bit_DAC.setChecked(not self.bias_dac)                # Set up 16bit DAC selection radio button
-        self.radioButton_20bit_DAC.setChecked(self.bias_dac)                    # Set up 20bit DAC selection radio buttion
+        self.radioButton_20bit_DAC.setChecked(self.bias_dac)                    # Set up 20bit DAC selection radio button
         self.bias_dac_slot(self.bias_dac)                                       # Set all other widgets based on bias DAC selection flag
 
     # Bias selection radio button slot
@@ -205,7 +203,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
     
     # Set up all spin boxes input range
     def bias_spinbox_range(self):
-        # Determin input limit based on selected DAC and DAC range
+        # Determine input limit based on selected DAC and DAC range
         minimum = cnv.bv(0, '20') if self.bias_dac else cnv.bv(0, 'd', self.dsp.dacrange[13])
         maximum = cnv.bv(0xfffff, '20') if self.bias_dac else cnv.bv(0xffff, 'd', self.dsp.dacrange[13])
             
@@ -229,7 +227,6 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             radio_dict[self.dsp.dacrange[13]].setChecked(True)      # Set corresponding radio button
             self.groupBox_Range_Bias.setEnabled(self.dsp.succeed)   # Enable range selection when found DSP
 
-                
     #
     # Current
     #
@@ -251,7 +248,7 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
     # Set up all spin boxes input range
     def current_spinbox_range(self):
-        # Determin set point limit based on current preamp gain
+        # Determine set point limit based on current preamp gain
         minimum = cnv.b2i(0xffff, self.preamp_gain, self.dsp.dacrange[5])
         maximum = cnv.b2i(0, self.preamp_gain, self.dsp.dacrange[5])
         spinboxes = [self.spinBox_Input_Setpoint, self.spinBox_Input1_CurrRamp, self.spinBox_Input2_CurrRamp,\
