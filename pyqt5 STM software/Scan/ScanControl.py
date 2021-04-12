@@ -466,7 +466,7 @@ class myScanControl(myMainMenu):
                 if self.scan.stop:
                     break
                 else:
-                    self.scan.spc.update_spc_()     # Update averaged data
+                    self.scan.spc.update_spc_(i)     # Update averaged data
                 # Rescan
                 # Send back to reference point
                 # Restore scan dither
@@ -564,6 +564,10 @@ class myScanControl(myMainMenu):
             self.scan.idling = True  # Restore scan idling flag
             self.scan.spc.idling = True  # Restore spectroscopy idling flag
             self.scan.spc.pushButton_Info_Deposition.setEnabled(True)  # Set Spectroscopy Info button enabled
+
+            # Auto save
+            if self.scan.spc.autosave_name:
+                self.scan.spc.auto_save(self.scan.spc.autosave_name, 0)
 
     # Spectroscopy slot
     def spectroscopy_thread(self):

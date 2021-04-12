@@ -7,14 +7,9 @@ Created on Wed Dec  2 15:20:55 2020
 
 import sys
 sys.path.append("../ui/")
-sys.path.append("../MainMenu/")
-sys.path.append("../Setting/")
 sys.path.append("../Model/")
-sys.path.append("../TipApproach/")
-sys.path.append("../Scan/")
-sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication , QWidget
-from PyQt5.QtCore import pyqtSignal , Qt
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtCore import pyqtSignal
 from ScanInfo_ui import Ui_ScanInfo
 import conversion as cnv
 

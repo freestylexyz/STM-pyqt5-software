@@ -61,6 +61,10 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.saved = True       # Saved status
         self.point_index = 0    # Current displayed point index
 
+        # Auto save variables
+        self.autosave_name = ''
+        self.every = False
+
         # Data for plot
         self.fwd_data = []      # Current plot forward data
         self.bwd_data = []      # Current plot bacward data
@@ -180,8 +184,10 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.bwd_data = b
 
     # !!! Update spectroscopy averaged data
-    def update_spc_(self):
+    def update_spc_(self, pass_num):
         self.data.combine_data()                # Combine forward and backward data
+        if self.every:
+            self.auto_save(self.auto_save_name, pass_num+1)
         self.data.avg_data()                    # Average current pass data with previous passes
 
     def update_avg_plot(self):
@@ -552,10 +558,9 @@ class mySpc(QWidget, Ui_Spectroscopy):
     # Configure auto save
     def configure_autosave(self):
         # Auto save is only enabled when auto save enabled AND setup proper file name
-        autosave_name = self.atuo_save_window() if self.adv.groupBox_AutoSave_AdvOption.isChecked() else ''
+        self.autosave_name = self.atuo_save_window() if self.adv.groupBox_AutoSave_AdvOption.isChecked() else ''
         # Save every pass will not be enabled is auto save is not enabled
-        every = self.adv.checkBox_SaveEveryPasses_Autosave.isChecked() and autosave_name
-        return autosave_name, every
+        self.every = self.adv.checkBox_SaveEveryPasses_Autosave.isChecked() and autosave_name
 
     # Auto save pop window
     def auto_save_window(self):
