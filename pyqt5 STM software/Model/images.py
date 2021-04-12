@@ -13,6 +13,7 @@ sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget
+from PyQt5.QtGui import QColor
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,8 +29,11 @@ class myImages(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.color = [QColor(206, 212, 218), QColor(239, 35, 60), QColor(244, 140, 6), QColor(176, 137, 104), \
+         QColor(255, 221, 0), QColor(116, 198, 157), QColor(0, 150, 199), QColor(160, 108, 213), \
+         QColor(185, 55, 94), QColor(255, 158, 187), QColor(255, 170, 0), QColor(114, 239, 221), \
+         QColor(170, 204, 0), QColor(0, 180, 216), QColor(224, 170, 255), QColor(255, 194, 212)]
 
-    #
     # color -> gray
     #
     def color2gray(self, img):
