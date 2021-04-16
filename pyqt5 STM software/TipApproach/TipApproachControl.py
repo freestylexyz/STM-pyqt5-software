@@ -23,7 +23,7 @@ class myTipApproachControl(myMainMenu):
     def setup_tipappr(self, flag):
         if self.idling or (not flag):
             if flag:
-                self.enable_mode_serial(False)                                  # Disable all serial realted features
+                self.enable_mode_serial(False)                                  # Disable all serial related features
                 self.idling = False
             # Set up inner piezo
             self.dsp.rampTo(0x13, 0x8000, 2, 1000, 0, False)                    # Ramp Z offset to 0V
@@ -55,19 +55,21 @@ class myTipApproachControl(myMainMenu):
     # Giant step execution
     def giant_excu(self, channel, x, z, delay, g, stepnum):
         if self.tipappr.idling:
-            self.enable_mode_serial(False)                                      # Disable all serial realted features
+            self.enable_mode_serial(False)                                      # Disable all serial related features
             self.tipappr.idling = False                                         # Toggle idling flag
             self.tipappr.pushButton_Stop.setEnabled(True)                       # Enable stop push button
             
             self.setup_tipappr(False)                                           # Set up tip approach
             self.dsp.digital_o(3, 1)                                            # Retract tip
             self.init_dock()                                                    # Reload all 3 dock view
+            self.enable_dock_serial(False)                                      # Disable dock serial button
             time.sleep(1)                                                       # Wait 1s to let feedback loop respond
-            self.dsp.giantStep(channel, x, z, delay, g, stepnum)                # Execute giant stpes
+            self.dsp.giantStep(channel, x, z, delay, g, stepnum)                # Execute giant steps
             self.dsp.digital_o(3, 0)                                            # Unretract tip
             time.sleep(5)                                                       # Wait 5s to let feedback loop respond
             self.init_dock()                                                    # Reload all 3 dock view
-            
+            self.enable_dock_serial(False)                                      # Disable dock serial button
+
             self.tipappr.idling = True                                          # Toggle back idling flag
             self.tipappr.label_Status_Status.setText("Idling")                  # Set the status label back to idling
             self.enable_mode_serial(True)                                       # Enable all serial related features
@@ -75,13 +77,12 @@ class myTipApproachControl(myMainMenu):
 
     # Giant step slot
     def giant_slot(self, channel, x, z, delay, g, stepnum):
-        threading.Thread(target = (lambda: self.giant_excu(channel, x, z, delay, g, stepnum))).start()
+        threading.Thread(target=(lambda: self.giant_excu(channel, x, z, delay, g, stepnum))).start()
         
     # Tip approach execution
     def tip_appr_excu(self, x, z, delay, g, giant, baby, minCurr):
         if self.tipappr.idling:
-            self.enable_mode_serial(False)
-            self.enable_mode_serial(False)                                      # Disable all serial realted features
+            self.enable_mode_serial(False)                                      # Disable all serial related features
             self.tipappr.idling = False                                         # Toggle idling flag
             self.tipappr.pushButton_Stop.setEnabled(True)                       # Enable stop push button
             
@@ -89,21 +90,22 @@ class myTipApproachControl(myMainMenu):
             self.dsp.digital_o(5, 0)                                            # Set up in rotation mode
             self.dsp.digital_o(3, 1)                                            # Retract tip
             self.init_dock()                                                    # Reload all 3 dock view
+            self.enable_dock_serial(False)                                      # Disable dock serial button
             time.sleep(1)                                                       # Wait 1s to let feedback loop respond
             self.dsp.tipApproach(x, z, delay, g, giant, baby, minCurr)          # Execute Tip approach
             self.dsp.digital_o(3, 0)                                            # Unretract tip
             time.sleep(5)                                                       # Wait 5s to let feedback loop respond
             self.init_dock()                                                    # Reload all 3 dock view
-            
+            self.enable_dock_serial(False)                                      # Disable dock serial button
+
             self.tipappr.idling = True                                          # Toggle back idling flag
             self.tipappr.label_Status_Status.setText("Idling")                  # Set the status label back to idling
             self.enable_mode_serial(True)                                       # Enable all serial related features
     
     # Tip approach slot
     def tip_appr_slot(self, x, z, delay, g, giant, baby, minCurr):
-        threading.Thread(target = (lambda: self.tip_appr_excu(x, z, delay, g, giant, baby, minCurr))).start()
+        threading.Thread(target=(lambda: self.tip_appr_excu(x, z, delay, g, giant, baby, minCurr))).start()
         
-    # Update stepnumber
+    # Update step number
     def giantStep_update(self, i):
         self.tipappr.label_Pass.setText(str(i))       # Update pass number label
-        

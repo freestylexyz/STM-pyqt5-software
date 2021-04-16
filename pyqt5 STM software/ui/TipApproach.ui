@@ -546,6 +546,12 @@
               <property name="maximum">
                <number>30000</number>
               </property>
+              <property name="singleStep">
+               <number>1000</number>
+              </property>
+              <property name="pageStep">
+               <number>10000</number>
+              </property>
               <property name="value">
                <number>1000</number>
               </property>

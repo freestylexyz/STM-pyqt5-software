@@ -17,11 +17,11 @@ void zAutoT(Uint16 target, Uint16 step)
 
     if(step > 10)
     {
-        delay = 300000;          // Delay long time for large step
+        delay = 16000;          // Delay long time for large step
     }
     else
     {
-        delay = 80000;           // Delay short time for small step
+        delay = 8000;           // Delay short time for small step
     }
 
     if(lastdac[Zofff -16] != Zero_16)
@@ -114,7 +114,7 @@ void iAutoT(Uint16 target, Uint16 step)
     while(condition)
     {
         dac_W(Zofff, zoffset);              // Output Z offset coarse
-        DELAY_US(60000);                    // Wait 600 us for the pre-amp to respond (pre-amp rise time is 450 us @ gain 10)
+        DELAY_US(600);                      // Wait 600 us for the pre-amp to respond (pre-amp rise time is 450 us @ gain 10)
         i = abs16(adc_CNV_N(Preamp, 100));  // Read pre-amp signal average 100 times
 
         // Update Z offset fine value and condition based on direction for next loop

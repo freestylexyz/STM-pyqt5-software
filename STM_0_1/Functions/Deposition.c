@@ -57,7 +57,7 @@ void deposition()
     serialOut(split(Finish, 1));        // Send out finish command
     serialOut(split(0xAA55A55A, 4));    // Send out a stop sequence to distinguish with remaining data
 
-    // Send out data array if reading with N sample or read until
+//     Send out data array if reading with N sample or read until
     if((read_flag & 0x02) == 0x02)
     {
         serialOut(split(read_num, 2));      // Tell PC how many data to be expected

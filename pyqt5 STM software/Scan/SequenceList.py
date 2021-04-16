@@ -63,7 +63,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
         seq.configure(self.bias_dac, self.preamp_gain, self.dacrange, self.lastdac, self.last20bitdac)
         return seq
 
-    # Seqence list window initialization
+    # Sequence list window initialization
     def init_seqlist(self, index, seq_list, selected_name, mode, bias_dac, preamp_gain, dacrange, lastdac, last20bitdac):
         self.index = index
         self.seqlist = []                   # Empty sequence list
@@ -117,7 +117,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
             if (num >= 0) and (self.namelist[num] == seq.name):
                 del name_list[num]          # Delete original sequence name if updating and name not changed
                 
-            # Take care of mode confliction
+            # Take care of mode conflict
             if seq.mode != self.mode:
                 QMessageBox.information(None, "Sequence compiler", "Sequence mode not compatible", QMessageBox.Ok)
                 
@@ -170,7 +170,7 @@ class mySequenceList(QWidget, Ui_SequenceList):
             del self.seqlist[row]                       # Remove selected sequence from sequence list
             del self.namelist[row]                      # Remove selected sequence name from sequence name list 
     
-    # Change selected squence index
+    # Change selected sequence index
     def select(self):
         current_index = self.listWidget_SeqList.currentRow()
         if current_index >= 0:                   # Valid row number

@@ -49,7 +49,7 @@ class myScanInfo(QWidget, Ui_ScanInfo):
         else:
             self.label_scan_protection.setText(scan_protection_dict[data.scan_protect_flag] + 'with Zout limit' + str(data.limit))
         tip_protection = 'Protected' if data.tip_protection else 'No protection'
-        tip_protect_data = ',retracted Zoffset fine '
+        tip_protect_data = ',retracted Offset fine '
         if data.tip_protection:
             self.label_tip_protection.setText(tip_protection + tip_protect_data + str(data.tip_protect_data) + ' bits')
         else:
@@ -94,7 +94,7 @@ class myScanInfo(QWidget, Ui_ScanInfo):
         self.label_zgain2.setText(str(z2_gain))
         preamp_gain = data.preamp_gain
         self.label_preamp_gain.setText(str(preamp_gain))
-        dac_range_dict = {0:'0 to 5V', 1:'0 to 10V', 2:'0 to 20V', 4:'0 to 40V', 9:'-V to +5V', 10:'-10V to +10V', 12:'-20V to +20V', 14:'-2.5V to +2.5V'}
+        dac_range_dict = {0:'0 to 5V', 1: '0 to 10V', 2: '0 to 20V', 4: '0 to 40V', 9: '-V to +5V', 10: '-10V to +10V', 12: '-20V to +20V', 14: '-2.5V to +2.5V'}
         bias_range = dac_range_dict[data.dacrange[13]]
         self.label_bias_range.setText(bias_range)
 
@@ -211,7 +211,7 @@ class myScanInfo(QWidget, Ui_ScanInfo):
                 if data.seq.option1[i] == 1:
                     seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to Original with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
                 else:
-                    if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] =='Z offset'):
+                    if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
                         seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' bits with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
                     elif data.seq.channel[i] == 'Iset':
                         seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' nA with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
@@ -240,9 +240,7 @@ class myScanInfo(QWidget, Ui_ScanInfo):
     def closeEvent(self, event):
         self.close_signal.emit()
         event.accept()
-        
-    def enable_serial(self, enable):
-        pass
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

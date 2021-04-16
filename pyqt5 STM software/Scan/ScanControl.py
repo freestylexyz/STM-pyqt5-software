@@ -37,6 +37,7 @@ class myScanControl(myMainMenu):
             self.enable_mode_serial(True)  # Enable serial based on current mode
             self.idling = True  # Toggle idling flag back
             self.init_dock()  # Reload all 3 dock view
+            self.enable_mode_serial(True)  # Enable serial based on current mode
 
     # Exit scan operation
     def exit_scan(self):
@@ -65,7 +66,6 @@ class myScanControl(myMainMenu):
 
             self.scan.idling = True  # Restore scan idling flag
             self.enable_mode_serial(True)  # Enable serial based on current mode
-            self.init_dock()  # Reload all 3 dock view
 
     # Scan related stop slot
     def scan_stop(self):
@@ -78,7 +78,7 @@ class myScanControl(myMainMenu):
         # Dictionaries based on different mode
         list_dict = {0: self.scan.scan_seq_list, 1: self.scan.dep_seq_list, 2: self.scan.spc_seq_list}
         select_dict = {0: self.scan.scan_seq_selected, 1: self.scan.dep_seq_selected, 2: self.scan.spc_seq_selected}
-        label_dict = {0: self.scan.label_Seq_ScanControl, 1: self.scan.dep.label_Seq_Deposition, \
+        label_dict = {0: self.scan.label_Seq_ScanControl, 1: self.scan.dep.label_Seq_Deposition,
                       2: self.scan.spc.adv.label_Seq_AdvOption}
 
         # Determine name
@@ -124,8 +124,8 @@ class myScanControl(myMainMenu):
             self.scan.idling = True  # Restore scan idling flag
             self.scan.pushButton_Zero_XY.setText("Zero")  # Restore zero button text
             self.scan.pushButton_Send_XY.setText("Send")  # Restore send button text
-            self.enable_mode_serial(True)  # Enable serial based on current mode
             self.init_dock()  # Reload all 3 dock view
+            self.enable_mode_serial(True)  # Enable serial based on current mode
 
     # Send signal slot
     def send_thread(self, index, xin, yin, xoff, yoff):
@@ -206,10 +206,10 @@ class myScanControl(myMainMenu):
 
             # Restore system status
             self.scan.pushButton_Start_Scan.setText('Start')  # Restore scan button text
-            self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.stop = True  # Restore scan stop flag
             self.scan.idling = True  # Restore scan idling flag
             self.init_dock()  # Reload all 3 dock view
+            self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.pushButton_Info_Scan.setEnabled(True)  # Set Scan Info button enabled
 
     # Scan signal slot
@@ -240,7 +240,7 @@ class myScanControl(myMainMenu):
             self.scan.dep.data = DepData()
             self.scan.dep.data.load_status(self.dsp, self.preamp_gain, self.bias_dac, seq)
             self.scan.dep.data.load(read)
-            self.dep.saved = (read[1] == 0)  # No need to save if not reading
+            self.scan.dep.saved = (read[1] == 0)  # No need to save if not reading
 
             # Get system ready
             self.scan.dep.setWindowTitle('Deposition')  # Set window title to indicate status
@@ -252,6 +252,7 @@ class myScanControl(myMainMenu):
             # Execute read before
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
+                # rdata = [0,1,2,3,4,5]
                 self.scan.dep.update_N(rdata, 0)  # Plot read before data
 
             # Set up stop button if continuous read mode
@@ -260,27 +261,28 @@ class myScanControl(myMainMenu):
                 self.scan.dep.pushButton_DoIt_Deposition.setEnabled(True)
 
             # Execute deposition
-            rdata = self.dsp.depostion(read[0], read[1], read[2], read[3], read[4], read[5], read[6], read[7], seq)
+            rdata = self.dsp.deposition(read[0], read[1], read[2], read[3], read[4], read[5], read[6], read[7], seq)
 
             # Load data
             if read[1] == 1:  # Continuous mode
                 self.dep.data.data = np.array(self.dep.rdata)  # Load data for storage
             if (read[1] == 2) or (read[1] == 3):  # N sample mode
-                self.dep.data.data = np.array(rdata)  # Load data for storage
+                self.scan.dep.data.data = np.array(rdata)  # Load data for storage
                 self.scan.dep.update_N(rdata, 1)  # Plot N sample data
 
             # Execute read after
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
+                # rdata = [0,1,2,3,4,5]
                 self.scan.dep.update_N(rdata, 2)  # Plot read after data
 
             # Restore system status
             self.scan.dep.pushButton_DoIt_Deposition.setText('Do it')  # Restore do it button text
-            self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.stop = True  # Restore scan stop flag
             self.scan.idling = True  # Restore scan idling flag
             self.scan.dep.idling = True  # Restore deposition idling flag
             self.init_dock()  # Reload all 3 dock view
+            self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.dep.pushButton_Info_Deposition.setEnabled(True)  # Set Deposition Info button enabled
 
     # Deposition signal slot
@@ -301,7 +303,6 @@ class myScanControl(myMainMenu):
             flag = seq.validated or (not seq.validation_required)  # Deposition executable flag
             if not flag:
                 self.scan.dep.message('Selected sequence is not valid')  # Pop out message
-            seq.build()  # Build sequence
 
         # Execute deposition if executable
         if flag:

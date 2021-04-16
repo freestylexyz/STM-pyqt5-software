@@ -799,7 +799,6 @@ class myDSP(QObject):
                 instruction = 0  # Initial instruction
                 self.giantStep_signal.emit(i)  # Emit Giant step counter
                 while (instruction != 0x0f):  # Wait until receive finish command
-
                     # If stop event issued
                     if self.stop:
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
@@ -841,7 +840,6 @@ class myDSP(QObject):
                 instruction = 0  # Initial instruction
                 self.giantStep_signal.emit(i)  # Emit Giant step counter
                 while (instruction != 0x0f):  # Wait until receive finish command
-
                     # If stop event issued
                     if self.stop:
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
@@ -877,7 +875,7 @@ class myDSP(QObject):
             self.idling = True
 
     # scan - This function perform scan
-    def scan(self, channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
+    def scan(self, channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay,
              limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x):
         if self.ok():
             channel_x = channel_x & 0xff
@@ -954,8 +952,9 @@ class myDSP(QObject):
             self.idling = True
 
     # deposition - This function perform deposition
-    def deposition(self, read_ch, read_flag, read_delay, read_delay2, read_num, \
+    def deposition(self, read_ch, read_flag, read_delay, read_delay2, read_num,
                    average, limit, stop_num, seq):
+        rdata_list = []  # Initialize read data list
         if self.ok():
             read_ch = read_ch & 0xff
             read_flag = read_flag & 0x03
@@ -991,12 +990,12 @@ class myDSP(QObject):
                             self.oscc_signal.emit(rdata)  # Send out data through signal
 
                 self.checkStopSeq()  # Check stop sequence
-                rdata_list = []  # Initialize read data list
 
-                if (read_flag == 2) and (read_flag == 3):
+                if (read_flag == 2) or (read_flag == 3):
                     return_num = int.from_bytes(self.ser.read(2), "big")  # Read the number of returned data
                     for i in range(return_num):
                         rdata_list += [int.from_bytes(self.ser.read(2), "big")]  # Read list data
+        self.idling = True
         return rdata_list
 
     # tract - this function perform track
@@ -1048,4 +1047,6 @@ class myDSP(QObject):
             y = int.from_bytes(self.ser.read(2), "big")
             self.update_last(0x10, x)  # Update Xin
             self.update_last(0x1f, y)  # Update Yin
-            return x, y
+
+        self.idling = True
+        return x, y

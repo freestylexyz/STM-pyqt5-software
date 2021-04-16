@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Wed Mar 31 20:23:09 2021
+>> Linked Wed Apr 14 21:27:51 2021
 
 OUTPUT FILE NAME:   <STM_0_1.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00080000
@@ -24,7 +24,7 @@ PAGE 0:
   BEGIN                 00080000   00000002  00000002  00000000  RWIX
   FLASHA                00080002   00001ffe  00000000  00001ffe  RWIX
   FLASHB                00082000   00002000  00001ff9  00000007  RWIX
-  FLASHC                00084000   00002000  00001274  00000d8c  RWIX
+  FLASHC                00084000   00002000  0000127d  00000d83  RWIX
   FLASHD                00086000   00002000  0000003b  00001fc5  RWIX
   FLASHE                00088000   00008000  00000000  00008000  RWIX
   FLASHF                00090000   00008000  00000246  00007dba  RWIX
@@ -611,37 +611,37 @@ CpuSysRegsFile
                   00083ff8    00000002     rts2800_fpu32.lib : pre_init.c.obj (.text)
                   00083ffa    00000001                       : startup.c.obj (.text)
 
-.text.2    0    00084000    00001274     
-                  00084000    000001c1     Image.obj (.text)
-                  000841c1    000001bd     main.obj (.text)
-                  0008437e    0000017a     Fundamental.obj (.text)
-                  000844f8    00000142     Protection.obj (.text)
-                  0008463a    00000137     DAC.obj (.text)
-                  00084771    00000126     Aout.obj (.text)
-                  00084897    0000010a     Digital.obj (.text)
-                  000849a1    00000107     Deposition.obj (.text)
-                  00084aa8    000000e5     ADC.obj (.text)
-                  00084b8d    000000dc     Serial.obj (.text)
-                  00084c69    000000d0     SPI.obj (.text)
-                  00084d39    000000bb     PinInit.obj (.text)
-                  00084df4    000000ac     20bitDAC.obj (.text)
-                  00084ea0    0000009c     rts2800_fpu32.lib : fd_add28.asm.obj (.text)
-                  00084f3c    0000008b                       : fd_div28.asm.obj (.text)
-                  00084fc7    00000088                       : fs_div28.asm.obj (.text)
-                  0008504f    00000083                       : fd_mpy28.asm.obj (.text)
-                  000850d2    00000056                       : boot28.asm.obj (.text)
-                  00085128    00000029                       : exit.c.obj (.text)
-                  00085151    00000028     F2837xD_PieCtrl.obj (.text)
-                  00085179    00000026     F2837xD_PieVect.obj (.text)
-                  0008519f    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
-                  000851c3    0000001f                       : fd_tol28.asm.obj (.text)
-                  000851e2    0000001d                       : memcpy.c.obj (.text)
-                  000851ff    00000019                       : args_main.c.obj (.text)
-                  00085218    00000018                       : ll_aox28.asm.obj (.text)
-                  00085230    00000017                       : u_tofd28.asm.obj (.text)
-                  00085247    00000016                       : ul_tofd28.asm.obj (.text)
-                  0008525d    0000000e                       : fd_sub28.asm.obj (.text)
-                  0008526b    00000009                       : _lock.c.obj (.text)
+.text.2    0    00084000    0000127d     
+                  00084000    000001c6     main.obj (.text)
+                  000841c6    000001c1     Image.obj (.text)
+                  00084387    0000017a     Fundamental.obj (.text)
+                  00084501    00000142     Protection.obj (.text)
+                  00084643    00000137     DAC.obj (.text)
+                  0008477a    00000126     Aout.obj (.text)
+                  000848a0    0000010a     Digital.obj (.text)
+                  000849aa    00000107     Deposition.obj (.text)
+                  00084ab1    000000e5     ADC.obj (.text)
+                  00084b96    000000dc     Serial.obj (.text)
+                  00084c72    000000d0     SPI.obj (.text)
+                  00084d42    000000bb     PinInit.obj (.text)
+                  00084dfd    000000ac     20bitDAC.obj (.text)
+                  00084ea9    0000009c     rts2800_fpu32.lib : fd_add28.asm.obj (.text)
+                  00084f45    0000008b                       : fd_div28.asm.obj (.text)
+                  00084fd0    00000088                       : fs_div28.asm.obj (.text)
+                  00085058    00000083                       : fd_mpy28.asm.obj (.text)
+                  000850db    00000056                       : boot28.asm.obj (.text)
+                  00085131    00000029                       : exit.c.obj (.text)
+                  0008515a    00000028     F2837xD_PieCtrl.obj (.text)
+                  00085182    00000026     F2837xD_PieVect.obj (.text)
+                  000851a8    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
+                  000851cc    0000001f                       : fd_tol28.asm.obj (.text)
+                  000851eb    0000001d                       : memcpy.c.obj (.text)
+                  00085208    00000019                       : args_main.c.obj (.text)
+                  00085221    00000018                       : ll_aox28.asm.obj (.text)
+                  00085239    00000017                       : u_tofd28.asm.obj (.text)
+                  00085250    00000016                       : ul_tofd28.asm.obj (.text)
+                  00085266    0000000e                       : fd_sub28.asm.obj (.text)
+                  00085274    00000009                       : _lock.c.obj (.text)
 
 .econst    0    00090000    00000246     
                   00090000    000001c0     F2837xD_PieVect.obj (.econst:_PieVectTableInit)
@@ -668,12 +668,12 @@ MODULE SUMMARY
        F2837xD_SysCtrl.obj              1289    0                  0                 
        F2837xD_Gpio.obj                 580     0                  0                 
        F2837xD_PieVect.obj              38      448                0                 
-       main.obj                         445     0                  1                 
+       main.obj                         454     0                  1                 
        F2837xD_PieCtrl.obj              40      0                  0                 
        F2837xD_usDelay.obj              8       0                  0                 
        F2837xD_CodeStartBranch.obj      2       0                  0                 
     +--+--------------------------------+-------+------------------+--------------------+
-       Total:                           3815    448                8696              
+       Total:                           3824    448                8696              
                                                                                      
     .\Functions\
        Oscilloscope.obj                 595     12                 4096              
@@ -722,7 +722,7 @@ MODULE SUMMARY
                                                                                      
        Stack:                           0       0                  256               
     +--+--------------------------------+-------+------------------+--------------------+
-       Grand Total:                     12999   609                13832             
+       Grand Total:                     13008   609                13832             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -932,18 +932,18 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 page  address   name                                  
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
-0     00085128  C$$EXIT                               
-0     00084ea0  FD$$ADD                               
-0     00084f3c  FD$$DIV                               
-0     0008504f  FD$$MPY                               
-0     0008525d  FD$$SUB                               
-0     000851c3  FD$$TOL                               
-0     00084fc7  FS$$DIV                               
-0     00085218  LL$$AND                               
-0     00085220  LL$$OR                                
-0     00085228  LL$$XOR                               
-0     00085230  U$$TOFD                               
-0     00085247  UL$$TOFD                              
+0     00085131  C$$EXIT                               
+0     00084ea9  FD$$ADD                               
+0     00084f45  FD$$DIV                               
+0     00085058  FD$$MPY                               
+0     00085266  FD$$SUB                               
+0     000851cc  FD$$TOL                               
+0     00084fd0  FS$$DIV                               
+0     00085221  LL$$AND                               
+0     00085229  LL$$OR                                
+0     00085231  LL$$XOR                               
+0     00085239  U$$TOFD                               
+0     00085250  UL$$TOFD                              
 0     000820de  _ADCA1_ISR                            
 0     0008235e  _ADCA2_ISR                            
 0     00082368  _ADCA3_ISR                            
@@ -1092,7 +1092,7 @@ abs   ffffffff  .text
 1     00047800  _Emif2Regs                            
 1     00000d00  _EmuBMode                             
 1     00000d01  _EmuBootPins                          
-0     00085170  _EnableInterrupts                     
+0     00085179  _EnableInterrupts                     
 0     00008037  _F28x_usDelay                         
 0     00082548  _FLASH_CORRECTABLE_ERROR_ISR          
 0     0008241c  _FPU_OVERFLOW_ISR                     
@@ -1134,9 +1134,9 @@ abs   ffffffff  .text
 0     00008000  _InitFlash                            
 0     000838da  _InitGpio                             
 0     000825e2  _InitPeripheralClocks                 
-0     00085151  _InitPieCtrl                          
-0     00085179  _InitPieVectTable                     
-0     00084c69  _InitSpi                              
+0     0008515a  _InitPieCtrl                          
+0     00085182  _InitPieVectTable                     
+0     00084c72  _InitSpi                              
 0     000825a5  _InitSysCtrl                          
 0     000826b3  _InitSysPll                           
 1     00007900  _InputXbarRegs                        
@@ -1204,7 +1204,7 @@ abs   0000003b  _RamfuncsRunSize
 1     00006100  _SpiaRegs                             
 1     00006110  _SpibRegs                             
 1     00006120  _SpicRegs                             
-0     000847c4  _Square                               
+0     000847cd  _Square                               
 1     00007940  _SyncSocRegs                          
 0     000829b2  _SysIntOsc1Sel                        
 0     000829be  _SysIntOsc2Sel                        
@@ -1251,59 +1251,59 @@ abs   ffffffff  ___c_args__
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
-0     000851ff  __args_main                           
+0     00085208  __args_main                           
 1     0001330c  __lock                                
-0     00085273  __nop                                 
-0     0008526f  __register_lock                       
-0     0008526b  __register_unlock                     
+0     0008527c  __nop                                 
+0     00085278  __register_lock                       
+0     00085274  __register_unlock                     
 1     00000400  __stack                               
 0     00083ffa  __system_post_cinit                   
 0     00083ff8  __system_pre_init                     
 1     0001330e  __unlock                              
-0     00084771  _aOut                                 
-0     00084781  _aOut_DSP                             
-0     00085128  _abort                                
-0     000843c7  _abs16                                
-0     00084b83  _adcInit                              
-0     00084acd  _adc_CNV                              
-0     00084ad6  _adc_CNV_N                            
-0     00084af5  _adc_DSP                              
-0     00084b16  _adc_N_DSP                            
-0     00084aa8  _adc_PD_H                             
-0     00084b5f  _adc_R_DSP                            
-0     00084b3a  _adc_W_DSP                            
-0     00084ab9  _adc_command                          
+0     0008477a  _aOut                                 
+0     0008478a  _aOut_DSP                             
+0     00085131  _abort                                
+0     000843d0  _abs16                                
+0     00084b8c  _adcInit                              
+0     00084ad6  _adc_CNV                              
+0     00084adf  _adc_CNV_N                            
+0     00084afe  _adc_DSP                              
+0     00084b1f  _adc_N_DSP                            
+0     00084ab1  _adc_PD_H                             
+0     00084b68  _adc_R_DSP                            
+0     00084b43  _adc_W_DSP                            
+0     00084ac2  _adc_command                          
 1     000132f0  _adcrange                             
 0     000831d9  _babyStep                             
-0     000843ef  _bigger                               
-0     00084e8f  _bit20Init                            
-0     00084e05  _bit20_CLR_H                          
-0     00084df4  _bit20_RST_H                          
-0     00084e5a  _bit20_R_DSP                          
-0     00084e16  _bit20_W                              
-0     00084e38  _bit20_W_DSP                          
-0     000850d2  _c_int00                              
-0     0008437e  _combine                              
-0     00084234  _commandLoop                          
-0     0008519f  _copy_in                              
-0     0008442a  _current_output                       
-0     000846de  _dacInit                              
-0     00084702  _dacRange                             
-0     0008464b  _dac_CLR_H                            
-0     0008463a  _dac_RST_H                            
-0     000846a9  _dac_R_DSP                            
-0     0008465c  _dac_W                                
-0     00084680  _dac_W_DSP                            
+0     000843f8  _bigger                               
+0     00084e98  _bit20Init                            
+0     00084e0e  _bit20_CLR_H                          
+0     00084dfd  _bit20_RST_H                          
+0     00084e63  _bit20_R_DSP                          
+0     00084e1f  _bit20_W                              
+0     00084e41  _bit20_W_DSP                          
+0     000850db  _c_int00                              
+0     00084387  _combine                              
+0     00084073  _commandLoop                          
+0     000851a8  _copy_in                              
+0     00084433  _current_output                       
+0     000846e7  _dacInit                              
+0     0008470b  _dacRange                             
+0     00084654  _dac_CLR_H                            
+0     00084643  _dac_RST_H                            
+0     000846b2  _dac_R_DSP                            
+0     00084665  _dac_W                                
+0     00084689  _dac_W_DSP                            
 1     00013305  _dacrange                             
 1     00013200  _depSeqB                              
 1     00013100  _depSeqF                              
-0     000849a1  _deposition                           
-0     000848eb  _digitalO                             
-0     0008491d  _digitalO_DSP                         
-0     00084936  _digitalScan_DSP                      
-0     0008512a  _exit                                 
-0     00084449  _floatT                               
-0     00084897  _gain_DSP                             
+0     000849aa  _deposition                           
+0     000848f4  _digitalO                             
+0     00084926  _digitalO_DSP                         
+0     0008493f  _digitalScan_DSP                      
+0     00085133  _exit                                 
+0     00084452  _floatT                               
+0     000848a0  _gain_DSP                             
 0     000832b2  _giantStep                            
 0     00083ea0  _iAuto                                
 0     00083e3e  _iAutoT                               
@@ -1315,20 +1315,20 @@ abs   ffffffff  ___text__
 0     00083f1d  _lastdigital_O                        
 1     00012000  _ldata                                
 0     00083fd0  _loadOffset                           
-0     000841c1  _main                                 
-0     000851e2  _memcpy                               
+0     00084000  _main                                 
+0     000851eb  _memcpy                               
 1     000132d2  _offset                               
 0     0008325a  _oneGiant                             
-0     00084de2  _outputPinInit                        
-0     0008443d  _output_limit                         
+0     00084deb  _outputPinInit                        
+0     00084446  _output_limit                         
 0     000830f1  _parabSlide                           
 0     00083146  _parabSteady                          
-0     00084d39  _pinInit                              
+0     00084d42  _pinInit                              
 0     00082da7  _pointSeq                             
-0     000844f8  _protectRamp                          
-0     0008452f  _protectScan                          
-0     00084597  _protectTip                           
-0     00084605  _protectTip_DSP                       
+0     00084501  _protectRamp                          
+0     00084538  _protectScan                          
+0     000845a0  _protectTip                           
+0     0008460e  _protectTip_DSP                       
 1     00013000  _ptSeq                                
 0     00082a40  _rampCore                             
 0     00083b1e  _rampDiag                             
@@ -1339,34 +1339,34 @@ abs   ffffffff  ___text__
 0     00082a86  _rampTo                               
 0     00082c4b  _rampTo_DSP                           
 0     00082b6c  _rampTo_S                             
-0     000843f8  _reachLimit                           
-0     0008479f  _sOut                                 
-0     00084000  _scan                                 
-0     00084b8d  _scia_echoback_init                   
-0     00084ba0  _scia_fifo_init                       
-0     00084c1e  _serialCheck                          
-0     00084c2b  _serialEcho                           
-0     00084ba8  _serialIn                             
-0     00084bcc  _serialOut                            
-0     00084be9  _serialOutArray                       
-0     00084c03  _serialOutCharArray                   
+0     00084401  _reachLimit                           
+0     000847a8  _sOut                                 
+0     000841c6  _scan                                 
+0     00084b96  _scia_echoback_init                   
+0     00084ba9  _scia_fifo_init                       
+0     00084c27  _serialCheck                          
+0     00084c34  _serialEcho                           
+0     00084bb1  _serialIn                             
+0     00084bd5  _serialOut                            
+0     00084bf2  _serialOutArray                       
+0     00084c0c  _serialOutCharArray                   
 0     00082fef  _setup_depSeq                         
 0     00082fb3  _setup_pointSeq                       
-0     000843e6  _smaller                              
-0     00084ca4  _spi_fifo_init                        
-0     00084cb5  _spia_xmit                            
-0     00084d06  _spib_bit20                           
-0     00084cd3  _spib_dac                             
-0     00084cc3  _spib_xmit                            
-0     000843a3  _split                                
+0     000843ef  _smaller                              
+0     00084cad  _spi_fifo_init                        
+0     00084cbe  _spia_xmit                            
+0     00084d0f  _spib_bit20                           
+0     00084cdc  _spib_dac                             
+0     00084ccc  _spib_xmit                            
+0     000843ac  _split                                
 0     00083ef6  _status                               
 1     0001330a  _stored_feedback                      
 1     00013309  _stored_zofff                         
-0     00084219  _testLoop                             
+0     00084058  _testLoop                             
 0     0008333a  _tipApproach                          
 1     0001330b  _tip_protect_status                   
 0     000833e1  _track                                
-0     000843d4  _updateLimit                          
+0     000843dd  _updateLimit                          
 0     000835e6  _updatePos                            
 0     00083eed  _version                              
 0     00083df1  _zAuto0                               
@@ -1605,95 +1605,95 @@ page  address   name
 0     00083fd0  _loadOffset                           
 0     00083ff8  __system_pre_init                     
 0     00083ffa  __system_post_cinit                   
-0     00084000  _scan                                 
-0     000841c1  _main                                 
-0     00084219  _testLoop                             
-0     00084234  _commandLoop                          
-0     0008437e  _combine                              
-0     000843a3  _split                                
-0     000843c7  _abs16                                
-0     000843d4  _updateLimit                          
-0     000843e6  _smaller                              
-0     000843ef  _bigger                               
-0     000843f8  _reachLimit                           
-0     0008442a  _current_output                       
-0     0008443d  _output_limit                         
-0     00084449  _floatT                               
-0     000844f8  _protectRamp                          
-0     0008452f  _protectScan                          
-0     00084597  _protectTip                           
-0     00084605  _protectTip_DSP                       
-0     0008463a  _dac_RST_H                            
-0     0008464b  _dac_CLR_H                            
-0     0008465c  _dac_W                                
-0     00084680  _dac_W_DSP                            
-0     000846a9  _dac_R_DSP                            
-0     000846de  _dacInit                              
-0     00084702  _dacRange                             
-0     00084771  _aOut                                 
-0     00084781  _aOut_DSP                             
-0     0008479f  _sOut                                 
-0     000847c4  _Square                               
-0     00084897  _gain_DSP                             
-0     000848eb  _digitalO                             
-0     0008491d  _digitalO_DSP                         
-0     00084936  _digitalScan_DSP                      
-0     000849a1  _deposition                           
-0     00084aa8  _adc_PD_H                             
-0     00084ab9  _adc_command                          
-0     00084acd  _adc_CNV                              
-0     00084ad6  _adc_CNV_N                            
-0     00084af5  _adc_DSP                              
-0     00084b16  _adc_N_DSP                            
-0     00084b3a  _adc_W_DSP                            
-0     00084b5f  _adc_R_DSP                            
-0     00084b83  _adcInit                              
-0     00084b8d  _scia_echoback_init                   
-0     00084ba0  _scia_fifo_init                       
-0     00084ba8  _serialIn                             
-0     00084bcc  _serialOut                            
-0     00084be9  _serialOutArray                       
-0     00084c03  _serialOutCharArray                   
-0     00084c1e  _serialCheck                          
-0     00084c2b  _serialEcho                           
-0     00084c69  _InitSpi                              
-0     00084ca4  _spi_fifo_init                        
-0     00084cb5  _spia_xmit                            
-0     00084cc3  _spib_xmit                            
-0     00084cd3  _spib_dac                             
-0     00084d06  _spib_bit20                           
-0     00084d39  _pinInit                              
-0     00084de2  _outputPinInit                        
-0     00084df4  _bit20_RST_H                          
-0     00084e05  _bit20_CLR_H                          
-0     00084e16  _bit20_W                              
-0     00084e38  _bit20_W_DSP                          
-0     00084e5a  _bit20_R_DSP                          
-0     00084e8f  _bit20Init                            
-0     00084ea0  FD$$ADD                               
-0     00084f3c  FD$$DIV                               
-0     00084fc7  FS$$DIV                               
-0     0008504f  FD$$MPY                               
-0     000850d2  _c_int00                              
-0     00085128  C$$EXIT                               
-0     00085128  _abort                                
-0     0008512a  _exit                                 
-0     00085151  _InitPieCtrl                          
-0     00085170  _EnableInterrupts                     
-0     00085179  _InitPieVectTable                     
-0     0008519f  _copy_in                              
-0     000851c3  FD$$TOL                               
-0     000851e2  _memcpy                               
-0     000851ff  __args_main                           
-0     00085218  LL$$AND                               
-0     00085220  LL$$OR                                
-0     00085228  LL$$XOR                               
-0     00085230  U$$TOFD                               
-0     00085247  UL$$TOFD                              
-0     0008525d  FD$$SUB                               
-0     0008526b  __register_unlock                     
-0     0008526f  __register_lock                       
-0     00085273  __nop                                 
+0     00084000  _main                                 
+0     00084058  _testLoop                             
+0     00084073  _commandLoop                          
+0     000841c6  _scan                                 
+0     00084387  _combine                              
+0     000843ac  _split                                
+0     000843d0  _abs16                                
+0     000843dd  _updateLimit                          
+0     000843ef  _smaller                              
+0     000843f8  _bigger                               
+0     00084401  _reachLimit                           
+0     00084433  _current_output                       
+0     00084446  _output_limit                         
+0     00084452  _floatT                               
+0     00084501  _protectRamp                          
+0     00084538  _protectScan                          
+0     000845a0  _protectTip                           
+0     0008460e  _protectTip_DSP                       
+0     00084643  _dac_RST_H                            
+0     00084654  _dac_CLR_H                            
+0     00084665  _dac_W                                
+0     00084689  _dac_W_DSP                            
+0     000846b2  _dac_R_DSP                            
+0     000846e7  _dacInit                              
+0     0008470b  _dacRange                             
+0     0008477a  _aOut                                 
+0     0008478a  _aOut_DSP                             
+0     000847a8  _sOut                                 
+0     000847cd  _Square                               
+0     000848a0  _gain_DSP                             
+0     000848f4  _digitalO                             
+0     00084926  _digitalO_DSP                         
+0     0008493f  _digitalScan_DSP                      
+0     000849aa  _deposition                           
+0     00084ab1  _adc_PD_H                             
+0     00084ac2  _adc_command                          
+0     00084ad6  _adc_CNV                              
+0     00084adf  _adc_CNV_N                            
+0     00084afe  _adc_DSP                              
+0     00084b1f  _adc_N_DSP                            
+0     00084b43  _adc_W_DSP                            
+0     00084b68  _adc_R_DSP                            
+0     00084b8c  _adcInit                              
+0     00084b96  _scia_echoback_init                   
+0     00084ba9  _scia_fifo_init                       
+0     00084bb1  _serialIn                             
+0     00084bd5  _serialOut                            
+0     00084bf2  _serialOutArray                       
+0     00084c0c  _serialOutCharArray                   
+0     00084c27  _serialCheck                          
+0     00084c34  _serialEcho                           
+0     00084c72  _InitSpi                              
+0     00084cad  _spi_fifo_init                        
+0     00084cbe  _spia_xmit                            
+0     00084ccc  _spib_xmit                            
+0     00084cdc  _spib_dac                             
+0     00084d0f  _spib_bit20                           
+0     00084d42  _pinInit                              
+0     00084deb  _outputPinInit                        
+0     00084dfd  _bit20_RST_H                          
+0     00084e0e  _bit20_CLR_H                          
+0     00084e1f  _bit20_W                              
+0     00084e41  _bit20_W_DSP                          
+0     00084e63  _bit20_R_DSP                          
+0     00084e98  _bit20Init                            
+0     00084ea9  FD$$ADD                               
+0     00084f45  FD$$DIV                               
+0     00084fd0  FS$$DIV                               
+0     00085058  FD$$MPY                               
+0     000850db  _c_int00                              
+0     00085131  C$$EXIT                               
+0     00085131  _abort                                
+0     00085133  _exit                                 
+0     0008515a  _InitPieCtrl                          
+0     00085179  _EnableInterrupts                     
+0     00085182  _InitPieVectTable                     
+0     000851a8  _copy_in                              
+0     000851cc  FD$$TOL                               
+0     000851eb  _memcpy                               
+0     00085208  __args_main                           
+0     00085221  LL$$AND                               
+0     00085229  LL$$OR                                
+0     00085231  LL$$XOR                               
+0     00085239  U$$TOFD                               
+0     00085250  UL$$TOFD                              
+0     00085266  FD$$SUB                               
+0     00085274  __register_unlock                     
+0     00085278  __register_lock                       
+0     0008527c  __nop                                 
 0     00086000  _RamfuncsLoadStart                    
 0     0008603b  _RamfuncsLoadEnd                      
 0     00090000  _PieVectTableInit                     

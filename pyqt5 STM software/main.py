@@ -99,7 +99,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Feedback Test
         self.etest.ftest_start_signal.connect(self.ftest_start_slot)
 
-
         # Connect scan signal
         self.bias_range_signal.connect(self.scan.bias_ran_change)
         # Scan
@@ -491,6 +490,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 1:
             self.osci_update(rdata)                 # Update etest continuous oscilloscope if in etest mode
         elif self.mode == 3:
+            print(rdata)
             self.scan.dep.update_C(rdata)           # Update deposition if in scan mode
 
     # Close dsp serial port before exit application
@@ -529,11 +529,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.tipappr.init_tipAppr(self.dsp.succeed, self.dsp.lastdigital)     # Init tip approach view
             self.tipappr.show()                                 # Show tip approach window
 
+        self.init_dock()        # Reload all 3 dock view
+
     # Close serial window
     # Used for closing setting, E-test and tip approach
     def closeWindow(self):
         self.mode = 0
         self.enable_menubar(0)
+        self.init_dock()        # Reload all 3 dock view
 
     # Open scan window
     # Open scan sub window
@@ -598,8 +601,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.actionSpectra.setEnabled(True)
         if self.scan.mode == 0:             # Scan mode
             self.exit_scan()
+            # self.scan.track.hide()          # Also close track window
             self.closeWindow()
-            self.scan.track.hide()          # Also close track window
         else:
             self.scan.mode = 0
             self.scan.open_track(0)         # In case of close spectroscopy with open track

@@ -70,7 +70,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.checkBox_DitherZ__SeqEditor.stateChanged.connect(ft.partial(self.digital_change, 1))
         # Name
         self.lineEdit_Name_SeqEditor.editingFinished.connect(self.name_change)
-        # Pushbuttons
+        # Pushbutton
         self.pushButton_AddStep_Edit.clicked.connect(lambda: self.add_step(self.seq.seq_num, True))
         self.pushButton_Remove_Edit.clicked.connect(self.remove_step)
         self.pushButton_Insert_Edit.clicked.connect(lambda: self.add_step(-1, True))
@@ -115,11 +115,11 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.checkBox_DitherB__SeqEditor.setChecked(self.seq.ditherB)       # Bias dither
         self.checkBox_DitherZ__SeqEditor.setChecked(self.seq.ditherZ)       # Z dither
         
-        # Mode radiobuttons
+        # Mode radiobutton
         self.radioButton_ReadSeq_Mode.setChecked(self.seq.mode)
         self.radioButton_Deposition_Mode.setChecked(not self.seq.mode)
         
-        # Bias DAC radiobuttons
+        # Bias DAC radiobutton
         self.radioButton_20bit_Bias.setChecked(self.seq.bias_dac)
         self.radioButton_16bit_Bias.setChecked(not self.seq.bias_dac)
         
@@ -170,7 +170,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.saved = False
         self.setWindowTitle('Sequence Editor*')
         
-    # Store changed command and set defult for this command
+    # Store changed command and set default for this command
     def command_default(self, seq_num):
         self.seq.command[seq_num] = self.command_combo_list[seq_num].currentText()                  # Store changed command
         command_index = self.command_combo_list[seq_num].currentIndex()                             # Get command
@@ -185,12 +185,12 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.seq.option2[seq_num] = option2_default_list[command_index]
         self.seq.data[seq_num] = data_default_list[command_index]
         
-    # Set defult data a ananlog output commad when change channel
+    # Set default data a analog output command when change channel
     def channel_default(self, seq_num):
         channel_index = self.channel_widget_list[seq_num].currentIndex()                    # Get channel
         data_default_list = ['0', '0', '0.1', '0.0', '0.0', '0.0', '0.0', '0.0', '0.0']     # Default data list
         
-        # Only update data for ananlog output commad
+        # Only update data for analog output command
         command_index = self.command_combo_list[seq_num].currentIndex()
         flag = (command_index == 3) or (command_index == 4) or (command_index == 5) or (command_index == 7)
         if flag:
@@ -199,7 +199,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
     # If anything changed
     def change(self):
         self.saved = False                          # Toggle saved flag
-        self.setWindowTitle('Sequence Editor*')     # Chnage title for indication
+        self.setWindowTitle('Sequence Editor*')     # Change title for indication
         self.seq.validated = False                  # Toggle validation flag
     
     # Command change slot
@@ -251,7 +251,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
             self.seq.data[seq_num] = str(self.data_widget_list[seq_num].value())
         self.change()
     
-    # Orgin checkbox slot
+    # Origin checkbox slot
     def original(self, state):
         seq_num = self.table_Content_SeqEditor.currentRow()
         
@@ -275,7 +275,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         
         # Set up channel widget
         if command_index <= 1:
-            channel = QLabel()      # Other cases, no channel selsction
+            channel = QLabel()      # Other cases, no channel selection
             channel.setText('NA')
             self.seq.channel[seq_num] = ' '
         elif command_index == 2:    # Digital output
@@ -310,7 +310,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
             option1.addItems(['SLOW', 'FAST'])
             option1.setCurrentIndex(self.seq.option1[seq_num])
             option1.currentIndexChanged.connect(self.change_option1)
-        elif (command_index == 3) or (command_index == 7):      # Shfit and shift ramp
+        elif (command_index == 3) or (command_index == 7):      # Shift and shift ramp
             option1 = QComboBox()
             option1.addItems(['DOWN', 'UP'])
             option1.setCurrentIndex(self.seq.option1[seq_num])
@@ -401,7 +401,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
                     self.option1_widget_list[seq_num].setChecked(True)
                 data.valueChanged.connect(self.change_data)
                 unit.setText('bits')
-            elif channel_index == 2:    # Nanoamp data
+            elif channel_index == 2:    # nA data
                 data = QDoubleSpinBox()
                 data.setMaximum(100.0)
                 data.setMinimum(0.01)
@@ -442,7 +442,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
             if seq_num < 0:                 # No current row
                 seq_num = self.seq.seq_num  # Use last row
                 
-        self.table_Content_SeqEditor.insertRow(seq_num)     # Inser row
+        self.table_Content_SeqEditor.insertRow(seq_num)     # Insert row
         
         # Add new step instead load step
         if opt:
@@ -484,7 +484,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         if seq_num >= 0:                                        # Valid row number
             self.table_Content_SeqEditor.removeRow(seq_num)
             
-            # Remove correspoding element in widget list
+            # Remove corresponding element in widget list
             del self.command_combo_list[seq_num]
             del self.channel_widget_list[seq_num]
             del self.option1_widget_list[seq_num]

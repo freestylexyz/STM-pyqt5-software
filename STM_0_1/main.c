@@ -330,12 +330,16 @@ void commandLoop()
                break;
            case TIP_PROTECT_DSP:
                protectTip_DSP();
+               break;
            case SCAN:
                scan();
+               break;
            case DEPOSITION:
                deposition();
+               break;
            case TRACK:
                track();
+               break;
            default:
                serialOut(split(inTypeTest,1));
                break;

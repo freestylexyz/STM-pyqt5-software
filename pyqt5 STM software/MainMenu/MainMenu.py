@@ -32,13 +32,13 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
         
     def init_mainMenu(self):
         # Initial flags
-        self.initO = True           # Initial output
-        self.idling = True          # Dock idling flag
-        self.hard_retracted = False # Hard retract flag
-        self.preamp_gain = 9        # Preamp gain flag gain 8(8), gain 9(9), gain(10)
-        self.bias_dac = False       # Bias DAC selection 16bit DAC (False), 20bit DAC (True)
-        self.mode = 0               # Software operation mode: None(0), Setting(-1), Electronics test(1)
-                                    # Tip approach(2), Scan(3)
+        self.initO = True               # Initial output
+        self.idling = True              # Dock idling flag
+        self.hard_retracted = False     # Hard retract flag
+        self.preamp_gain = 9            # Preamp gain flag gain 8(8), gain 9(9), gain(10)
+        self.bias_dac = False           # Bias DAC selection 16bit DAC (False), 20bit DAC (True)
+        self.mode = 0                   # Software operation mode: None(0), Setting(-1), Electronics test(1)
+                                        # Tip approach(2), Scan(3)
                                     
         # Instantiation                            
         self.setting = mySetting()                                  # Setting window
@@ -148,8 +148,8 @@ class myMainMenu(QMainWindow, Ui_HoGroupSTM):
             self.enable_dock_serial(enable)     # All docks
             self.tipappr.enable_serial(enable)  # Tip approach
         elif self.mode == 3:
-            self.scan.enable_serial(enable)     # All docks
-            self.enable_dock_serial(enable)     # Scan
+            self.scan.enable_serial(enable)     # Scan
+            self.enable_dock_serial(enable)     # All docks
             self.menuScan.setEnabled(enable)    # Scan menu
         elif self.mode == 0:
             self.enable_dock_serial(enable)     # All docks

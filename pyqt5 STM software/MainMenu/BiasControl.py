@@ -14,9 +14,11 @@ import conversion as cnv
 import threading
 import time
 
+
 # myBiasControl - This class handles bias dock control
 class myBiasControl(myMainMenu):
     bias_range_signal = pyqtSignal(int)
+
     # Init bias dock
     def init_bias_dock(self):
         self.init_bias()        # Initial bias dock view
@@ -49,23 +51,23 @@ class myBiasControl(myMainMenu):
     # Update bias indication
     def bias_update(self):
         value = cnv.bv(self.dsp.last20bit, '20') if self.bias_dac else cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13])
-        # Update main spin box only, scroll bar will not follow (on poupose)
+        # Update main spin box only, scroll bar will not follow (on purpose)
         self.spinBox_Input_Bias.setValue(value) 
     
     # Show bias dock
     def bias_show(self):
-        self.init_bias()    # Reinital bias dock view, every time call bias dock
+        self.init_bias()    # Re-initial bias dock view, every time call bias dock
         self.Bias.show()    # Show bias dock
 
-    # Check feedback and cross zero to determin if OK to change current value
+    # Check feedback and cross zero to determine if OK to change current value
     # True stands for can not change    
     def check_feedback(self, bits, equal0):
         fb = self.dsp.lastdigital[2]    # Obtain current feedback status
         
-        if self.bias_dac: # Case with 20 bit DAC 
+        if self.bias_dac:   # Case with 20 bit DAC
             equal_zero = ((bits - 0x80000) == 0)   # Only check equal to 0, use for direct output
             cross_zero = (((bits - 0x80000) * (self.dsp.last20bit - 0x80000)) < 0)   # Check if target and current cross zero, use for ramp
-        else: # Case with 16 bit DAC
+        else:               # Case with 16 bit DAC
             equal_zero = ((bits - 0x8000) == 0)  # Only check equal to 0, use for direct output
             cross_zero = (((bits - 0x8000) * (self.dsp.lastdac[13] - 0x8000)) < 0)  # Check if target and current cross zero, use for ramp
         
@@ -75,7 +77,7 @@ class myBiasControl(myMainMenu):
     # Bias spinBox slot
     def bias_value(self):
         value = self.spinBox_Input_Bias.value()                                                     # Obtain current voltage
-        bits = cnv.vb(value, '20') if self.bias_dac else cnv.vb(value, 'd', self.dsp.dacrange[13])  # Calcualte bits
+        bits = cnv.vb(value, '20') if self.bias_dac else cnv.vb(value, 'd', self.dsp.dacrange[13])  # Calculate bits
         self.scrollBar_Input_Bias.setValue(bits)                                                    # Update scrollbar
     
     # Bias scrollBar slot
@@ -115,7 +117,7 @@ class myBiasControl(myMainMenu):
             maximum = cnv.bv(0xffff, 'd', ran)              # Target range maximum
             value = self.spinBox_Input_Bias.value()         # Current value
             if (value > maximum) or (value < minimum):      # If current bias out of target range, abort range changing
-                QMessageBox.warning(None, "Bias", "Current bias is out of target range!", QMessageBox.Ok)    # Pop out remider
+                QMessageBox.warning(None, "Bias", "Current bias is out of target range!", QMessageBox.Ok)    # Pop out reminder
                 self.bias_range_radio()                                                                      # Restore to original radio button setup
             else:                                           # Continue if current bias in the target range
                 if (not self.bias_dac) and self.idling:
@@ -133,13 +135,12 @@ class myBiasControl(myMainMenu):
             self.dsp.dac_range(13, ran)                         # Change range
             self.bias_range_signal.emit(ran)                    # Emit bias range signal
             self.dsp.rampTo(0x1d, cnv.vb(value, 'd', self.dsp.dacrange[13]), 10, 200, 0, True)  # Restore to original bias voltage
-            self.dsp.digital_o(2, feedback_store)               # Restore orignial feedback status  
+            self.dsp.digital_o(2, feedback_store)               # Restore original feedback status
             self.bias_spinbox_range()                           # Set spin boxes range
             self.scrollBar_Input_Bias.setValue(self.dsp.lastdac[13])                                    # Set scroll bar value
             self.spinBox_Input_Bias.setValue(cnv.bv(self.dsp.lastdac[13], 'd', self.dsp.dacrange[13]))  # Set spin box value
             self.idling = True                                  # Toggle dock idling flag
             self.enable_mode_serial(True)                       # Enable all serial related component in current window
-        
 
     # Bias stop ramp button slot
     def bias_stop(self):
