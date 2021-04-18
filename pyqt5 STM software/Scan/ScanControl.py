@@ -252,7 +252,6 @@ class myScanControl(myMainMenu):
             # Execute read before
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
-                # rdata = [0,1,2,3,4,5]
                 self.scan.dep.update_N(rdata, 0)  # Plot read before data
 
             # Set up stop button if continuous read mode
@@ -273,7 +272,6 @@ class myScanControl(myMainMenu):
             # Execute read after
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
-                # rdata = [0,1,2,3,4,5]
                 self.scan.dep.update_N(rdata, 2)  # Plot read after data
 
             # Restore system status

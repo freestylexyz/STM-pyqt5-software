@@ -98,7 +98,6 @@ class myDeposition(QWidget, Ui_Deposition):
 
         self.view_box_before.setMouseEnabled(x=False, y=False)
         self.view_box_before.setMenuEnabled(False)
-        self.view_box_before.disableAutoRange()
         self.view_box_before.register('before')
 
         self.view_box_during.setMouseEnabled(x=True, y=True)
@@ -324,7 +323,7 @@ class myDeposition(QWidget, Ui_Deposition):
             if self.count >= self.stop_num:                                     # Emit stop signal if have enough data
                 self.stop_signal.emit()
 
-        self.during_curve.setData(rdata)   # Plot continuous measure data
+        self.during_curve.setData(self.rdata)   # Plot continuous measure data
     
     # Emit close signal
     def closeEvent(self, event):
