@@ -86,8 +86,8 @@ class myScan_(QWidget, Ui_Scan):
         # Sequence lists and selected sequence
         constant_current_seq = mySequence([0xd8], [500], True)  # Basic constant current sequence
         constant_current_seq.name = 'Basic constant current'
-        constant_height_seq = mySequence([0xdc], [500], True)  # Basic height current sequence
-        constant_height_seq.name = 'Basic height current'
+        constant_height_seq = mySequence([0xdc], [500], True)  # Basic constant height sequence
+        constant_height_seq.name = 'Basic constant height'
         constant_height_seq.feedback = False
         self.scan_seq_list = [constant_current_seq, constant_height_seq]  # Scan sequence list
         self.dep_seq_list = []  # Deposition sequence list
@@ -97,7 +97,7 @@ class myScan_(QWidget, Ui_Scan):
         self.spc_seq_selected = -1  # Selected spectroscopy sequence
 
         # Spectroscopy related
-        self.point_list = [[0, 0]]  # Point list for mapping [[X position, Y position]]
+        self.point_list = [(0, 0)]  # Point list for mapping [[X position, Y position]], a list of tuple
         self.pattern = [0, 0, 1]  # Pattern for matching [X position, Y position, Size]
 
     def init_UI(self):

@@ -33,7 +33,7 @@ void track()
 
     // Initialize variables
     x = current_output(Xin);
-    y = current_output(Xin);
+    y = current_output(Yin);
 
     // Execution
     serialOut(split(Start, 1));     // Send out start command
@@ -55,13 +55,13 @@ void track()
                 {
                     rampTo_S(Yin, y + ((3 - dy) * step), 1, 10);    // Send y
                     DELAY_US(delay);                                // Delay
-                    updatePos(track_min, in_ch, average, tiltx, tilty, dx, dy, &sx, &sy, &best);    // Measure and update best position
+                    updatePos(step, track_min, in_ch, average, tiltx, tilty, dx, 4-dy, &sx, &sy, &best);    // Measure and update best position
                 }
                 else
                 {
                     rampTo_S(Yin, y + ((dy - 1) * step), 1, 10);
                     DELAY_US(delay);
-                    updatePos(track_min, in_ch, average, tiltx, tilty, dx, dy, &sx, &sy, &best);
+                    updatePos(step, track_min, in_ch, average, tiltx, tilty, dx, dy, &sx, &sy, &best);
                 }
             }
         }
@@ -70,7 +70,7 @@ void track()
         y = y + ((sy - 1) * step);
         rampTo_S(Xin, x, 1, 10);                            // Send x to best position
         rampTo_S(Yin, y, 1, 10);                            // Send y to best position
-        sdata = ((sx & 0x03) << 6) || ((sy & 0x03) << 4);   // Patch data of best position shift, use the 4 MSB to distinguish with finish command
+        sdata = ((sx & 0x03) << 6) | ((sy & 0x03) << 4);    // Patch data of best position shift, use the 4 MSB to distinguish with finish command
         serialOut(split(sdata, 1));                         // Send out the shift of best position
         DELAY_US(stay_delay);                               // Stay at best station for some time
         if(serialCheck() == Stop){break;}                   //Check stop
@@ -83,7 +83,7 @@ void track()
 //
 // updatePos - This function update position for track. Return if need to update
 //
-void updatePos(bool track_min, Uint16 in_ch, Uint16 average, Uint32 tiltx, Uint32 tilty, char dx, char dy, char* sx, char* sy,  Uint32* best)
+void updatePos(Uint16 step, bool track_min, Uint16 in_ch, Uint16 average, Uint32 tiltx, Uint32 tilty, char dx, char dy, char* sx, char* sy,  Uint32* best)
 {
     Uint32 rdata;
     bool txs, tys, xs, ys;
@@ -91,14 +91,14 @@ void updatePos(bool track_min, Uint16 in_ch, Uint16 average, Uint32 tiltx, Uint3
     tys = ((tilty & 0x80000000) == 0x80000000);                         // Figure out tilt y sign
     xs = ((dx & 0x02) == 0x02);                                         // Figure out shift x sign
     ys = ((dy & 0x02) == 0x02);                                         // Figure out shift y sign
-    rdata = ((Uint32)adc_CNV_N(in_ch, average)) * ((Uint32)0x7FFF);     // Read data
-    if(txs ^ xs){rdata = rdata - ((dx & 0x1) * (tiltx & 0x7FFFFFFF));}  // Correct x based on plane fit
-    else{rdata = rdata + ((dx & 0x1) * (tiltx & 0x7FFFFFFF));}
-    if(tys ^ ys){rdata = rdata - ((dy & 0x1) * (tilty & 0x7FFFFFFF));}  // Correct y based on plane fit
-    else{rdata = rdata + ((dy & 0x1) * (tilty & 0x7FFFFFFF));}
+    rdata = (((Uint32)adc_CNV_N(in_ch, average)) * ((Uint32)0x7FFF)) & 0x7FFFFFFF;      // Read data
+    if(txs != xs){rdata = rdata - ((dx & 0x01) * (tiltx & 0x7FFFFFFF) * step);}         // Correct x based on plane fit
+    else{rdata = rdata + ((dx & 0x01) * (tiltx & 0x7FFFFFFF) * step);}
+    if(tys != ys){rdata = rdata - ((dy & 0x01) * (tilty & 0x7FFFFFFF) * step);}         // Correct y based on plane fit
+    else{rdata = rdata + ((dy & 0x01) * (tilty & 0x7FFFFFFF) * step);}
 
     // Update best value and best position
-    if((dx > 1) && (dy > 1))
+    if((dx > 1) || (dy > 1))
     {
         if(track_min)
         {

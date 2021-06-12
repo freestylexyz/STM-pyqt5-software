@@ -69,7 +69,7 @@ class myTrack(QWidget, Ui_Track):
         if self.idling:
             self.track_signal.emit()                            # Emit start signal
         else:
-            self.pushButton_Start_Track.setEnable(False)        # Disable stop button to avoid sending stop signal twice
+            self.pushButton_Start_Track.setEnabled(False)        # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                             # Send stop signal
 
     # Pop out message

@@ -232,17 +232,28 @@ class SpcData(STMData):
         # Determine forward data and backward data of current pass and current physical point based on scan direction
         if self.scan_dir == 0:      # Forward only: all data is forward data, backward data is empty
             f = self.data_[self.num_pt, :, :self.data_pt].reshape(self.seq.read_num + 1, self.data_pt)
-            b = np.array([]).reshape(self.seq.read_num + 1, self.data_pt)       # Empty also need to match dimensions
+            b = np.array([])
+            # b = np.array([]).reshape(self.seq.read_num + 1, self.data_num)       # Empty also need to match dimensions
         elif self.scan_dir == 1:    # Backward only: all data is backward data, forward data is empty
-            f = np.array([]).reshape(self.seq.read_num + 1, self.data_pt)       # Empty also need to match dimensions
+            # f = np.array([]).reshape(self.seq.read_num + 1, self.data_num)       # Empty also need to match dimensions
+            f = np.array([])
             b = self.data_[self.num_pt, :, :self.data_pt].reshape(self.seq.read_num + 1, self.data_pt)
-            b = np.flip(b, 2)                                                   # Flip backward data order
+            b = np.flip(b, axis=1)                                                   # Flip backward data order
         else:                       # Both of the left mode will keep both forward and backward data for current pass
-            f_num = min(self.data_pt, self.data_num)                            # Determine forward data already measured
-            f = self.data_[self.num_pt, :, :f_num].reshape(self.seq.read_num + 1, f_num)
-            b_num = max(self.data_pt, self.data_num)                            # Determine backward data already measured
-            b = self.data_[self.num_pt, :, self.data_num:b_num].reshape(self.seq.read_num + 1, b_num - self.data_num)
-            b = np.flip(b, axis=2)
+            if self.data_pt <= self.data_num:
+                f = self.data_[self.num_pt, :, :self.data_pt].reshape(self.seq.read_num + 1, self.data_pt)
+                # b = np.array([]).reshape(self.seq.read_num + 1, self.data_num)       # Empty also need to match dimensions
+                b = np.array([])
+            else:
+                f = self.data_[self.num_pt, :, :self.data_num].reshape(self.seq.read_num + 1, self.data_num)
+                b = self.data_[self.num_pt, :, self.data_num:self.data_pt].reshape(self.seq.read_num + 1, self.data_pt -
+                                                                                   self.data_num)
+                b = np.flip(b, axis=1)
+            # f_num = min(self.data_pt, self.data_num)                            # Determine forward data already measured
+            # f = self.data_[self.num_pt, :, :f_num].reshape(self.seq.read_num + 1, f_num)
+            # b_num = max(self.data_pt, self.data_num)                            # Determine backward data already measured
+            # b = self.data_[self.num_pt, :, self.data_num:b_num].reshape(self.seq.read_num + 1, b_num - self.data_num)
+            # b = np.flip(b, axis=1)
             
         return f, b
 
@@ -284,3 +295,9 @@ class SpcData(STMData):
         self.data_ = -np.ones((len(self.point_list), self.seq.read_num + 1, self.data_num * (1 + (self.scan_dir > 1))))
         self.num_pt = 0
         self.data_pt = 0 
+
+if __name__ == "__main__":
+    data = SpcData()
+    data.load(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,[1,1,1],1)
+
+    print(data.feedback_delay)

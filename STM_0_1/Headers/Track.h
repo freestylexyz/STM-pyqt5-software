@@ -14,6 +14,6 @@
 // Function declaration
 //
 void track();
-void updatePos(bool, Uint16, Uint16, Uint32, Uint32, char, char, char*, char*,  Uint32*);
+void updatePos(Uint16, bool, Uint16, Uint16, Uint32, Uint32, char, char, char*, char*,  Uint32*);
 
 #endif /* HEADERS_TRACK_H_ */

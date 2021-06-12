@@ -98,8 +98,8 @@ Uint16 OCS_U(Uint16 command, Uint16 average, Uint16 delay, Uint16 limit, Uint16 
     initial = rdata + 0x80000000;           // Add a big offset to avoid data overflow during subtraction
     for(i = 1; i < 4096; i++)               // Start from second data
     {
-        DELAY_US(delay);                        // Delay
-        sum = 0;
+        DELAY_US(delay);                                            // Delay
+        sum = 0;                                                    // Clear out sum memory
         for(j = 0; j < average; j++){sum += adc_command(command);}  // Measure n times of selected channel
         rdata = sum / average;                                      // Return averaged conversion result of corresponding channel
         ldata[i] = rdata;                                           // Store data
@@ -113,15 +113,16 @@ Uint16 OCS_U(Uint16 command, Uint16 average, Uint16 delay, Uint16 limit, Uint16 
         }
     }
     if(*detected){i++;}                 // If detected, there in no chance to increase
-    num = bigger(4096, i + stopNum);    // Calculate target total number of data points
+    num = smaller(4096, i + stopNum);   // Calculate target total number of data points
     if((stopNum != 0) && *detected)
     {
         k = i;
         for(i = k; i < num; i++)
         {
             DELAY_US(delay);                                            // Delay
+            sum = 0;                                                    // Clear out sum memory
             for(j = 0; j < average; j++){sum += adc_command(command);}  // Measure n times of selected channel
-            ldata[i] = sum / average;                                   // Return averaged conversion result of corresponding channel
+            ldata[i] = (Uint16)(sum / average);                         // Return averaged conversion result of corresponding channel
         }
     }
     return i;

@@ -180,6 +180,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
     # !!! Update spectroscopy current pass data
     def update_spc(self, rdata):
         f, b = self.data.update_data(rdata)     # Update current pass data and obtain forward data and backward data for plot
+        print('data_pt'+str(self.data.data_pt))
         self.fwd_data = f
         self.bwd_data = b
 
@@ -189,6 +190,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         if self.every:
             self.auto_save(self.auto_save_name, pass_num+1)
         self.data.avg_data()                    # Average current pass data with previous passes
+        print('update average')
 
     def update_avg_plot(self):
         self.plot_avg.clear()

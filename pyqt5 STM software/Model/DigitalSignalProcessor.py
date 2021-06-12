@@ -689,7 +689,7 @@ class myDSP(QObject):
                     else:
                         current = stored - (i * step_size)
                     rdata = [current]
-                    for i in range(seq.read_num):
+                    for j in range(seq.read_num):
                         rdata += [int.from_bytes(self.ser.read(2), "big")]  # Read data
                     self.rampMeasure_signal.emit(rdata)
 
@@ -893,11 +893,12 @@ class myDSP(QObject):
             target = target & 0xffff
 
             tip_protect_flag = 0x08 if tip_protection else 0x00
-            dir_x_flag = 0x10 if tip_protection else 0x00
+            dir_x_flag = 0x10 if dir_x else 0x00
             flag = tip_protect_flag | dir_x_flag | (scan_protect_flag & 0x03)
 
             self.idling = False
             self.ser.write(int(0x91).to_bytes(1, byteorder="big"))  # 0x91 for scan function
+
             self.ser.write(int(channel_x).to_bytes(1, byteorder="big"))  # Send X channel
             self.ser.write(int(channel_y).to_bytes(1, byteorder="big"))  # Send Y channel
             self.ser.write(int(flag).to_bytes(1, byteorder="big"))  # Send flag data
@@ -913,6 +914,7 @@ class myDSP(QObject):
 
             # If receive start command
             if int.from_bytes(self.ser.read(1), "big") == 0xf0:
+                print('dsp scan start')
                 self.stop = False  # Set stop flag to false
 
                 i = 0
@@ -926,13 +928,15 @@ class myDSP(QObject):
                         for j in range(seq.read_num):
                             rdata += [int.from_bytes(self.ser.read(2), "big")]  # Read data
                         self.scan_signal.emit(rdata)
+                        print('data emit' + str(i))
+                        print(rdata)
                     if self.stop and (not stopped):  # If check stop is enabled and stop event is issued
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
                         stopped = True
                     i += 1
                 if command == 0x0f:
                     self.lastdac[3] = int.from_bytes(self.ser.read(2), "big")  # Update last Z offset coarse output
-
+                    print('finish command')
                 # for i in range(step_num * step_num):
                 #     if self.stop:
                 #         break
@@ -1001,6 +1005,7 @@ class myDSP(QObject):
     # tract - this function perform track
     def track(self, loop_num, in_ch, delay, stay_delay, step, average, track_min, tiltx, tilty):
         if self.ok():
+            print(tiltx, tilty)
             in_ch = in_ch & 0xff
             delay = delay & 0xffff
             stay_delay = stay_delay & 0xffff
@@ -1008,8 +1013,8 @@ class myDSP(QObject):
             average = average & 0xffff
             track_min_flag = 0x01 if track_min else 0x00
 
-            tiltx_data = (int(tiltx * 0x7fff) & 0x7fffffff) + ((tiltx > 0) * 0x80000000)
-            tilty_data = (int(tilty * 0x7fff) & 0x7fffffff) + ((tilty > 0) * 0x80000000)
+            tiltx_data = (int(tiltx * 0x7fff) & 0x7fffffff) + ((tiltx >= 0) * 0x80000000)
+            tilty_data = (int(tilty * 0x7fff) & 0x7fffffff) + ((tilty >= 0) * 0x80000000)
 
             self.idling = False
             self.ser.write(int(0x93).to_bytes(1, byteorder="big"))  # 0x93 for track function
@@ -1034,8 +1039,9 @@ class myDSP(QObject):
                     if flag:
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send stop command
                         stopped = True
-                    dx = (data & 0xc0) >> 6 - 2
+                    dx = ((data & 0xc0) >> 6) - 2
                     dy = ((data & 0x30) >> 4) - 2
+                    print(dx, dy)
                     x = self.current_last(0x10) + (dx * step)
                     y = self.current_last(0x1f) + (dy * step)
                     self.update_last(0x10, x)

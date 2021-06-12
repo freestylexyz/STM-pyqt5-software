@@ -32,23 +32,23 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
     def configure_measure(self):
         command_list = [0]                                      # First step is wait
         data_list = [self.spinBox_Wait_Delay.value() * 1000]    # Wait delay
-        if self.radioButton_I_Measure.isChecked:
+        if self.radioButton_I_Measure.isChecked():
             command_list += [0xdc]                              # Preamp: 0xc0 + 4 * 7
             data_list += [self.spinBox_Avg_I.value()]           # Preamp average number
-        if self.radioButton_Z_Measure.isChecked:
+        if self.radioButton_Z_Measure.isChecked():
             command_list += [0xd8]                              # Zout: 0xc0 + 4 * 6
             data_list += [self.spinBox_Avg_Z.value()]           # Zout average number
-        if self.checkBox_Ch2_Measure.isChecked:
+        if self.checkBox_Ch2_Measure.isChecked():
             command_list += [0xc8]                              # ADC2: 0xc0 + 4 * 2
             data_list += [self.spinBox_Avg_CH2.value()]         # ADC2 average number
-        if self.checkBox_Ch3_Measure.isChecked:
+        if self.checkBox_Ch3_Measure.isChecked():
             command_list += [0xcc]                              # ADC3: 0xc0 + 4 * 3
             data_list += [self.spinBox_Avg_CH3.value()]         # ADC3 average number
             
-        if self.groupBox_Seq_AdvOption.isChecked():
+        if not self.groupBox_Seq_AdvOption.isChecked():
             return command_list, data_list                      # Return command list and data list
         else:
-            return [], []                                       # Return empty list to indicate not using sequence
+            return [], []                                       # Return empty list to indicate using sequence
     
     # Configure correction options
     def configure_correction(self, feedback):

@@ -7,20 +7,10 @@
 import sys
 
 sys.path.append("../ui/")
-sys.path.append("../MainMenu/")
-sys.path.append("../Setting/")
 sys.path.append("../Model/")
-sys.path.append("../TipApproach/")
-sys.path.append("../Scan/")
-sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
-from PyQt5.QtCore import pyqtSignal, Qt
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
+from PyQt5.QtWidgets import QApplication, QWidget
 from ScanOptions_ui import Ui_ScanOptions
-import numpy as np
 import conversion as cnv
-import functools as ft
 
 
 class myScanOptions(QWidget, Ui_ScanOptions):
@@ -89,11 +79,11 @@ class myScanOptions(QWidget, Ui_ScanOptions):
             
     # Configure before scan procedures
     def configure_prescan(self, seq_feedback, dsp):
-        # Determin enable flag
-        prescan = dsp.lasdigital[2] and (not seq_feedback)                              # Enable only when current feedback is on but sequence feedback is off
+        # Determine enable flag
+        prescan = dsp.lastdigital[2] and (not seq_feedback)                             # Enable only when current feedback is on but sequence feedback is off
         prescan = self.groupBox_Feedback_ScanOptions.isChecked() and (not prescan)      # Enable by use 
         
-        match_curr = prescan and (not(dsp.lasdigital[0] or dsp.lasdigital[1]))          # Enable match current when both dither are off and prescan is activated
+        match_curr = prescan and (not(dsp.lastdigital[0] or dsp.lastdigital[1]))        # Enable match current when both dither are off and prescan is activated
         match_curr = self.checkBox_MatchCurr_Feedback.isChecked() and match_curr        # Enable match current by user
         advance_bit = self.scrollBar_Advance_Feedabck.value() if prescan else 0         # Enable advance bit only when prescan is activated
         return match_curr, advance_bit

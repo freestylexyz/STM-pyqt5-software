@@ -12,15 +12,57 @@ import conversion as cnv
 from sequence import mySequence
 import time
 import serial
-# ser = serial.Serial('com4', 38400)  # Open serial port
-# ser.write((0xf2).to_bytes(1, byteorder='big'))  # 0x72 lastdigital_O command
-# ser.close()
-dsp = myDSP()
+ser = serial.Serial('COM3', 9600)  # Open serial port
+# time.sleep(2)
+ser.flushInput()
+ser.write((0x02).to_bytes(1, byteorder='big'))
+ser.write((10).to_bytes(2, byteorder='big'))
+
+time.sleep(1)
+
+ser.write((0x03).to_bytes(1, byteorder='big'))
+data = int.from_bytes(ser.read(1), byteorder='big') << 8
+data = data | int.from_bytes(ser.read(1), byteorder='big')
+print(data)
+
+
+# ser.write((0x05).to_bytes(1, byteorder='big'))
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+#
+# ser.write((0x01).to_bytes(1, byteorder='big'))
+# ser.write((0x57).to_bytes(1, byteorder='big'))
+# ser.write((0x32).to_bytes(1, byteorder='big'))
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+#
+# ser.write((0x09).to_bytes(1, byteorder='big'))
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+#
+# ser.write((0x06).to_bytes(1, byteorder='big'))
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+#
+# ser.write((0x03).to_bytes(1, byteorder='big'))
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+# i=5
+# while i<10:
+#     # time.sleep(0.1)
+#     ser.write((i).to_bytes(1, byteorder='big'))
+#     if ser.inWaiting() > 0:
+#         print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+#     print(i)
+#     i=i+1
+# time.sleep(0.1)
+# print(hex(int.from_bytes(ser.read(1), byteorder='big')))
+
+
+
+ser.close()
+# dsp = myDSP()
 
 # Open COM
-dsp.port, dsp.baudrate = 'com4', 38400
-dsp.init_dsp(True)
-print(dsp.ver)
+# dsp.port, dsp.baudrate = 'com4', 38400
+# dsp.init_dsp(True)
+# print(dsp.ver)
 
 # =============================================================================
 # # DAC output
@@ -67,12 +109,12 @@ print(dsp.ver)
 # dsp.lastdacAcq()
 # print(dsp.lastdac[chs] - currents, dsp.lastdac[chl] - currentl)
 # =============================================================================
-poke_command = [0x42, 0x63, 0x8d]
-poke_data = [0, 0x80000000, 0x8000]
-seq = mySequence(poke_command, poke_data, False)
-rdata = dsp.deposition(0xc0, 3, 1000, 20, 20, 1, 0, 0, seq)
+# poke_command = [0x42, 0x63, 0x8d]
+# poke_data = [0, 0x80000000, 0x8000]
+# seq = mySequence(poke_command, poke_data, False)
+# rdata = dsp.deposition(0xc0, 3, 1000, 20, 20, 1, 0, 0, seq)
 # dsp.ser.write(int(0xff).to_bytes(2, byteorder="big"))  # Send scan delay
-print(rdata)
+# print(rdata)
 # time.sleep(1)
 # print(dsp.ser.inWaiting())
 # while(dsp.ser.inWaiting()):
@@ -91,7 +133,14 @@ print(rdata)
 # print(dsp.ver)
 
 # =============================================================================
-
+# channel_x, channel_y = 0x19, 0x17
+# step_size, step_num = 10, 3
+# move_delay, measure_delay, line_delay = 10, 2000, 2
+# limit, tip_protect_data = 0, 0
+# seq = mySequence([0xdc], [500], True)
+# scan_protect_flag, tip_protection, dir_x = 0, 0, 1
+# dsp.scan(channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay,
+#          limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x)
 # =============================================================================
 
 # =============================================================================
@@ -141,4 +190,4 @@ print(rdata)
 
 
 # Close COM
-dsp.close()
+# dsp.close()

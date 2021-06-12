@@ -81,7 +81,7 @@ class myPointEditor(QWidget, Ui_PointEditor):
         y.editingFinished.connect(self.update_graphics)
         self.update_graphics()
 
-    # Remove slelcted button slot
+    # Remove selected button slot
     def remove(self):
         curRow = self.table_Content.currentRow()
         self.table_Content.removeRow(curRow)

@@ -490,7 +490,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 1:
             self.osci_update(rdata)                 # Update etest continuous oscilloscope if in etest mode
         elif self.mode == 3:
-            print(rdata)
             self.scan.dep.update_C(rdata)           # Update deposition if in scan mode
 
     # Close dsp serial port before exit application
@@ -626,7 +625,7 @@ if __name__ == "__main__":
     window = mySTM()
     window.show()
     sys.stdout = Logger("initO.log")    # Temporary method used to record initO value
-    print("running!!")
+    # print("running!!")
     sys.exit(app.exec_())
 
 '''

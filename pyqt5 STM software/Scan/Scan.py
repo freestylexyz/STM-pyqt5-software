@@ -202,6 +202,11 @@ class myScan(myScan_):
     # Emit scan signal
     def scan_emit(self):
         flag = self.saved        # If able to start flag
+
+        # Update average for default sequence
+        avg = self.scan_options.spinBox_Avg.value()
+        self.scan_seq_list[0].data_list[0] = avg
+        self.scan_seq_list[1].data_list[0] = avg
         
         # Ask if overwrite data if not saved
         if self.idling and (not flag):
@@ -216,6 +221,7 @@ class myScan(myScan_):
             step_size = self.scrollBar_StepSize_ScanControl.value()     # Pixel size
             step_num = self.scrollBar_ScanSize_ScanControl.value()      # Pixel number
             self.scan_signal.emit(xin, yin, xoff, yoff, self.imagine_gain, step_num, step_size)     # Emit scan start signal
+            print('scan signal emitted' + str(step_size))
         elif not self.idling:       # Stop case if not idling
             self.pushButton_Start_Scan.setEnabled(False)                # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                                     # Emit stop signal
@@ -247,7 +253,7 @@ class myScan(myScan_):
     # Update scan
     def scan_update(self, rdata):
         # !!! Update graphic view
-        plot_data = self.data.updata_data(rdata)            # Update scan data and obtain data used for plot
+        plot_data = self.data.update_data(rdata)            # Update scan data and obtain data used for plot
         self.raw_img = copy.deepcopy(plot_data)
         self.current_img = copy.deepcopy(self.raw_img)
         self.img_display.setImage(self.current_img)
@@ -272,7 +278,7 @@ class myScan(myScan_):
         stop_flag = (abs(self.track.x - x) > self.track.track_size)                     # X out of boundary
         stop_flag = stop_flag or (abs(self.track.y - y) > self.track.track_size)        # Y out of boundary
         if stop_flag and (not self.stop):       # Either X or Y out of boundary, avoid sending stop signal twice
-            self.track.pushButton_Start_Track.setEnable(False)                          # Disable stop button to avoid sending stop signal twice
+            self.track.pushButton_Start_Track.setEnabled(False)                          # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                                                     # Emit stop signal
 
     # Open scan information window
