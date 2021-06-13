@@ -682,6 +682,8 @@ class ViewBox(GraphicsWidget):
         if bounds is not None:
             self.setRange(bounds, padding=padding)
 
+        return bounds   # added by Dan on 06/13/2021
+
     def suggestPadding(self, axis):
         l = self.width() if axis==0 else self.height()
         if l > 0:
