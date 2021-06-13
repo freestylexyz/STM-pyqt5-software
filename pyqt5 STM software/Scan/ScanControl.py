@@ -261,7 +261,9 @@ class myScanControl(myMainMenu):
             # Execute read before
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
-                self.scan.dep.update_N(rdata, 0)  # Plot read before data
+                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
+                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)
+                self.scan.dep.update_N(rdata_volt, 0)  # Plot read before data
 
             # Set up stop button if continuous read mode
             if read[1] == 1:
@@ -276,12 +278,16 @@ class myScanControl(myMainMenu):
                 self.scan.dep.data.data = np.array(self.scan.dep.rdata)  # Load data for storage
             if (read[1] == 2) or (read[1] == 3):  # N sample mode
                 self.scan.dep.data.data = np.array(rdata)  # Load data for storage
-                self.scan.dep.update_N(rdata, 1)  # Plot N sample data
+                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
+                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)
+                self.scan.dep.update_N(rdata_volt, 1)  # Plot N sample data
 
             # Execute read after
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
-                self.scan.dep.update_N(rdata, 2)  # Plot read after data
+                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
+                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)
+                self.scan.dep.update_N(rdata_volt, 2)  # Plot read after data
 
             # Restore system status
             self.scan.dep.pushButton_DoIt_Deposition.setText('Do it')  # Restore do it button text

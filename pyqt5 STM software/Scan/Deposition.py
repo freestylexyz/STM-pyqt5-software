@@ -6,11 +6,14 @@ Created on Wed Dec  2 15:19:17 2020
 """
 
 import sys
+
+import numpy as np
+
 sys.path.append("../ui/")
 sys.path.append("../Model/")
 sys.path.append("../Scan/")
 from PyQt5.QtWidgets import QApplication , QWidget, QMessageBox, QFileDialog
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QRectF
 from Deposition_ui import Ui_Deposition
 from DepositionInfo import myDepositionInfo
 from DataStruct import DepData
@@ -18,7 +21,7 @@ import functools as ft
 import conversion as cnv
 import pickle
 from datetime import datetime
-
+import random
 
 class myDeposition(QWidget, Ui_Deposition):
     close_signal = pyqtSignal()                     # Close deposition window signal
@@ -72,6 +75,8 @@ class myDeposition(QWidget, Ui_Deposition):
         # Mode change
         self.groupBox_ReadNSample_Deposition.toggled.connect(ft.partial(self.read_mode, True))
         self.groupBox_ReadUntil_Deposition.toggled.connect(ft.partial(self.read_mode, False))
+        self.radioButton_Continuous_ReadUntil.toggled.connect(ft.partial(self.read_mode, False))
+        self.radioButton_NSample_ReadUntil.toggled.connect(ft.partial(self.read_mode, False))
         self.groupBox_Seq_Deposition.toggled.connect(self.seq_mode)
         
         # Conversions
@@ -99,6 +104,7 @@ class myDeposition(QWidget, Ui_Deposition):
         self.view_box_before.setMouseEnabled(x=False, y=False)
         self.view_box_before.setMenuEnabled(False)
         self.view_box_before.register('before')
+        self.before_bounds = self.view_box_before.autoRange()
 
         self.view_box_during.setMouseEnabled(x=True, y=True)
         self.view_box_during.setMenuEnabled(False)
@@ -106,9 +112,9 @@ class myDeposition(QWidget, Ui_Deposition):
         self.view_box_after.setMouseEnabled(x=False, y=False)
         self.view_box_after.setMenuEnabled(False)
         self.view_box_after.register('after')
+        self.after_bounds = self.view_box_after.autoRange()
 
         self.plot_during.setClipToView(True)
-        self.view_box_before.linkView(self.view_box_before.YAxis, self.view_box_after)
 
         self.before_curve = self.plot_before.plot()
         self.during_curve = self.plot_during.plot()
@@ -148,12 +154,25 @@ class myDeposition(QWidget, Ui_Deposition):
     # Read mode slot
     # Can not have multiple read mode on
     def read_mode(self, mode, state):
-        if mode:
+        if mode:    # Read N-sample
             if state:
                 self.groupBox_ReadUntil_Deposition.setChecked(False)
-        else:
+                self.label_wait_before.setText('Wait before read (us)')
+                self.label_sampling_delay.setText('Sampling delay (us)')
+                self.spinBox_Delay_Pulse.setMinimum(0)
+                self.spinBox_Delay_Pulse.setValue(0)
+        else:       # Read until change happen
             if state:
                 self.groupBox_ReadNSample_Deposition.setChecked(False)
+                if self.radioButton_Continuous_ReadUntil.isChecked():   # Continuous
+                    self.label_wait_before.setText('Wait before read (ms)')
+                    self.label_sampling_delay.setText('Sampling delay (ms)')
+                    self.spinBox_Delay_Pulse.setMinimum(2)
+                else:   # N-sample
+                    self.label_wait_before.setText('Wait before read (us)')
+                    self.label_sampling_delay.setText('Sampling delay (us)')
+                    self.spinBox_Delay_Pulse.setMinimum(0)
+                    self.spinBox_Delay_Pulse.setValue(0)
     
     # Sequence mode slot
     def seq_mode(self, state):
@@ -310,10 +329,26 @@ class myDeposition(QWidget, Ui_Deposition):
     def update_N(self, rdata, index):
         if index == 0:          # Update read before
             self.before_curve.setData(rdata)   # Plot read before data
+            self.before_bounds = self.view_box_before.autoRange()
         elif index == 1:        # Update N sample measurement
             self.during_curve.setData(rdata)   # Plot N sample data
         elif index == 2:        # Update read after
             self.after_curve.setData(rdata)    # Plot read after data
+            self.after_bounds = self.view_box_after.autoRange()
+        self.autoRange()
+
+    def cnv2volt(self, rdata, ch_range):
+        volt_data = [cnv.bv(data, 'a', ch_range) for data in rdata]
+        return volt_data
+
+    def autoRange(self):
+        if (self.before_bounds is not None) and (self.after_bounds is not None):
+            left, bottom = min(self.before_bounds.x(), self.after_bounds.x()), min(self.before_bounds.y(), self.after_bounds.y())
+            width = max(self.before_bounds.width() + self.before_bounds.x(), self.after_bounds.width() + self.after_bounds.x()) - left
+            height = max(self.before_bounds.height() + self.before_bounds.y(), self.after_bounds.height() + self.after_bounds.y()) - bottom
+            new_bounds = QRectF(left, bottom, width, height)
+            self.view_box_before.setRange(new_bounds, padding=None)
+            self.view_box_after.setRange(new_bounds, padding=None)
 
     # Update continuous data
     def update_C(self, rdata):
