@@ -520,7 +520,7 @@ class myScan_(QWidget, Ui_Scan):
         self.pushButton_Send_XY.setEnabled(enable)
         self.pushButton_Start_Scan.setEnabled(enable)
 
-        # self.view_box.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
+        self.view_box.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
 
         # self.pushButton_SaveAll_Scan.setEnabled(enable and (not self.data.data))
         # self.pushButton_Info_Scan.setEnabled(enable and (not self.data.data))

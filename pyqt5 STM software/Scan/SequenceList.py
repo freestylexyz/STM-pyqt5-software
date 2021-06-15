@@ -15,6 +15,7 @@ sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox, QFileDialog
 from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtGui import QBrush, QColor
 from SequenceList_ui import Ui_SequenceList
 import functools as ft
 from SequenceEditor import mySequenceEditor
@@ -90,10 +91,11 @@ class mySequenceList(QWidget, Ui_SequenceList):
             self.selected = -1
         else:
             self.selected = self.namelist.index(selected_name)
-        
+            item = self.listWidget_SeqList.item(self.selected)
+            item.setBackground(QBrush(QColor(233, 196, 106)))
+
         self.listWidget_SeqList.setCurrentRow(self.selected)
-    
-        
+
     # Load sequence from file
     def load(self, opt, num):
         flag = True

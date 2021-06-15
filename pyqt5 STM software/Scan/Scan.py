@@ -5,6 +5,9 @@ Created on Wed Dec  2 15:18:34 2020
 """
 
 import sys
+
+import numpy as np
+
 sys.path.append("../Model/")
 sys.path.append("../Scan/")
 
@@ -254,6 +257,9 @@ class myScan(myScan_):
     def scan_update(self, rdata):
         # !!! Update graphic view
         plot_data = self.data.update_data(rdata)            # Update scan data and obtain data used for plot
+        # print("!!!!!", type(plot_data), plot_data.shape, plot_data)    #!!!!! <class 'numpy.ndarray'> (129, 129)
+        # plot_data = np.ones((129, 129))*255
+        # print("!!!!!", type(plot_data), plot_data.shape, plot_data)
         self.raw_img = copy.deepcopy(plot_data)
         self.current_img = copy.deepcopy(self.raw_img)
         self.img_display.setImage(self.current_img)
