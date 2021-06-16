@@ -880,7 +880,6 @@ class myDSP(QObject):
         if self.ok():
             channel_x = channel_x & 0xff
             channel_y = channel_y & 0xff
-            flag = 0x00
             step_size = step_size & 0xffff
             step_num = step_num & 0xffff
             move_delay = move_delay & 0xffff
@@ -911,6 +910,12 @@ class myDSP(QObject):
             self.ser.write(int(tip_protect_data).to_bytes(2, byteorder="big"))  # Send tip protection data
             self.ser.write(int(target).to_bytes(2, byteorder="big"))  # Send target data for matching current
             self.serialSeq(seq)  # Send sequence command and data
+            read_command = []
+            for i in seq.command_list:
+                if (i >= 0xc0) and (i <= 0xdc):
+                    read_command += [i]
+            print(seq.command_list)
+            print(seq.data_list)
 
             # If receive start command
             if int.from_bytes(self.ser.read(1), "big") == 0xf0:
@@ -925,8 +930,11 @@ class myDSP(QObject):
                         break
                     else:
                         rdata = []
-                        for j in range(seq.read_num):
-                            rdata += [int.from_bytes(self.ser.read(2), "big")]  # Read data
+                        for j in read_command:
+                            if (j == 0xd8) and (scan_protect_flag != 0):
+                                rdata += [int.from_bytes(self.ser.read(3), "big")]  # Read data
+                            else:
+                                rdata += [int.from_bytes(self.ser.read(2), "big")]  # Read data
                         self.scan_signal.emit(rdata)
                         print('data emit' + str(i))
                         print(rdata)

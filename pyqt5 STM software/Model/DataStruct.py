@@ -137,7 +137,10 @@ class ScanData(STMData):
         # axis 0 is image index
         # axis 1 is x pixel number
         # axis 2 is y pixel number
-        
+        first_point_flag = (self.point == 0) if self.dir_x else (self.point == self.step_num - 1)
+        if (self.line == 0) and first_point_flag:
+            self.minimum = rdata[0]
+
         # Start a new line if point index out of range
         if (self.point >= self.step_num) or (self.point <= -1):
             self.point = 0 if self.dir_x else (self.step_num - 1)

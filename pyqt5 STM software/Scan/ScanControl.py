@@ -355,7 +355,7 @@ class myScanControl(myMainMenu):
         x, y = self.dsp.track(loop_num, track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
         self.scan.send_update(0x10, 0x1f, x, y)  # Update scan view based on returned XY value
         self.scan.target_position.movePoint(self.scan.target_position.getHandles()[0],
-                                    [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
+                                    [self.scan.last_xy[0] + self.scan.last_xy[2], self.scan.last_xy[1] + self.scan.last_xy[3]])
         print('track end')
         # Restore system status
         self.scan.track.idling = True
