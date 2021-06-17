@@ -100,7 +100,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.pushButton_yScale_Cur.clicked.connect(lambda: self.scale_cur(1))
         self.pushButton_xScale_Avg.clicked.connect(lambda: self.scale_avg(0))
         self.pushButton_yScale_Avg.clicked.connect(lambda: self.scale_avg(1))
-        self.update_plot_signal.connect(self.update_avg_plot)
+        # self.update_plot_signal.connect(self.update_avg_plot)
         self.update_plot_signal.connect(self.update_cur_plot)
 
         # label | display scanner coordinates
@@ -112,8 +112,10 @@ class mySpc(QWidget, Ui_Spectroscopy):
         # graphicsView |
         self.plot_cur = self.graphicsView_current_Spectro.addPlot(row=1, col=0)
         # self.plot_cur.disableAutoRange()
+        self.view_box_cur = self.plot_cur.getViewBox()
         self.plot_avg = self.graphicsView_avg_Spectro.addPlot(row=1, col=0)
         # self.plot_avg.disableAutoRange()
+        self.view_box_avg = self.plot_avg.getViewBox()
 
         # ROI | data scanner
         gray_pen = pg.mkPen((150, 150, 150, 255), width=1)
@@ -182,7 +184,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
             self.auto_save(self.auto_save_name, pass_num+1)
         self.data.avg_data()                    # Average current pass data with previous passes
         print('update average')
-        self.update_plot_signal.emit()
+        self.update_avg_plot()
 
     # Update plot signal slot
     def update_cur_plot(self):
@@ -193,10 +195,10 @@ class mySpc(QWidget, Ui_Spectroscopy):
         # for i in range(self.bwd_data.shape[0]):
         #     for j in range(self.bwd_data[i].shape[0]):
         #         self.plot_cur.plot(self.bwd_data[i][j], pen=self.img.color[(i*self.bwd_data[i].shape[0]+j) % 16])
-        for i in range(self.fwd_data.shape[0]):
-            self.plot_cur.plot(self.fwd_data[i], pen=self.img.color[i % 16])
+        for i in range(1, self.fwd_data.shape[0]):
+            self.plot_cur.plot(x=self.fwd_data[0], y=self.fwd_data[i], pen=self.img.color[i % 16])
         for i in range(self.bwd_data.shape[0]):
-            self.plot_cur.plot(self.bwd_data[i], pen=self.img.color[i % 16])
+            self.plot_cur.plot(x=self.bwd_data[0], y=self.bwd_data[i], pen=self.img.color[i % 16])
 
     def update_avg_plot(self):
         self.plot_avg.clear()
@@ -378,6 +380,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.pushButton_Save.setEnabled(enable)     # Enable save button
         self.pushButton_Scan.setEnabled(enable)     # Enable scan button
         self.pushButton_Info.setEnabled(enable)     # Enable info button
+        self.view_box_cur.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
+        self.view_box_avg.setMouseEnabled(x=enable, y=enable)  # Enable and disable mouse event
 
     # Bias range changing slot
     def bias_ran_change(self, bias_ran):

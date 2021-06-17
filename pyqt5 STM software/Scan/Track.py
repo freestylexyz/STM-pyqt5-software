@@ -15,6 +15,8 @@ from Track_ui import Ui_Track
 class myTrack(QWidget, Ui_Track):
     track_signal = pyqtSignal()         # Start track signal
     stop_signal = pyqtSignal()          # Stop track signal
+    track_area_signal = pyqtSignal()    # Update track_area ROI signal
+    close_signal = pyqtSignal()         # Hide track ROI
 
     def __init__(self):
         super().__init__()
@@ -35,6 +37,10 @@ class myTrack(QWidget, Ui_Track):
         self.spinBox_StepSize_Track.valueChanged.connect(self.scrollBar_StepSize_Track.setValue)
         self.scrollBar_StepSize_Track.valueChanged.connect(self.spinBox_StepSize_Track.setValue)
         self.pushButton_Start_Track.clicked.connect(self.track)
+
+        # signals
+        self.scrollBar_TrackSize_Track.valueChanged.connect(self.track_area_signal)
+        self.scrollBar_StepSize_Track.valueChanged.connect(self.track_area_signal)
 
     # Init track window based on succeed
     def init_track(self, succeed):
@@ -79,6 +85,7 @@ class myTrack(QWidget, Ui_Track):
     # Emit close signal
     def closeEvent(self, event):
         if self.idling and self.closable:
+            self.close_signal.emit()
             event.accept()
         else:
             self.message('Track on going')

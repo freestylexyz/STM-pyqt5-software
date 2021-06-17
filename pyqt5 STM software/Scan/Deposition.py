@@ -157,7 +157,6 @@ class myDeposition(QWidget, Ui_Deposition):
         if mode:    # Read N-sample
             if state:
                 self.groupBox_ReadUntil_Deposition.setChecked(False)
-                self.label_wait_before.setText('Wait before read (us)')
                 self.label_sampling_delay.setText('Sampling delay (us)')
                 self.spinBox_Delay_Pulse.setMinimum(0)
                 self.spinBox_Delay_Pulse.setValue(0)
@@ -165,11 +164,9 @@ class myDeposition(QWidget, Ui_Deposition):
             if state:
                 self.groupBox_ReadNSample_Deposition.setChecked(False)
                 if self.radioButton_Continuous_ReadUntil.isChecked():   # Continuous
-                    self.label_wait_before.setText('Wait before read (ms)')
                     self.label_sampling_delay.setText('Sampling delay (ms)')
                     self.spinBox_Delay_Pulse.setMinimum(2)
                 else:   # N-sample
-                    self.label_wait_before.setText('Wait before read (us)')
                     self.label_sampling_delay.setText('Sampling delay (us)')
                     self.spinBox_Delay_Pulse.setMinimum(0)
                     self.spinBox_Delay_Pulse.setValue(0)
@@ -188,6 +185,9 @@ class myDeposition(QWidget, Ui_Deposition):
         # self.pushButton_Info_Deposition.setEnabled(enable and (not self.data.data))
         mode = not self.groupBox_Poke_Deposition.isChecked()
         self.groupBox_Poke_Deposition.setEnabled(enable and mode)   # Poke group box is also determined by if using sequence
+        self.view_box_before.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
+        self.view_box_during.setMouseEnabled(x=enable, y=enable)  # Enable and disable mouse event
+        self.view_box_after.setMouseEnabled(x=enable, y=enable)  # Enable and disable mouse event
     
     # Bias conversion slot
     def bias_cnv(self, flag, value):
@@ -240,7 +240,7 @@ class myDeposition(QWidget, Ui_Deposition):
         # Init continuous data storage
         self.limit = read_change
         self.stop_num = read_stop_num
-        self.rdata = []
+        # self.rdata = [] #!!! moved to self.do_it, it clears during plot when stop is clicked
         self.count = 0
             
         return [read_ch, read_mode, read_delay, read_delay2, read_num, read_avg, read_change, read_stop_num]
@@ -270,6 +270,7 @@ class myDeposition(QWidget, Ui_Deposition):
 
         if self.idling and flag:    # Start case if idling and able to start
             self.do_it_signal.emit(read_before, read, poke_data)    # Emit spectroscopy start signal
+            self.rdata = []
         elif not self.idling:       # Stop case if not idling
             self.pushButton_DoIt_Deposition.setEnabled(False)       # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                                 # Emit stop signal
@@ -337,10 +338,12 @@ class myDeposition(QWidget, Ui_Deposition):
             self.after_bounds = self.view_box_after.autoRange()
         self.autoRange()
 
+    # N-sample | convert bits to volts
     def cnv2volt(self, rdata, ch_range):
         volt_data = [cnv.bv(data, 'a', ch_range) for data in rdata]
         return volt_data
 
+    # N-sample | convert bits to volts
     def autoRange(self):
         if (self.before_bounds is not None) and (self.after_bounds is not None):
             left, bottom = min(self.before_bounds.x(), self.after_bounds.x()), min(self.before_bounds.y(), self.after_bounds.y())
@@ -359,6 +362,9 @@ class myDeposition(QWidget, Ui_Deposition):
                 self.stop_signal.emit()
 
         self.during_curve.setData(self.rdata)   # Plot continuous measure data
+        self.during_bounds = self.view_box_during.autoRange()
+        new_bounds = QRectF(self.during_bounds.x()+self.during_bounds.width()-500, self.during_bounds.y(), 500, self.during_bounds.height())
+        self.view_box_during.setRange(new_bounds, padding=None) # Reserve 1000 data points in view
     
     # Emit close signal
     def closeEvent(self, event):

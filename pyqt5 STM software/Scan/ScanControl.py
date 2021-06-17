@@ -18,6 +18,7 @@ import threading
 import copy
 import numpy as np
 import time
+import winsound
 
 class myScanControl(myMainMenu):
 
@@ -79,17 +80,28 @@ class myScanControl(myMainMenu):
         select_dict = {0: self.scan.scan_seq_selected, 1: self.scan.dep_seq_selected, 2: self.scan.spc_seq_selected}
         label_dict = {0: self.scan.label_Seq_ScanControl, 1: self.scan.dep.label_Seq_Deposition,
                       2: self.scan.spc.adv.label_Seq_AdvOption}
+        # seq_dict = {0: self.scan.data.seq, 1: self.scan.dep.data.seq, 2: self.scan.spc.data.seq}
 
         # Determine name
         name = '' if self.scan.seq_list.selected < 0 else self.scan.seq_list.seqlist[self.scan.seq_list.selected].name
 
         select_dict[index] = self.scan.seq_list.selected  # Load selected sequence
         label_dict[index].setText(name)  # Set corresponding label
-        list_dict[index] = []  # Empty corresponding sequence list
+        list_dict[index].clear()  # Empty corresponding sequence list
 
         # Load sequence list
         for seq in self.scan.seq_list.seqlist:
             list_dict[index] += [copy.deepcopy(seq)]
+
+        # Change selected sequence
+        if index == 0:
+            self.scan.data.seq = list_dict[index][select_dict[index]]
+        elif index == 1:
+            self.scan.dep.data.seq = list_dict[index][select_dict[index]]
+        elif index == 2:
+            self.scan.spc.data.seq = list_dict[index][select_dict[index]]
+        # print(list_dict[index][select_dict[index]].name)
+        # print(self.scan.data.seq.name)
 
     # Open sequence list window
     def open_seq_list(self, index, selected_name):
@@ -219,6 +231,7 @@ class myScanControl(myMainMenu):
             self.init_dock()  # Reload all 3 dock view
             self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.pushButton_Info_Scan.setEnabled(True)  # Set Scan Info button enabled
+            winsound.Beep(2000, 1000)
             print('finish finish')
 
     # Scan signal slot
@@ -277,15 +290,15 @@ class myScanControl(myMainMenu):
                 self.scan.dep.data.data = np.array(self.scan.dep.rdata)  # Load data for storage
             if (read[1] == 2) or (read[1] == 3):  # N sample mode
                 self.scan.dep.data.data = np.array(rdata)  # Load data for storage
-                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
-                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)
+                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6] # Get current ch range
+                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range) # Convert bits to volts
                 self.scan.dep.update_N(rdata_volt, 1)  # Plot N sample data
 
             # Execute read after
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
-                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
-                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)
+                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6] # Get current ch range
+                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range) # Convert bits to volts
                 self.scan.dep.update_N(rdata_volt, 2)  # Plot read after data
 
             # Restore system status
@@ -356,6 +369,9 @@ class myScanControl(myMainMenu):
         self.scan.send_update(0x10, 0x1f, x, y)  # Update scan view based on returned XY value
         self.scan.target_position.movePoint(self.scan.target_position.getHandles()[0],
                                     [self.scan.last_xy[0] + self.scan.last_xy[2], self.scan.last_xy[1] + self.scan.last_xy[3]])
+        self.scan.track_area.movePoint(self.scan.track_area.getHandles()[0],
+                                       [self.scan.last_xy[0] + self.scan.last_xy[2],
+                                        self.scan.last_xy[1] + self.scan.last_xy[3]])
         print('track end')
         # Restore system status
         self.scan.track.idling = True

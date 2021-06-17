@@ -60,10 +60,10 @@ class myScan(myScan_):
         self.pushButton_LockIn_ScanControl.clicked.connect(self.lockin.show)                # Open lock in window
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)            # Open scan option window
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)            # Open send option window
-        # self.pushButton_Info_Scan.clicked.connect(self.open_info)                         # Open scan data info window
-        # self.pushButton_Info_Scan.setEnabled(False)
+        self.pushButton_Info_Scan.clicked.connect(self.open_info)                         # Open scan data info window
+        self.pushButton_Info_Scan.setEnabled(False)
         self.pushButton_LockIn_ScanControl.setEnabled(False)
-        self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
+        # self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
         self.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
         self.pushButton_Track.clicked.connect(self.open_track_win)
         self.pushButton_Deposition.clicked.connect(self.open_dep_win)
@@ -253,6 +253,8 @@ class myScan(myScan_):
                                             [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
 
+
+
     # Update scan
     def scan_update(self, rdata):
         # !!! Update graphic view
@@ -271,6 +273,7 @@ class myScan(myScan_):
                                       int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                       self.scan_size[0] * self.scan_size[1],
                                       self.scan_size[0] * self.scan_size[1]), padding=0)
+        self.label_line.setText(str(self.data.line))    # Update line num label
         
     # Update plane fit parameters in track window
     def track_update_fit(self):
@@ -507,7 +510,19 @@ class myScan(myScan_):
             # Init Track size and position
             self.track.resize(472, 274)
             self.track.move(11, 757)
+            self.update_track_roi()
             self.track.show()
+
+    # Update track ROI position and size
+    def update_track_roi(self):
+        size = self.track.scrollBar_TrackSize_Track.value()
+        step = self.track.scrollBar_StepSize_Track.value()
+        track_size = (size-1) * step * self.imagine_gain
+        self.track_area.setSize(track_size, center=(0.5, 0.5))
+        self.track_area.movePoint(self.track_area.getHandles()[0], \
+                                  [self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0], \
+                                   self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0]])
+        self.track_area.show()
 
     # pallet radioButton slot | gray, color
     def pallet_changed(self, index, status):

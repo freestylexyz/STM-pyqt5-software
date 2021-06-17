@@ -248,6 +248,18 @@ class myScan_(QWidget, Ui_Scan):
         self.connect_position.getHandles()[1].hide()
         self.target_position.sigRegionChanged.connect(self.connect_target_position)
 
+        # ROI | track
+        self.track_area = CrossCenterROI([-150000, -150000], [100000, 100000], pen=yellow_pen, centered=True, \
+                                        movable=False, resizable=False, rotatable=False, \
+                                        maxBounds=QRectF(-3276800, -3276800, 6553600, 6553600), scaleSnap=True)
+        self.track_area.aspectLocked = True
+        self.track_area.setZValue(10)
+        self.view_box.addItem(self.track_area)
+        self.track_area.removeHandle(0)
+        self.track_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5], 'pen': blue_pen}, index=3)
+        self.track_area.getHandles()[0].setPen(purple_pen)
+        self.track_area.hide()
+
         # pushButton | tool bar
         self.pushButton_Full_ViewControl.clicked.connect(self.full_view)
         self.pushButton_Detail_ViewControl.clicked.connect(self.detail_view)
