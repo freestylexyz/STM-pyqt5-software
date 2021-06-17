@@ -77,15 +77,11 @@ class myScanControl(myMainMenu):
     def close_seq_list(self, index):
         # Dictionaries based on different mode
         list_dict = {0: self.scan.scan_seq_list, 1: self.scan.dep_seq_list, 2: self.scan.spc_seq_list}
-        select_dict = {0: self.scan.scan_seq_selected, 1: self.scan.dep_seq_selected, 2: self.scan.spc_seq_selected}
         label_dict = {0: self.scan.label_Seq_ScanControl, 1: self.scan.dep.label_Seq_Deposition,
                       2: self.scan.spc.adv.label_Seq_AdvOption}
-        # seq_dict = {0: self.scan.data.seq, 1: self.scan.dep.data.seq, 2: self.scan.spc.data.seq}
 
         # Determine name
         name = '' if self.scan.seq_list.selected < 0 else self.scan.seq_list.seqlist[self.scan.seq_list.selected].name
-
-        select_dict[index] = self.scan.seq_list.selected  # Load selected sequence
         label_dict[index].setText(name)  # Set corresponding label
         list_dict[index].clear()  # Empty corresponding sequence list
 
@@ -95,13 +91,11 @@ class myScanControl(myMainMenu):
 
         # Change selected sequence
         if index == 0:
-            self.scan.data.seq = list_dict[index][select_dict[index]]
+            self.scan.scan_seq_selected = self.scan.seq_list.selected
         elif index == 1:
-            self.scan.dep.data.seq = list_dict[index][select_dict[index]]
+            self.scan.dep_seq_selected = self.scan.seq_list.selected
         elif index == 2:
-            self.scan.spc.data.seq = list_dict[index][select_dict[index]]
-        # print(list_dict[index][select_dict[index]].name)
-        # print(self.scan.data.seq.name)
+            self.scan.spc_seq_selected = self.scan.seq_list.selected
 
     # Open sequence list window
     def open_seq_list(self, index, selected_name):
@@ -237,6 +231,9 @@ class myScanControl(myMainMenu):
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
         # Set up sequence
+        for a in self.scan.scan_seq_list:
+            print(a.name)
+        print('selected'+str(self.scan.scan_seq_selected))
         if self.scan.scan_seq_selected < 0:  # No sequence selected
             flag = False  # Cannot execute scan
             self.scan.message('No sequence selected')  # Pop out message

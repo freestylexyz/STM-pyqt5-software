@@ -914,8 +914,7 @@ class myDSP(QObject):
             for i in seq.command_list:
                 if (i >= 0xc0) and (i <= 0xdc):
                     read_command += [i]
-            print(seq.command_list)
-            print(seq.data_list)
+            print(seq.name)
 
             # If receive start command
             if int.from_bytes(self.ser.read(1), "big") == 0xf0:
@@ -936,8 +935,6 @@ class myDSP(QObject):
                             else:
                                 rdata += [int.from_bytes(self.ser.read(2), "big")]  # Read data
                         self.scan_signal.emit(rdata)
-                        print('data emit' + str(i))
-                        print(rdata)
                     if self.stop and (not stopped):  # If check stop is enabled and stop event is issued
                         self.ser.write(int(0xff).to_bytes(1, byteorder="big"))  # Send out a stop command
                         stopped = True

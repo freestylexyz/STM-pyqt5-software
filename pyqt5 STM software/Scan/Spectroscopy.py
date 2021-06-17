@@ -172,7 +172,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
     # !!! Update spectroscopy current pass data
     def update_spc(self, rdata):
         f, b = self.data.update_data(rdata)     # Update current pass data and obtain forward data and backward data for plot
-        print('data_pt'+str(self.data.data_pt))
         self.fwd_data = f
         self.bwd_data = b
         self.update_plot_signal.emit()
@@ -183,7 +182,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
         if self.every:
             self.auto_save(self.auto_save_name, pass_num+1)
         self.data.avg_data()                    # Average current pass data with previous passes
-        print('update average')
         self.update_avg_plot()
 
     # Update plot signal slot
@@ -202,8 +200,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     def update_avg_plot(self):
         self.plot_avg.clear()
-        for i in range(self.data.data_[self.point_index].shape[0]):
-            self.plot_avg.plot(self.data.data_[self.point_index][i], pen=self.img.color[i])
+        for i in range(self.data.data[self.point_index].shape[0]):
+            self.plot_avg.plot(self.data.data[self.point_index][i], pen=self.img.color[i])
 
     # # Graphics | scanner mouse moved signal slot
     # def mouseMoved(self, index, evt):

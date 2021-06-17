@@ -273,7 +273,7 @@ class myScan(myScan_):
                                       int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                       self.scan_size[0] * self.scan_size[1],
                                       self.scan_size[0] * self.scan_size[1]), padding=0)
-        self.label_line.setText(str(self.data.line))    # Update line num label
+        self.label_line.setText(str(self.data.line + 1))    # Update line num label
         
     # Update plane fit parameters in track window
     def track_update_fit(self):
@@ -297,7 +297,7 @@ class myScan(myScan_):
 
     # Open sequence list window
     def open_seq_list(self):
-        self.seq_list_signal.emit(self.data.seq.name)
+        self.seq_list_signal.emit(self.label_Seq_ScanControl.text())
 
     # Open Track window
     def open_track_win(self):

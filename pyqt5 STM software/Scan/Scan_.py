@@ -84,7 +84,7 @@ class myScan_(QWidget, Ui_Scan):
         self.tilt = [0.0] * 2  # Tilt X, Tilt Y
 
         # Sequence lists and selected sequence
-        constant_current_seq = mySequence([0xdc], [500], True)  # Basic constant current sequence
+        constant_current_seq = mySequence([0xd8], [500], True)  # Basic constant current sequence
         constant_current_seq.name = 'Basic constant current'
         constant_height_seq = mySequence([0xdc], [500], True)  # Basic constant height sequence
         constant_height_seq.name = 'Basic constant height'
