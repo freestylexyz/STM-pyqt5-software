@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>LockIn</class>
  <widget class="QWidget" name="LockIn">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>769</width>
+    <width>944</width>
     <height>143</height>
    </rect>
   </property>

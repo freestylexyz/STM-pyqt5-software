@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SendOptions(object):
     def setupUi(self, SendOptions):
         SendOptions.setObjectName("SendOptions")
+        SendOptions.setWindowModality(QtCore.Qt.ApplicationModal)
         SendOptions.resize(258, 178)
         self.gridLayout_2 = QtWidgets.QGridLayout(SendOptions)
         self.gridLayout_2.setObjectName("gridLayout_2")
