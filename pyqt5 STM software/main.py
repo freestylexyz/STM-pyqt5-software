@@ -224,7 +224,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         ## write scan sequence
         fname_list_scan = []
         for seq in self.scan.scan_seq_list:
-            fname = './.seq/scan/' + seq.name + '.seq'
+            fname = './seq/scan/' + seq.name + '.seq'
             fname_list_scan.append(fname)
             with open(fname, 'wb') as output:
                 pickle.dump(seq, output, pickle.HIGHEST_PROTOCOL)  # Save sequence
@@ -247,7 +247,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         ## write deposition sequence
         fname_list_dep = []
         for seq in self.scan.dep_seq_list:
-            fname  = './.seq/dep/' + seq.name +'.seq'
+            fname  = './seq/dep/' + seq.name +'.seq'
             fname_list_dep.append(fname)
             with open(fname, 'wb') as output:
                 pickle.dump(seq, output, pickle.HIGHEST_PROTOCOL)  # Save sequence
@@ -299,7 +299,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         ## write spectroscopy sequence
         fname_list_spc = []
         for seq in self.scan.spc_seq_list:
-            fname  = './.seq/spc/' + seq.name +'.seq'
+            fname  = './seq/spc/' + seq.name +'.seq'
             fname_list_spc.append(fname)
             with open(fname, 'wb') as output:
                 pickle.dump(seq, output, pickle.HIGHEST_PROTOCOL)  # Save sequence
@@ -411,13 +411,13 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.spinBox_ScanSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/SCAN_SIZE", type=int))
         self.scan.spinBox_StepSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/STEP_SIZE", type=int))
         ## load scan sequence
-        self.scan.scan_seq_list.clear()
-        fname_list_scan = self.cnfgEX.value("SCAN_CONTROL/SEQUENCE")
-        for fname in fname_list_scan:
-            if fname != '':
-                with open(fname, 'rb') as input:
-                    seq = pickle.load(input)
-            self.scan.scan_seq_list.append(seq)
+        # self.scan.scan_seq_list.clear()
+        # fname_list_scan = self.cnfgEX.value("SCAN_CONTROL/SEQUENCE")
+        # for fname in fname_list_scan:
+        #     if fname != '':
+        #         with open(fname, 'rb') as input:
+        #             seq = pickle.load(input)
+        #     self.scan.scan_seq_list.append(seq)
         # Scan | Track
         self.scan.track.spinBox_TrackSize_Track.setValue(self.cnfgEX.value("TRACK/TRACK_SIZE", type=int))
         self.scan.track.spinBox_StepSize_Track.setValue(self.cnfgEX.value("TRACK/STEP_SIZE", type=int))
@@ -487,12 +487,12 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.cnfgEX.value("ADVANCE_OPTION/AUTO_SAVE_EVERY", type=bool))
         self.scan.spc.adv.groupBox_Seq_AdvOption.setChecked(self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE", type=bool))
         ## load spectroscopy sequence
-        fname_list_spc = self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE_NAME")
-        for fname in fname_list_spc:
-            if fname != '':
-                with open(fname, 'rb') as input:
-                    seq = pickle.load(input)
-            self.scan.spc_seq_list.append(seq)
+        # fname_list_spc = self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE_NAME")
+        # for fname in fname_list_spc:
+        #     if fname != '':
+        #         with open(fname, 'rb') as input:
+        #             seq = pickle.load(input)
+        #     self.scan.spc_seq_list.append(seq)
         self.scan.spc.adv.spinBox_MoveDelay_Dealy.setValue(self.cnfgEX.value("ADVANCE_OPTION/MOVE_DELAY", type=int))
         self.scan.spc.adv.spinBox_MeasureDelay_Dealy.setValue(self.cnfgEX.value("ADVANCE_OPTION/MEASURE_DELAY", type=int))
         self.scan.spc.adv.spinBox_Wait_Delay.setValue(self.cnfgEX.value("ADVANCE_OPTION/WAIT_DELAY", type=int))
