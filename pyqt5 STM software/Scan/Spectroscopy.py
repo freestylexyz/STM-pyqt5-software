@@ -31,6 +31,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
     stop_signal = pyqtSignal()          # Spectroscopy stop scan signal
     seq_list_signal = pyqtSignal(str)   # Open sequence list window signal
     update_plot_signal = pyqtSignal()   # Update current plot signal
+    update_ran_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -100,7 +101,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.pushButton_yScale_Cur.clicked.connect(lambda: self.scale_cur(1))
         self.pushButton_xScale_Avg.clicked.connect(lambda: self.scale_avg(0))
         self.pushButton_yScale_Avg.clicked.connect(lambda: self.scale_avg(1))
-        # self.update_plot_signal.connect(self.update_avg_plot)
         self.update_plot_signal.connect(self.update_cur_plot)
 
         # label | display scanner coordinates
@@ -171,6 +171,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     # !!! Update spectroscopy current pass data
     def update_spc(self, rdata):
+        self.update_ran_signal.emit()
         f, b = self.data.update_data(rdata)     # Update current pass data and obtain forward data and backward data for plot
         self.fwd_data = f
         self.bwd_data = b
@@ -184,24 +185,36 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.data.avg_data()                    # Average current pass data with previous passes
         self.update_avg_plot()
 
+    def get_zfine_range(self, ran):
+        self.zfine_ran = ran
+
+    def cnv_bit2volt(self, bit_data):
+        ch = self.comboBox_RampCh_General.currentIndex()    # Determine ramp channel
+        bias_flag = '20' if self.bias_dac else 'd'          # Conversion flag
+        if ch == 0: # Bias
+            volt_data = [cnv.bv(data, bias_flag, self.bias_ran) for data in bit_data]
+        else: # Z offset fine
+            volt_data = [cnv.bv(data, 'd', self.zfine_ran) for data in bit_data]
+        return volt_data
+
     # Update plot signal slot
     def update_cur_plot(self):
         self.plot_cur.clear()
-        # for i in range(self.fwd_data.shape[0]):
-        #     for j in range(self.fwd_data[i].shape[0]):
-        #         self.plot_cur.plot(self.fwd_data[i][j], pen=self.img.color[(i*self.fwd_data[i].shape[0]+j) % 16])
-        # for i in range(self.bwd_data.shape[0]):
-        #     for j in range(self.bwd_data[i].shape[0]):
-        #         self.plot_cur.plot(self.bwd_data[i][j], pen=self.img.color[(i*self.bwd_data[i].shape[0]+j) % 16])
         for i in range(1, self.fwd_data.shape[0]):
-            self.plot_cur.plot(x=self.fwd_data[0], y=self.fwd_data[i], pen=self.img.color[i % 16])
-        for i in range(self.bwd_data.shape[0]):
-            self.plot_cur.plot(x=self.bwd_data[0], y=self.bwd_data[i], pen=self.img.color[i % 16])
+            x = self.cnv_bit2volt(self.fwd_data[0])
+            y = self.cnv_bit2volt(self.fwd_data[i])
+            self.plot_cur.plot(x=x, y=y, pen=self.img.color[i % 16])
+        for i in range(1, self.bwd_data.shape[0]):
+            x = self.cnv_bit2volt(self.bwd_data[0])
+            y = self.cnv_bit2volt(self.bwd_data[i])
+            self.plot_cur.plot(x=x, y=y, pen=self.img.color[i % 16])
 
     def update_avg_plot(self):
         self.plot_avg.clear()
-        for i in range(self.data.data[self.point_index].shape[0]):
-            self.plot_avg.plot(self.data.data[self.point_index][i], pen=self.img.color[i])
+        for i in range(1, self.data.data[self.point_index].shape[0]):
+            x = self.cnv_bit2volt(self.data.data[self.point_index][0])
+            y = self.cnv_bit2volt(self.data.data[self.point_index][i])
+            self.plot_avg.plot(x=x, y=y, pen=self.img.color[i])
 
     # # Graphics | scanner mouse moved signal slot
     # def mouseMoved(self, index, evt):

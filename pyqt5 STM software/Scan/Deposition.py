@@ -364,7 +364,7 @@ class myDeposition(QWidget, Ui_Deposition):
         self.during_curve.setData(self.rdata)   # Plot continuous measure data
         self.during_bounds = self.view_box_during.autoRange()
         new_bounds = QRectF(self.during_bounds.x()+self.during_bounds.width()-500, self.during_bounds.y(), 500, self.during_bounds.height())
-        self.view_box_during.setRange(new_bounds, padding=None) # Reserve 1000 data points in view
+        self.view_box_during.setRange(new_bounds, padding=None) # Reserve 500 data points in view
     
     # Emit close signal
     def closeEvent(self, event):

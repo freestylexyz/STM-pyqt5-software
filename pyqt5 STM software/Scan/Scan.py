@@ -253,8 +253,6 @@ class myScan(myScan_):
                                             [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
 
-
-
     # Update scan
     def scan_update(self, rdata):
         # !!! Update graphic view
@@ -516,8 +514,7 @@ class myScan(myScan_):
     # Update track ROI position and size
     def update_track_roi(self):
         size = self.track.scrollBar_TrackSize_Track.value()
-        step = self.track.scrollBar_StepSize_Track.value()
-        track_size = (size-1) * step * self.imagine_gain
+        track_size = (size-1) * self.imagine_gain
         self.track_area.setSize(track_size, center=(0.5, 0.5))
         self.track_area.movePoint(self.track_area.getHandles()[0], \
                                   [self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0], \

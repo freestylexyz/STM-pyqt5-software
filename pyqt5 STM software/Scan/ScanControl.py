@@ -355,6 +355,7 @@ class myScanControl(myMainMenu):
     # Track execution called by other function
     def track_excu_(self, track, loop_num):
         self.scan.track.idling = False  # Toggle track idling flag
+        self.scan.update_track_roi()
 
         # Load track XY variables for out of boundary judgement
         self.scan.track.x = self.dsp.lastdac[0]
@@ -366,10 +367,8 @@ class myScanControl(myMainMenu):
         self.scan.send_update(0x10, 0x1f, x, y)  # Update scan view based on returned XY value
         self.scan.target_position.movePoint(self.scan.target_position.getHandles()[0],
                                     [self.scan.last_xy[0] + self.scan.last_xy[2], self.scan.last_xy[1] + self.scan.last_xy[3]])
-        self.scan.track_area.movePoint(self.scan.track_area.getHandles()[0],
-                                       [self.scan.last_xy[0] + self.scan.last_xy[2],
-                                        self.scan.last_xy[1] + self.scan.last_xy[3]])
         print('track end')
+        self.scan.update_track_roi()
         # Restore system status
         self.scan.track.idling = True
 
