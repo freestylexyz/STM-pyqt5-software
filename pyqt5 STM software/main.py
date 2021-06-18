@@ -23,6 +23,8 @@ from TipApproachControl import myTipApproachControl
 from ScanControl import myScanControl
 from logger import Logger
 import functools as ft
+import conversion as cnv
+import pickle
 
 class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, myEtestControl, myTipApproachControl, myScanControl):
     def __init__(self, parent=None):
@@ -125,16 +127,19 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Track
         self.scan.track.track_signal.connect(self.track_thread)
         self.scan.track.stop_signal.connect(self.scan_stop)
+        self.scan.track.track_area_signal.connect(self.scan.update_track_roi)
+        self.scan.track.close_signal.connect(self.scan.track_area.hide)
 
         # Spectroscopy
         self.scan.spc.close_signal.connect(self.close_scan)
         self.scan.spc.seq_list_signal.connect(ft.partial(self.open_seq_list, 2))
         self.scan.spc.spectroscopy_signal.connect(self.spectroscopy_thread)
         self.scan.spc.stop_signal.connect(self.scan_stop)
+        self.scan.spc.update_ran_signal.connect(lambda: self.scan.spc.get_zfine_range(self.dsp.dacrange[2]))
 
         # Do some real stuff
         self.load_config_bs()           # Load DSP settings
-        # self.load_config_ex()
+        self.load_config_ex()
         self.dsp.init_dsp(self.initO)   # Try to initial DSP
         # if self.mode_last != 0:
         #     pass
@@ -216,7 +221,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Scan | Scan control
         self.cnfgEX.setValue("SCAN_CONTROL/SCAN_SIZE", self.scan.spinBox_ScanSize_ScanControl.value())
         self.cnfgEX.setValue("SCAN_CONTROL/STEP_SIZE", self.scan.spinBox_StepSize_ScanControl.value())
-        self.cnfgEX.setValue("SCAN_CONTROL/SEQUENCE", self.scan.scan_seq_list)
+        ## write scan sequence
+        fname_list_scan = []
+        for seq in self.scan.scan_seq_list:
+            fname = './.seq/scan/' + seq.name + '.seq'
+            fname_list_scan.append(fname)
+            with open(fname, 'wb') as output:
+                pickle.dump(seq, output, pickle.HIGHEST_PROTOCOL)  # Save sequence
+        self.cnfgEX.setValue("SCAN_CONTROL/SEQUENCE", fname_list_scan)
         # Scan | Track
         self.cnfgEX.setValue("TRACK/TRACK_SIZE", self.scan.track.spinBox_TrackSize_Track.value())
         self.cnfgEX.setValue("TRACK/STEP_SIZE", self.scan.track.spinBox_StepSize_Track.value())
@@ -232,7 +244,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("DEPOSITION/POKE_TIP", self.scan.dep.spinBox_Bias_PokeTip.value())
         self.cnfgEX.setValue("DEPOSITION/DELTA_Z", self.scan.dep.spinBox_DeltaZ_PokeTip.value())
         self.cnfgEX.setValue("DEPOSITION/SEQUENCE", self.scan.dep.groupBox_Seq_Deposition.isChecked())
-        self.cnfgEX.setValue("DEPOSITION/SEQUENCE_NAME", self.scan.dep_seq_list)
+        ## write deposition sequence
+        fname_list_dep = []
+        for seq in self.scan.dep_seq_list:
+            fname  = './.seq/dep/' + seq.name +'.seq'
+            fname_list_dep.append(fname)
+            with open(fname, 'wb') as output:
+                pickle.dump(seq, output, pickle.HIGHEST_PROTOCOL)  # Save sequence
+        self.cnfgEX.setValue("DEPOSITION/SEQUENCE_NAME", fname_list_dep)
         self.cnfgEX.setValue("DEPOSITION/READ", self.scan.dep.groupBox_Read_Deposition.isChecked())
         self.cnfgEX.setValue("TRACK/READ_CHANNEL", self.scan.dep.comboBox_Ch_Read.currentIndex())
         self.cnfgEX.setValue("DEPOSITION/AVERAGE_NUM", self.scan.dep.spinBox_AvgNum_Read.value())
@@ -259,6 +278,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("SPECTROSCOPY/DELTA_Z", self.scan.spc.spinBox_Delta_Z.value())
         self.cnfgEX.setValue("SPECTROSCOPY/DELTA_BIAS", self.scan.spc.spinBox_Bias_Delta.value())
         self.cnfgEX.setValue("SPECTROSCOPY/MAPPING", self.scan.spc.groupBox_Mapping.isChecked())
+        print('writing ', self.scan.spc.groupBox_Mapping.isChecked())
         # Scan | Advance option
         self.cnfgEX.setValue("ADVANCE_OPTION/DO", self.scan.spc.adv.spinBox_DoZCorrection_ZDrift.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/Z_CORRECTION", self.scan.spc.adv.groupBox_ZDrift_Correction.isChecked())
@@ -268,7 +288,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("ADVANCE_OPTION/MEASURE_MODE", self.scan.spc.adv.radioButton_I_Measure.isChecked())
         self.cnfgEX.setValue("ADVANCE_OPTION/CH2", self.scan.spc.adv.checkBox_Ch2_Measure.isChecked())
         self.cnfgEX.setValue("ADVANCE_OPTION/CH3", self.scan.spc.adv.checkBox_Ch3_Measure.isChecked())
-        self.cnfgEX.setValue("ADVANCE_OPTION/AVERAGE_I", self.scan.spc.adv.spinBox_Avg_I_2.value())
+        self.cnfgEX.setValue("ADVANCE_OPTION/AVERAGE_I", self.scan.spc.adv.spinBox_Avg_I.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/AVERAGE_Z", self.scan.spc.adv.spinBox_Avg_Z.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/AVERAGE_CH2", self.scan.spc.adv.spinBox_Avg_CH2.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/AVERAGE_CH3", self.scan.spc.adv.spinBox_Avg_CH3.value())
@@ -276,7 +296,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("ADVANCE_OPTION/AUTO_SAVE_EVERY",
                                 self.scan.spc.adv.checkBox_SaveEveryPasses_Autosave.isChecked())
         self.cnfgEX.setValue("ADVANCE_OPTION/SEQUENCE", self.scan.spc.adv.groupBox_Seq_AdvOption.isChecked())
-        self.cnfgEX.setValue("ADVANCE_OPTION/SEQUENCE_NAME", self.scan.spc_seq_list)
+        ## write spectroscopy sequence
+        fname_list_spc = []
+        for seq in self.scan.spc_seq_list:
+            fname  = './.seq/spc/' + seq.name +'.seq'
+            fname_list_spc.append(fname)
+            with open(fname, 'wb') as output:
+                pickle.dump(seq, output, pickle.HIGHEST_PROTOCOL)  # Save sequence
+        self.cnfgEX.setValue("ADVANCE_OPTION/SEQUENCE_NAME", fname_list_spc)
         self.cnfgEX.setValue("ADVANCE_OPTION/MOVE_DELAY", self.scan.spc.adv.spinBox_MoveDelay_Dealy.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/MEASURE_DELAY", self.scan.spc.adv.spinBox_MeasureDelay_Dealy.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/WAIT_DELAY", self.scan.spc.adv.spinBox_Wait_Delay.value())
@@ -346,8 +373,12 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Scan | Scan options
         self.scan.scan_options.radioButton_YFirst_OrderandDirection.setChecked(
             self.cnfgEX.value("SCAN_OPTIONS/SCAN_ORDER", type=bool))
+        self.scan.scan_options.radioButton_XFirst_OrderandDirection.setChecked(
+            not(self.cnfgEX.value("SCAN_OPTIONS/SCAN_ORDER", type=bool)))
         self.scan.scan_options.radioButton_ReadForward_OrderandDirection.setChecked(
             self.cnfgEX.value("SCAN_OPTIONS/READ_DIRECTION", type=bool))
+        self.scan.scan_options.radioButton_ReadForward_OrderandDirection.setChecked(
+            not(self.cnfgEX.value("SCAN_OPTIONS/READ_DIRECTION", type=bool)))
         self.scan.scan_options.groupBox_Tip_ScanOptions.setChecked(self.cnfgEX.value("SCAN_OPTIONS/TIP_PROTECTION", type=bool))
         self.scan.scan_options.spinBox_Retract_Tip.setValue(self.cnfgEX.value("SCAN_OPTIONS/RETRACT", type=int))
         self.scan.scan_options.groupBox_Scan_ScanOptions.setChecked(
@@ -360,6 +391,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         elif self.cnfgEX.value("SCAN_OPTIONS/SCAN_PROTECTION_OPTION") == 2:
             self.scan.scan_options.radioButton_AutoPre_Scan.setChecked(True)
         self.scan.scan_options.radioButton_Fixed_Delay.setChecked(self.cnfgEX.value("SCAN_OPTIONS/DELAY_OPTION", type=bool))
+        self.scan.scan_options.radioButton_Variable_Delay.setChecked(
+            not(self.cnfgEX.value("SCAN_OPTIONS/DELAY_OPTION", type=bool)))
         self.scan.scan_options.spinBox_MoveControl_Delay.setValue(
             self.cnfgEX.value("SCAN_OPTIONS/DELAY_MOVE_CONTROL", type=int))
         self.scan.scan_options.spinBox_MoveOFF_Delay.setValue(self.cnfgEX.value("SCAN_OPTIONS/DELAY_MOVE_OFF", type=int))
@@ -377,7 +410,14 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # Scan | Scan control
         self.scan.spinBox_ScanSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/SCAN_SIZE", type=int))
         self.scan.spinBox_StepSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/STEP_SIZE", type=int))
-        self.scan.scan_seq_list = self.cnfgEX.value("SCAN_CONTROL/SEQUENCE")
+        ## load scan sequence
+        self.scan.scan_seq_list.clear()
+        fname_list_scan = self.cnfgEX.value("SCAN_CONTROL/SEQUENCE")
+        for fname in fname_list_scan:
+            if fname != '':
+                with open(fname, 'rb') as input:
+                    seq = pickle.load(input)
+            self.scan.scan_seq_list.append(seq)
         # Scan | Track
         self.scan.track.spinBox_TrackSize_Track.setValue(self.cnfgEX.value("TRACK/TRACK_SIZE", type=int))
         self.scan.track.spinBox_StepSize_Track.setValue(self.cnfgEX.value("TRACK/STEP_SIZE", type=int))
@@ -389,11 +429,18 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.track.spinBox_X_PlaneFit.setValue(self.cnfgEX.value("TRACK/PLANE_FIT_X", type=float))
         self.scan.track.spinBox_Y_PlaneFit.setValue(self.cnfgEX.value("TRACK/PLANE_FIT_Y", type=float))
         self.scan.track.radioButton_Max_PlaneFit.setChecked(self.cnfgEX.value("TRACK/MODE", type=bool))
+        self.scan.track.radioButton_Min_PlaneFit.setChecked(not self.cnfgEX.value("TRACK/MODE", type=bool))
         # Scan | Deposition
         self.scan.dep.spinBox_Bias_PokeTip.setValue(self.cnfgEX.value("DEPOSITION/POKE_TIP", type=float))
         self.scan.dep.spinBox_DeltaZ_PokeTip.setValue(self.cnfgEX.value("DEPOSITION/DELTA_Z", type=int))
         self.scan.dep.groupBox_Seq_Deposition.setChecked(self.cnfgEX.value("DEPOSITION/SEQUENCE", type=bool))
-        self.scan.dep_seq_list = self.cnfgEX.value("DEPOSITION/SEQUENCE_NAME")
+        ## load deposition sequence
+        # fname_list = self.cnfgEX.value("DEPOSITION/SEQUENCE_NAME")
+        # for fname in fname_list:
+        #     if fname != '':
+        #         with open(fname, 'rb') as input:
+        #             seq = pickle.load(input)
+        #     self.scan.dep_seq_list.append(seq)
         self.scan.dep.groupBox_Read_Deposition.setChecked(self.cnfgEX.value("DEPOSITION/READ", type=bool))
         self.scan.dep.comboBox_Ch_Read.setCurrentIndex(self.cnfgEX.value("TRACK/READ_CHANNEL", type=int))
         self.scan.dep.spinBox_AvgNum_Read.setValue(self.cnfgEX.value("DEPOSITION/AVERAGE_NUM", type=int))
@@ -408,6 +455,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.dep.spinBox_StopNum_ReadUntil.setValue(self.cnfgEX.value("DEPOSITION/READ_UNTIL_NUM", type=int))
         self.scan.dep.spinBox_Change_ReadUntil.setValue(self.cnfgEX.value("DEPOSITION/READ_UNTIL_CHANGE", type=float))
         self.scan.dep.radioButton_Continuous_ReadUntil.setChecked(self.cnfgEX.value("DEPOSITION/READ_UNTIL_MODE", type=bool))
+        self.scan.dep.radioButton_NSample_ReadUntil.setChecked(not self.cnfgEX.value("DEPOSITION/READ_UNTIL_MODE", type=bool))
         # Scan | Spectroscopy
         self.scan.spc.spinBox_Min_General.setValue(self.cnfgEX.value("SPECTROSCOPY/MIN", type=float))
         self.scan.spc.spinBox_Max_General.setValue(self.cnfgEX.value("SPECTROSCOPY/MAX", type=float))
@@ -419,6 +467,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.spc.spinBox_Delta_Z.setValue(self.cnfgEX.value("SPECTROSCOPY/DELTA_Z", type=int))
         self.scan.spc.spinBox_Bias_Delta.setValue(self.cnfgEX.value("SPECTROSCOPY/DELTA_BIAS", type=float))
         self.scan.spc.groupBox_Mapping.setChecked(self.cnfgEX.value("SPECTROSCOPY/MAPPING", type=bool))
+        print('loading ', self.cnfgEX.value("SPECTROSCOPY/MAPPING", type=bool))
         # Scan | Advance option
         self.scan.spc.adv.spinBox_DoZCorrection_ZDrift.setValue(self.cnfgEX.value("ADVANCE_OPTION/DO", type=int))
         self.scan.spc.adv.groupBox_ZDrift_Correction.setChecked(self.cnfgEX.value("ADVANCE_OPTION/Z_CORRECTION", type=bool))
@@ -426,9 +475,10 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.spc.adv.checkBox_MatchCurr_ZDrift.setChecked(self.cnfgEX.value("ADVANCE_OPTION/MATCH", type=bool))
         self.scan.spc.adv.checkBox_Tracking_Correction.setChecked(self.cnfgEX.value("ADVANCE_OPTION/TRACK", type=bool))
         self.scan.spc.adv.radioButton_I_Measure.setChecked(self.cnfgEX.value("ADVANCE_OPTION/MEASURE_MODE", type=bool))
+        self.scan.spc.adv.radioButton_Z_Measure.setChecked(not self.cnfgEX.value("ADVANCE_OPTION/MEASURE_MODE", type=bool))
         self.scan.spc.adv.checkBox_Ch2_Measure.setChecked(self.cnfgEX.value("ADVANCE_OPTION/CH2", type=bool))
         self.scan.spc.adv.checkBox_Ch3_Measure.setChecked(self.cnfgEX.value("ADVANCE_OPTION/CH3", type=bool))
-        self.scan.spc.adv.spinBox_Avg_I_2.setValue(self.cnfgEX.value("ADVANCE_OPTION/AVERAGE_I", type=int))
+        self.scan.spc.adv.spinBox_Avg_I.setValue(self.cnfgEX.value("ADVANCE_OPTION/AVERAGE_I", type=int))
         self.scan.spc.adv.spinBox_Avg_Z.setValue(self.cnfgEX.value("ADVANCE_OPTION/AVERAGE_Z", type=int))
         self.scan.spc.adv.spinBox_Avg_CH2.setValue(self.cnfgEX.value("ADVANCE_OPTION/AVERAGE_CH2", type=int))
         self.scan.spc.adv.spinBox_Avg_CH3.setValue(self.cnfgEX.value("ADVANCE_OPTION/AVERAGE_CH3", type=int))
@@ -436,17 +486,23 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.spc.adv.checkBox_SaveEveryPasses_Autosave.setChecked(
             self.cnfgEX.value("ADVANCE_OPTION/AUTO_SAVE_EVERY", type=bool))
         self.scan.spc.adv.groupBox_Seq_AdvOption.setChecked(self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE", type=bool))
-        self.scan.spc_seq_list = self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE_NAME")
+        ## load spectroscopy sequence
+        fname_list_spc = self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE_NAME")
+        for fname in fname_list_spc:
+            if fname != '':
+                with open(fname, 'rb') as input:
+                    seq = pickle.load(input)
+            self.scan.spc_seq_list.append(seq)
         self.scan.spc.adv.spinBox_MoveDelay_Dealy.setValue(self.cnfgEX.value("ADVANCE_OPTION/MOVE_DELAY", type=int))
         self.scan.spc.adv.spinBox_MeasureDelay_Dealy.setValue(self.cnfgEX.value("ADVANCE_OPTION/MEASURE_DELAY", type=int))
         self.scan.spc.adv.spinBox_Wait_Delay.setValue(self.cnfgEX.value("ADVANCE_OPTION/WAIT_DELAY", type=int))
-        if self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION") == 0:
+        if self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION", type=int) == 0:
             self.scan.spc.adv.radioButton_Forward_Dir.setChecked(True)
-        elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION") == 1:
+        elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION", type=int) == 1:
             self.scan.spc.adv.radioButton_Bacward_Dir.setChecked(True)
-        elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION") == 2:
+        elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION", type=int) == 2:
             self.scan.spc.adv.radioButton_AvgBoth_Dir.setChecked(True)
-        elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION") == 3:
+        elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION", type=int) == 3:
             self.scan.spc.adv.radioButton_Both_Dir.setChecked(True)
         # !!! pre-scan
         # Scan | Point editor
@@ -490,7 +546,9 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         if self.mode == 1:
             self.osci_update(rdata)                 # Update etest continuous oscilloscope if in etest mode
         elif self.mode == 3:
-            self.scan.dep.update_C(rdata)           # Update deposition if in scan mode
+            ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
+            rdata_volt = cnv.bv(rdata, 'a', ch_range)
+            self.scan.dep.update_C(rdata_volt)        # Update deposition if in scan mode
 
     # Close dsp serial port before exit application
     def closeEvent(self, event):
@@ -500,7 +558,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.Current.close()    # Close Current dock
             self.dsp.close()        # Terminate DSP serial communication
             self.write_cnfg_bs()    # Write configuration file
-            # self.write_cnfg_ex()
+            self.write_cnfg_ex()
             event.accept()          # Accept close event
         else:
             self.msg("Close top window first!")     # Pop out window to remind close the tip window
@@ -570,6 +628,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             # Init Track size and position
             self.scan.track.resize(472, 274)
             self.scan.track.move(11, 757)
+            self.scan.update_track_roi()
             self.scan.track.show()
         else:
             self.msg("Open Scan window first!")
