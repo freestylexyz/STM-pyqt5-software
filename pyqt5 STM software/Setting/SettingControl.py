@@ -15,7 +15,6 @@ sys.path.append("../Scan/")
 sys.path.append("../Etest/")
 from MainMenu import myMainMenu
 
-
 #  mySettingControl class - This class handles signal from setting, unpack data and execute corresponding operation
 class mySettingControl(myMainMenu):
     # Setting initial DSP slot
