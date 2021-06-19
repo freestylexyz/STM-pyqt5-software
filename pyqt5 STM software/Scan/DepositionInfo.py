@@ -33,7 +33,6 @@ class myDepositionInfo(QWidget, Ui_DepositionInfo):
 
         # Title
         file_name = data.path
-        print(file_name)
         self.setWindowTitle('Deposition Data Info --- ' + str(file_name))
 
         # Date and Time

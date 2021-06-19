@@ -5,7 +5,6 @@
 @FileName : BetweenPasses.py
 """
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../MainMenu/")
 sys.path.append("../Setting/")
@@ -13,15 +12,10 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup, QSpinBox
-from PyQt5.QtCore import pyqtSignal, Qt
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
+from PyQt5.QtWidgets import QApplication, QWidget, QSpinBox
+from PyQt5.QtCore import pyqtSignal
 from SpectroscopyInfo_ui import Ui_SpectroscopyInfo
-import numpy as np
 import conversion as cnv
-import functools as ft
-
 
 class mySpectroscopyInfo(QWidget, Ui_SpectroscopyInfo):
     close_signal = pyqtSignal()
@@ -38,14 +32,13 @@ class mySpectroscopyInfo(QWidget, Ui_SpectroscopyInfo):
     def init_spcInfo(self, data):
         # Title
         file_name = data.path
-        print(file_name)
         self.setWindowTitle('Deposition Data Info --- ' + str(file_name))
 
         # Date and Time
         self.label_date.setText(str(data.time)[0:10])
         self.label_time.setText(str(data.time)[11:19])
 
-        # !!! Options
+        # Options
         self.label_min.setText(str())
         self.label_of_data_pts.setText(str(data.data_pt))
         self.label_move_delay.setText(str(data.move_delay))
@@ -264,7 +257,6 @@ class mySpectroscopyInfo(QWidget, Ui_SpectroscopyInfo):
             self.tableWidget_pts.setCellWidget(i, 0, x)
             self.tableWidget_pts.setCellWidget(i, 1, y)
 
-            
     # Emit close signal
     def closeEvent(self, event):
         if self.idling:
@@ -273,8 +265,7 @@ class mySpectroscopyInfo(QWidget, Ui_SpectroscopyInfo):
         else:
             event.ignore()
 
-    def enable_serial(self, enable):
-        pass
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

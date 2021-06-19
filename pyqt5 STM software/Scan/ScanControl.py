@@ -6,11 +6,9 @@ Created on Thu Dec  3 11:11:38 2020
 """
 
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../MainMenu/")
 sys.path.append("../Model/")
-
 from MainMenu import myMainMenu
 from DataStruct import ScanData, DepData, SpcData, STMData
 from sequence import mySequence

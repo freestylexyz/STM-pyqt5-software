@@ -5,14 +5,11 @@ Created on Wed Dec  2 15:18:34 2020
 """
 
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../Model/")
 sys.path.append("../Scan/")
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QButtonGroup, QFileDialog
 from PyQt5.QtCore import Qt, QRectF
-
-
 from Scan_ui import Ui_Scan
 from Spectroscopy import mySpc
 from Deposition import myDeposition
@@ -23,16 +20,13 @@ from PointEditor import myPointEditor
 from SequenceList import mySequenceList
 from ScanInfo import myScanInfo
 from LockIn import myLockIn
-
 from sequence import mySequence
 from DataStruct import ScanData
 from customROI import *
-
 import pyqtgraph as pg
 import numpy as np
 import functools as ft
 from datetime import datetime
-
 
 class myScan_(QWidget, Ui_Scan):
     def __init__(self):
@@ -114,6 +108,7 @@ class myScan_(QWidget, Ui_Scan):
         self.XY_gain_group.addButton(self.radioButton_Gain1_XY, 1)
         self.XY_gain_group.addButton(self.radioButton_Gain10_XY, 0)
         self.XY_gain_group.buttonToggled[int, bool].connect(self.xy_gain_cnv)
+        self.XY_gain_group.buttonToggled.connect(self.track.track_area_signal)
 
         # spinBox | X/Y offset and X/Y in
         self.spinBox_Xin_XY.editingFinished.connect(lambda: self.xy_in_cnv(True, 0, 0))
@@ -187,7 +182,6 @@ class myScan_(QWidget, Ui_Scan):
         self.target_area.aspectLocked = True
         self.view_box.addItem(self.target_area)
         self.target_area.removeHandle(0)
-        # self.target_area.hide()
         self.target_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5], 'pen': baby_blue_pen}, index=3)
         self.target_area.sigRegionChanged.connect(lambda: self.default_update(0))
 
@@ -257,7 +251,7 @@ class myScan_(QWidget, Ui_Scan):
         self.view_box.addItem(self.track_area)
         self.track_area.removeHandle(0)
         self.track_area.addCustomHandle(info={'type': 't', 'pos': [0.5, 0.5], 'pen': blue_pen}, index=3)
-        self.track_area.getHandles()[0].setPen(purple_pen)
+        self.track_area.getHandles()[0].setPen((0,0,0,0))
         self.track_area.hide()
 
         # pushButton | tool bar
@@ -272,7 +266,6 @@ class myScan_(QWidget, Ui_Scan):
         self.points.getHandles()[0].pen.setWidth(2)
         purple_brush = pg.mkBrush('deaaff')
         self.points.getHandles()[0].pen.setBrush(purple_brush)
-        # self.points.sigRegionChanged.connect(lambda: self.points_update(1))
         self.points.sigRegionChanged.connect(self.update_point_editor)
         self.points.hide()
 
@@ -283,8 +276,6 @@ class myScan_(QWidget, Ui_Scan):
         self.view_box.addItem(self.select_point)
         self.select_point.removeHandle(0)
         self.select_point.setZValue(self.points.zValue() - 1)
-        # self.points.setParentItem(self.select_point)
-        # self.select_point.sigRegionChanged.connect(lambda: self.points_update(3))
         self.select_point.sigRegionChanged.connect(self.points_overall)
         self.select_point.hide()
 
@@ -450,8 +441,6 @@ class myScan_(QWidget, Ui_Scan):
         if index == 0:  # target area moved
             xoffset = int((self.target_area.getHandles()[0].pos()[0] + self.target_area.pos()[0]) / 100)
             yoffset = int((self.target_area.getHandles()[0].pos()[1] + self.target_area.pos()[1]) / 100)
-            # self.xy_off_cnv(False, 0, xoffset)
-            # self.xy_off_cnv(False, 1, yoffset)
             if self.scrollBar_Xoffset_XY.value() != xoffset:
                 self.scrollBar_Xoffset_XY.setValue(xoffset)
             if self.scrollBar_Yoffset_XY.value() != yoffset:
@@ -461,9 +450,6 @@ class myScan_(QWidget, Ui_Scan):
                 2]) / self.imagine_gain)
             yin = int((self.target_position.getHandles()[0].pos()[1] + self.target_position.pos()[1] - self.last_xy[
                 3]) / self.imagine_gain)
-            # print(self.target_position.getHandles()[0].pos()[0], self.target_position.getHandles()[0].pos()[1])
-            # self.xy_in_cnv(False, 0, False, xin)
-            # self.xy_in_cnv(False, 1, False, yin)
             if self.scrollBar_Xin_XY.value() != xin:
                 self.scrollBar_Xin_XY.setValue(xin)
             if self.scrollBar_Yin_XY.value() != yin:

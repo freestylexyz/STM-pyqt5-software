@@ -5,7 +5,6 @@
 @FileName : ScanOptions.py
 """
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../Model/")
 from PyQt5.QtWidgets import QApplication, QWidget
@@ -87,6 +86,8 @@ class myScanOptions(QWidget, Ui_ScanOptions):
         match_curr = self.checkBox_MatchCurr_Feedback.isChecked() and match_curr        # Enable match current by user
         advance_bit = self.scrollBar_Advance_Feedabck.value() if prescan else 0         # Enable advance bit only when prescan is activated
         return match_curr, advance_bit
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

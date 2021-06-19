@@ -6,9 +6,6 @@ Created on Wed Dec  2 15:19:17 2020
 """
 
 import sys
-
-import numpy as np
-
 sys.path.append("../ui/")
 sys.path.append("../Model/")
 sys.path.append("../Scan/")
@@ -21,7 +18,6 @@ import functools as ft
 import conversion as cnv
 import pickle
 from datetime import datetime
-import random
 
 class myDeposition(QWidget, Ui_Deposition):
     close_signal = pyqtSignal()                     # Close deposition window signal
@@ -92,7 +88,6 @@ class myDeposition(QWidget, Ui_Deposition):
         self.pushButton_Info_Deposition.clicked.connect(self.open_Info)             # Open data info window
 
         # graphicsView
-        # self.graphicsView_Before_Deposition.setContentsMargins(1,1,1,1)
         self.plot_before = self.graphicsView_Before_Deposition.addPlot()
         self.plot_during = self.graphicsView_During_Deposition.addPlot()
         self.plot_after = self.graphicsView_After_Deposition.addPlot()
@@ -240,7 +235,6 @@ class myDeposition(QWidget, Ui_Deposition):
         # Init continuous data storage
         self.limit = read_change
         self.stop_num = read_stop_num
-        # self.rdata = [] #!!! moved to self.do_it, it clears during plot when stop is clicked
         self.count = 0
             
         return [read_ch, read_mode, read_delay, read_delay2, read_num, read_avg, read_change, read_stop_num]
@@ -268,10 +262,10 @@ class myDeposition(QWidget, Ui_Deposition):
         read = self.configure_read()
         poke_data = self.configure_sequence()
 
-        if self.idling and flag:    # Start case if idling and able to start
+        if self.idling and flag:                                    # Start case if idling and able to start
             self.do_it_signal.emit(read_before, read, poke_data)    # Emit spectroscopy start signal
             self.rdata = []
-        elif not self.idling:       # Stop case if not idling
+        elif not self.idling:                                       # Stop case if not idling
             self.pushButton_DoIt_Deposition.setEnabled(False)       # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                                 # Emit stop signal
 
@@ -295,8 +289,8 @@ class myDeposition(QWidget, Ui_Deposition):
         if self.data.time.strftime("%m%d%y") != self.today:             # New day, init file_index
             self.today = self.data.time.strftime("%m%d%y")
             self.file_index = 0
-        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name list
-        name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]    # Auto configure file name
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'              # Name list
+        name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]  # Auto configure file name
         self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.dep')                  # Set default file name as auto configured
         
         if self.dlg.exec_():                                            # File selected
@@ -307,12 +301,12 @@ class myDeposition(QWidget, Ui_Deposition):
             
             # If default file name is not used
             if save_name != name:
-                try:        # See if current file name is in our naming system
+                try:                                        # See if current file name is in our naming system
                     if save_name[0:6] == self.today:        # Reset file index if match
                         self.file_index = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
                     else:
                         self.file_index -= 1
-                except:     # Otherwise do not consume file index
+                except:                                     # Otherwise do not consume file index
                     self.file_index -= 1
                     
             self.saved = True                                               # Toggle saved flag
@@ -328,13 +322,13 @@ class myDeposition(QWidget, Ui_Deposition):
 
     # Update N samples data
     def update_N(self, rdata, index):
-        if index == 0:          # Update read before
-            self.before_curve.setData(rdata)   # Plot read before data
+        if index == 0:                          # Update read before
+            self.before_curve.setData(rdata)    # Plot read before data
             self.before_bounds = self.view_box_before.autoRange()
-        elif index == 1:        # Update N sample measurement
-            self.during_curve.setData(rdata)   # Plot N sample data
-        elif index == 2:        # Update read after
-            self.after_curve.setData(rdata)    # Plot read after data
+        elif index == 1:                        # Update N sample measurement
+            self.during_curve.setData(rdata)    # Plot N sample data
+        elif index == 2:                        # Update read after
+            self.after_curve.setData(rdata)     # Plot read after data
             self.after_bounds = self.view_box_after.autoRange()
         self.autoRange()
 
@@ -361,10 +355,10 @@ class myDeposition(QWidget, Ui_Deposition):
             if self.count >= self.stop_num:                                     # Emit stop signal if have enough data
                 self.stop_signal.emit()
 
-        self.during_curve.setData(self.rdata)   # Plot continuous measure data
+        self.during_curve.setData(self.rdata)                                   # Plot continuous measure data
         self.during_bounds = self.view_box_during.autoRange()
         new_bounds = QRectF(self.during_bounds.x()+self.during_bounds.width()-500, self.during_bounds.y(), 500, self.during_bounds.height())
-        self.view_box_during.setRange(new_bounds, padding=None) # Reserve 500 data points in view
+        self.view_box_during.setRange(new_bounds, padding=None)                 # Reserve 500 data points in view
     
     # Emit close signal
     def closeEvent(self, event):
@@ -375,7 +369,6 @@ class myDeposition(QWidget, Ui_Deposition):
             self.message('Process ongoing')
             event.ignore()
         
-
 
 
 if __name__ == "__main__":

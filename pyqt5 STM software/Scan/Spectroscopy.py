@@ -165,11 +165,12 @@ class mySpc(QWidget, Ui_Spectroscopy):
             self.pushButton_Scan.setEnabled(False)  # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                 # Emit stop signal
 
+    # Point scrollBar slot
     def point_changed(self, index):
         self.point_index = index
         self.update_plot_signal.emit()
 
-    # !!! Update spectroscopy current pass data
+    # Update spectroscopy current pass data
     def update_spc(self, rdata):
         self.update_ran_signal.emit()
         f, b = self.data.update_data(rdata)     # Update current pass data and obtain forward data and backward data for plot
@@ -177,7 +178,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.bwd_data = b
         self.update_plot_signal.emit()
 
-    # !!! Update spectroscopy averaged data
+    # Update spectroscopy averaged data
     def update_spc_(self, pass_num):
         self.data.combine_data()                # Combine forward and backward data
         if self.every:
@@ -185,9 +186,11 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.data.avg_data()                    # Average current pass data with previous passes
         self.update_avg_plot()
 
+    # Get current z offset fine range to convert data unit
     def get_zfine_range(self, ran):
         self.zfine_ran = ran
 
+    # Convert data unit from bits to volts
     def cnv_bit2volt(self, bit_data):
         ch = self.comboBox_RampCh_General.currentIndex()    # Determine ramp channel
         bias_flag = '20' if self.bias_dac else 'd'          # Conversion flag
@@ -209,65 +212,13 @@ class mySpc(QWidget, Ui_Spectroscopy):
             y = self.cnv_bit2volt(self.bwd_data[i])
             self.plot_cur.plot(x=x, y=y, pen=self.img.color[i % 16])
 
+    # Update averaged plot, called by update_spc_
     def update_avg_plot(self):
         self.plot_avg.clear()
         for i in range(1, self.data.data[self.point_index].shape[0]):
             x = self.cnv_bit2volt(self.data.data[self.point_index][0])
             y = self.cnv_bit2volt(self.data.data[self.point_index][i])
             self.plot_avg.plot(x=x, y=y, pen=self.img.color[i])
-
-    # # Graphics | scanner mouse moved signal slot
-    # def mouseMoved(self, index, evt):
-    #     if index == 0:
-    #         pos = evt[0]  ## using signal proxy turns original arguments into a tuple
-    #         if self.plot_cur.sceneBoundingRect().contains(pos):
-    #             mousePoint = self.plot_cur.vb.mapSceneToView(pos)
-    #             data_x = [] * len(self.plot_cur.listDataItems())
-    #             data_y = [] * len(self.plot_cur.listDataItems())
-    #             color = [] * len(self.plot_cur.listDataItems())
-    #             for curve in self.plot_cur.listDataItems():
-    #                 near_x = min(curve.xData, key=lambda x: abs(x - mousePoint.x()))
-    #                 index = list(curve.xData).index(near_x)
-    #                 data_x += [near_x]
-    #                 data_y += [curve.yData[index]]
-    #                 color += [self.img.RGB_to_Hex(curve.curve.opts['pen'].brush().color().getRgb())]
-    #
-    #             text = ''
-    #             num = 0
-    #             for i in range(len(data_x)):
-    #                 num += 1
-    #                 text += "<span style='font-size: 7pt'><span style='color: " + color[
-    #                     i] + "'>(%0.2f, %0.2f)   </span>" % (data_x[i], data_y[i])
-    #                 if num % 3 == 0:
-    #                     text += "<br />"
-    #             self.label_cur.setText(text)
-    #
-    #             self.scanner_vLine_cur.setPos(mousePoint.x())
-    #     elif index == 1:
-    #         pos = evt[0]  ## using signal proxy turns original arguments into a tuple
-    #         if self.plot_avg.sceneBoundingRect().contains(pos):
-    #             mousePoint = self.plot_avg.vb.mapSceneToView(pos)
-    #             data_x = [] * len(self.plot_avg.listDataItems())
-    #             data_y = [] * len(self.plot_avg.listDataItems())
-    #             color = [] * len(self.plot_avg.listDataItems())
-    #             for curve in self.plot_avg.listDataItems():
-    #                 near_x = min(curve.xData, key=lambda x: abs(x - mousePoint.x()))
-    #                 index = list(curve.xData).index(near_x)
-    #                 data_x += [near_x]
-    #                 data_y += [curve.yData[index]]
-    #                 color += [self.img.RGB_to_Hex(curve.curve.opts['pen'].brush().color().getRgb())]
-    #
-    #             text = ''
-    #             num = 0
-    #             for i in range(len(data_x)):
-    #                 num += 1
-    #                 text += "<span style='font-size: 7pt'><span style='color: " + color[
-    #                     i] + "'>(%0.2f, %0.2f)   </span>" % (data_x[i], data_y[i])
-    #                 if num % 2 == 0:
-    #                     text += "<br />"
-    #             self.label_avg.setText(text)
-    #
-    #             self.scanner_vLine_avg.setPos(mousePoint.x())
 
     # Graphics | scanner mouse moved signal slot
     def mouseMoved(self, index, evt):
@@ -294,8 +245,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
                     if num % 5 == 0:
                         text += "<br />"
                 self.label_cur.setText(text)
-
                 self.scanner_vLine_cur.setPos(mousePoint.x())
+
         elif index == 1:
             pos = evt[0]  ## using signal proxy turns original arguments into a tuple
             if self.plot_avg.sceneBoundingRect().contains(pos):
@@ -319,7 +270,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
                     if num % 5 == 0:
                         text += "<br />"
                 self.label_avg.setText(text)
-
                 self.scanner_vLine_avg.setPos(mousePoint.x())
 
     # Graphics | show crosshair data scanner
@@ -332,7 +282,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
                 self.label_cur.show()
             else:
                 self.plot_cur.removeItem(self.scanner_vLine_cur)
-                # self.plot.scene().sigMouseMoved.disconnect(self.mouseMoved)
                 self.label_cur.hide()
         elif index == 1:
             if self.pushButton_Scanner_Avg.isChecked():
@@ -342,7 +291,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
                 self.label_avg.show()
             else:
                 self.plot_avg.removeItem(self.scanner_vLine_avg)
-                # self.plot.scene().sigMouseMoved.disconnect(self.mouseMoved)
                 self.label_avg.hide()
                 
     # Graphics | scale by X/Y axis
@@ -367,10 +315,6 @@ class mySpc(QWidget, Ui_Spectroscopy):
     def open_info(self):
         self.info.init_spcInfo(self.data)
         self.info.show()
-
-    # !!! Clear graph
-    def clear_graph(self):
-        pass
     
     # Emit close signal
     def closeEvent(self, event):
@@ -626,6 +570,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         with open(fname, 'wb') as output:
             self.data.path = fname                                      # Save path
             pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
+
 
 
 if __name__ == "__main__":

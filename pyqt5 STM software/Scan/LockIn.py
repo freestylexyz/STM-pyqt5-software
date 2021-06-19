@@ -16,8 +16,6 @@ sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication , QWidget
 from LockIn_ui import Ui_LockIn
 
-
-
 class myLockIn(QWidget, Ui_LockIn):
     def __init__(self):
         super().__init__()

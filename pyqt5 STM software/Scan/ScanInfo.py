@@ -13,8 +13,6 @@ from PyQt5.QtCore import pyqtSignal
 from ScanInfo_ui import Ui_ScanInfo
 import conversion as cnv
 
-
-
 class myScanInfo(QWidget, Ui_ScanInfo):
     close_signal = pyqtSignal()
 

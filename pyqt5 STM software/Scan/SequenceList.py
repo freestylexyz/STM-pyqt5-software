@@ -5,7 +5,6 @@
 @FileName : SequenceList.py
 """
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../MainMenu/")
 sys.path.append("../Setting/")
@@ -165,7 +164,6 @@ class mySequenceList(QWidget, Ui_SequenceList):
             self.seqED.show()            
         
     # Remove selected sequence from list
-
     def remove(self):
         row = self.listWidget_SeqList.currentRow()
         if row >= 0:                                    # If there is a selected row

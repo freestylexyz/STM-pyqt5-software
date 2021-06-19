@@ -5,16 +5,11 @@ Created on Wed Dec  2 15:18:34 2020
 """
 
 import sys
-
-import numpy as np
-
 sys.path.append("../Model/")
 sys.path.append("../Scan/")
-
 from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox, QButtonGroup, QFileDialog, QUndoStack, QUndoCommand
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal, QRectF
-
 from Scan_ import myScan_
 from DigitalSignalProcessor import myDSP
 from customGradientWidget import *
@@ -243,35 +238,34 @@ class myScan(myScan_):
         func_dict[channell].setText(str(currentl - 0x8000))                             # Update second channel indicator
         self.last_xy[var_dict[channels]] = (currents - 0x8000) * gain_dict[channels]    # Update first channel variable
         self.last_xy[var_dict[channell]] = (currentl - 0x8000) * gain_dict[channell]    # Update second channel variable
+        self.enable_gain(True)                                                          # Enable / Disable xy gain after send
 
         if (channels == 0x11) or (channels == 0x1e):
             
             self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
-            # self.xy_in_cnv(False, 0, self.scrollBar_Xin_XY.value())
-            # self.xy_in_cnv(False, 1, self.scrollBar_Yin_XY.value())
             self.target_position.movePoint(self.target_position.getHandles()[0], \
                                             [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
+        self.track_area.movePoint(self.track_area.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
 
     # Update scan
     def scan_update(self, rdata):
-        # !!! Update graphic view
-        plot_data = self.data.update_data(rdata)            # Update scan data and obtain data used for plot
-        # print("!!!!!", type(plot_data), plot_data.shape, plot_data)    #!!!!! <class 'numpy.ndarray'> (129, 129)
-        # plot_data = np.ones((129, 129))*255
-        # print("!!!!!", type(plot_data), plot_data.shape, plot_data)
-        self.raw_img = copy.deepcopy(plot_data)
-        self.current_img = copy.deepcopy(self.raw_img)
-        self.img_display.setImage(self.current_img)
+        # Update graphic view
+        plot_data = self.data.update_data(rdata)  # Update scan data and obtain data used for plot
+        self.raw_img = copy.deepcopy(plot_data)  # Get raw data to plot
+        self.current_img = copy.deepcopy(self.raw_img)  # Make a copy of raw data
+        self.img_display.setImage(self.current_img)  # Plot image
+        # Set graphicsView interaction range
         self.img_display.setRect(QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                         int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                         self.scan_size[0] * self.scan_size[1],
                                         self.scan_size[0] * self.scan_size[1]))
+        # Set the image to full screen
         self.view_box.setRange(QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                       int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                       self.scan_size[0] * self.scan_size[1],
                                       self.scan_size[0] * self.scan_size[1]), padding=0)
-        self.label_line.setText(str(self.data.line + 1))    # Update line num label
+        self.label_line.setText(str(self.data.line + 1))  # Update line num label
         
     # Update plane fit parameters in track window
     def track_update_fit(self):
@@ -341,7 +335,6 @@ class myScan(myScan_):
             self.view_box.setRange(QRectF(xmin, xmax, self.scan_size[0] * self.scan_size[1], self.scan_size[0] * self.scan_size[1]), padding=0)
             # Set up Points related ROI
             self.select_point.setSize([(xmax-xmin)/20, (ymax-ymin)/20])
-            # self.select_point.setPos([int((xmax + xmin)/2-(xmax-xmin)/40), int((ymax + ymin)/2-(ymax-ymin)/40)])
             self.select_point.setPos([0,0])
             self.select_point.maxBounds = QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                           int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
@@ -409,57 +402,57 @@ class myScan(myScan_):
         self.dlg.setFileMode(QFileDialog.AnyFile)
         self.dlg.setAcceptMode(QFileDialog.AcceptSave)
         
-        if self.data.time.strftime("%m%d%y") != self.today:             # New day, init file_index
+        if self.data.time.strftime("%m%d%y") != self.today:  # New day, init file_index
             self.today = self.data.time.strftime("%m%d%y")
             self.file_index = 0
-        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'                                      # Name list
-        name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]    # Auto configure file name
-        self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.stm')                  # Set default file name as auto configured
+        name_list = '0123456789abcdefghijklmnopqrstuvwxyz'  # Name list
+        name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]  # Auto configure file name
+        self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.stm')  # Set default file name as auto configured
         
-        if self.dlg.exec_():                                            # File selected
-            fname = self.dlg.selectedFiles()[0]                                                 # File path
-            directory = self.dlg.directory()                                                    # Directory path
-            self.dlg.setDirectory(directory)                                                    # Set directory path for next call
-            save_name = fname.replace(directory.path() + '/', '').replace('.stm', '')           # Get the real file name 
+        if self.dlg.exec_():  # File selected
+            fname = self.dlg.selectedFiles()[0]  # File path
+            directory = self.dlg.directory()  # Directory path
+            self.dlg.setDirectory(directory)  # Set directory path for next call
+            save_name = fname.replace(directory.path() + '/', '').replace('.stm', '')  # Get the real file name
             
             # If default file name is not used
             if save_name != name:
-                try:        # See if current file name is in our naming system
-                    if save_name[0:6] == self.today:        # Reset file index if match
+                try:  # See if current file name is in our naming system
+                    if save_name[0:6] == self.today:   # Reset file index if match
                         self.file_index = name_list.index(save_name[6]) * 36 + name_list.index(save_name[7])
                     else:
                         self.file_index -= 1
-                except:     # Otherwise do not consume file index
+                except:  # Otherwise do not consume file index
                     self.file_index -= 1
-            self.saved = True                                               # Toggle saved flag
-            self.setWindowTitle('Scan-' + save_name)                        # Change window title for saving status indication
-            self.file_index += 1                                            # Consume 1 file index
+            self.saved = True  # Toggle saved flag
+            self.setWindowTitle('Scan-' + save_name)  # Change window title for saving status indication
+            self.file_index += 1  # Consume 1 file index
             with open(fname, 'wb') as output:
-                self.data.path = fname                                      # Save path
-                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
+                self.data.path = fname  # Save path
+                pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)  # Save data
     
     # Load
     def load(self):
-        flag = self.saved        # If able to load flag
+        flag = self.saved  # If able to load flag
         if not flag:
             msg = QMessageBox.question(None, "Scan", "Imaged not saved, do you overwrite current data?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             flag = (msg == QMessageBox.Yes)
-        if flag:                # Able to load
+        if flag:  # Able to load
             # Set up file dialog for load
             self.dlg.setFileMode(QFileDialog.ExistingFile)
             self.dlg.setAcceptMode(QFileDialog.AcceptOpen)
             if self.remember_path != '':
                 self.dlg.setDirectory(self.remember_path)
-            if self.dlg.exec_():        # File selected
-                fname = self.dlg.selectedFiles()[0]             # File path
-                directory = self.dlg.directory().path()         # Directory path
+            if self.dlg.exec_():   # File selected
+                fname = self.dlg.selectedFiles()[0]  # File path
+                directory = self.dlg.directory().path()  # Directory path
                 # Load data
                 with open(fname, 'rb') as input:
                     self.data = pickle.load(input)
-                    self.data.path = fname                      # Change file path
+                    self.data.path = fname  # Change file path
                 self.saved = True
                 self.remember_path = directory
-                self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))   # Change window title for saving status indication
+                self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))  # Change window title for saving status indication
                     
                 # Set up scroll bars
                 self.scrollBar_Xin_XY.setValue(self.data.lastdac[0] - 0x8000)
@@ -468,6 +461,7 @@ class myScan(myScan_):
                 self.scrollBar_Yoffset_XY.setValue(self.data.lastdac[14] - 0x8000)
                 self.scrollBar_ScanSize_ScanControl.setValue(self.data.step_num)
                 self.scrollBar_StepSize_ScanControl.setValue(self.data.step_size)
+
                 # Plot image
                 self.raw_img = copy.deepcopy(self.data.data[0])
                 self.current_img = copy.deepcopy(self.raw_img)
@@ -499,16 +493,16 @@ class myScan(myScan_):
         if state == 0:  # if spc adv checkBox is unchecked
             self.track.closable = True
             self.track.comboBox_ReadCh_Track.setEnabled(True)
-            self.track.pushButton_Start_Track.setEnabled(self.pushButton_Start_Scan.isEnabled())    # Reset enable based on succeed
-            self.track.close()  # !!! not working
-        elif state == 2:    # if spc adv checkBox is checked (0: unchecked, 1: partially checked, 2: checked)
+            self.track.pushButton_Start_Track.setEnabled(self.pushButton_Start_Scan.isEnabled())  # Reset enable based on succeed
+            self.track.close()
+        elif state == 2:  # if spc adv checkBox is checked (0: unchecked, 1: partially checked, 2: checked)
             self.track.closable = False
             self.track.pushButton_Start_Track.setEnabled(False)
             self.track.comboBox_ReadCh_Track.setEnabled(False)
             # Init Track size and position
             self.track.resize(472, 274)
             self.track.move(11, 757)
-            self.update_track_roi()
+            self.update_track_roi()  # Set track area in the same position as tip position with correct size
             self.track.show()
 
     # Update track ROI position and size
@@ -516,9 +510,8 @@ class myScan(myScan_):
         size = self.track.scrollBar_TrackSize_Track.value()
         track_size = (size-1) * self.imagine_gain
         self.track_area.setSize(track_size, center=(0.5, 0.5))
-        self.track_area.movePoint(self.track_area.getHandles()[0], \
-                                  [self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0], \
-                                   self.tip_position.pos()[0]+self.tip_position.getHandles()[0].pos()[0]])
+        self.track_area.movePoint(self.track_area.getHandles()[0],
+                                  [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
         self.track_area.show()
 
     # pallet radioButton slot | gray, color
@@ -616,7 +609,6 @@ class myScan(myScan_):
                 else:
                     self.pallet_bar.loadPreset('thermal')
 
-
     # Point Editor | update variable and draw points
     def points_update(self, index):
         # Update graphics
@@ -641,7 +633,6 @@ class myScan(myScan_):
                 self.points.getHandles()[0].pen.setWidth(2)
                 purple_brush = pg.mkBrush('deaaff')
                 self.points.getHandles()[0].pen.setBrush(purple_brush)
-                # self.points.sigRegionChanged.connect(lambda: self.points_update(1))
                 self.points.sigRegionChanged.connect(self.update_point_editor)
                 self.points.movePoint(self.points.getHandles()[0], self.point_list[0])
                 for i in range(1, len(self.point_list)):
@@ -652,40 +643,6 @@ class myScan(myScan_):
             for i in range(start, len(self.points.handles) - 1):
                 self.points.addSegment(self.points.handles[i]['item'], self.points.handles[i + 1]['item'])
             self.points.update()
-
-        # !!! Replaced with update_point_editor()
-        # Update point editor
-        elif index == 1:
-
-            # Record other points position
-            self.point_list_others = []
-            x_others = []
-            y_others = []
-            for i in range(len(self.points.handles)):
-                x_other = self.points.getHandles()[i].pos()[0]
-                y_other = self.points.getHandles()[i].pos()[1]
-                self.point_list_others += [(x_other, y_other)]
-                x_others += [x_other]
-                y_others += [y_other]
-
-            # Set up size of select point roi
-            index_xmin = x_others.index(min(x_others))
-            index_ymin = y_others.index(min(y_others))
-            index_xmax = x_others.index(max(x_others))
-            index_ymax = y_others.index(max(y_others))
-            self.select_point.sigRegionChanged.disconnect(self.points_overall)
-            self.select_point.setPos([self.point_list_others[index_xmin][0], self.point_list_others[index_ymin][1]])
-            self.select_point.setSize([self.point_list_others[index_xmax][0] - self.point_list_others[index_xmin][0], \
-                                       self.point_list_others[index_ymax][1] - self.point_list_others[index_ymin][1]])
-            self.select_point.sigRegionChanged.connect(self.points_overall)
-
-            # Update table widget
-            self.point_list_2table = []
-            for handle in self.points.getHandles():
-                x = int((handle.pos()[0] + self.points.pos()[0] - self.last_xy[2])/self.imagine_gain)
-                y = int((handle.pos()[1] + self.points.pos()[1] - self.last_xy[3])/self.imagine_gain)
-                self.point_list_2table += [(x, y)]
-            self.point_editor.update_from_graphics(self.point_list_2table)
 
         # Special case for only one point left
         elif index == 2:
@@ -703,7 +660,6 @@ class myScan(myScan_):
             self.points.getHandles()[0].pen.setWidth(2)
             purple_brush = pg.mkBrush('deaaff')
             self.points.getHandles()[0].pen.setBrush(purple_brush)
-            # self.points.sigRegionChanged.connect(lambda: self.points_update(1))
             self.points.sigRegionChanged.connect(self.update_point_editor)
             self.points.movePoint(self.points.getHandles()[0],
                                   [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
@@ -787,6 +743,8 @@ class myScan(myScan_):
         else:
             QMessageBox.warning(None, "Scan", "Process ongoing!!", QMessageBox.Ok)
             event.ignore()
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

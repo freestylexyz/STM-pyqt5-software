@@ -5,7 +5,6 @@
 @FileName : SequenceEditor.py
 """
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../MainMenu/")
 sys.path.append("../Setting/")
@@ -533,7 +532,6 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
                 self.saved = True
                 self.setWindowTitle('Sequence Editor')
 
-    
     # !!! Not finished
     def validate(self):
         if not self.saved:
@@ -563,8 +561,6 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         else:
             d = {'Command': self.seq.command, 'Channel': self.seq.channel, 'Option1': self.seq.option1, 'Option2': self.seq.option2, 'Data': self.seq.data}
         print(pd.DataFrame(data = d))
-       
-
 
     # Add to list (self.edit = -1) or update list (self.edit >= 0)
     def add_to_list(self):
@@ -576,6 +572,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
     # Do nothing
     def cancel(self):
         self.close()    
+
 
 
 if __name__ == "__main__":

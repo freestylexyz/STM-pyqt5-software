@@ -7,7 +7,6 @@
 import sys
 sys.path.append("../ui/")
 sys.path.append("../Model/")
-
 from PyQt5.QtWidgets import QApplication, QWidget
 from SendOptions_ui import Ui_SendOptions
 import conversion as cnv
@@ -27,7 +26,6 @@ class mySendOptions(QWidget, Ui_SendOptions):
             limit = cnv.vb(self.spinBox_Limit_Crash.value(), 'a') - cnv.vb(0.0, 'a')
         else:
             limit = 0       # No crash protection
-            
         return delay, step, limit
     
 

@@ -5,7 +5,6 @@
 @FileName : SendOptions.py
 """
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../MainMenu/")
 sys.path.append("../Setting/")
@@ -13,20 +12,13 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QAbstractItemView, QFileDialog, QHeaderView, QMessageBox, QTableWidgetItem, QShortcut
-from PyQt5.QtWidgets import QWidget, QComboBox, QCheckBox, QLabel, QSpinBox, QDoubleSpinBox, QApplication, QFileDialog, QButtonGroup, QMessageBox
+from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QShortcut
+from PyQt5.QtWidgets import QWidget, QSpinBox, QApplication, QFileDialog
 from PyQt5.QtCore import pyqtSignal, Qt
-
 from PyQt5.QtGui import *
-from PyQt5 import QtCore
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
+from pyqtgraph.Qt import QtGui
 from PointEditor_ui import Ui_PointEditor
-import numpy as np
-import conversion as cnv
-import functools as ft
 import pickle
-
 
 class myPointEditor(QWidget, Ui_PointEditor):
     close_signal = pyqtSignal(int)
@@ -207,20 +199,6 @@ class myPointEditor(QWidget, Ui_PointEditor):
                     y = int(self.table_Content.cellWidget(i, 1).value())
                     self.points += [(x, y)]
                 self.points_signal.emit(0)  # update point list variable
-
-
-    def enable_serial(self, enable):
-        pass
-
-    # def keyPressEvent(self, event):
-    #     print("按下：" + str(event.key()))
-    #     if event.key() == Qt.Key_Z:
-    #         if QApplication.keyboardModifiers() == Qt.ControlModifier:
-    #             self.undoStack.createUndoAction(self, '撤销')
-    #
-    #     if event.key() == Qt.Key_Y:
-    #         if QApplication.keyboardModifiers() == Qt.ControlModifier:
-    #             self.undoStack.createRedoAction(self, '重做')
 
     # Emit close signal
     def closeEvent(self, event):
