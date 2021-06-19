@@ -5,7 +5,6 @@
 @FileName : Etest_.py
 """
 import sys
-
 sys.path.append("../ui/")
 sys.path.append("../MainMenu/")
 sys.path.append("../Setting/")
@@ -16,13 +15,10 @@ sys.path.append("../Etest/")
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, QButtonGroup
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QIntValidator
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
 from Etest_ui import Ui_ElectronicTest
 import numpy as np
 import conversion as cnv
 import functools as ft
-import math
 
 class myEtest(QWidget, Ui_ElectronicTest):
     # Common signal
@@ -240,16 +236,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.init_swave(dacrange)
         self.init_osci()
         self.init_ftest(lastdigital)
-        '''
-        self.lastdac = [0x8000] * 16    # Last ouput of all DAC channels
-        self.dacrange = [10] * 16       # All DAC channels' current range
-        self.adcrange = [0] * 8         # All ADC channels' current range
-        self.last20bit = 0x80000        # Last ouput of 20bit DAC
-        self.lastdigital = [False] * 6  # 0 - 5 : bias dither, z dither, feedback, retract, coarse, translation
-        self.lastgain = [1] * 4         # 0 -> gain 10.0, 1 -> gain 1.0, 3 -> gain 0.1
-                                        # Z1 gain is different from others, 3 -> gain 10.0, 1 -> gain 1.0, 0 -> gain 0.1
-        self.offset = [0] * 16          # 0 - 14 are bias offset for different range, 15 is Iset offset
-        '''
 
     # init I/O tab
     def init_io(self, dacrange, adcrange, lastdigital, lastgain, lastdac, last20bit):
@@ -323,10 +309,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
         self.spinBox_AvTimes_Osci.setValue(0)
         self.spinBox_Samples_Osci.setValue(0)
         self.spinBox_Delay_Osci.setValue(0)
-
-    # init Echo tab
-    def init_echo(self):
-        pass
 
     # init Feedback Test tab
     def init_ftest(self, lastdigital):
@@ -542,8 +524,6 @@ class myEtest(QWidget, Ui_ElectronicTest):
                 self.spinBox_V2_SWave.setMinimum(minimum)
                 self.spinBox_V2_SWave.setMaximum(maximum)
 
-
-
     # Ramp Test | load input(index =2) and output(index = 3) range from dsp
     # Square Wave | load output(index=4) range from dsp
     def set_range_text(self, index, ran):
@@ -704,14 +684,12 @@ class myEtest(QWidget, Ui_ElectronicTest):
         if not self.ftest_stop:
             self.ftest_stop = True
 
-
     # Enable serial
     def enable_serial(self, enable):
         # tabs
         for tab in range(6):
             if tab != self.mode:
                 self.Etest.setTabEnabled(tab, enable)
-
         # I/O
         # DAC
         self.dac_out.setEnabled(enable)
@@ -819,39 +797,4 @@ if __name__ == "__main__":
     window = myEtest()
     window.show()
     sys.exit(app.exec_())
-
-    '''
-       -> signal - slot connection <-
-    # Common
-    self.etest.Etest.currentChanged.connect(self.init_tab_slot)
-    self.etest.Etest.tabBarClicked.connect(self.init_tab_slot)
-       
-    # I/O
-    self.etest.range_changed_signal.connect(self.range_changed_slot)
-    self.etest.ch_changed_signal.connect(self.ch_changed_slot)
-    self.etest.digital_changed_signal.connect(self.dsp.digital_o)   
-    self.etest.gain_changed_signal.connect(self.dsp.gain)  
-    self.etest.adc_input_signal.connect(self.adc_input_slot)
-    self.etest.dac_output_signal.connect(self.dsp.dac_W)   
-    self.etest.bit20_output_signal.connect(self.dsp.bit20_W)
-    
-    # Ramp Test
-    self.etest.stop_signal.connect(self.stop_slot)
-    
-    # Square Wave
-    self.etest.swave_start_signal.connect(self.swave_start_slot)
-    
-    # Oscilloscope
-    self.etest.osci_start_signal.connect(self.osci_start_slot)
-    self.dsp.oscc_signal.connect(self.osci_update)
-    
-    # Echo
-    self.etest.echo_start_signal.connect(self.echo_start_slot)
-    self.etest.echo_query_signal.connect(self.echo_query_slot)
-    
-    # Feedback
-    self.etest.ftest_start_signal.connect(self.ftest_start_slot)
-    
-
-    '''
 

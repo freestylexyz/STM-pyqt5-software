@@ -13,9 +13,7 @@ sys.path.append("../Model/")
 sys.path.append("../TipApproach/")
 sys.path.append("../Scan/")
 sys.path.append("../Etest/")
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt, QMetaObject, QSettings
+from PyQt5.QtWidgets import QMessageBox
 from sequence import mySequence
 from MainMenu import myMainMenu
 import conversion as cnv
@@ -344,7 +342,4 @@ class myEtestControl(myMainMenu):
             for tab in range(6):
                 if tab != self.etest.mode:
                     self.etest.Etest.setTabEnabled(tab, False)
-            # if index != self.etest.mode:
-            #     self.etest.Etest.setCurrentIndex(self.etest.mode)   # return to former tab
-            #     QMessageBox.warning(None, "Etest", "Process ongoing!", QMessageBox.Ok)
 
