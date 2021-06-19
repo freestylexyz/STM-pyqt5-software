@@ -6,7 +6,6 @@ Created on Wed Dec  2 16:04:05 2020
 """
 
 import sys
-
 sys.path.append("./ui/")
 from PyQt5.QtWidgets import QMessageBox, QButtonGroup
 from MainMenu import myMainMenu

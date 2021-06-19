@@ -75,7 +75,6 @@ class myCurrentControl(myMainMenu):
             else:                                           # Everythin is good
                 threading.Thread(target = (lambda: self.current_gain_excu(gain, value))).start()    # Execute with thread
 
-                
     # Setpoint spinBox slot
     def current_value(self):
         value = self.spinBox_Input_Setpoint.value()     # Current setpoint
@@ -93,8 +92,7 @@ class myCurrentControl(myMainMenu):
     def current_stop(self):
         self.dsp.stop = True    # Toggle DSP stop flag
         self.pushButton_StopRamp_CurrRamp.setEnabled(False) # Prevent multiple toggle
-    
-        
+
     # Setpoint ramp function
     def current_ramp_excu(self, value):
         if self.idling:
