@@ -17,8 +17,6 @@ from PyQt5.QtCore import pyqtSignal
 from TipApproach_ui import Ui_TipApproach
 import conversion as cnv
 
-
-
 class myTipApproach(QWidget, Ui_TipApproach):
     close_signal = pyqtSignal()
     stop_signal = pyqtSignal()
@@ -74,7 +72,6 @@ class myTipApproach(QWidget, Ui_TipApproach):
         # Stop
         self.pushButton_Stop.clicked.connect(self.stop)
 
-        
     # Re-init tip approach view
     def init_tipAppr(self, succeed, lastdigital):
         # Enable serial related buttons
