@@ -45,7 +45,7 @@ class myScanControl(myMainMenu):
             self.enable_mode_serial(False)  # Disable serial based on current mode
             self.scan.idling = False  # Toggle scan idling flag
             # !!! May stuck in endless loop
-            # while not self.idling:                                              # Wait until all docks are idling
+            # while not self.idling:  # Wait until all docks are idling
             #     time.sleep(1)
             self.dsp.rampTo(0x1a, 0x8000, 2, 1000, 0, False)  # Ramp Zouter to 0V
             self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)  # Ramp XY in to 0V
@@ -56,7 +56,7 @@ class myScanControl(myMainMenu):
             self.dsp.digital_o(5, 0)  # Change XY to rotation mode
             self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)  # Return Z offset fine to zero
             # !!! Avoid stuck for no scanner testing
-            # self.dsp.zAuto0()                                                   # Command DSP to do Z auto
+            # self.dsp.zAuto0()  # Command DSP to do Z auto
             bits = self.dsp.lastdac[3] + 300  # Adjust Z feedback to be little bit contracted
             self.dsp.rampTo(0x13, bits, 1, 500, 0, False)  # Execute the adjustment
             time.sleep(1)  # Wait 1 seconds to wait for feedback Z to respond
@@ -160,7 +160,6 @@ class myScanControl(myMainMenu):
             if self.scan.checkBox_LockIn_ScanControl.isEnabled():
                 self.scan.pushButton_LockIn_ScanControl.setEnabled(True)  # Load lock in
             self.scan.saved = False  # Set saved flag to false
-            print('data finish loading')
 
             # Get system ready
             self.scan.setWindowTitle('Scan')  # Set window title to indicate status
@@ -170,7 +169,6 @@ class myScanControl(myMainMenu):
             self.dsp.rampDiag(1 + 16, 14 + 16, xoff, yoff, step_off, delay, 0,
                               True)  # Send XY offset without crash protection
             self.dsp.rampDiag(0 + 16, 15 + 16, xin, yin, step_in, delay, 0, True)  # Send XY in without crash protection
-            print('finish ramp to reference')
 
             # Store system status for later restore
             ditherB_s = self.dsp.lastdigital[0]  # Store bias dither
@@ -185,14 +183,12 @@ class myScanControl(myMainMenu):
             self.dsp.rampTo(0x12, max(0, min(self.dsp.lastdac[2] + advance_bit, 0xffff)), 100, 10, 0, False)  # Advance bits
             self.dsp.digital_o(0, seq.ditherB)  # Turn bias dither ON/OFF
             self.dsp.digital_o(1, seq.ditherZ)  # Turn Z dither ON/OFF
-            print('finish prescan setup')
 
             # Send tip to start scan start position
             if tip_protection:
                 # self.dsp.tipProtect(tip_protect_data, False)  # Tip protect
                 print('finish tip protection')
             self.dsp.rampDiag(channel_x, channel_y, x_pos, y_pos, step_in, delay, 0, False)  # Send XY in
-            print('finish ramp to start')
 
             # Enable stop button
             self.scan.pushButton_Start_Scan.setText('Stop')
@@ -201,13 +197,10 @@ class myScanControl(myMainMenu):
             # Start scan
             self.dsp.scan(channel_x, channel_y, step_size, step_num, move_delay, measure_delay, line_delay, \
                           limit, tip_protect_data, seq, scan_protect_flag, tip_protection, dir_x)
-            print('finish scan')
-
 
             # Send XY in back to original
-            self.dsp.rampDiag(0 + 16, 15 + 16, xin, yin, step_in, delay, 0,
-                              False)  # Send XY in back to original place
-            print('finish ramp back to start')
+            self.dsp.rampDiag(0 + 16, 15 + 16, xin, yin, step_in, delay, 0, False)  # Send XY in back to original place
+
             if tip_protection:
                 # self.dsp.tipProtect(tip_protect_data, True)  # Tip unprotect
                 print('finish tip unprotect')
@@ -226,14 +219,10 @@ class myScanControl(myMainMenu):
             self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.pushButton_Info_Scan.setEnabled(True)  # Set Scan Info button enabled
             winsound.Beep(2000, 1000)
-            print('finish finish')
 
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
         # Set up sequence
-        for a in self.scan.scan_seq_list:
-            print(a.name)
-        print('selected'+str(self.scan.scan_seq_selected))
         if self.scan.scan_seq_selected < 0:  # No sequence selected
             flag = False  # Cannot execute scan
             self.scan.message('No sequence selected')  # Pop out message
@@ -270,8 +259,8 @@ class myScanControl(myMainMenu):
             # Execute read before
             if read_before:
                 rdata = self.dsp.osc_N(read_before[0], read_before[1], read_before[2], read_before[3])
-                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]
-                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)
+                ch_range = self.dsp.adcrange[self.scan.dep.comboBox_Ch_Read.currentIndex() + 6]  # Get current channel range
+                rdata_volt = self.scan.dep.cnv2volt(rdata, ch_range)  # Convert data unit to vlot
                 self.scan.dep.update_N(rdata_volt, 0)  # Plot read before data
 
             # Set up stop button if continuous read mode
@@ -355,21 +344,21 @@ class myScanControl(myMainMenu):
     # Track execution called by other function
     def track_excu_(self, track, loop_num):
         self.scan.track.idling = False  # Toggle track idling flag
-        self.scan.update_track_roi()
+        self.scan.update_track_roi()  # Set track ROI position same as tip position before track start
 
         # Load track XY variables for out of boundary judgement
         self.scan.track.x = self.dsp.lastdac[0]
         self.scan.track.y = self.dsp.lastdac[15]
 
         # Execute track
-        print('track start')
         x, y = self.dsp.track(loop_num, track[0], track[1], track[2], track[3], track[4], track[5], track[6], track[7])
         self.scan.send_update(0x10, 0x1f, x, y)  # Update scan view based on returned XY value
+        # Keep track ROI in the same position as tip position
         self.scan.target_position.movePoint(self.scan.target_position.getHandles()[0],
                                     [self.scan.last_xy[0] + self.scan.last_xy[2], self.scan.last_xy[1] + self.scan.last_xy[3]])
-        print('track end')
-        self.scan.update_track_roi()
+
         # Restore system status
+        self.scan.update_track_roi()  # Set track ROI position same as tip position after track end
         self.scan.track.idling = True
 
     # Track slot
@@ -439,12 +428,11 @@ class myScanControl(myMainMenu):
             time.sleep(0.01)  # Wait for analog switch
 
             corr_flag = True  # Initiate corr_flag
+
             # Passes
             for i in range(pass_num):
-                print('pass' + str(i) + 'started')
+                self.scan.spc.label_pass.setText(str(i + 1))  # Set current pass label
                 for j in self.scan.point_list:
-                    print('point')
-                    print(j)
                     # Send to point + delta
                     position = (j[0] + delta_xy[0], j[1] + delta_xy[1])
                     self.dsp.rampDiag(0x10, 0x1f, position[0], position[1], 100, 2000, 0, True)
@@ -550,7 +538,6 @@ class myScanControl(myMainMenu):
                         ref_xy = (self.dsp.lastdac[0], self.dsp.lastdac[15])
                         # Send to reference point
                         self.dsp.rampDiag(0x10, 0x1f, ref_xy[0], ref_xy[1], 100, 2000, 0, False)
-                        print
                     if self.scan.stop:
                         break
 
@@ -616,7 +603,7 @@ class myScanControl(myMainMenu):
                 seq = mySequence(command_list, data_list, True)  # Generate sequence
                 seq.feedback, seq.ditherB, seq.ditherZ = self.scan.spc.adv.configure_prescan()  # Load sequence digital
             else:  # Use sequence
-                self.scan.spc_seq_list[self.scan.spc_seq_selected]  # Get selected sequence
+                seq = self.scan.spc_seq_list[self.scan.spc_seq_selected]  # Get selected sequence
             seq.configure(self.bias_dac, self.preamp_gain, self.dsp.dacrange, self.dsp.lastdac,
                           self.dsp.last20bit)  # Configure sequence
             seq.validation(seq.ditherB, seq.ditherZ, seq.feedback, True)  # Validate sequence
