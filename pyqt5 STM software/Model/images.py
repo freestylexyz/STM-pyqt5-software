@@ -37,46 +37,26 @@ class myImages(QWidget):
     # color -> gray
     #
     def color2gray(self, img):
-        # img = cv.imread(path)
-        # img = cv.resize(img, dsize=(440, 440))
-        # cv.imshow('read_img',img)
         gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        # cv.imshow('gray_img', gray_img)
         psudo_gray_img = cv.cvtColor(gray_img, cv.COLOR_GRAY2BGR)
-        # cv.imshow('psudo_gray_img', psudo_gray_img)
-        # cv.imwrite('..\data\scan_example_gray.jpg', psudo_gray_img)
-        # cv.waitKey(0)
-        # cv.destroyAllWindows()
         return psudo_gray_img
 
     #
     # gray -> color
     #
     def gray2color(self, img):
-        # img = cv.imread(path)
         img = cv.resize(img, dsize=(440, 440))
-        # cv.imshow('read_img',img)
-        # img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        # img=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
         img = cv.applyColorMap(img, 5)
-        # cv.imshow('color_img', img)
-        # cv.waitKey(0)
-        # cv.destroyAllWindows()
         return img
     #
     # gray -> reversed
     #
     def gray2reverse(self, img):
-        # img = cv.imread(path, 0)
         height, width = img.shape
         dst = np.zeros((height, width), np.uint8)
         for i in range(height):
             for j in range(width):
                 dst[i, j] = 255-img[i,j]
-        # cv.imwrite('..\data\scan_example_reverse.png', dst)
-        # cv.imshow('img',img)
-        # cv.imshow('dst',dst)
-        # cv.waitKey()
         return dst
 
     #
@@ -91,26 +71,17 @@ class myImages(QWidget):
             for j in range(width):
                 b, g, r = img[i, j]
                 dst[i, j] = (255-b, 255-g, 255-r)
-        # cv.imshow('img', img)
-        # cv.imshow('dst', dst)
-        # cv.waitKey()
         return dst
     #
     # gray --> scharr operator --> diff
     #
     def illuminated(self, img):
-        # img = cv.imread(path)
         # scharr operator
         scharrx = cv.Scharr(img, cv.CV_64F, 1, 0)
         scharry = cv.Scharr(img, cv.CV_64F, 0, 1)
         scharrx = cv.convertScaleAbs(scharrx)
         scharry = cv.convertScaleAbs(scharry)
         scharrxy = cv.addWeighted(scharrx, 0.5, scharry, 0.5, 0)
-        # cv.imwrite('..\data\scan_example_illuminated.png', scharrxy)
-        # res = np.hstack((img, scharrx, scharry, scharrxy))
-        # cv.imshow(res, 'res')
-        # cv.waitKey()
-        # cv.destroyAllWindows()
         return scharrxy
 
     #
@@ -120,7 +91,6 @@ class myImages(QWidget):
         x = np.array([[i + 1] * img.shape[0] for i in range(img.shape[0])]).flatten()
         y = np.array(list(np.arange(img.shape[1]) + 1) * img.shape[1])
         z = img.flatten()
-        index = np.argmin(z)
 
         # Create coefficient matrix A
         A = np.zeros((3, 3))
@@ -141,18 +111,15 @@ class myImages(QWidget):
             b[0, 0] = b[0, 0] + x[i] * z[i]
             b[1, 0] = b[1, 0] + y[i] * z[i]
             b[2, 0] = b[2, 0] + z[i]
-        # print(b)
 
         # Solving x
         A_inv = np.linalg.inv(A)
         X = np.dot(A_inv, b)
-        # print('PlaneFit: The result of plane fitting is：z = %.3f * x + %.3f * y + %.3f' % (X[0, 0], X[1, 0], X[2, 0]))
 
         # Calculate variance
         R = 0
         for i in range(0, img.size):
             R = R + (X[0, 0] * x[i] + X[1, 0] * y[i] + X[2, 0] - z[i]) ** 2
-        # print('PlaneFit: The variance is：%.*f' % (3, R))
 
         # Display image
         fig1 = plt.figure()
@@ -164,7 +131,6 @@ class myImages(QWidget):
         x_p = np.linspace(1, img.shape[0]+1, 100)
         y_p = np.linspace(1, img.shape[1]+1, 100)
         x_p, y_p = np.meshgrid(x_p, y_p)
-        # X[2, 0] = z[index] - X[0, 0] * x[index] - X[1, 0] * y[index]
         z_p = X[0, 0] * x_p + X[1, 0] * y_p + X[2, 0]
         new_z = X[0, 0] * x + X[1, 0] * y + X[2, 0]
         new_z = z - new_z
@@ -172,13 +138,6 @@ class myImages(QWidget):
 
         ax1.plot_wireframe(x_p, y_p, z_p, rstride=10, cstride=10, alpha=0.7)
         ax1.scatter(x, y, new_z, c='g', marker='.', alpha=0.03)
-
-        # plt.show()
-
-        # img = cv.cvtColor(new_z, cv.COLOR_GRAY2BGR)
-        # cv.imshow('img', img)
-        # cv.waitKey()
-        # cv.destroyAllWindows()
 
         new_z = self.hist_normalization(new_z)
 
@@ -200,13 +159,13 @@ class myImages(QWidget):
     def prepare_data(self, array):
         xmax = max(map(max, array))
         xmin = min(map(min, array))
-        print(xmax, xmin)
+
         if xmax-xmin != 0:
             for i in range(array.shape[0]):
                 for j in range(array.shape[1]):
                     array[i][j] = (array[i][j] - xmin) / (xmax - xmin) * 255
         array = array.astype(np.float32)
-        print("prepare data:", array.max(), array.min())
+
         return array
 
     def read_csv(self, path):
@@ -221,12 +180,6 @@ class myImages(QWidget):
                 str(x) + " " + str(y)
                 pix[x, y] = (int(temp[y, x] // 256 // 256 % 256), int(temp[y, x] // 256 % 256), int(temp[y, x] % 256))
         im.save(g.name[0:-4] + '.jpeg')
-        # img = cv.imread(g.name[0:-4] + '.jpeg')
-        # img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        # img = np.reshape(img, (1, rows, cols))
-        # data = pd.DataFrame(data=img.tolist())
-        # data.to_csv('../data/real_stm_img_.csv',header=False)
-        # print(img.shape)
 
     # RGB to HEX
     def RGB_to_Hex(self, rgb):
@@ -242,7 +195,7 @@ class myImages(QWidget):
         g = int(hex[3:5], 16)
         b = int(hex[5:7], 16)
         rgb = str(r) + ',' + str(g) + ',' + str(b)
-        print(rgb)
+
         return rgb
 
     def upsampling(self, img, up_height, up_width):
@@ -428,31 +381,3 @@ class myImages(QWidget):
         else:
             pass
         return img
-
-'''
-cmaps = [('Perceptually Uniform Sequential', [
-            'viridis', 'plasma', 'inferno', 'magma', 'cividis']),
-         ('Sequential', [
-            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
-            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
-            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']),
-         ('Sequential (2)', [
-            'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
-            'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
-            'hot', 'afmhot', 'gist_heat', 'copper']),
-         ('Diverging', [
-            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']),
-         ('Cyclic', ['twilight', 'twilight_shifted', 'hsv']),
-         ('Qualitative', [
-            'Pastel1', 'Pastel2', 'Paired', 'Accent',
-            'Dark2', 'Set1', 'Set2', 'Set3',
-            'tab10', 'tab20', 'tab20b', 'tab20c']),
-         ('Miscellaneous', [
-            'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
-            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
-            'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
-            'gist_ncar'])]'''
-
-
-

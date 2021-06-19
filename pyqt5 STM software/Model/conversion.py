@@ -86,13 +86,3 @@ class myCNV():
 
 if __name__ == "__main__":
     cnv = myCNV()
-    # print(hex(cnv.v2b(0.1, bit_num = 16, lower_limit = -5, upper_limit = 5)))
-    # print(cnv.b2v(0x8001, bit_num = 16, lower_limit = -2.5, upper_limit = 2.5))
-    # for i in range(7):
-    #     print(cnv.adcl[i], ' ', cnv.adcu[i])
-    # print(vb(0.05, 'd', 9) - vb(0, 'd', 9))
-    # print(vb(0.05, '20') - vb(0, '20'))
-    # print(bv(100, 'd', 10) - bv(0, 'd', 10))
-    # print(hex(vb(0.1, 'a') - vb(0, 'a')))
-    print(bv(0xc000, 'd', ran = 10))
-    # print(bv(1 + 0x8000, 'a'))
