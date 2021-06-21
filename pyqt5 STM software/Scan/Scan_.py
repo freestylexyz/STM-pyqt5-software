@@ -108,7 +108,7 @@ class myScan_(QWidget, Ui_Scan):
         self.XY_gain_group.addButton(self.radioButton_Gain1_XY, 1)
         self.XY_gain_group.addButton(self.radioButton_Gain10_XY, 0)
         self.XY_gain_group.buttonToggled[int, bool].connect(self.xy_gain_cnv)
-        self.XY_gain_group.buttonToggled.connect(self.track.track_area_signal)
+        self.XY_gain_group.buttonToggled.connect(lambda: self.track.emit_track_area_signal(False))
 
         # spinBox | X/Y offset and X/Y in
         self.spinBox_Xin_XY.editingFinished.connect(lambda: self.xy_in_cnv(True, 0, 0))
@@ -407,6 +407,9 @@ class myScan_(QWidget, Ui_Scan):
             self.last_xy[1] = self.last_xy[1] / gain * self.imagine_gain  # Update Yin variable
             self.current_xy[0] = self.current_xy[0] / gain * self.imagine_gain  # Update Xin variable
             self.current_xy[1] = self.current_xy[1] / gain * self.imagine_gain  # Update Yin variable
+
+            self.scan_size_cnv(True, 0, 0)
+            self.scan_size_cnv(True, 1, 0)
 
     # View Control | segment connecting scan area
     def connect_scan_area(self):

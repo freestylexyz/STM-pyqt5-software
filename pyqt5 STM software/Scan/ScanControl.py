@@ -362,7 +362,9 @@ class myScanControl(myMainMenu):
     # Track slot
     def track_thread(self):
         track = self.scan.track.configure_track()
+        self.scan.update_track_roi()  # Set track ROI position same as tip position before track start
         threading.Thread(target=(lambda: self.track_excu(track, 0))).start()
+        self.scan.update_track_roi()  # Set track ROI position same as tip position after track end
 
     # !!! Spectroscopy execution
     def spectroscopy_excu(self, seq):

@@ -126,68 +126,98 @@ class myDepositionInfo(QWidget, Ui_DepositionInfo):
                     data.seq.option1 += [0]
                     data.seq.option2 += [0]
 
-        # Use 5 sequence lists to generate str description list
-        seq_description = []    # Init str description list
-        for i in range(data.seq.seq_num):
-            if data.seq.command[i] == 'Wait':
-                seq_description += [str(i+1) + '  Wait ' + data.seq.data[i] + ' us']
-            elif data.seq.command[i] == 'Match':
-                option = '  Fast' if data.seq.option1[i] else '  Slow'
-                seq_description += [str(i+1) + option + ' Match current']
-            elif data.seq.command[i] == 'Dout':
-                status = 'ON' if data.seq.data[i] else 'OFF'
-                if data.seq.channel[i] == 'DitherZ':
-                    seq_description += [str(i+1) + '  Z dither ' + status]
-                elif data.seq.channel[i] == 'DitherB':
-                    seq_description += [str(i+1) + '  Bias dither ' + status]
-                elif data.seq.channel[i] == 'Feedback':
-                    seq_description += [str(i+1) + '  Feedback ' + status]
-            elif data.seq.command[i] == 'Shift':
-                direction = ' Up' if data.seq.option1[i] else ' Down'
-                if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
-                    seq_description += [str(i+1) + '  Shift ' + data.seq.channel[i] + direction + ' by ' + data.seq.data[i] + ' bits']
-                elif data.seq.channel[i] == 'Iset':
-                    seq_description += [str(i+1) + '  Shift ' + data.seq.channel[i] + direction + ' by ' + data.seq.data[i] + ' nA']
-                else:
-                    seq_description += [str(i+1) + '  Shift ' + data.seq.channel[i] + direction + ' by ' + data.seq.data[i] + ' volts']
-            elif data.seq.command[i] == 'Aout':
-                if data.seq.option1 == 1:
-                    seq_description += [str(i+1) + '  Analog Output ' + data.seq.channel[i] + ' to Original']
-                else:
+            # Use 5 sequence lists to generate str description list
+            seq_description = []  # Init str description list
+            for i in range(data.seq.seq_num):
+                if data.seq.command[i] == 'Wait':
+                    seq_description.append(str(i + 1) + '  Wait ' + data.seq.data[i] + ' us')
+                elif data.seq.command[i] == 'Match':
+                    option = '  Fast' if data.seq.option1[i] else '  Slow'
+                    seq_description.append(str(i + 1) + option + ' Match current')
+                elif data.seq.command[i] == 'Dout':
+                    status = 'ON' if data.seq.data[i] else 'OFF'
+                    if data.seq.channel[i] == 'DitherZ':
+                        seq_description.append(str(i + 1) + '  Z dither ' + status)
+                    elif data.seq.channel[i] == 'DitherB':
+                        seq_description.append(str(i + 1) + '  Bias dither ' + status)
+                    elif data.seq.channel[i] == 'Feedback':
+                        seq_description.append(str(i + 1) + '  Feedback ' + status)
+                elif data.seq.command[i] == 'Shift':
+                    direction = ' Up' if data.seq.option1[i] else ' Down'
                     if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
-                        seq_description += [str(i+1) + '  Analog Output ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' bits']
+                        seq_description.append(
+                            str(i + 1) + '  Shift ' + data.seq.channel[i] + direction + ' by ' + data.seq.data[
+                                i] + ' bits')
                     elif data.seq.channel[i] == 'Iset':
-                        seq_description += [str(i+1) + '  Analog Output ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' nA']
+                        seq_description.append(
+                            str(i + 1) + '  Shift ' + data.seq.channel[i] + direction + ' by ' + data.seq.data[
+                                i] + ' nA')
                     else:
-                        seq_description += [str(i+1) + '  Analog Output ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' volts']
-            elif data.seq.command[i] == 'Ramp':
-                if data.seq.option1[i] == 1:
-                    seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to Original with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
-                else:
-                    if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] =='Z offset'):
-                        seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' bits with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
+                        seq_description.append(
+                            str(i + 1) + '  Shift ' + data.seq.channel[i] + direction + ' by ' + data.seq.data[
+                                i] + ' volts')
+                elif data.seq.command[i] == 'Aout':
+                    if data.seq.option1 == 1:
+                        seq_description.append(str(i + 1) + '  Analog Output ' + data.seq.channel[i] + ' to Original')
+                    else:
+                        if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
+                            seq_description.append(
+                                str(i + 1) + '  Analog Output ' + data.seq.channel[i] + ' to ' + data.seq.data[
+                                    i] + ' bits')
+                        elif data.seq.channel[i] == 'Iset':
+                            seq_description.append(
+                                str(i + 1) + '  Analog Output ' + data.seq.channel[i] + ' to ' + data.seq.data[
+                                    i] + ' nA')
+                        else:
+                            seq_description.append(
+                                str(i + 1) + '  Analog Output ' + data.seq.channel[i] + ' to ' + data.seq.data[
+                                    i] + ' volts')
+                elif data.seq.command[i] == 'Ramp':
+                    if data.seq.option1[i] == 1:
+                        seq_description.append(
+                            str(i + 1) + '  Ramp ' + data.seq.channel[i] + ' to Original with speed ' + str(
+                                float(data.seq.option2[i]) / 10.0) + ' bits/ms')
+                    else:
+                        if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
+                            seq_description.append(
+                                str(i + 1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[
+                                    i] + ' bits with speed ' + str(float(data.seq.option2[i]) / 10.0) + ' bits/ms')
+                        elif data.seq.channel[i] == 'Iset':
+                            seq_description.append(
+                                str(i + 1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[
+                                    i] + ' nA with speed ' + str(float(data.seq.option2[i]) / 10.0) + ' bits/ms')
+                        else:
+                            seq_description.append(
+                                str(i + 1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[
+                                    i] + ' volts with speed ' + str(float(data.seq.option2[i]) / 10.0) + ' bits/ms')
+                elif data.seq.command[i] == 'Read':
+                    seq_description.append(str(i + 1) + '  Read ' + data.seq.channel[i] + data.seq.data[i] + ' times')
+                elif data.seq.command[i] == 'ShiftRamp':
+                    if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
+                        seq_description.append(
+                            str(i + 1) + '  ShiftRamp ' + data.seq.channel[i] + ' by ' + data.seq.data[
+                                i] + ' bits with speed ' + str(float(data.seq.option2[i]) / 10.0) + ' bits/ms')
                     elif data.seq.channel[i] == 'Iset':
-                        seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' nA with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
+                        seq_description.append(
+                            str(i + 1) + '  ShiftRamp ' + data.seq.channel[i] + ' by ' + data.seq.data[
+                                i] + ' nA with speed ' + str(float(data.seq.option2[i]) / 10.0) + ' bits/ms')
                     else:
-                        seq_description += [str(i+1) + '  Ramp ' + data.seq.channel[i] + ' to ' + data.seq.data[i] + ' volts with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
-            elif data.seq.command[i] == 'Read':
-                seq_description += [str(i+1) + '  Read ' + data.seq.channel[i] + data.seq.data[i] + ' times']
-            elif data.seq.command[i] == 'ShiftRamp':
-                if (data.seq.channel[i] == 'Z offset fine') or (data.seq.channel[i] == 'Z offset'):
-                    seq_description += [str(i+1) + '  ShiftRamp ' + data.seq.channel[i] + ' by ' + data.seq.data[i] + ' bits with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
-                elif data.seq.channel[i] == 'Iset':
-                    seq_description += [str(i+1) + '  ShiftRamp ' + data.seq.channel[i] + ' by ' + data.seq.data[i] + ' nA with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
-                else:
-                    seq_description += [str(i+1) + '  ShiftRamp ' + data.seq.channel[i] + ' by ' + data.seq.data[i] + ' volts with speed ' + str(float(data.seq.option2[i])/10.0) + ' bits/ms']
+                        seq_description.append(
+                            str(i + 1) + '  ShiftRamp ' + data.seq.channel[i] + ' by ' + data.seq.data[
+                                i] + ' volts with speed ' + str(float(data.seq.option2[i]) / 10.0) + ' bits/ms')
 
-            self.listWidget_seq.addItem(seq_description[i])
+            self.listWidget_seq.addItems(seq_description)
 
-        # Read
-        self.label_read_ch.setText(str(data.read_ch))
-        self.label_read_mode.setText(str(data.read_mode))
-        self.label_avg_num.setText(str(data.read_avg))
-        self.label_read_delay.setText(str(data.read_delay))
-        self.label_sampling_delay.setText(str(data.read_delay2))
+            # Read
+            self.label_read_ch.setText(str(data.read_ch))
+            read_mode_dict = {0: 'Do nothing', 1: 'Continuous read',
+                              2: 'N samples read until total amount of change detected', 3: 'N samples reading'}
+            self.label_read_mode.setText(read_mode_dict[data.read_mode])
+            self.label_avg_num.setText(str(data.read_avg))
+            delay_unit_dict = {0: '(us)', 1: '(ms)', 2: '(us)', 3: '(us)'}
+            self.label_16.setText('Sampling Delay ' + delay_unit_dict[data.read_mode])
+            self.label_read_delay.setText(str(data.read_delay))
+            self.label_sampling_delay.setText(str(data.read_delay2))
     
     # Emit close signal
     def closeEvent(self, event):

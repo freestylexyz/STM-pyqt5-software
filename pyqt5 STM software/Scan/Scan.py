@@ -44,7 +44,7 @@ class myScan(myScan_):
 
         # Track signal
         self.track.pushButton_PlaneFit.clicked.connect(self.track_update_fit)               # Track want to use current image plane fit
-        
+
         # Spectroscopy signal
         self.spc.pushButton_EditPoints.clicked.connect(lambda: self.edit_points(0))                    # Edit points mode
         self.spc.pushButton_LockIn_General.clicked.connect(self.lockin.show)                # Spectroscopy want open lock in window
@@ -88,7 +88,7 @@ class myScan(myScan_):
         self.filter_group.addButton(self.checkBox_PlaneFit_Scan, 2)
         self.filter_group.setExclusive(False)
         self.filter_group.buttonToggled[int, bool].connect(self.filter_changed)
-        
+
         # pushButton | scan
         self.pushButton_Start_Scan.clicked.connect(self.scan_emit)
 
@@ -140,7 +140,7 @@ class myScan(myScan_):
     def init_scan(self, dsp, bias_dac, preamp_gain):
         succeed = dsp.succeed
         bias_ran = dsp.dacrange[13]
-        
+
         # Set up gain radio button
         if dsp.lastgain[0] == 0:
             self.radioButton_Gain10_XY.setChecked(True)
@@ -151,7 +151,7 @@ class myScan(myScan_):
         elif dsp.lastgain[0] == 3:
             self.radioButton_Gain0_1_XY.setChecked(True)
             self.imagine_gain = 1
-        
+
         # Set up XY control
         self.scrollBar_Xin_XY.setValue(dsp.lastdac[0] - 32768)
         self.scrollBar_Yin_XY.setValue(dsp.lastdac[15] - 32768)
@@ -169,7 +169,7 @@ class myScan(myScan_):
         self.pushButton_Start_Scan.setEnabled(succeed)
         # self.pushButton_SaveAll_Scan.setEnabled(not self.data.data)
         # self.pushButton_Info_Scan.setEnabled(not self.data.data)
-        
+
         # Init sub modules
         self.dep.init_deposition(succeed, bias_dac, bias_ran, self.dep_seq_list, self.dep_seq_selected)
         self.spc.init_spc(succeed, bias_dac, bias_ran, self.spc_seq_list, self.spc_seq_selected)
@@ -196,7 +196,7 @@ class myScan(myScan_):
             self.pushButton_Zero_XY.setEnabled(False)           # Disable stop button to avoid sending stop signal twice
             self.pushButton_Send_XY.setEnabled(False)           # Disable stop button to avoid sending stop signal twice
             self.stop_signal.emit()                             # Emit stop signal
-            
+
     # Emit scan signal
     def scan_emit(self):
         flag = self.saved        # If able to start flag
@@ -205,12 +205,12 @@ class myScan(myScan_):
         avg = self.scan_options.spinBox_Avg.value()
         self.scan_seq_list[0].data_list[0] = avg
         self.scan_seq_list[1].data_list[0] = avg
-        
+
         # Ask if overwrite data if not saved
         if self.idling and (not flag):
             msg = QMessageBox.question(None, "Scan", "Image not saved, do you want to continue?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             flag = (msg == QMessageBox.Yes)
-            
+
         if self.idling and flag:    # Start case if idling and able to start
             xoff = self.scrollBar_Xoffset_XY.value() + 0x8000           # X offset
             yoff = self.scrollBar_Yoffset_XY.value() + 0x8000           # Y offset
@@ -241,7 +241,7 @@ class myScan(myScan_):
         self.enable_gain(True)                                                          # Enable / Disable xy gain after send
 
         if (channels == 0x11) or (channels == 0x1e):
-            
+
             self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
             self.target_position.movePoint(self.target_position.getHandles()[0], \
                                             [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
@@ -266,7 +266,7 @@ class myScan(myScan_):
                                       self.scan_size[0] * self.scan_size[1],
                                       self.scan_size[0] * self.scan_size[1]), padding=0)
         self.label_line.setText(str(self.data.line + 1))  # Update line num label
-        
+
     # Update plane fit parameters in track window
     def track_update_fit(self):
         self.track.spinBox_X_PlaneFit.setValue(self.tilt[0])    # Sync tilt X
@@ -395,26 +395,26 @@ class myScan(myScan_):
         else:
             self.points.hide()
             self.select_point.hide()
-    
+
     # Save
     def save(self):
         # Set up file dialog for save
         self.dlg.setFileMode(QFileDialog.AnyFile)
         self.dlg.setAcceptMode(QFileDialog.AcceptSave)
-        
+
         if self.data.time.strftime("%m%d%y") != self.today:  # New day, init file_index
             self.today = self.data.time.strftime("%m%d%y")
             self.file_index = 0
         name_list = '0123456789abcdefghijklmnopqrstuvwxyz'  # Name list
         name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]  # Auto configure file name
         self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.stm')  # Set default file name as auto configured
-        
+
         if self.dlg.exec_():  # File selected
             fname = self.dlg.selectedFiles()[0]  # File path
             directory = self.dlg.directory()  # Directory path
             self.dlg.setDirectory(directory)  # Set directory path for next call
             save_name = fname.replace(directory.path() + '/', '').replace('.stm', '')  # Get the real file name
-            
+
             # If default file name is not used
             if save_name != name:
                 try:  # See if current file name is in our naming system
@@ -430,7 +430,7 @@ class myScan(myScan_):
             with open(fname, 'wb') as output:
                 self.data.path = fname  # Save path
                 pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)  # Save data
-    
+
     # Load
     def load(self):
         flag = self.saved  # If able to load flag
@@ -453,7 +453,7 @@ class myScan(myScan_):
                 self.saved = True
                 self.remember_path = directory
                 self.setWindowTitle('Scan-' + fname.replace(directory + '/', '').replace('.stm', ''))  # Change window title for saving status indication
-                    
+
                 # Set up scroll bars
                 self.scrollBar_Xin_XY.setValue(self.data.lastdac[0] - 0x8000)
                 self.scrollBar_Yin_XY.setValue(self.data.lastdac[15] - 0x8000)
@@ -483,7 +483,7 @@ class myScan(myScan_):
                 # !!! if self.data.lockin_flag:
                 if True:
                     self.pushButton_LockIn_ScanControl.setEnabled(True)
-    
+
     # Pop out message
     def message(self, text):
         QMessageBox.warning(None, "Scan", text, QMessageBox.Ok)
@@ -502,17 +502,18 @@ class myScan(myScan_):
             # Init Track size and position
             self.track.resize(472, 274)
             self.track.move(11, 757)
-            self.update_track_roi()  # Set track area in the same position as tip position with correct size
+            self.update_track_roi(True)  # Set track area in the same position as tip position with correct size
             self.track.show()
 
     # Update track ROI position and size
-    def update_track_roi(self):
+    def update_track_roi(self, if_show):
         size = self.track.scrollBar_TrackSize_Track.value()
-        track_size = (size-1) * self.imagine_gain
+        track_size = (size - 1) * self.imagine_gain
         self.track_area.setSize(track_size, center=(0.5, 0.5))
         self.track_area.movePoint(self.track_area.getHandles()[0],
                                   [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
-        self.track_area.show()
+        if if_show:
+            self.track_area.show()
 
     # pallet radioButton slot | gray, color
     def pallet_changed(self, index, status):

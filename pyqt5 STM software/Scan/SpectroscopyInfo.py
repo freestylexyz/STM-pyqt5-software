@@ -250,10 +250,12 @@ class mySpectroscopyInfo(QWidget, Ui_SpectroscopyInfo):
             x.setMinimum(-32768)
             x.setMaximum(32767)
             x.setValue(points[i][0])
+            x.setReadOnly(True)
             y = QSpinBox()
             y.setMinimum(-32768)
             y.setMaximum(32767)
             y.setValue(points[i][1])
+            y.setReadOnly(True)
             self.tableWidget_pts.setCellWidget(i, 0, x)
             self.tableWidget_pts.setCellWidget(i, 1, y)
 

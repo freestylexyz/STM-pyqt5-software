@@ -13,10 +13,10 @@ from Track_ui import Ui_Track
 
 
 class myTrack(QWidget, Ui_Track):
-    track_signal = pyqtSignal()         # Start track signal
-    stop_signal = pyqtSignal()          # Stop track signal
-    track_area_signal = pyqtSignal()    # Update track_area ROI signal
-    close_signal = pyqtSignal()         # Hide track ROI
+    track_signal = pyqtSignal()             # Start track signal
+    stop_signal = pyqtSignal()              # Stop track signal
+    track_area_signal = pyqtSignal(bool)    # Update track_area ROI signal
+    close_signal = pyqtSignal()             # Hide track ROI
 
     def __init__(self):
         super().__init__()
@@ -39,8 +39,10 @@ class myTrack(QWidget, Ui_Track):
         self.pushButton_Start_Track.clicked.connect(self.track)
 
         # signals
-        self.scrollBar_TrackSize_Track.valueChanged.connect(self.track_area_signal)
-        self.scrollBar_StepSize_Track.valueChanged.connect(self.track_area_signal)
+        self.scrollBar_TrackSize_Track.valueChanged.connect(lambda: self.emit_track_area_signal(True))
+
+    def emit_track_area_signal(self, status):
+        self.track_area_signal.emit(status)
 
     # Init track window based on succeed
     def init_track(self, succeed):

@@ -515,19 +515,19 @@ class mySpc(QWidget, Ui_Spectroscopy):
             delta_data = self.scrollBar_Z_Delta.value() if delta_flag else 0            # Collect delta data
 
         return start, step, data_num, pass_num, ramp_ch, delta_ch, delta_data
-    
+
     # Save data slot
     def save(self):
-        name, flag = self.atuo_save_window()    # Pop out file dialog for saving
+        name, flag = self.auto_save_window()  # Pop out file dialog for saving
         if flag:                                # If savable
             self.auto_save(name, 0)             # Save averaged data
-            
+
     # Configure auto save
     def configure_autosave(self):
         # Auto save is only enabled when auto save enabled AND setup proper file name
-        self.autosave_name = self.atuo_save_window() if self.adv.groupBox_AutoSave_AdvOption.isChecked() else ''
+        self.autosave_name = self.auto_save_window() if self.adv.groupBox_AutoSave_AdvOption.isChecked() else ''
         # Save every pass will not be enabled is auto save is not enabled
-        self.every = self.adv.checkBox_SaveEveryPasses_Autosave.isChecked() and autosave_name
+        self.every = self.adv.checkBox_SaveEveryPasses_Autosave.isChecked() and self.autosave_name
 
     # Auto save pop window
     def auto_save_window(self):
