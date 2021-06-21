@@ -49,15 +49,7 @@ class mySetting(QWidget, Ui_Setting):
         if succeed:     # Set up view in case of successfully finding DSP
             self.comboBox_uart.setCurrentText(port)             # Set COM port combo box to indicate current DSP COM port
             self.comboBox_baud.setCurrentText(str(baudrate))    # Set baud rate combo box to indicate current DSP baudrate
-            # self.comboBox_uart.setEnabled(False)                # Disable COM port combo box
-            # self.comboBox_baud.setEnabled(False)                # Disable baudrate combo box
-            # self.initButton.setEnabled(False)                   # Disable initial button
             self.initButton.setText('Re-initialize')               # Change button text to reinitialize
-            # self.loadButton.setEnabled(True)                    # Enable load offset button
-            # self.spinBox_Biasoffset25_Setting.setEnabled(True)  # Enable bias +/-2.5V offset spin box
-            # self.spinBox_Biasoffset5_Setting.setEnabled(True)   # Enable bias +/-5V offset spin box
-            # self.spinBox_Biasoffset10_Setting.setEnabled(True)  # Enable bias +/-10V offset spin box
-            # self.spinBox_Isetoff_Setting.setEnabled(True)       # Enable I set offset spin box
             
             # Need convert integers to number
             offset1 = cnv.bv(offset[14], 'd', 14)

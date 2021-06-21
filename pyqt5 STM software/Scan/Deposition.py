@@ -31,13 +31,6 @@ class myDeposition(QWidget, Ui_Deposition):
         self.init_UI()
 
     def init_UI(self):
-        # init ui position and size
-        # screen = QDesktopWidget().screenGeometry()
-        # self.resize(969, 632)
-        # size = self.frameGeometry()
-        # self.move(int((screen.width() - size.width()) / 2), int((screen.height() - size.height()) / 2))
-        # self.setFixedSize(self.width(), self.height())
-
         self.info = myDepositionInfo()          # Deposition data information window
         self.dlg = QFileDialog()                # File dialog window
         self.data = DepData()                   # Spectroscopy data
@@ -58,9 +51,6 @@ class myDeposition(QWidget, Ui_Deposition):
         self.rdata = []         # Continuous data storage
         self.count = 0          # Count after change detected
 
-        # Initial poke sequence
-        # self.poke_seq = mySequence([0x42, 0x63, 0x8d], [0x00000000, 0x80000000, 0x00008000] , False)
-        
         # Set up file dialog window
         self.dlg.setNameFilter('DEP Files (*.dep)')
         self.dlg.setFileMode(QFileDialog.AnyFile)

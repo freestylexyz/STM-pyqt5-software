@@ -51,10 +51,6 @@ class myPointEditor(QWidget, Ui_PointEditor):
         trig = QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked
         self.table_Content.setEditTriggers(trig)
 
-
-    def init_sendoptions(self):
-        pass
-
     # Add point button slot
     def add(self):
         curRow = self.table_Content.rowCount()

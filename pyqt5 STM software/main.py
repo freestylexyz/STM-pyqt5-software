@@ -217,7 +217,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("SCAN_OPTIONS/DELAY_LINE_OFF", self.scan.scan_options.spinBox_LineOFF_Delay.value())
         self.cnfgEX.setValue("SCAN_OPTIONS/DELAY_LINE_ON", self.scan.scan_options.spinBox_LineON_Delay.value())
         self.cnfgEX.setValue("SCAN_OPTIONS/AVERAGE_NUM", self.scan.scan_options.spinBox_Avg.value())
-        # !!! Pre-scan
+
         # Scan | Scan control
         self.cnfgEX.setValue("SCAN_CONTROL/SCAN_SIZE", self.scan.spinBox_ScanSize_ScanControl.value())
         self.cnfgEX.setValue("SCAN_CONTROL/STEP_SIZE", self.scan.spinBox_StepSize_ScanControl.value())
@@ -311,7 +311,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             1 if self.scan.spc.adv.radioButton_Bacward_Dir.isChecked() else (
                 2 if self.scan.spc.adv.radioButton_AvgBoth_Dir.isChecked() else 3))
         self.cnfgEX.setValue("ADVANCE_OPTION/SCAN_DIRECTION", scan_direction)
-        # !!! pre-scan
+
         # Scan | Point editor
         self.cnfgEX.setValue("SCAN/POINT_EDITOR", self.scan.point_list)
         self.cnfgEX.sync()
@@ -406,7 +406,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.scan_options.spinBox_LineOFF_Delay.setValue(self.cnfgEX.value("SCAN_OPTIONS/DELAY_LINE_OFF", type=int))
         self.scan.scan_options.spinBox_LineON_Delay.setValue(self.cnfgEX.value("SCAN_OPTIONS/DELAY_LINE_ON", type=int))
         self.scan.scan_options.spinBox_Avg.setValue(self.cnfgEX.value("SCAN_OPTIONS/AVERAGE_NUM", type=int))
-        # !!! Pre-scan
+
         # Scan | Scan control
         self.scan.spinBox_ScanSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/SCAN_SIZE", type=int))
         self.scan.spinBox_StepSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/STEP_SIZE", type=int))
@@ -504,7 +504,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.scan.spc.adv.radioButton_AvgBoth_Dir.setChecked(True)
         elif self.cnfgEX.value("ADVANCE_OPTION/SCAN_DIRECTION", type=int) == 3:
             self.scan.spc.adv.radioButton_Both_Dir.setChecked(True)
-        # !!! pre-scan
+
         # Scan | Point editor
         self.scan.point_list = self.cnfgEX.value("SCAN/POINT_EDITOR")
 

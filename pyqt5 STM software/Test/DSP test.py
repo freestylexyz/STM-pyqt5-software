@@ -15,15 +15,45 @@ import serial
 ser = serial.Serial('COM3', 9600)  # Open serial port
 # time.sleep(2)
 ser.flushInput()
-ser.write((0x02).to_bytes(1, byteorder='big'))
-ser.write((10).to_bytes(2, byteorder='big'))
+v = 1
+dither_on = 1
+pot_ratio = 0.4
 
-time.sleep(1)
+
+
+b = int((v+2.5) * (2**16)/5)
+pot = int(pot_ratio * (2**8))
+print(hex(b))
+print(hex(pot))
+# msb = (b & 0xff00) << 8
+# lsb = b & 0x00ff
+ser.write((0x01).to_bytes(1, byteorder='big'))
+ser.write(int(b).to_bytes(2, byteorder='big'))
+
 
 ser.write((0x03).to_bytes(1, byteorder='big'))
-data = int.from_bytes(ser.read(1), byteorder='big') << 8
-data = data | int.from_bytes(ser.read(1), byteorder='big')
-print(data)
+ser.write(int(dither_on).to_bytes(1, byteorder='big'))
+
+ser.write((0x02).to_bytes(1, byteorder='big'))
+ser.write(int(pot).to_bytes(1, byteorder='big'))
+# print(hex(int.from_bytes(ser.read(1), "big")))
+
+ser.write((0x04).to_bytes(1, byteorder='big'))
+time.sleep(0.2)
+print(ser.inWaiting())
+# while(ser.inWaiting()):
+#     print(hex(int.from_bytes(ser.read(1), "big")))
+print(hex(int.from_bytes(ser.read(2), "big")))
+print(hex(int.from_bytes(ser.read(1), "big")))
+print(hex(int.from_bytes(ser.read(1), "big")))
+
+
+# time.sleep(1)
+#
+# ser.write((0x03).to_bytes(1, byteorder='big'))
+# data = int.from_bytes(ser.read(1), byteorder='big') << 8
+# data = data | int.from_bytes(ser.read(1), byteorder='big')
+# print(data)
 
 
 # ser.write((0x05).to_bytes(1, byteorder='big'))

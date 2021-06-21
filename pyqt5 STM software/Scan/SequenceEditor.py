@@ -35,14 +35,6 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         
     # UI initialization
     def init_UI(self):
-        # set up table widget
-        # self.table_Content_SeqEditor.setColumnWidth(0, 100)
-        # self.table_Content_SeqEditor.setColumnWidth(1, 100)
-        # self.table_Content_SeqEditor.setColumnWidth(2, 100)
-        # self.table_Content_SeqEditor.setColumnWidth(3, 100)
-        # self.table_Content_SeqEditor.setColumnWidth(4, 100)
-        # self.table_Content_SeqEditor.setColumnWidth(5, 30)
-
         # Radio button group
         self.mode_group = QButtonGroup()
         self.mode_group.addButton(self.radioButton_Deposition_Mode, 0)

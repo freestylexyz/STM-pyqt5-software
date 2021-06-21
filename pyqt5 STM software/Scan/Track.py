@@ -46,11 +46,6 @@ class myTrack(QWidget, Ui_Track):
     def init_track(self, succeed):
         self.pushButton_Start_Track.setEnabled(succeed)
 
-    # # Update track size and step size limit
-    # def update_limit(self, scan_size):
-    #     self.spinBox_TrackSize_Track.setMaximum(scan_size[0] * scan_size[1])
-    #     self.spinBox_StepSize_Track.setMaximum(scan_size[1])
-
     # Configure track options
     def configure_track(self):
         self.track_size = int(self.scrollBar_TrackSize_Track.value() / 2)   # Load track boundary
