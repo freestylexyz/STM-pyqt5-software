@@ -316,7 +316,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("SCAN/POINT_EDITOR", self.scan.point_list)
         self.cnfgEX.sync()
 
-    # !!! Load all settings stored in configuration file to dsp module
+    # Load all settings stored in configuration file to dsp module: Basic part
     def load_config_bs(self):
         self.dsp.baudrate = self.cnfgBS.value("CONFIG/BAUD_VALUE")
         self.dsp.port = self.cnfgBS.value("CONFIG/COM_VALUE")
@@ -350,7 +350,8 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.preamp_gain = self.cnfgBS.value("MAIN/PREAMP_GAIN", type=int)
         self.bias_dac = self.cnfgBS.value("MAIN/BIAS_DAC", type=bool)
         self.mode = self.cnfgBS.value("MAIN/MODE", type=int)
-        
+
+    # Load all settings stored in configuration file to dsp module: Extra part
     def load_config_ex(self):
         # Bias control
         self.spinBox_SpeedInput_BiasRamp.setValue(self.cnfgEX.value("BIAS/RAMP_SPEED", type=int))
@@ -628,7 +629,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             # Init Track size and position
             self.scan.track.resize(472, 274)
             self.scan.track.move(11, 757)
-            self.scan.update_track_roi()
+            self.scan.update_track_roi(True)
             self.scan.track.show()
         else:
             self.msg("Open Scan window first!")
@@ -684,7 +685,6 @@ if __name__ == "__main__":
     window = mySTM()
     window.show()
     sys.stdout = Logger("initO.log")    # Temporary method used to record initO value
-    # print("running!!")
     sys.exit(app.exec_())
 
 '''
