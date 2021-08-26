@@ -171,7 +171,7 @@
      <x>0</x>
      <y>0</y>
      <width>694</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -234,7 +234,7 @@
     <addaction name="actionBias"/>
     <addaction name="actionZ"/>
     <addaction name="actionCurrent"/>
-    <addaction name="actionShow_All_A"/>
+    <addaction name="actionShow_All"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuControl"/>
@@ -1870,6 +1870,9 @@
    <property name="text">
     <string>Scan</string>
    </property>
+   <property name="shortcut">
+    <string>S</string>
+   </property>
   </action>
   <action name="actionSpectra">
    <property name="enabled">
@@ -1920,6 +1923,9 @@
    <property name="text">
     <string>Tip Approach</string>
    </property>
+   <property name="shortcut">
+    <string>T</string>
+   </property>
   </action>
   <action name="actionEtest">
    <property name="text">
@@ -1946,9 +1952,27 @@
     <string>Current</string>
    </property>
   </action>
-  <action name="actionShow_All_A">
+  <action name="actionShow_All">
    <property name="text">
-    <string>Show All(A)</string>
+    <string>Show All</string>
+   </property>
+   <property name="iconText">
+    <string>Show All</string>
+   </property>
+   <property name="toolTip">
+    <string>Show All</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
+   <property name="autoRepeat">
+    <bool>true</bool>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>true</bool>
    </property>
   </action>
   <zorder>Zcontrol</zorder>

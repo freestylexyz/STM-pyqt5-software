@@ -16,7 +16,7 @@ void scan()
 {
     // Variables sent by PC
     char channel_x, channel_y, flag, scan_protect_flag;
-    bool tip_protection, dir_x;
+    bool tip_protection, dir_x, stop_scan;
     Uint16 move_delay, measure_delay, stepsize, stepnum, target;
     Uint32 line_delay;
 
@@ -25,7 +25,7 @@ void scan()
     // Variables used inside function
     Uint16 i, j;
     Uint32 lastmax, lastmin, deltaZ, stored_x, stored_y, current_x, current_y;
-    bool condition, stopped;
+    bool stopped;
 
     // Acquire data from serial
     channel_x = combine(serialIn(1));           // Acquire channel data
@@ -47,14 +47,13 @@ void scan()
     dir_x = ((flag & 0x10) == 0x10);            // X scan direction
 
     // Variables initialization
-    lastmax = 0x80000;                      // Initialize last maximum
-    lastmin = 0x80000;                      // Initialize last minimum
-    deltaZ = 0x80000;                       // Initialize delta Z
+    lastmax = 0x800000;                      // Initialize last maximum
+    lastmin = 0x800000;                      // Initialize last minimum
+    deltaZ = 0x800000;                       // Initialize delta Z
     if(scan_protect_flag == 0){deltaZ = 0;} // Change delta Z to zero if scan protection disabled. Save one byte for Z out
 
     stored_x = current_output(channel_x);    // Initial channel x to last output value
     stored_y = current_output(channel_y);    // Initial channel y to last output value
-    condition = true;                        // Initialize scan protect condition
     stopped = false;                         // Initialize stopped flag
 
     serialOut(split(Start, 1));     // Send out start command
@@ -75,12 +74,14 @@ void scan()
             serialOut(split(Ongoing, 1));                               // Output ongoing command
             DELAY_US(measure_delay);                                    // Measure delay
             pointSeq(deltaZ, ptSeq);                                    // Perform measurement sequence
-            protectScan(flag, limit, &lastmax, &lastmin, &deltaZ, &condition);  // Do scan protection
+            stop_scan = protectScan(scan_protect_flag, limit, &lastmax, &lastmin, &deltaZ);  // Do scan protection
             if (serialCheck() == Stop){stopped = true;}                 // Check stop
-            if (stopped || (! condition)){break;}                       // If stopped or scan protection tells not continue, break loop
+ //           if (stopped || (! condition)){break;}                       // If stopped or scan protection tells not continue, break loop
+            if (stopped || stop_scan ){break;}
         }
         protectTip(tip_protection, tip_protect_data, false, target);    // Do tip protection
-        if (stopped || (! condition)){break;}                           // If stopped or scan protection tells not continue, break loop
+ //       if (stopped || (! condition)){break;}                           // If stopped or scan protection tells not continue, break loop
+        if (stopped || stop_scan ){break;}
     }
     serialOut(split(Finish, 1));            // Send out Finish command only
 //    if(stopped)                             // If stopped

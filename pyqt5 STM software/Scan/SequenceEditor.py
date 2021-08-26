@@ -535,24 +535,28 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
 
     # !!! Not finished
     def simulate(self):
-        print('save', self.saved)
-        print('Name', self.seq.name)
-        print('Mode', self.seq.mode)
-        print('Sequence number:', self.seq.seq_num)
-        print('Read number:', self.seq.read_num)
-        print('Feedback:', self.seq.feedback)
-        print('DitherB:', self.seq.ditherB)
-        print('DitherZ:', self.seq.ditherZ)
-        print('Validation:', self.seq.validated)
-        print('Path:', self.seq.path)
-        # print(len(self.seq.command), len(self.seq.option1), len(self.seq.option2), len(self.seq.data), len(self.seq.command_list), len(self.seq.data_list))
-        
+        print('########################')
+        print(' Sequence info ')
+        print('########################')
+        print('Save\t:', self.saved)
+        print('Name\t:', self.seq.name)
+        print('Mode\t:', self.seq.mode)
+        print('Sequence number\t:', self.seq.seq_num)
+        print('Read number\t:', self.seq.read_num)
+        print('Feedback\t:', self.seq.feedback)
+        print('DitherB\t:', self.seq.ditherB)
+        print('DitherZ\t:', self.seq.ditherZ)
+        print('Validation\t:', self.seq.validated)
+        print('Path\t:', self.seq.path)
+        print('-------------------------------')
         if self.seq.validated:
             d = {'Command': self.seq.command, 'Channel': self.seq.channel, 'Option1': self.seq.option1, 'Option2': self.seq.option2, 'Data': self.seq.data,\
                  'Command list': self.seq.command_list, 'Data list': self.seq.data_list}
         else:
             d = {'Command': self.seq.command, 'Channel': self.seq.channel, 'Option1': self.seq.option1, 'Option2': self.seq.option2, 'Data': self.seq.data}
         print(pd.DataFrame(data = d))
+        print('-------------------------------')
+        # print(len(self.seq.command), len(self.seq.option1), len(self.seq.option2), len(self.seq.data), len(self.seq.command_list), len(self.seq.data_list))
 
     # Add to list (self.edit = -1) or update list (self.edit >= 0)
     def add_to_list(self):

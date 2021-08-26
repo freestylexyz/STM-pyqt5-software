@@ -47,7 +47,7 @@ class STMData():
     # Load lock in parameters
     # params is a list of parameters, osc_type is string
     def load_lockin(self, params, osc_type):
-        self.ocs_type = osc_type
+        self.osc_type = osc_type
         self.osc_rms = params[0]
         self.osc_freq = params[1]
         self.lockin_freq = params[2]

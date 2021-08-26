@@ -45,6 +45,7 @@ class myScanControl(myMainMenu):
             # !!! May stuck in endless loop
             # while not self.idling:  # Wait until all docks are idling
             #     time.sleep(1)
+            #
             self.dsp.rampTo(0x1a, 0x8000, 2, 1000, 0, False)  # Ramp Zouter to 0V
             self.dsp.rampDiag(0x10, 0x1f, 0x8000, 0x8000, 2, 1000, 0, False)  # Ramp XY in to 0V
             self.dsp.rampDiag(0x11, 0x1e, 0x8000, 0x8000, 2, 1000, 0, False)  # Ramp XY offset to 0V
@@ -55,6 +56,7 @@ class myScanControl(myMainMenu):
             self.dsp.rampTo(0x12, 0x8000, 100, 1000, 0, False)  # Return Z offset fine to zero
             # !!! Avoid stuck for no scanner testing
             # self.dsp.zAuto0()  # Command DSP to do Z auto
+            #
             bits = self.dsp.lastdac[3] + 300  # Adjust Z feedback to be little bit contracted
             self.dsp.rampTo(0x13, bits, 1, 500, 0, False)  # Execute the adjustment
             time.sleep(1)  # Wait 1 seconds to wait for feedback Z to respond
@@ -152,6 +154,7 @@ class myScanControl(myMainMenu):
         if self.scan.idling:
             # Re-init scan data and load options
             self.scan.data = ScanData()
+            time.sleep(0.1)
             self.scan.data.load_status(self.dsp, self.preamp_gain, self.bias_dac, seq)
             self.scan.data.load(step_num, step_size, channel_x, channel_y, dir_x, move_delay, measure_delay, line_delay, \
                                 scan_protect_flag, limit, tip_protection, tip_protect_data, match_curr, advance_bit)
@@ -161,11 +164,11 @@ class myScanControl(myMainMenu):
 
             # Get system ready
             self.scan.setWindowTitle('Scan')  # Set window title to indicate status
+            self.scan.reset_pallet()
             self.enable_mode_serial(False)  # Disable serial based on current mode
             self.scan.idling = False  # Toggle scan idling flag
             self.scan.stop = False  # Toggle stop flag
-            self.dsp.rampDiag(1 + 16, 14 + 16, xoff, yoff, step_off, delay, 0,
-                              True)  # Send XY offset without crash protection
+            self.dsp.rampDiag(1 + 16, 14 + 16, xoff, yoff, step_off, delay, 0, True)  # Send XY offset without crash protection
             self.dsp.rampDiag(0 + 16, 15 + 16, xin, yin, step_in, delay, 0, True)  # Send XY in without crash protection
 
             # Store system status for later restore
@@ -184,7 +187,7 @@ class myScanControl(myMainMenu):
 
             # Send tip to start scan start position
             if tip_protection:
-                # self.dsp.tipProtect(tip_protect_data, False)  # Tip protect
+                self.dsp.tipProtect(tip_protect_data, False)  # Tip protect
                 print('finish tip protection')
             self.dsp.rampDiag(channel_x, channel_y, x_pos, y_pos, step_in, delay, 0, False)  # Send XY in
 
@@ -200,7 +203,7 @@ class myScanControl(myMainMenu):
             self.dsp.rampDiag(0 + 16, 15 + 16, xin, yin, step_in, delay, 0, False)  # Send XY in back to original place
 
             if tip_protection:
-                # self.dsp.tipProtect(tip_protect_data, True)  # Tip unprotect
+                self.dsp.tipProtect(tip_protect_data, True)  # Tip unprotect
                 print('finish tip unprotect')
 
             # Restore pre-scan
@@ -216,7 +219,7 @@ class myScanControl(myMainMenu):
             self.init_dock()  # Reload all 3 dock view
             self.enable_mode_serial(True)  # Enable serial based on current mode
             self.scan.pushButton_Info_Scan.setEnabled(True)  # Set Scan Info button enabled
-            winsound.Beep(2000, 1000)
+            winsound.Beep(1500, 1000)
 
     # Scan signal slot
     def scan_thread(self, xin, yin, xoff, yoff, xygain, step_num, step_size):
@@ -342,7 +345,7 @@ class myScanControl(myMainMenu):
     # Track execution called by other function
     def track_excu_(self, track, loop_num):
         self.scan.track.idling = False  # Toggle track idling flag
-        self.scan.update_track_roi()  # Set track ROI position same as tip position before track start
+        self.scan.update_track_roi(True)  # Set track ROI position same as tip position before track start
 
         # Load track XY variables for out of boundary judgement
         self.scan.track.x = self.dsp.lastdac[0]
@@ -356,15 +359,15 @@ class myScanControl(myMainMenu):
                                     [self.scan.last_xy[0] + self.scan.last_xy[2], self.scan.last_xy[1] + self.scan.last_xy[3]])
 
         # Restore system status
-        self.scan.update_track_roi()  # Set track ROI position same as tip position after track end
+        self.scan.update_track_roi(False)  # Set track ROI position same as tip position after track end
         self.scan.track.idling = True
 
     # Track slot
     def track_thread(self):
         track = self.scan.track.configure_track()
-        self.scan.update_track_roi()  # Set track ROI position same as tip position before track start
+        self.scan.update_track_roi(True)  # Set track ROI position same as tip position before track start
         threading.Thread(target=(lambda: self.track_excu(track, 0))).start()
-        self.scan.update_track_roi()  # Set track ROI position same as tip position after track end
+        self.scan.update_track_roi(False)  # Set track ROI position same as tip position after track end
 
     # !!! Spectroscopy execution
     def spectroscopy_excu(self, seq):

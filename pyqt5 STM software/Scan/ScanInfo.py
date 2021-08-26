@@ -97,8 +97,8 @@ class myScanInfo(QWidget, Ui_ScanInfo):
         self.label_bias_range.setText(bias_range)
 
         # !!! Lock-in parameter
-        # if data.lockin_flag:
-        if False:
+        if data.lockin_flag:
+        # if False:
             self.label_modulation_type.setText(data.osc_type)
             self.label_osc_amp.setText(str(data.osc_rms))
             self.label_lockin_frequency.setText(str(data.lockin_freq))

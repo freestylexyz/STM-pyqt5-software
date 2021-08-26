@@ -52,6 +52,7 @@ class myImages(QWidget):
     # gray -> reversed
     #
     def gray2reverse(self, img):
+        img = self.hist_normalization(img)
         height, width = img.shape
         dst = np.zeros((height, width), np.uint8)
         for i in range(height):
@@ -77,6 +78,7 @@ class myImages(QWidget):
     #
     def illuminated(self, img):
         # scharr operator
+        img = self.hist_normalization(img)
         scharrx = cv.Scharr(img, cv.CV_64F, 1, 0)
         scharry = cv.Scharr(img, cv.CV_64F, 0, 1)
         scharrx = cv.convertScaleAbs(scharrx)

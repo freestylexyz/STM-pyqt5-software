@@ -36,13 +36,13 @@ class mySequence():
         
         # For compile use
         self.commandDict = {'Wait': [0x00, 0x00, 0x00000000, 0x00000000, 0xffffffff],
-                            'Match': [0x20, 0x00, 0x10000000, 0x00000000, 0x0000ffff],
+                            'Match': [0x20, 0x00, 0x80000000, 0x00000000, 0x0000ffff],
                             'Dout': [0x40, 0x03, 0x00000000, 0x00000000, 0x00000001],
-                            'Shift': [0x60, 0x1f, 0x10000000, 0x00000000, 0x000fffff],
+                            'Shift': [0x60, 0x1f, 0x80000000, 0x00000000, 0x000fffff],
                             'Aout': [0x80, 0x1f, 0x00000000, 0x00000000, 0x000fffff],
                             'Ramp': [0xa0, 0x1f, 0x00000000, 0xfff00000, 0x000fffff],
                             'Read': [0xc0, 0x1c, 0x00000000, 0x00000000, 0x0000ffff],
-                            'ShiftRamp': [0xe0, 0x1f, 0x10000000, 0x7ff00000, 0x000fffff]}
+                            'ShiftRamp': [0xe0, 0x1f, 0x80000000, 0x7ff00000, 0x000fffff]}
         self.channelDict = {'Z offset fine': 2, 'Z offset': 3, 'Iset': 5, 'DAC6': 6, 'DAC7': 7, 'DAC8': 8, 'DAC9': 9,
                             'DAC11': 11, 'Bias': 13, 'AIN0': 0x00, 'AIN1': 0x04, 'AIN2': 0x08, 'AIN3': 0x0c,
                             'AIN4': 0x10, 'AIN5': 0x14, 'ZOUT': 0x18, 'PREAMP': 0x1c, 'DitherB': 0, 'DitherZ': 1,
@@ -114,6 +114,10 @@ class mySequence():
                 
         if (error == 0) and self.validation_required:
             self.build()
+            cmd_list = [hex(cmd) for cmd in self.command_list]
+            dat_list = [hex(dat) for dat in self.data_list]
+            print("Command List:\n", cmd_list)
+            print("Data List:\n", dat_list)
         return error
     
     # !!! Not finished
@@ -146,7 +150,7 @@ class mySequence():
                 
                 self.command_list += [(comp[0] & 0xe0) | (ch & comp[1])]
                 self.data_list += [(self.dataDict[comm](dstr, ch) & comp[4]) | ((op2 << 20) & comp[3]) |
-                                   ((op1 * comp[2]) & 0x10000000)]
+                                   ((op1 * comp[2]) & 0x80000000)]
                 
                 if comm == 'Read':
                     self.read_num += 1

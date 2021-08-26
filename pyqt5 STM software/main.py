@@ -49,7 +49,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         # self.actionManipulation.triggered['bool'].connect(self.open_manipulation)
         
         # Connect open control dock window
-        self.actionShow_All_A.triggered.connect(self.show_all_dock)         # Connect open all docks
+        self.actionShow_All.triggered.connect(self.show_all_dock)         # Connect open all docks
         self.actionBias.triggered['bool'].connect(self.bias_show)           # Connect open bias dock
         self.actionZ.triggered['bool'].connect(self.Zcontroller_show)       # Connect open Z control dock
         self.actionCurrent.triggered['bool'].connect(self.current_show)     # Connect open current dock
@@ -409,8 +409,9 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.scan_options.spinBox_Avg.setValue(self.cnfgEX.value("SCAN_OPTIONS/AVERAGE_NUM", type=int))
 
         # Scan | Scan control
-        self.scan.spinBox_ScanSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/SCAN_SIZE", type=int))
-        self.scan.spinBox_StepSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/STEP_SIZE", type=int))
+        self.scan.scrollBar_ScanSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/SCAN_SIZE", type=int))
+        self.scan.scrollBar_StepSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/STEP_SIZE", type=int))
+
         ## load scan sequence
         # self.scan.scan_seq_list.clear()
         # fname_list_scan = self.cnfgEX.value("SCAN_CONTROL/SEQUENCE")
@@ -604,6 +605,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             self.enter_scan()                                               # Enter scan mode
             self.scan.init_scan(self.dsp, self.bias_dac, self.preamp_gain)  # Init scan view
             self.scan.show()
+            # print(self.scan.track_area.isVisible())
             self.enable_menubar(3)                                          # Disable menubar to prevent software enter other mode
             self.enable_scan_menu(0)
         elif (index == 1) and (self.mode == 3):     # Open spectroscopy

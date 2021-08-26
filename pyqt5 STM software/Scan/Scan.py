@@ -241,12 +241,11 @@ class myScan(myScan_):
         self.enable_gain(True)                                                          # Enable / Disable xy gain after send
 
         if (channels == 0x11) or (channels == 0x1e):
-
             self.scan_area.movePoint(self.scan_area.getHandles()[0], [self.last_xy[2], self.last_xy[3]])
             self.target_position.movePoint(self.target_position.getHandles()[0], \
                                             [self.current_xy[0] + self.last_xy[2], self.current_xy[1] + self.last_xy[3]])
         self.tip_position.movePoint(self.tip_position.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
-        self.track_area.movePoint(self.track_area.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
+        # self.track_area.movePoint(self.track_area.getHandles()[0], [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
 
     # Update scan
     def scan_update(self, rdata):
@@ -409,6 +408,11 @@ class myScan(myScan_):
         name = self.today + name_list[self.file_index // 36] + name_list[self.file_index % 36]  # Auto configure file name
         self.dlg.selectFile(self.dlg.directory().path() + '/' + name + '.stm')  # Set default file name as auto configured
 
+        # Load lock-in parameters if required
+        if self.checkBox_LockIn_ScanControl.isChecked():
+            self.data.lockin_flag = True
+            self.data.load_lockin(self.lockin.params, self.lockin.osc_type)
+
         if self.dlg.exec_():  # File selected
             fname = self.dlg.selectedFiles()[0]  # File path
             directory = self.dlg.directory()  # Directory path
@@ -466,6 +470,13 @@ class myScan(myScan_):
                 self.raw_img = copy.deepcopy(self.data.data[0])
                 self.current_img = copy.deepcopy(self.raw_img)
                 self.img_display.setImage(self.current_img)
+                # Reset pallet
+                self.radioButton_Gray_Scan.setChecked(True)
+                self.pallet_bar.loadPreset('grey')
+                self.checkBox_Illuminated_Scan.setChecked(False)
+                self.checkBox_PlaneFit_Scan.setChecked(False)
+                self.checkBox_Reverse_Scan.setChecked(False)
+                # Set view range
                 gain_dict = {8: 1, 9: 10, 10: 100}
                 gain = gain_dict[self.data.preamp_gain]
                 self.img_display.setRect(QRectF(
@@ -514,6 +525,13 @@ class myScan(myScan_):
                                   [self.last_xy[0] + self.last_xy[2], self.last_xy[1] + self.last_xy[3]])
         if if_show:
             self.track_area.show()
+
+    # Reset pallet to default state
+    def reset_pallet(self):
+        self.radioButton_Gray_Scan.setChecked(True)
+        self.checkBox_PlaneFit_Scan.setChecked(False)
+        self.checkBox_Illuminated_Scan.setChecked(False)
+        self.checkBox_Reverse_Scan.setChecked(False)
 
     # pallet radioButton slot | gray, color
     def pallet_changed(self, index, status):
@@ -583,6 +601,7 @@ class myScan(myScan_):
     def update_display(self):
         '''Update image based on user selected filter and colormap.'''
         if len(self.current_img) != 0:      # For real image display
+            self.current_img = self.myimg.hist_normalization(self.current_img)
             if self.radioButton_Gray_Scan.isChecked():
                 psudo_gray_img = cv.cvtColor(self.current_img, cv.COLOR_GRAY2BGR)
                 self.color_current_img = psudo_gray_img

@@ -21,7 +21,7 @@ extern bool tip_protect_status;
 // Function declaration
 //
 bool protectRamp(bool, Uint16, bool*);
-bool protectScan(char, Uint16, Uint32*, Uint32*, Uint32*, bool*);
+bool protectScan(char, Uint16, Uint32*, Uint32*, Uint32*);
 void protectTip(bool, Uint16, bool, Uint16);
 void protectTip_DSP();
 

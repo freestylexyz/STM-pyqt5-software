@@ -239,6 +239,6 @@ class myGraphWindow(QWidget, Ui_Graph):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = myGraphWindow("C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software/data/02012100.stm", 0)
+    window = myGraphWindow("C:/Users/wh740/OneDrive/Desktop/pyqt5 STM software/Test/test data/08232103.stm", 1)
     window.show()
     sys.exit(app.exec_())
