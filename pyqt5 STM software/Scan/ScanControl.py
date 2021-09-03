@@ -389,7 +389,16 @@ class myScanControl(myMainMenu):
         # send_delay, send_step, send_limit = self.scan.send_options.configure_send()
         # Configure scan for rescan
         # Configure spectroscopy rescan options
-        rescan = self.scan.spc.adv.configure_rescan
+        rescan = self.scan.spc.adv.configure_rescan()
+
+        # Prepare point list
+        self.point_list = []
+        if self.scan.spc.groupBox_Mapping.isChecked():
+            self.point_list = copy.deepcopy(self.scan.point_list)
+        else:
+            xin = int(self.scan.label_Xin_XY.text()) + 0x8000  # Get X in target
+            yin = int(self.scan.label_Yin_XY.text()) + 0x8000  # Get Y in target
+            self.point_list = [(xin, yin)]
 
         if self.scan.idling:
             # Re-init spectroscopy data and load options
@@ -398,7 +407,9 @@ class myScanControl(myMainMenu):
             self.scan.spc.data.load_status(self.dsp, self.preamp_gain, self.bias_dac, seq)
             self.scan.spc.data.load(start, step, data_num, ramp_ch, delta_data, move_delay, measure_delay,
                                     forward, backward, average, corr_pass_num, z_flag, match_flag, feedback_delay,
-                                    track_flag, rescan, self.scan.data, self.scan.point_list, self.scan.pattern)
+                                    track_flag, rescan, self.scan.data, self.point_list, self.scan.pattern)
+            if self.scan.spc.data.lockin_flag:
+                self.scan.spc.data.load_lockin(self.scan.lockin.params, self.scan.lockin.osc_type)
 
             # Get system ready
             self.scan.spc.setWindowTitle('Spectroscopy')  # Set window title to indicate status
@@ -435,7 +446,7 @@ class myScanControl(myMainMenu):
             # Passes
             for i in range(pass_num):
                 self.scan.spc.label_pass.setText(str(i + 1))  # Set current pass label
-                for j in self.scan.point_list:
+                for j in self.point_list:
                     # Send to point + delta
                     position = (j[0] + delta_xy[0], j[1] + delta_xy[1])
                     self.dsp.rampDiag(0x10, 0x1f, position[0], position[1], 100, 2000, 0, True)
@@ -443,7 +454,7 @@ class myScanControl(myMainMenu):
                         break
 
                     # First pass or restore from correction or multi-pont, go to initial set point
-                    if (len(self.scan.point_list) != 1) or corr_flag:
+                    if (len(self.point_list) != 1) or corr_flag:
                         # Ramp to initial
                         self.dsp.rampTo(ramp_ch, start, 100, move_delay, 0, False)
                         if self.scan.stop:
@@ -476,7 +487,7 @@ class myScanControl(myMainMenu):
                             break
 
                     # Multipoint go to reference set point
-                    if len(self.scan.point_list) != 1:
+                    if len(self.point_list) != 1:
                         # Undo advance
                         self.dsp.rampTo(delta_ch, ref_delta, 100, 10, 0, False)
                         if self.scan.stop:
@@ -486,6 +497,7 @@ class myScanControl(myMainMenu):
                         if self.scan.stop:
                             break
                 if self.scan.stop:
+                    self.scan.spc.plot_avg.clear()
                     break
                 else:
                     self.scan.spc.update_spc_(i)     # Update averaged data
@@ -581,6 +593,8 @@ class myScanControl(myMainMenu):
 
             # Restore system status
             self.scan.spc.pushButton_Scan.setText('Start')  # Restore scan button text
+            self.scan.spc.scrollBar_point_Graph.setMaximum(len(self.point_list))    # Set up scrollBar range for point selection
+            self.scan.spc.point_num = len(self.point_list)
             self.enable_mode_serial(True)  # Enable serial based on current mode
             if track_flag:
                 self.scan.track.pushButton_Start_Track.setEnabled(False)

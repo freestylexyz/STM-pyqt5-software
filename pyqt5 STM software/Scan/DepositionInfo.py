@@ -88,7 +88,6 @@ class myDepositionInfo(QWidget, Ui_DepositionInfo):
         z_dither_seq = 'ON' if data.seq.ditherZ else 'OFF'
         self.label_z_dither_seq.setText(z_dither_seq)
 
-
         # If command_list and command do not match, use command_list, else command
         if len(data.seq.command_list) != len(data.seq.command):
 
@@ -125,6 +124,40 @@ class myDepositionInfo(QWidget, Ui_DepositionInfo):
                     data.seq.data += [str(data.seq.data_list[i] & 0xffff)]
                     data.seq.option1 += [0]
                     data.seq.option2 += [0]
+                elif data.seq.command_list[i] == 0x20:
+                    data.seq.command += ['Match']
+                    data.seq.channel += ['NA']
+                    data.seq.data += [str(data.seq.data_list[i] & 0xffff)]
+                    data.seq.option1 += [data.seq.data_list[i] & 0x80000000]
+                    data.seq.option2 += [0]
+                elif (data.seq.command_list[i] >= 0x60) and (data.seq.command_list[i] <= 0x70):
+                    data.seq.command += ['Shift']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [(data.seq.data_list[i] & 0x80000000) >> 31]
+                    data.seq.option2 += [0]
+                elif (data.seq.command_list[i] >= 0x80) and (data.seq.command_list[i] <= 0x90):
+                    data.seq.command += ['Aout']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [0]
+                    data.seq.option2 += [0]
+                elif (data.seq.command_list[i] >= 0x80) and (data.seq.command_list[i] <= 0x90):
+                    data.seq.command += ['Ramp']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [0]
+                    data.seq.option2 += [(data.seq.data_list[i] & 0xfff00000) >> 20]
+                elif (data.seq.command_list[i] >= 0x80) and (data.seq.command_list[i] <= 0x90):
+                    data.seq.command += ['ShiftRamp']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [(data.seq.data_list[i] & 0x80000000) >> 31]
+                    data.seq.option2 += [(data.seq.data_list[i] & 0x7ff00000) >> 20]
 
             # Use 5 sequence lists to generate str description list
             seq_description = []  # Init str description list
@@ -218,6 +251,7 @@ class myDepositionInfo(QWidget, Ui_DepositionInfo):
             self.label_16.setText('Sampling Delay ' + delay_unit_dict[data.read_mode])
             self.label_read_delay.setText(str(data.read_delay))
             self.label_sampling_delay.setText(str(data.read_delay2))
+
     
     # Emit close signal
     def closeEvent(self, event):

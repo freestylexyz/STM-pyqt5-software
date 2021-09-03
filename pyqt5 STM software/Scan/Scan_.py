@@ -92,6 +92,10 @@ class myScan_(QWidget, Ui_Scan):
 
         # Spectroscopy related
         self.point_list = [(0, 0)]  # Point list for mapping [[X position, Y position]], a list of tuple
+        self.imagine_point_list = [(0, 0)] # Point list for graphics view, internal us eonly  [[X position, Y position]], a list of tuple
+        self.pt_last_pos = (0, 0)    # Select point ROI's pos last time
+        # self.pt1_last_pos = (0, 0)   # The first point last time pos
+        self.pt_init = True         # Record if  points has been changed
         self.pattern = [0, 0, 1]  # Pattern for matching [X position, Y position, Size]
 
     def init_UI(self):

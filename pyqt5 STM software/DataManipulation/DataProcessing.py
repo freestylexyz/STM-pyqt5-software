@@ -17,8 +17,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QMessageBox, 
 from PyQt5.QtCore import pyqtSignal, Qt, QDir, QRectF, QThread, QTimer
 from PyQt5.QtGui import QIntValidator, QIcon
 from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
-import pyqtgraph.opengl as gl
 from SpectroscopyInfo import mySpectroscopyInfo
 from DepositionInfo import myDepositionInfo
 from DataProcessing_ui import Ui_DataProcessing

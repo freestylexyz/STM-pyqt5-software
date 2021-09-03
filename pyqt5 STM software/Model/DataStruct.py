@@ -179,7 +179,8 @@ class SpcData(STMData):
         self.feedback_delay = 0                         # Feedback on delay for Z correction
         self.z_flag = False                             # If do Z correction (feedback on)
         self.match_flag = False                         # If do current matching for Z correction
-        self.track_flag = False                         # If do XY correction (tracking) 
+        self.track_flag = False                         # If do XY correction (tracking)
+        self.lockin_flag = False                        # Lock in
         
         self.rescan = 0xffffffff                        # Number of passes before doing one re-scan
         self.pattern = [0, 0, 1]                        # Match pattern [pattern center x, pattern center y, pattern size]

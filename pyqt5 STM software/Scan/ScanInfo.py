@@ -98,7 +98,6 @@ class myScanInfo(QWidget, Ui_ScanInfo):
 
         # !!! Lock-in parameter
         if data.lockin_flag:
-        # if False:
             self.label_modulation_type.setText(data.osc_type)
             self.label_osc_amp.setText(str(data.osc_rms))
             self.label_lockin_frequency.setText(str(data.lockin_freq))
@@ -170,6 +169,41 @@ class myScanInfo(QWidget, Ui_ScanInfo):
                     data.seq.data += [str(data.seq.data_list[i] & 0xffff)]
                     data.seq.option1 += [0]
                     data.seq.option2 += [0]
+                elif data.seq.command_list[i] == 0x20:
+                    data.seq.command += ['Match']
+                    data.seq.channel += ['NA']
+                    data.seq.data += [str(data.seq.data_list[i] & 0xffff)]
+                    data.seq.option1 += [data.seq.data_list[i] & 0x80000000]
+                    data.seq.option2 += [0]
+                elif (data.seq.command_list[i] >= 0x60) and (data.seq.command_list[i] <= 0x70):
+                    data.seq.command += ['Shift']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [(data.seq.data_list[i] & 0x80000000) >> 31]
+                    data.seq.option2 += [0]
+                elif (data.seq.command_list[i] >= 0x80) and (data.seq.command_list[i] <= 0x90):
+                    data.seq.command += ['Aout']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [0]
+                    data.seq.option2 += [0]
+                elif (data.seq.command_list[i] >= 0x80) and (data.seq.command_list[i] <= 0x90):
+                    data.seq.command += ['Ramp']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [0]
+                    data.seq.option2 += [(data.seq.data_list[i] & 0xfff00000) >> 20]
+                elif (data.seq.command_list[i] >= 0x80) and (data.seq.command_list[i] <= 0x90):
+                    data.seq.command += ['ShiftRamp']
+                    data.seq.channel += [
+                        list(data.seq.channelDict.keys())[list(data.seq.channelDict.values()).index(channel)]]
+                    data.seq.data += [str(data.seq.data_list[i] & 0xfffff)]
+                    data.seq.option1 += [(data.seq.data_list[i] & 0x80000000) >> 31]
+                    data.seq.option2 += [(data.seq.data_list[i] & 0x7ff00000) >> 20]
+
 
         # Use 5 sequence lists to generate str description list
         seq_description = []    # Init str description list

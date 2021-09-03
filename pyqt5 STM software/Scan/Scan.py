@@ -55,10 +55,10 @@ class myScan(myScan_):
         self.pushButton_LockIn_ScanControl.clicked.connect(self.lockin.show)                # Open lock in window
         self.pushButton_ScanOptions_Scan.clicked.connect(self.scan_options.show)            # Open scan option window
         self.pushButton_SendOptions_Scan.clicked.connect(self.send_options.show)            # Open send option window
-        self.pushButton_Info_Scan.clicked.connect(self.open_info)                         # Open scan data info window
-        self.pushButton_Info_Scan.setEnabled(False)
-        self.pushButton_LockIn_ScanControl.setEnabled(False)
-        # self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))
+        # self.pushButton_Info_Scan.clicked.connect(self.open_info)                           # Open scan data info window
+        # self.pushButton_Info_Scan.setEnabled(False)
+        # self.pushButton_LockIn_ScanControl.setEnabled(False)
+        self.pushButton_Info_Scan.clicked.connect(lambda: self.edit_points(0))            # For points editor test use only
         self.pushButton_SeqList_ScanControl.clicked.connect(self.open_seq_list)
         self.pushButton_Track.clicked.connect(self.open_track_win)
         self.pushButton_Deposition.clicked.connect(self.open_dep_win)
@@ -334,12 +334,14 @@ class myScan(myScan_):
             self.view_box.setRange(QRectF(xmin, xmax, self.scan_size[0] * self.scan_size[1], self.scan_size[0] * self.scan_size[1]), padding=0)
             # Set up Points related ROI
             self.select_point.setSize([(xmax-xmin)/20, (ymax-ymin)/20])
-            self.select_point.setPos([0,0])
+            # self.select_point.setPos([0,0])
+            self.select_point.setPos(self.pt_last_pos)
             self.select_point.maxBounds = QRectF(int(self.last_xy[2] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                           int(self.last_xy[3] - (self.scan_size[0] * self.scan_size[1] / 2)),
                                           self.scan_size[0] * self.scan_size[1] ,
                                           self.scan_size[0] * self.scan_size[1] )
-            self.points.movePoint(self.points.getHandles()[0],[self.last_xy[0]+self.last_xy[2],self.last_xy[1]+self.last_xy[3]])
+            if self.pt_init:        # if point editor is opened for the first time, move 1st point to tip position
+                self.points.movePoint(self.points.getHandles()[0],[self.last_xy[0]+self.last_xy[2],self.last_xy[1]+self.last_xy[3]])
             # Disable all widgets in Scan window except the viewBox
             self.enable_point(False)
             # Remember window states
@@ -352,6 +354,8 @@ class myScan(myScan_):
             self.point_editor_signal.emit(True)
 
         elif index == -1:   # close point editor
+            self.pt_last_pos = self.select_point.pos()  # record last time pos of the rectangle
+            self.pt_init = False                        # points has been edited before
             self.point_mode = False
             self.init_point_mode(False)
             self.init_default_mode(True)
@@ -367,6 +371,8 @@ class myScan(myScan_):
                 self.track.showNormal()
             if self.spcVisible:
                 self.spc.showNormal()
+            self.refresh_point_list()
+            print('---close--- ', self.point_editor.points)
             self.point_editor_signal.emit(False)
 
     # Control ROIs visibility in default mode
@@ -635,17 +641,17 @@ class myScan(myScan_):
         if index == 0:
 
             # Update point_list variable
-            self.point_list.clear()
+            self.imagine_point_list.clear()
             for point in self.point_editor.points:
-                self.point_list += [(point[0]*self.imagine_gain+self.last_xy[2], point[1]*self.imagine_gain+self.last_xy[3])]
+                self.imagine_point_list += [(point[0]*self.imagine_gain+self.last_xy[2], point[1]*self.imagine_gain+self.last_xy[3])]
 
             # Draw points
-            if len(self.points.getHandles()) <= len(self.point_list):
+            if len(self.points.getHandles()) <= len(self.imagine_point_list):
                 for i in range(len(self.points.getHandles())):
-                    self.points.movePoint(self.points.getHandles()[i], self.point_list[i])
-                for i in range(len(self.points.getHandles()), len(self.point_list)):
-                    self.points.addFreeHandle(self.point_list[i])
-            elif len(self.points.getHandles()) > len(self.point_list):
+                    self.points.movePoint(self.points.getHandles()[i], self.imagine_point_list[i])
+                for i in range(len(self.points.getHandles()), len(self.imagine_point_list)):
+                    self.points.addFreeHandle(self.imagine_point_list[i])
+            elif len(self.points.getHandles()) > len(self.imagine_point_list):
                 self.view_box.removeItem(self.points)
                 self.points = pg.PolyLineROI([0, 0], closed=False, pen=self.serial_pen[0], movable=False)
                 self.view_box.addItem(self.points)
@@ -654,9 +660,9 @@ class myScan(myScan_):
                 purple_brush = pg.mkBrush('deaaff')
                 self.points.getHandles()[0].pen.setBrush(purple_brush)
                 self.points.sigRegionChanged.connect(self.update_point_editor)
-                self.points.movePoint(self.points.getHandles()[0], self.point_list[0])
-                for i in range(1, len(self.point_list)):
-                    self.points.addFreeHandle(self.point_list[i])
+                self.points.movePoint(self.points.getHandles()[0], self.imagine_point_list[0])
+                for i in range(1, len(self.imagine_point_list)):
+                    self.points.addFreeHandle(self.imagine_point_list[i])
 
             # Draw dashed lines
             start = -1 if self.points.closed else 0
@@ -668,9 +674,9 @@ class myScan(myScan_):
         elif index == 2:
 
             # Update table widget
-            self.point_list.clear()
-            self.point_list += [(self.last_xy[0]+self.last_xy[2], self.last_xy[1]+self.last_xy[3])]
-            self.point_editor.update_from_graphics(self.point_list)
+            self.imagine_point_list.clear()
+            self.imagine_point_list += [(self.last_xy[0]+self.last_xy[2], self.last_xy[1]+self.last_xy[3])]
+            self.point_editor.update_from_graphics(self.imagine_point_list)
 
             # Draw points
             self.view_box.removeItem(self.points)
@@ -714,6 +720,7 @@ class myScan(myScan_):
             x = int((handle.pos()[0] + self.points.pos()[0] - self.last_xy[2]) / self.imagine_gain)
             y = int((handle.pos()[1] + self.points.pos()[1] - self.last_xy[3]) / self.imagine_gain)
             self.point_list_2table += [(x, y)]
+
         self.point_editor.update_from_graphics(self.point_list_2table)
 
     # Point Editor | overall displacement of points
@@ -748,6 +755,12 @@ class myScan(myScan_):
         for i in range(len(self.point_list_overall)):
             self.points.movePoint(self.points.getHandles()[i], [self.point_list_overall[i][0] + origin_position[0],
                                                                 self.point_list_overall[i][1] + origin_position[1]])
+
+    # Update point list to do mapping
+    def refresh_point_list(self):
+        self.point_list.clear()
+        for point in self.point_editor.points:
+            self.point_list += [(point[0] + 0x8000, point[1] + 0x8000)]
 
     # Emit close signal
     def closeEvent(self, event):

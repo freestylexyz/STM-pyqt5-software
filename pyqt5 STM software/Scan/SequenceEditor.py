@@ -207,6 +207,7 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.setup_option1(seq_num)
         self.setup_option2(seq_num)
         self.setup_data_unit(seq_num)
+        self.recheck_setup(seq_num)
         
     # Channel change slot
     def change_channel(self):
@@ -218,8 +219,21 @@ class mySequenceEditor(QWidget, Ui_SequenceEditor):
         self.setup_option1(seq_num)
         self.setup_option2(seq_num)
         self.setup_data_unit(seq_num)
+        self.recheck_setup(seq_num)
         self.change()
-    
+
+    # Special function for a recheck after load: if Origin checked without spinBox disabled
+    def recheck_setup(self, seq_num):
+        command_index = self.command_combo_list[seq_num].currentIndex()
+
+        if (command_index == 4) or (command_index == 5):  # Aout and ramp
+            state = 2 if self.option1_widget_list[seq_num].isChecked() else 0
+            # Update data list and change view
+            if state == 2:  # Checked
+                self.data_widget_list[seq_num].setEnabled(False)
+            elif state == 0:  # Unchecked
+                self.data_widget_list[seq_num].setEnabled(True)
+
     # Option1 change slot
     def change_option1(self):
         seq_num = self.table_Content_SeqEditor.currentRow()

@@ -399,7 +399,12 @@ class CrossCenterROI2(ROI):
         p.setPen(self.currentPen)
 
         p.scale(r.width(), r.height())  ## workaround for GL bug
-        r = QtCore.QRectF(r.x() / r.width(), r.y() / r.height(), 1, 1)
+
+        # make tip ROI circle visible in 0.1 gain and smallest scan size
+        if r.width() == 0 or r.height() == 0:   # Dan 20210831
+            r = QtCore.QRectF(r.x() / 1, r.y() / 1, 1, 1)
+        else:
+            r = QtCore.QRectF(r.x() / r.width(), r.y() / r.height(), 1, 1)
 
         p.drawEllipse(r)
 

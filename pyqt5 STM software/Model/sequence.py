@@ -47,8 +47,8 @@ class mySequence():
                             'DAC11': 11, 'Bias': 13, 'AIN0': 0x00, 'AIN1': 0x04, 'AIN2': 0x08, 'AIN3': 0x0c,
                             'AIN4': 0x10, 'AIN5': 0x14, 'ZOUT': 0x18, 'PREAMP': 0x1c, 'DitherB': 0, 'DitherZ': 1,
                             'Feedback': 2, ' ': 0}
-        self.dataDict = {'Wait': self.bb, 'Match': self.mb, 'Dout': self.bb, 'Shift': self.ab,
-                         'Aout': self.ab, 'Ramp': self.ab, 'Read': self.bb, 'ShiftRamp': self.ab}
+        self.dataDict = {'Wait': self.bb, 'Match': self.mb, 'Dout': self.bb, 'Shift': self.sb,
+                         'Aout': self.ab, 'Ramp': self.ab, 'Read': self.bb, 'ShiftRamp': self.sb}
         
         # Sequence status
         self.mode = mode                        # True for read sequence, False for deposition sequence
@@ -147,10 +147,11 @@ class mySequence():
                 op1 = self.option1[i]
                 op2 = self.option2[i]
                 dstr = self.data[i]
-                
+                print("-----build(uncompiled)", comm, op1, op2, (self.dataDict[comm](dstr, ch) & comp[4]))
                 self.command_list += [(comp[0] & 0xe0) | (ch & comp[1])]
                 self.data_list += [(self.dataDict[comm](dstr, ch) & comp[4]) | ((op2 << 20) & comp[3]) |
                                    ((op1 * comp[2]) & 0x80000000)]
+                print("-----build(compiled)", comm, hex((op1 * comp[2]) & 0x80000000), bin((op2 << 20) & comp[3]), bin(self.dataDict[comm](dstr, ch) & comp[4]))
                 
                 if comm == 'Read':
                     self.read_num += 1
@@ -181,3 +182,22 @@ class mySequence():
                 else:
                     b = cnv.vb(v, '20')
         return b
+
+    def sb(self, dstr, ch):
+        if dstr == 'Origin':                        # If back to origin
+            b = self.dac[ch]
+            return b
+        elif float(dstr) < 0:
+            return 0x0
+        else:
+            if (ch == 2) or (ch == 3):              # z offset fine & z offset
+                b = int(dstr)                       # Convert data string to bits value
+            elif ch == 5:                           # i set
+                b = cnv.i2b(float(dstr), self.preamp_gain, self.range[5]) - 0x8000
+            else:
+                v = float(dstr)                     # Convert data string to voltage value
+                if ch != 16:
+                    b = cnv.vb(v, 'd', self.range[ch]) - 0x8000
+                else:
+                    b = cnv.vb(v, '20') - 0x80000
+            return b

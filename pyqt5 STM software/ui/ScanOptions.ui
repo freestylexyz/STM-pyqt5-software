@@ -247,6 +247,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QSpinBox" name="spinBox_MoveOFF_Delay">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -281,6 +284,9 @@
       </item>
       <item row="2" column="3">
        <widget class="QSpinBox" name="spinBox_MoveON_Delay">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -349,6 +355,9 @@
       </item>
       <item row="4" column="2">
        <widget class="QSpinBox" name="spinBox_ReadOFF_Delay">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -383,6 +392,9 @@
       </item>
       <item row="4" column="3">
        <widget class="QSpinBox" name="spinBox_ReadON_Delay">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -454,6 +466,9 @@
       </item>
       <item row="6" column="2">
        <widget class="QSpinBox" name="spinBox_LineOFF_Delay">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -488,6 +503,9 @@
       </item>
       <item row="6" column="3">
        <widget class="QSpinBox" name="spinBox_LineON_Delay">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>

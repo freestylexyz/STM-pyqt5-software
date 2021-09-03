@@ -7,7 +7,7 @@
 import sys
 sys.path.append("../ui/")
 sys.path.append("../Model/")
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QButtonGroup
 from ScanOptions_ui import Ui_ScanOptions
 import conversion as cnv
 
@@ -24,6 +24,35 @@ class myScanOptions(QWidget, Ui_ScanOptions):
         self.scrollBar_Retract_tip.valueChanged.connect(self.spinBox_Retract_Tip.setValue)
         self.spinBox_Advance_Feedabck.editingFinished.connect(lambda: self.scrollBar_Advance_Feedabck.setValue(self.spinBox_Advance_Feedabck.value()))
         self.scrollBar_Advance_Feedabck.valueChanged.connect(self.spinBox_Advance_Feedabck.setValue)
+
+        self.delay_group = QButtonGroup()
+        self.delay_group.addButton(self.radioButton_Fixed_Delay, 0)
+        self.delay_group.addButton(self.radioButton_Variable_Delay, 1)
+        self.delay_group.buttonToggled[int, bool].connect(self.delay_changed)
+
+    # delay radio button slot ( 0: fixed; 1: variable )
+    def delay_changed(self, index, status):
+        if status:
+            if index == 0:
+                self.spinBox_MoveControl_Delay.setEnabled(True)
+                self.spinBox_ReadControl_Delay.setEnabled(True)
+                self.spinBox_LineControl_Delay.setEnabled(True)
+                self.spinBox_MoveOFF_Delay.setEnabled(False)
+                self.spinBox_ReadOFF_Delay.setEnabled(False)
+                self.spinBox_LineOFF_Delay.setEnabled(False)
+                self.spinBox_MoveON_Delay.setEnabled(False)
+                self.spinBox_ReadON_Delay.setEnabled(False)
+                self.spinBox_LineON_Delay.setEnabled(False)
+            else:
+                self.spinBox_MoveControl_Delay.setEnabled(False)
+                self.spinBox_ReadControl_Delay.setEnabled(False)
+                self.spinBox_LineControl_Delay.setEnabled(False)
+                self.spinBox_MoveOFF_Delay.setEnabled(True)
+                self.spinBox_ReadOFF_Delay.setEnabled(True)
+                self.spinBox_LineOFF_Delay.setEnabled(True)
+                self.spinBox_MoveON_Delay.setEnabled(True)
+                self.spinBox_ReadON_Delay.setEnabled(True)
+                self.spinBox_LineON_Delay.setEnabled(True)
 
     # Configure scan direction
     def configure_scan(self):

@@ -45,7 +45,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.dlg = QFileDialog()            # File dialog window
         self.data = SpcData()               # Spectroscopy data
         self.img = myImages()               # Plot processing function
-        
+
         # Set up file dialog window
         self.dlg.setFileMode(QFileDialog.AnyFile)
         self.dlg.setAcceptMode(QFileDialog.AcceptSave)
@@ -61,6 +61,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.idling = True      # Idling status
         self.saved = True       # Saved status
         self.point_index = 0    # Current displayed point index
+        self.point_num = 0      # Number of points
 
         # Auto save variables
         self.autosave_name = ''
@@ -84,6 +85,9 @@ class mySpc(QWidget, Ui_Spectroscopy):
         
         # Status change
         self.comboBox_RampCh_General.currentIndexChanged.connect(self.channel_change)
+
+        # Flag change
+        self.checkBox_record_General.stateChanged.connect(self.record_lockin)
         
         # Buttons
         self.pushButton_Save.clicked.connect(self.save)                     # Save data
@@ -167,8 +171,17 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     # Point scrollBar slot
     def point_changed(self, index):
-        self.point_index = index
-        self.update_plot_signal.emit()
+        if self.data.data.shape[0] == self.point_num:
+            self.point_index = index - 1
+            self.update_plot_signal.emit()
+            self.update_avg_plot()
+        elif self.data.data.shape[0] < self.point_num:
+            if index <= self.data.data.shape[0]:
+                self.point_index = index - 1
+                self.update_plot_signal.emit()
+                self.update_avg_plot()
+            else:
+                self.plot_cur.clear()
 
     # Update spectroscopy current pass data
     def update_spc(self, rdata):
@@ -354,6 +367,12 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.min_cnv(False, 0)          # Set minimum scrollbar to 0
         self.max_cnv(False, 0xfffff)    # Set maximum scrollbar to 0xfffff
         self.step_cnv(False, 1)         # Set step to scrollbar 1
+
+    # Record lock-in params checkBox slot
+    def record_lockin(self, index):
+        state = True if index == 2 else False
+        self.data.lockin_flag = state
+        self.pushButton_LockIn_General.setEnabled(state)
     
     # Set scrollbars range
     def setup_scroll(self, ch):
@@ -518,9 +537,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     # Save data slot
     def save(self):
-        name, flag = self.auto_save_window()  # Pop out file dialog for saving
-        if flag:                                # If savable
-            self.auto_save(name, 0)             # Save averaged data
+        name = self.auto_save_window()  # Pop out file dialog for saving
+        self.auto_save(name, 0)             # Save averaged data
 
     # Configure auto save
     def configure_autosave(self):
@@ -570,6 +588,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         with open(fname, 'wb') as output:
             self.data.path = fname                                      # Save path
             pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
+            print(self.data.data.shape)
 
 
 

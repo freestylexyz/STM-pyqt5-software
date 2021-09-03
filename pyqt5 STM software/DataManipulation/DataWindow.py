@@ -17,8 +17,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QDesktopWidget,
 from PyQt5.QtCore import pyqtSignal, Qt, QDir, QRectF, QThread, QTimer, QPointF
 from PyQt5.QtGui import QIntValidator, QIcon, QKeySequence, QColor
 from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph
-import pyqtgraph.opengl as gl
 from images import myImages
 from DataWindow_ui import Ui_DataWindow
 from SpectroscopyInfo import mySpectroscopyInfo
@@ -67,6 +65,7 @@ class myDataWindow(QWidget, Ui_DataWindow):
         self.parent_data_list = data_list
         self.parent_data_paths = data_paths
         self.parent_data_colors = [QColor(106, 4, 15), QColor(0, 150, 199), QColor(60, 9, 108), \
+                                   QColor(157, 2, 8), QColor(8, 28, 21), QColor(90, 24, 154), QColor(45, 106, 79), QColor(106, 4, 15), QColor(0, 150, 199), QColor(60, 9, 108), \
                                    QColor(157, 2, 8), QColor(8, 28, 21), QColor(90, 24, 154), QColor(45, 106, 79) ]
         self.processed_data_colors = [QColor(3, 7, 30), QColor(3, 4, 94), QColor(16, 0, 43), QColor(208, 0, 0), QColor(123, 44, 191), QColor(232, 93, 4), \
                                       QColor(55, 6, 23), QColor(2, 62, 138), QColor(27, 67, 50), QColor(220, 47, 2), QColor(64, 145, 108), QColor(250, 163, 7), QColor(157, 78, 221)]
@@ -628,14 +627,8 @@ class myDataWindow(QWidget, Ui_DataWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    paths =  ['C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03242100.spc',\
- 'C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03242100.spc',\
- 'C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03242100.spc', \
-'C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03242101.spc',\
- 'C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03252100.dep',\
- 'C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03252101.dep', \
-'C:/Users/DAN/Documents/MyCode/PythonScripts/pyqt5 STM software 0325/Test/test data\\03252102.dep']
-    data = ['03242100.spc',  '\t03242100.spc_No1', '\t03242100.spc_No2', '03242101.spc', '03252100.dep', '03252101.dep', '03252102.dep']
+    paths =  ['C:/Users/wh740/OneDrive/Desktop/pyqt5 STM software/Test\\test data\\08292101.spc']
+    data = ['08292101.spc']
     window = myDataWindow(data_list=data, data_paths=paths)
     window.listWidget.addItems(data)
 
