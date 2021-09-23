@@ -137,7 +137,7 @@ class myTipApproach(QWidget, Ui_TipApproach):
         x = (0x8000 + x) if direction else (0x8000 - x )            # Calculate the real x based on direction
         chtxt = 'X' if channel == 0x10 else 'Y'                     # Figure out channel text
         dirtxt = '+' if direction else '-'                          # Figure out direction text
-        labeltxt = 'Stepping Down' if direction else 'Stepping Up'  # Figure out steping direction text
+        labeltxt = 'Stepping Up' if direction else 'Stepping Down'  # Figure out steping direction text
 
         # Set status label
         if self.groupBox_Trans_TipAppr.isChecked():

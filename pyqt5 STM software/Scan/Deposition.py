@@ -114,24 +114,36 @@ class myDeposition(QWidget, Ui_Deposition):
         # Variables
         self.bias_dac = bias_dac
         self.bias_ran = bias_ran
-        
+
         # Enable buttons based on succeed
         self.pushButton_DoIt_Deposition.setEnabled(succeed)
         # self.pushButton_Save_Deposition.setEnabled(not self.data.data)
         # self.pushButton_Info_Deposition.setEnabled(not self.data.data)
-        
-        # Setup controls
+
+        # Setup controls, make sure delta bias is within range & config value is recorded
+        config_deltaB_val = self.spinBox_Bias_PokeTip.value()
         if bias_dac:
             self.scrollBar_Bias_PokeTip.setMaximum(0xfffff)
-            self.scrollBar_Bias_PokeTip.setValue(0x80000)
+            config_deltaB_bit = cnv.vb(self.spinBox_Bias_PokeTip.value(), '20')
+            if config_deltaB_bit > 0xfffff:
+                self.scrollBar_Bias_PokeTip.setValue(0x80000)
+            else:
+                self.scrollBar_Bias_PokeTip.setValue(config_deltaB_bit)
             self.spinBox_Bias_PokeTip.setMaximum(5.0)
             self.spinBox_Bias_PokeTip.setMinimum(-5.0)
-            self.spinBox_Bias_PokeTip.setValue(0.0)
+            if config_deltaB_bit > 0xfffff:
+                self.spinBox_Bias_PokeTip.setValue(0.0)
+            else:
+                self.spinBox_Bias_PokeTip.setValue(config_deltaB_val)
         else:
             self.scrollBar_Bias_PokeTip.setMaximum(0xffff)
-            self.scrollBar_Bias_PokeTip.setValue(0x8000)
+            config_deltaB_bit = cnv.vb(config_deltaB_val, 'd', self.bias_ran)
+            if config_deltaB_bit > 0xffff:
+                self.scrollBar_Bias_PokeTip.setValue(0x8000)
+            else:
+                self.scrollBar_Bias_PokeTip.setValue(config_deltaB_bit)
             self.bias_ran_change(bias_ran)
-            
+
         # Set selected sequence name
         seq_name = '' if selected < 0 else seq_list[selected].name
         self.label_Seq_Deposition.setText(seq_name)
@@ -169,7 +181,7 @@ class myDeposition(QWidget, Ui_Deposition):
         # self.pushButton_Save_Deposition.setEnabled(enable and (not self.data.data))
         # self.pushButton_Info_Deposition.setEnabled(enable and (not self.data.data))
         mode = not self.groupBox_Poke_Deposition.isChecked()
-        self.groupBox_Poke_Deposition.setEnabled(enable and mode)   # Poke group box is also determined by if using sequence
+        self.groupBox_Seq_Deposition.setEnabled(enable and mode)   # Poke group box is also determined by if using sequence
         self.view_box_before.setMouseEnabled(x=enable, y=enable)   # Enable and disable mouse event
         self.view_box_during.setMouseEnabled(x=enable, y=enable)  # Enable and disable mouse event
         self.view_box_after.setMouseEnabled(x=enable, y=enable)  # Enable and disable mouse event

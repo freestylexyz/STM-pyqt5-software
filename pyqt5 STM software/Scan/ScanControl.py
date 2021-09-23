@@ -37,6 +37,7 @@ class myScanControl(myMainMenu):
             self.init_dock()  # Reload all 3 dock view
             self.enable_mode_serial(True)  # Enable serial based on current mode
 
+
     # Exit scan operation
     def exit_scan(self):
         if self.scan.idling:
@@ -408,7 +409,8 @@ class myScanControl(myMainMenu):
             self.scan.spc.data.load(start, step, data_num, ramp_ch, delta_data, move_delay, measure_delay,
                                     forward, backward, average, corr_pass_num, z_flag, match_flag, feedback_delay,
                                     track_flag, rescan, self.scan.data, self.point_list, self.scan.pattern)
-            if self.scan.spc.data.lockin_flag:
+            if self.scan.spc.checkBox_record_General.isChecked():
+                self.scan.spc.data.lockin_flag = True
                 self.scan.spc.data.load_lockin(self.scan.lockin.params, self.scan.lockin.osc_type)
 
             # Get system ready
@@ -421,6 +423,7 @@ class myScanControl(myMainMenu):
             # Set up stop button
             self.scan.spc.pushButton_Scan.setText('Stop')
             self.scan.spc.pushButton_Scan.setEnabled(True)
+            self.scan.spc.plot_avg.clear()
 
             # Store system status for later restore
             ref_ditherB = self.dsp.lastdigital[0]  # Store bias dither
@@ -497,7 +500,6 @@ class myScanControl(myMainMenu):
                         if self.scan.stop:
                             break
                 if self.scan.stop:
-                    self.scan.spc.plot_avg.clear()
                     break
                 else:
                     self.scan.spc.update_spc_(i)     # Update averaged data

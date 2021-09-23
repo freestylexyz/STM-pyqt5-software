@@ -14,6 +14,16 @@ class myAdvanceOption(QWidget, Ui_AdvanceOption):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.init_UI()
+
+    def init_UI(self):
+        self.groupBox_Seq_AdvOption.toggled.connect(self.seq_selected)
+
+    # Sequence selected slot
+    def seq_selected(self, status):
+        self.groupBox_prescan.setEnabled(not status)
+        self.groupBox_measure.setEnabled(not status)
+        self.spinBox_Wait_Delay.setEnabled(not status)
 
     # Configure pre-scan for sequence
     def configure_prescan(self):

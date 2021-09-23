@@ -290,6 +290,7 @@ class myDataWindow(QWidget, Ui_DataWindow):
                 data = pickle.load(input)
             if self.listWidget.currentItem().text().find('.spc') != -1:
                 data2save = data.data_
+                print(data2save.shape)
                 if data2save.shape[0] > 1:
                     for i in range(data2save.shape[0]):
                         default_name = data_path[:-4] + '_No' + str(i + 1)

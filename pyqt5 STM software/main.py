@@ -278,7 +278,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.cnfgEX.setValue("SPECTROSCOPY/DELTA_Z", self.scan.spc.spinBox_Delta_Z.value())
         self.cnfgEX.setValue("SPECTROSCOPY/DELTA_BIAS", self.scan.spc.spinBox_Bias_Delta.value())
         self.cnfgEX.setValue("SPECTROSCOPY/MAPPING", self.scan.spc.groupBox_Mapping.isChecked())
-        print('writing ', self.scan.spc.groupBox_Mapping.isChecked())
+        # print('writing ', self.scan.spc.groupBox_Mapping.isChecked())
         # Scan | Advance option
         self.cnfgEX.setValue("ADVANCE_OPTION/DO", self.scan.spc.adv.spinBox_DoZCorrection_ZDrift.value())
         self.cnfgEX.setValue("ADVANCE_OPTION/Z_CORRECTION", self.scan.spc.adv.groupBox_ZDrift_Correction.isChecked())
@@ -359,11 +359,16 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.spinBox_SpeedInput_CurrRamp.setValue(self.cnfgEX.value("CURRENT/RAMP_SPEED", type=int))
         # Tip approach
         self.tipappr.spinBox_Delay.setValue(self.cnfgEX.value("TIP_APPROACH/DELAY", type=int))
+        self.tipappr.delay_slot(True)
         self.tipappr.spinBox_Xstep.setValue(self.cnfgEX.value("TIP_APPROACH/XIN_STEP_SIZE", type=float))
+        self.tipappr.x_slot(True)
         self.tipappr.spinBox_Accel.setValue(self.cnfgEX.value("TIP_APPROACH/ACCELERATION", type=float))
+        self.tipappr.accel_slot(True)
         self.tipappr.spinBox_Zstep.setValue(self.cnfgEX.value("TIP_APPROACH/ZOUTER_STEP_SIZE", type=float))
-        self.tipappr.spinBox_Giant.setValue(self.cnfgEX.value("TIP_APPROACH/GIANT_STEP", type=int))
+        self.tipappr.z_slot(True)
         self.tipappr.spinBox_MInCurr.setValue(self.cnfgEX.value("TIP_APPROACH/MIN_CURRENT", type=float))
+        self.tipappr.min_curr_slot(True)
+        self.tipappr.spinBox_Giant.setValue(self.cnfgEX.value("TIP_APPROACH/GIANT_STEP", type=int))
         self.tipappr.spinBox_Baby.setValue(self.cnfgEX.value("TIP_APPROACH/BABY_STEP", type=int))
         self.tipappr.spinBox_StepNum.setValue(self.cnfgEX.value("TIP_APPROACH/STEP_NUM", type=int))
         # Scan | Send options
@@ -378,7 +383,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
             not(self.cnfgEX.value("SCAN_OPTIONS/SCAN_ORDER", type=bool)))
         self.scan.scan_options.radioButton_ReadForward_OrderandDirection.setChecked(
             self.cnfgEX.value("SCAN_OPTIONS/READ_DIRECTION", type=bool))
-        self.scan.scan_options.radioButton_ReadForward_OrderandDirection.setChecked(
+        self.scan.scan_options.radioButton_ReadBackward_OrderandDirection.setChecked(
             not(self.cnfgEX.value("SCAN_OPTIONS/READ_DIRECTION", type=bool)))
         self.scan.scan_options.groupBox_Tip_ScanOptions.setChecked(self.cnfgEX.value("SCAN_OPTIONS/TIP_PROTECTION", type=bool))
         self.scan.scan_options.spinBox_Retract_Tip.setValue(self.cnfgEX.value("SCAN_OPTIONS/RETRACT", type=int))
@@ -407,7 +412,6 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.scan_options.spinBox_LineOFF_Delay.setValue(self.cnfgEX.value("SCAN_OPTIONS/DELAY_LINE_OFF", type=int))
         self.scan.scan_options.spinBox_LineON_Delay.setValue(self.cnfgEX.value("SCAN_OPTIONS/DELAY_LINE_ON", type=int))
         self.scan.scan_options.spinBox_Avg.setValue(self.cnfgEX.value("SCAN_OPTIONS/AVERAGE_NUM", type=int))
-
         # Scan | Scan control
         self.scan.scrollBar_ScanSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/SCAN_SIZE", type=int))
         self.scan.scrollBar_StepSize_ScanControl.setValue(self.cnfgEX.value("SCAN_CONTROL/STEP_SIZE", type=int))
@@ -459,17 +463,22 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.dep.radioButton_Continuous_ReadUntil.setChecked(self.cnfgEX.value("DEPOSITION/READ_UNTIL_MODE", type=bool))
         self.scan.dep.radioButton_NSample_ReadUntil.setChecked(not self.cnfgEX.value("DEPOSITION/READ_UNTIL_MODE", type=bool))
         # Scan | Spectroscopy
-        self.scan.spc.spinBox_Min_General.setValue(self.cnfgEX.value("SPECTROSCOPY/MIN", type=float))
-        self.scan.spc.spinBox_Max_General.setValue(self.cnfgEX.value("SPECTROSCOPY/MAX", type=float))
+        self.scan.spc.comboBox_RampCh_General.setCurrentIndex(self.cnfgEX.value("SPECTROSCOPY/RAMP_CHANNEL", type=int))
         self.scan.spc.spiBox_StepSize_General.setValue(self.cnfgEX.value("SPECTROSCOPY/STEP_SIZE", type=float))
+        self.scan.spc.step_cnv(True, 0)
+        self.scan.spc.spinBox_Max_General.setValue(self.cnfgEX.value("SPECTROSCOPY/MAX", type=float))
+        self.scan.spc.max_cnv(True, 0)
+        self.scan.spc.spinBox_Min_General.setValue(self.cnfgEX.value("SPECTROSCOPY/MIN", type=float))
+        self.scan.spc.min_cnv(True, 0)
         self.scan.spc.label_DataNum_General.setText(self.cnfgEX.value("SPECTROSCOPY/NUM"))
         self.scan.spc.spinBox_Pass_General.setValue(self.cnfgEX.value("SPECTROSCOPY/PASS", type=int))
-        self.scan.spc.comboBox_RampCh_General.setCurrentIndex(self.cnfgEX.value("SPECTROSCOPY/RAMP_CHANNEL", type=int))
         self.scan.spc.groupBox_Delta_General.setChecked(self.cnfgEX.value("SPECTROSCOPY/DELTA", type=bool))
         self.scan.spc.spinBox_Delta_Z.setValue(self.cnfgEX.value("SPECTROSCOPY/DELTA_Z", type=int))
+        self.scan.spc.scrollBar_Z_Delta.setValue(self.scan.spc.spinBox_Delta_Z.value())
         self.scan.spc.spinBox_Bias_Delta.setValue(self.cnfgEX.value("SPECTROSCOPY/DELTA_BIAS", type=float))
+        self.scan.spc.bias_cnv(True, 0)
         self.scan.spc.groupBox_Mapping.setChecked(self.cnfgEX.value("SPECTROSCOPY/MAPPING", type=bool))
-        print('loading ', self.cnfgEX.value("SPECTROSCOPY/MAPPING", type=bool))
+        # print('loading ', self.cnfgEX.value("SPECTROSCOPY/MAPPING", type=bool))
         # Scan | Advance option
         self.scan.spc.adv.spinBox_DoZCorrection_ZDrift.setValue(self.cnfgEX.value("ADVANCE_OPTION/DO", type=int))
         self.scan.spc.adv.groupBox_ZDrift_Correction.setChecked(self.cnfgEX.value("ADVANCE_OPTION/Z_CORRECTION", type=bool))
@@ -488,7 +497,7 @@ class mySTM(myBiasControl, myZcontroller, myCurrentControl, mySettingControl, my
         self.scan.spc.adv.checkBox_SaveEveryPasses_Autosave.setChecked(
             self.cnfgEX.value("ADVANCE_OPTION/AUTO_SAVE_EVERY", type=bool))
         self.scan.spc.adv.groupBox_Seq_AdvOption.setChecked(self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE", type=bool))
-        ## load spectroscopy sequence
+        # load spectroscopy sequence
         # fname_list_spc = self.cnfgEX.value("ADVANCE_OPTION/SEQUENCE_NAME")
         # for fname in fname_list_spc:
         #     if fname != '':

@@ -147,11 +147,11 @@ class mySequence():
                 op1 = self.option1[i]
                 op2 = self.option2[i]
                 dstr = self.data[i]
-                print("-----build(uncompiled)", comm, op1, op2, (self.dataDict[comm](dstr, ch) & comp[4]))
+                # print("-----build(uncompiled)", comm, op1, op2, (self.dataDict[comm](dstr, ch) & comp[4]))
                 self.command_list += [(comp[0] & 0xe0) | (ch & comp[1])]
                 self.data_list += [(self.dataDict[comm](dstr, ch) & comp[4]) | ((op2 << 20) & comp[3]) |
                                    ((op1 * comp[2]) & 0x80000000)]
-                print("-----build(compiled)", comm, hex((op1 * comp[2]) & 0x80000000), bin((op2 << 20) & comp[3]), bin(self.dataDict[comm](dstr, ch) & comp[4]))
+                # print("-----build(compiled)", comm, hex((op1 * comp[2]) & 0x80000000), bin((op2 << 20) & comp[3]), bin(self.dataDict[comm](dstr, ch) & comp[4]))
                 
                 if comm == 'Read':
                     self.read_num += 1

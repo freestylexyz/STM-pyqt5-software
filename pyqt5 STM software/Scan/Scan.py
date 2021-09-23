@@ -175,6 +175,7 @@ class myScan(myScan_):
         self.spc.init_spc(succeed, bias_dac, bias_ran, self.spc_seq_list, self.spc_seq_selected)
         self.track.init_track(succeed)
 
+
     # if X/Y gain is changed by user, emit signal
     def gain_changed_emit(self, gain, status):
         if status:

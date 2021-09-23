@@ -85,6 +85,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         
         # Status change
         self.comboBox_RampCh_General.currentIndexChanged.connect(self.channel_change)
+        self.comboBox_RampCh_General.currentIndexChanged.connect(self.delta_change)
 
         # Flag change
         self.checkBox_record_General.stateChanged.connect(self.record_lockin)
@@ -138,14 +139,14 @@ class mySpc(QWidget, Ui_Spectroscopy):
         
         # Enable buttons based on succeed
         self.pushButton_Scan.setEnabled(succeed)
-        
+
         # Setup controls
         self.setup_spin(0)
         self.setup_scroll(0)
         self.min_cnv(False, 0)
         self.max_cnv(False, 0xfffff)
         self.step_cnv(False, 1)
-        
+
         # Set selected sequence name
         seq_name = '' if selected < 0 else seq_list[selected].name
         self.adv.label_Seq_AdvOption.setText(seq_name)
@@ -368,6 +369,13 @@ class mySpc(QWidget, Ui_Spectroscopy):
         self.max_cnv(False, 0xfffff)    # Set maximum scrollbar to 0xfffff
         self.step_cnv(False, 1)         # Set step to scrollbar 1
 
+    # Change ramp channel slot
+    def delta_change(self, ch):
+        self.spinBox_Bias_Delta.setEnabled(ch)
+        self.scrollBar_Bias_Delta.setEnabled(ch)
+        self.spinBox_Delta_Z.setEnabled(1-ch)
+        self.scrollBar_Z_Delta.setEnabled(1-ch)
+
     # Record lock-in params checkBox slot
     def record_lockin(self, index):
         state = True if index == 2 else False
@@ -439,7 +447,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
         else:       # Ramp bias
             if flag:    # Spinbox to scrollbar
                 value = cnv.vb(self.spinBox_Min_General.value(), bias_flag, self.bias_ran)
-            value = min(value, max(self.scrollBar_Max_General.value() - step, 0))
+            value = min(value, max(self.scrollBar_Max_General.value() - step, 0))   # 0 -1.000061
             self.spinBox_Min_General.setValue(cnv.bv(value, bias_flag, self.bias_ran))
             self.scrollBar_Min_General.setValue(int(value))
             self.spinBox_Max_General.setMinimum(cnv.bv(self.scrollBar_Min_General.value() + step, bias_flag, self.bias_ran))
@@ -473,12 +481,12 @@ class mySpc(QWidget, Ui_Spectroscopy):
             self.spinBox_Max_General.setValue(cnv.bv(value, bias_flag, self.bias_ran))
             self.scrollBar_Max_General.setValue(int(value))
             self.spinBox_Min_General.setMaximum(cnv.bv(self.scrollBar_Max_General.value() - step, bias_flag, self.bias_ran))
-            
+
             step_max = self.scrollBar_Max_General.value() - self.scrollBar_Min_General.value()
             self.spiBox_StepSize_General.setMaximum(cnv.bv(step_max + bias_mid, bias_flag, self.bias_ran))
         data_num = int(step_max / self.scrollBar_StepSize_General.value())
         self.label_DataNum_General.setText(str(data_num))
-            
+
     # Step change slot
     def step_cnv(self, flag, value):
         ch = self.comboBox_RampCh_General.currentIndex()
@@ -537,7 +545,7 @@ class mySpc(QWidget, Ui_Spectroscopy):
 
     # Save data slot
     def save(self):
-        name = self.auto_save_window()  # Pop out file dialog for saving
+        name = self.auto_save_window()      # Pop out file dialog for saving
         self.auto_save(name, 0)             # Save averaged data
 
     # Configure auto save
@@ -588,8 +596,8 @@ class mySpc(QWidget, Ui_Spectroscopy):
         with open(fname, 'wb') as output:
             self.data.path = fname                                      # Save path
             pickle.dump(self.data, output, pickle.HIGHEST_PROTOCOL)     # Save data
-            print(self.data.data.shape)
-
+            # print(self.data.data.shape)
+            print('save finished')
 
 
 if __name__ == "__main__":

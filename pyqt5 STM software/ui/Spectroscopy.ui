@@ -386,6 +386,9 @@
          </item>
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="spinBox_Bias_Delta">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="decimals">
             <number>7</number>
            </property>
@@ -434,6 +437,9 @@
          </item>
          <item row="3" column="0" colspan="2">
           <widget class="QScrollBar" name="scrollBar_Bias_Delta">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimum">
             <number>0</number>
            </property>

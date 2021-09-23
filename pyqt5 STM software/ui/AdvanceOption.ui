@@ -30,7 +30,10 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="6" column="0" rowspan="2">
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBox_measure">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -834,7 +837,10 @@
     </widget>
    </item>
    <item row="0" column="0" rowspan="3">
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="groupBox_prescan">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
